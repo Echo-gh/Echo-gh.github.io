@@ -262,5 +262,12 @@ unset XDG_RUNTIME_DIR
     <title>orbslam2-env</title>
     <url>/2024/01/26/orbslam2-env/</url>
     <content><![CDATA[]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>ORB-SLAM2</tag>
+      </tags>
   </entry>
 </search>
