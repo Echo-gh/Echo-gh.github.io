@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title></title>
+    <title>Ubuntu系统安装</title>
     <url>/2024/01/26/Ubuntu-setup/</url>
-    <content><![CDATA[<h1 id="01-Ubunut系统安装"><a href="#01-Ubunut系统安装" class="headerlink" title="01-Ubunut系统安装"></a>01-Ubunut系统安装</h1><h2 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h2><p>推荐使用 Rufus 这个软件进行制作</p>
+    <content><![CDATA[<p>﻿# 01-Ubunut系统安装</p>
+<h2 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h2><p>推荐使用 Rufus 这个软件进行制作</p>
 <img src="/2024/01/26/Ubuntu-setup/rufus.png" class="" title="rufus">
+
 <h2 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h2><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
 <ol>
 <li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
@@ -25,5 +27,8 @@
 <p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
 <h2 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h2><p>进入Ubuntu系统后的设置不再赘述。</p>
 ]]></content>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
   </entry>
 </search>
