@@ -100,39 +100,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu系统安装</title>
-    <url>/2024/01/26/Ubuntu-setup/</url>
-    <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作</p>
-<span id="more"></span>
-
-<p><img src="/../images/rufus.png" alt="rufus" title="rufus设置界面"></p>
-<h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
-<ol>
-<li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
-</li>
-<li><p>删除”quite splash”后的”—“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
-</li>
-<li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
-</li>
-</ol>
-<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”&#x2F;etc&#x2F;default&#x2F;grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
-<h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
-<ol>
-<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
-<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
-</ol>
-<p><img src="/../images/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
-<p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
-<h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>寒武纪MLU220 开发环境Docker搭建</title>
     <url>/2024/01/26/mlu220/</url>
     <content><![CDATA[<p>首先进入<a href="https://cair.cambricon.com/#/home/catalog">寒武纪开发主页</a>，登录寒武纪账号，进入cambricon_pytorch docker 页面，由于本人只使用MLU220 进行边缘端推理，所以不需要在主机上安装MLU 驱动，可直接按照提示安装docker。本人在尝试按照页面说明时遇到了一些问题，所以记录一下。</p>
@@ -196,80 +163,6 @@
         <tag>Ubuntu</tag>
         <tag>g++</tag>
         <tag>gcc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SSH免密登录设置</title>
-    <url>/2024/01/26/ssh-setup/</url>
-    <content><![CDATA[<h1 id="1-ssh服务"><a href="#1-ssh服务" class="headerlink" title="1 ssh服务"></a>1 ssh服务</h1><p>Ubuntu开启ssh服务需要下载openssh-server，命令为：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h1 id="2-ssh-key生成"><a href="#2-ssh-key生成" class="headerlink" title="2 ssh key生成"></a>2 ssh key生成</h1><p>生成ssh key的命令是：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
-
-<p>后续一路默认设置即可，该命令会在主目录默认生成.ssh文件，内包含以下文件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa: 私钥</span><br><span class="line">id_rsa.pub: 公钥</span><br></pre></td></tr></table></figure>
-
-<h1 id="3-无密码远程登陆服务器"><a href="#3-无密码远程登陆服务器" class="headerlink" title="3 无密码远程登陆服务器"></a>3 无密码远程登陆服务器</h1><p>将本地产生的公钥上传至服务器：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-copy-id -p <span class="comment">#port master@ubuntu</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="4-Windows免密登录Ubuntu"><a href="#4-Windows免密登录Ubuntu" class="headerlink" title="4 Windows免密登录Ubuntu"></a>4 Windows免密登录Ubuntu</h1><p>Windows在终端中执行以下命令生成公私密钥：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
-
-<p>会在C:\Users\xxx.ssh 文件夹中生成以下三个文件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa 本地私钥</span><br><span class="line">id_rsa.pub 公钥</span><br><span class="line">known_hosts 已知的ip</span><br></pre></td></tr></table></figure>
-
-<p>将公钥上传至Ubuntu，可使用scp命令，然后执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将公钥拷贝至Ubuntu的authorized_keys文件中</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改sshd_config文件</span></span><br><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将一下三行命令添加至sshd_config文件</span></span><br><span class="line">RSAAuthentication <span class="built_in">yes</span></span><br><span class="line">PubkeyAuthentication <span class="built_in">yes</span></span><br><span class="line">PasswordAuthentication no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启ssh</span></span><br><span class="line">sudo service sshd restart</span><br></pre></td></tr></table></figure>
-
-<p>然后即可实现Windows免密登录Ubuntu。</p>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-        <tag>SSH</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Object SLAM部署过程</title>
-    <url>/2024/01/26/object-slam/</url>
-    <content><![CDATA[<p>系统代码包下载地址为<a href="https://github.com/yangliu9527/Object_SLAM.git">github地址</a>，论文为(Liu 等, 2023).</p>
-<h2 id="1-ORB-SLAM2基础问题"><a href="#1-ORB-SLAM2基础问题" class="headerlink" title="1 ORB-SLAM2基础问题"></a>1 ORB-SLAM2基础问题</h2><p>该算法是在ORB-SLAM2 的基础上进行改进的，所以编译前需要对CMakeLists.txt 文件进行修改，此处不再赘述。除此之外，还遇到了其他问题，这里记录一下。</p>
-<span id="more"></span>
-
-<h2 id="2-其他问题"><a href="#2-其他问题" class="headerlink" title="2 其他问题"></a>2 其他问题</h2><ul>
-<li>PCL 报错：</li>
-</ul>
-<blockquote>
-<p>error: #error PCL requires C++14 or above</p>
-</blockquote>
-<p>参考这篇<a href="https://blog.csdn.net/handily_1/article/details/122421305">文章</a>解释，使用C++14编译器，更改主目录下的CMakeLists.txt：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">### 修改前</span><br><span class="line"># Check C++<span class="number">11</span> <span class="keyword">or</span> C++<span class="number">0</span><span class="function">x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++11.&quot;</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">### 修改后</span></span><br><span class="line"><span class="function"># Check C++11 <span class="keyword">or</span> C++0x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++14&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++14.&quot;</span>)</span></span></span><br></pre></td></tr></table></figure>
-
-<p>修改完之后不再报错，可正常编译。</p>
-<ul>
-<li>针对不同的输入图片，需要设置不同的通道变换，否则会报与数据通道相关的错误，如下图所示；修改方法为修改frame.cc 代码 392行附近的内容：</li>
-</ul>
-<p><img src="/../images/object-slam/err1.png" alt="err1" title="err1"></p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//* for gray pictures (e.g. KITTI-odometry dataset)</span></span><br><span class="line">cv::Mat imRGB_1;</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB.<span class="built_in">clone</span>(), imRGB_1, CV_GRAY2BGR);</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB_1.<span class="built_in">clone</span>(), Img_HSV, CV_BGR2HSV);</span><br><span class="line"></span><br><span class="line"><span class="comment">//* for RGB pictures (e.g. TUM dataset)</span></span><br><span class="line"><span class="comment">// cv::cvtColor(imRGB.clone(), Img_HSV, CV_BGR2HSV);</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在VS Code 里对程序进行调试运行时，可能会报错：</li>
-</ul>
-<p><img src="/../images/object-slam/err2.png" alt="err2"></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 只有在VS Code 中调试才会出现该错误，解决办法是在VS Code 中unset GTK_PATH即可：</span></span><br><span class="line"><span class="built_in">unset</span> GTK_PATH</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>语义SLAM</category>
-      </categories>
-      <tags>
-        <tag>Semantic</tag>
-        <tag>SLAM</tag>
-        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
@@ -420,9 +313,129 @@
       <tags>
         <tag>Ubuntu</tag>
         <tag>SLAM</tag>
-        <tag>C++</tag>
         <tag>ORB-SLAM2</tag>
         <tag>OpenCV</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SSH免密登录设置</title>
+    <url>/2024/01/26/ssh-setup/</url>
+    <content><![CDATA[<h1 id="1-ssh服务"><a href="#1-ssh服务" class="headerlink" title="1 ssh服务"></a>1 ssh服务</h1><p>Ubuntu开启ssh服务需要下载openssh-server，命令为：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h1 id="2-ssh-key生成"><a href="#2-ssh-key生成" class="headerlink" title="2 ssh key生成"></a>2 ssh key生成</h1><p>生成ssh key的命令是：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
+
+<p>后续一路默认设置即可，该命令会在主目录默认生成.ssh文件，内包含以下文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa: 私钥</span><br><span class="line">id_rsa.pub: 公钥</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-无密码远程登陆服务器"><a href="#3-无密码远程登陆服务器" class="headerlink" title="3 无密码远程登陆服务器"></a>3 无密码远程登陆服务器</h1><p>将本地产生的公钥上传至服务器：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-copy-id -p <span class="comment">#port master@ubuntu</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="4-Windows免密登录Ubuntu"><a href="#4-Windows免密登录Ubuntu" class="headerlink" title="4 Windows免密登录Ubuntu"></a>4 Windows免密登录Ubuntu</h1><p>Windows在终端中执行以下命令生成公私密钥：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+
+<p>会在C:\Users\xxx.ssh 文件夹中生成以下三个文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa 本地私钥</span><br><span class="line">id_rsa.pub 公钥</span><br><span class="line">known_hosts 已知的ip</span><br></pre></td></tr></table></figure>
+
+<p>将公钥上传至Ubuntu，可使用scp命令，然后执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将公钥拷贝至Ubuntu的authorized_keys文件中</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改sshd_config文件</span></span><br><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将一下三行命令添加至sshd_config文件</span></span><br><span class="line">RSAAuthentication <span class="built_in">yes</span></span><br><span class="line">PubkeyAuthentication <span class="built_in">yes</span></span><br><span class="line">PasswordAuthentication no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启ssh</span></span><br><span class="line">sudo service sshd restart</span><br></pre></td></tr></table></figure>
+
+<p>然后即可实现Windows免密登录Ubuntu。</p>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu系统安装</title>
+    <url>/2024/01/26/Ubuntu-setup/</url>
+    <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作</p>
+<span id="more"></span>
+
+<p><img src="/../images/rufus.png" alt="rufus" title="rufus设置界面"></p>
+<h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
+<ol>
+<li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
+</li>
+<li><p>删除”quite splash”后的”—“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
+</li>
+<li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
+</li>
+</ol>
+<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”&#x2F;etc&#x2F;default&#x2F;grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
+<h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
+<ol>
+<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
+<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
+</ol>
+<p><img src="/../images/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
+<p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
+<h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Windows远程桌面控制ubuntu</title>
+    <url>/2024/01/26/win-remote-ubuntu/</url>
+    <content><![CDATA[<h2 id="1-Ubuntu设置与软件安装"><a href="#1-Ubuntu设置与软件安装" class="headerlink" title="1 Ubuntu设置与软件安装"></a>1 Ubuntu设置与软件安装</h2><p>首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：</p>
+<span id="more"></span>
+
+<p><img src="/../images/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
+<p>然后安装xrdp：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install xrdp</span><br></pre></td></tr></table></figure>
+
+<p>接下来的步骤网上有很多不同的做法，其中<a href="https://zhuanlan.zhihu.com/p/145614559">这篇文章</a>提到需要修改startwm.sh文件:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
+<p>将最后两行注释掉，即：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 注释掉这两行</span></span><br><span class="line"><span class="comment"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span></span><br><span class="line"><span class="comment"># exec /bin/sh /etc/X11/Xsession</span></span><br></pre></td></tr></table></figure>
+
+<p>然后即可通过win10自带的远程桌面进行连接：</p>
+<p><img src="/../images/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
+<p>到目前为止，本人可以在Windows中正常远程控制Ubuntu，且可实现Ubuntu显示和远程控制<strong>同时在线</strong>，即通过远程控制操作Ubuntu，同时另一个屏幕可正常显示Ubuntu界面，且实时显示远程控制的操作。</p>
+<h2 id="2-黑屏问题"><a href="#2-黑屏问题" class="headerlink" title="2 黑屏问题"></a>2 黑屏问题</h2><p>但是，在这之后我重新安装了NVIDIA显卡驱动、CUDA、cuDNN，然后就发现远程控制无法进入Ubuntu系统了，点击“连接”后出现一段时间的黑屏后会自动退出。在网上查询了很多案例，有各种五花八门的解决方案，如换一个桌面程序、使用dconf-editor更改配置文件、远程控制与Ubuntu本地无法同时登陆（必须有一方log out）等等，以下是个人尝试的结果：</p>
+<ul>
+<li><p>换桌面程序：由于本人安装的是桌面版Ubuntu，故系统自带桌面程序gnome，之前配置远程控制时就受到网上各种五花八门意见的影响，使用了xfce4桌面程序，后来发现完全没必要，而且就在不久前还可以正常远程连接，说明应该不是桌面程序的原因，因此就没有尝试更换桌面程序；</p>
+</li>
+<li><p>使用dconf-editor更改配置文件：在<a href="https://zhuanlan.zhihu.com/p/345738274">文章</a>中提到，进入dconf-editor后，依次进入“org-&gt;gnome-&gt;desktop-&gt;remote-access”，将 requre-encryption 设为 False，这也是本人在上个系统（Ubuntu20.04）中的操作，但是在本系统（Ubuntu22.04）中没有发现有“remote-access”，故该方法也没有成功；</p>
+</li>
+<li><p>本地端与远程端无法共存：这个比较简单，本人试着将Ubuntu本地端账户log out，或者使用不同账户进行远程控制，发现仍然失败；但<strong>需要注意的是</strong>，在本人解决远程黑屏问题之后，发现该问题确实是存在的，若本地端或远程端没有log out，那么另一端就无法正常登陆显示界面，这边记录一下；</p>
+</li>
+<li><pre><code class="bash">## 修改startwm.sh文件，添加下面几行，仍旧没有解决问题
+unset DBUS_SESSION_BUS_ADDRESS
+unset XDG_RUNTIME_DIR
+. $HOME/.profile
+</code></pre>
+</li>
+</ul>
+<p>最后，不知道怎么想起来，尝试把startwm.sh文件中注释掉的两行取消注释，峰回路转、柳暗花明，竟然成了！！！于是，本人最终的startwm.sh文件内容如下所示：</p>
+<p><img src="/../images/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
+<h2 id="3-后记"><a href="#3-后记" class="headerlink" title="3 后记"></a>3 后记</h2><p>虽然不知道原因是什么，只知道目前这样子是可行的，但同时也发现无法像安装显卡驱动前那样本地端和远程端同时登陆了，必须要有一端log out，另一端才可正常工作，现做以下记录：</p>
+<ul>
+<li>使用远程连接桌面后，不能简单地关掉远程桌面：若只是简单地关掉远程桌面后，在本地端可以正常进入账号选择、密码输入界面，输完密码后会显示黑屏；此时，只有重新进入远程桌面，选择log out，本地端方可正常登录。</li>
+<li>对于本地端Todesk等远程控制软件：经过本人测试，Todesk 软件若想正常工作需要本地端正常登录，即要求远程端log out，然后本地端log in；那么也就意味着本地端电脑需要连接显示器。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>远程桌面</tag>
       </tags>
   </entry>
   <entry>
@@ -475,54 +488,41 @@
       </tags>
   </entry>
   <entry>
-    <title>Windows远程桌面控制ubuntu</title>
-    <url>/2024/01/26/win-remote-ubuntu/</url>
-    <content><![CDATA[<h2 id="1-Ubuntu设置与软件安装"><a href="#1-Ubuntu设置与软件安装" class="headerlink" title="1 Ubuntu设置与软件安装"></a>1 Ubuntu设置与软件安装</h2><p>首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：</p>
+    <title>Object SLAM部署过程</title>
+    <url>/2024/01/26/object-slam/</url>
+    <content><![CDATA[<p>系统代码包下载地址为<a href="https://github.com/yangliu9527/Object_SLAM.git">github地址</a>，论文为(Liu 等, 2023).</p>
+<h2 id="1-ORB-SLAM2基础问题"><a href="#1-ORB-SLAM2基础问题" class="headerlink" title="1 ORB-SLAM2基础问题"></a>1 ORB-SLAM2基础问题</h2><p>该算法是在ORB-SLAM2 的基础上进行改进的，所以编译前需要对CMakeLists.txt 文件进行修改，此处不再赘述。除此之外，还遇到了其他问题，这里记录一下。</p>
 <span id="more"></span>
 
-<p><img src="/../images/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
-<p>然后安装xrdp：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install xrdp</span><br></pre></td></tr></table></figure>
-
-<p>接下来的步骤网上有很多不同的做法，其中<a href="https://zhuanlan.zhihu.com/p/145614559">这篇文章</a>提到需要修改startwm.sh文件:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
-
-<p><img src="/../images/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
-<p>将最后两行注释掉，即：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 注释掉这两行</span></span><br><span class="line"><span class="comment"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span></span><br><span class="line"><span class="comment"># exec /bin/sh /etc/X11/Xsession</span></span><br></pre></td></tr></table></figure>
-
-<p>然后即可通过win10自带的远程桌面进行连接：</p>
-<p><img src="/../images/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
-<p>到目前为止，本人可以在Windows中正常远程控制Ubuntu，且可实现Ubuntu显示和远程控制<strong>同时在线</strong>，即通过远程控制操作Ubuntu，同时另一个屏幕可正常显示Ubuntu界面，且实时显示远程控制的操作。</p>
-<h2 id="2-黑屏问题"><a href="#2-黑屏问题" class="headerlink" title="2 黑屏问题"></a>2 黑屏问题</h2><p>但是，在这之后我重新安装了NVIDIA显卡驱动、CUDA、cuDNN，然后就发现远程控制无法进入Ubuntu系统了，点击“连接”后出现一段时间的黑屏后会自动退出。在网上查询了很多案例，有各种五花八门的解决方案，如换一个桌面程序、使用dconf-editor更改配置文件、远程控制与Ubuntu本地无法同时登陆（必须有一方log out）等等，以下是个人尝试的结果：</p>
-<ul>
-<li><p>换桌面程序：由于本人安装的是桌面版Ubuntu，故系统自带桌面程序gnome，之前配置远程控制时就受到网上各种五花八门意见的影响，使用了xfce4桌面程序，后来发现完全没必要，而且就在不久前还可以正常远程连接，说明应该不是桌面程序的原因，因此就没有尝试更换桌面程序；</p>
-</li>
-<li><p>使用dconf-editor更改配置文件：在<a href="https://zhuanlan.zhihu.com/p/345738274">文章</a>中提到，进入dconf-editor后，依次进入“org-&gt;gnome-&gt;desktop-&gt;remote-access”，将 requre-encryption 设为 False，这也是本人在上个系统（Ubuntu20.04）中的操作，但是在本系统（Ubuntu22.04）中没有发现有“remote-access”，故该方法也没有成功；</p>
-</li>
-<li><p>本地端与远程端无法共存：这个比较简单，本人试着将Ubuntu本地端账户log out，或者使用不同账户进行远程控制，发现仍然失败；但<strong>需要注意的是</strong>，在本人解决远程黑屏问题之后，发现该问题确实是存在的，若本地端或远程端没有log out，那么另一端就无法正常登陆显示界面，这边记录一下；</p>
-</li>
-<li><pre><code class="bash">## 修改startwm.sh文件，添加下面几行，仍旧没有解决问题
-unset DBUS_SESSION_BUS_ADDRESS
-unset XDG_RUNTIME_DIR
-. $HOME/.profile
-</code></pre>
-</li>
+<h2 id="2-其他问题"><a href="#2-其他问题" class="headerlink" title="2 其他问题"></a>2 其他问题</h2><ul>
+<li>PCL 报错：</li>
 </ul>
-<p>最后，不知道怎么想起来，尝试把startwm.sh文件中注释掉的两行取消注释，峰回路转、柳暗花明，竟然成了！！！于是，本人最终的startwm.sh文件内容如下所示：</p>
-<p><img src="/../images/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
-<h2 id="3-后记"><a href="#3-后记" class="headerlink" title="3 后记"></a>3 后记</h2><p>虽然不知道原因是什么，只知道目前这样子是可行的，但同时也发现无法像安装显卡驱动前那样本地端和远程端同时登陆了，必须要有一端log out，另一端才可正常工作，现做以下记录：</p>
+<blockquote>
+<p>error: #error PCL requires C++14 or above</p>
+</blockquote>
+<p>参考这篇<a href="https://blog.csdn.net/handily_1/article/details/122421305">文章</a>解释，使用C++14编译器，更改主目录下的CMakeLists.txt：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">### 修改前</span><br><span class="line"># Check C++<span class="number">11</span> <span class="keyword">or</span> C++<span class="number">0</span><span class="function">x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++11.&quot;</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">### 修改后</span></span><br><span class="line"><span class="function"># Check C++11 <span class="keyword">or</span> C++0x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++14&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++14.&quot;</span>)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>修改完之后不再报错，可正常编译。</p>
 <ul>
-<li>使用远程连接桌面后，不能简单地关掉远程桌面：若只是简单地关掉远程桌面后，在本地端可以正常进入账号选择、密码输入界面，输完密码后会显示黑屏；此时，只有重新进入远程桌面，选择log out，本地端方可正常登录。</li>
-<li>对于本地端Todesk等远程控制软件：经过本人测试，Todesk 软件若想正常工作需要本地端正常登录，即要求远程端log out，然后本地端log in；那么也就意味着本地端电脑需要连接显示器。</li>
+<li>针对不同的输入图片，需要设置不同的通道变换，否则会报与数据通道相关的错误，如下图所示；修改方法为修改frame.cc 代码 392行附近的内容：</li>
 </ul>
+<p><img src="/../images/object-slam/err1.png" alt="err1" title="err1"></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//* for gray pictures (e.g. KITTI-odometry dataset)</span></span><br><span class="line">cv::Mat imRGB_1;</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB.<span class="built_in">clone</span>(), imRGB_1, CV_GRAY2BGR);</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB_1.<span class="built_in">clone</span>(), Img_HSV, CV_BGR2HSV);</span><br><span class="line"></span><br><span class="line"><span class="comment">//* for RGB pictures (e.g. TUM dataset)</span></span><br><span class="line"><span class="comment">// cv::cvtColor(imRGB.clone(), Img_HSV, CV_BGR2HSV);</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在VS Code 里对程序进行调试运行时，可能会报错：</li>
+</ul>
+<p><img src="/../images/object-slam/err2.png" alt="err2"></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 只有在VS Code 中调试才会出现该错误，解决办法是在VS Code 中unset GTK_PATH即可：</span></span><br><span class="line"><span class="built_in">unset</span> GTK_PATH</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>开发环境搭建</category>
+        <category>语义SLAM</category>
       </categories>
       <tags>
-        <tag>Ubuntu</tag>
-        <tag>远程桌面</tag>
+        <tag>SLAM</tag>
+        <tag>C++</tag>
+        <tag>Semantic</tag>
       </tags>
   </entry>
 </search>
