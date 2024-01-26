@@ -24,12 +24,12 @@
 
 
 
-  <meta name="description" content="本文主要参考该文章。 1 安装显卡驱动1.1 前期准备根据显卡型号在Nvidia 官网下载相应的驱动程序，然后安装必备软件： 123456## 更新源sudo apt-get update## 安装必备软件sudo apt-get install g++sudo apt-get install gccsudo apt-get install make">
+  <meta name="description" content="本文主要参考该文章。 1 安装显卡驱动1.1 前期准备根据显卡型号在Nvidia 官网下载相应的驱动程序，然后安装必备软件：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Ubuntu系统安装显卡驱动、CUDA、cuDNN">
 <meta property="og:url" content="http://echo-gh.github.io/2024/01/26/Ubuntu-dl-setup/index.html">
 <meta property="og:site_name" content="Echo&#39;s blog">
-<meta property="og:description" content="本文主要参考该文章。 1 安装显卡驱动1.1 前期准备根据显卡型号在Nvidia 官网下载相应的驱动程序，然后安装必备软件： 123456## 更新源sudo apt-get update## 安装必备软件sudo apt-get install g++sudo apt-get install gccsudo apt-get install make">
+<meta property="og:description" content="本文主要参考该文章。 1 安装显卡驱动1.1 前期准备根据显卡型号在Nvidia 官网下载相应的驱动程序，然后安装必备软件：">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://echo-gh.github.io/images/nvidia-smi.png">
 <meta property="og:image" content="http://echo-gh.github.io/images/CUDA.png">
@@ -40,7 +40,7 @@
 <meta property="og:image" content="http://echo-gh.github.io/images/cudnn-error.png">
 <meta property="og:image" content="http://echo-gh.github.io/images/cudnn-success.png">
 <meta property="article:published_time" content="2024-01-26T03:38:49.000Z">
-<meta property="article:modified_time" content="2024-01-26T08:10:04.935Z">
+<meta property="article:modified_time" content="2024-01-26T11:36:22.750Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="Ubuntu">
 <meta property="article:tag" content="Deep Learning">
@@ -235,7 +235,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-01-26 11:38:49 / 修改时间：16:10:04" itemprop="dateCreated datePublished" datetime="2024-01-26T11:38:49+08:00">2024-01-26</time>
+              <time title="创建时间：2024-01-26 11:38:49 / 修改时间：19:36:22" itemprop="dateCreated datePublished" datetime="2024-01-26T11:38:49+08:00">2024-01-26</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -260,9 +260,9 @@
       
         <p><strong>本文主要参考</strong><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/643954422">该文章</a>。</p>
 <h2 id="1-安装显卡驱动"><a href="#1-安装显卡驱动" class="headerlink" title="1 安装显卡驱动"></a>1 安装显卡驱动</h2><h3 id="1-1-前期准备"><a href="#1-1-前期准备" class="headerlink" title="1.1 前期准备"></a>1.1 前期准备</h3><p>根据显卡型号在<a target="_blank" rel="noopener" href="https://www.nvidia.com/Download/Find.aspx?lang=en-us#">Nvidia 官网</a>下载相应的驱动程序，然后安装必备软件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 更新源</span></span><br><span class="line">sudo apt-get update</span><br><span class="line"><span class="comment">## 安装必备软件</span></span><br><span class="line">sudo apt-get install g++</span><br><span class="line">sudo apt-get install gcc</span><br><span class="line">sudo apt-get install make</span><br></pre></td></tr></table></figure>
-
 <span id="more"></span>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 更新源</span></span><br><span class="line">sudo apt-get update</span><br><span class="line"><span class="comment">## 安装必备软件</span></span><br><span class="line">sudo apt-get install g++</span><br><span class="line">sudo apt-get install gcc</span><br><span class="line">sudo apt-get install make</span><br></pre></td></tr></table></figure>
 
 <h3 id="1-2-禁用默认驱动"><a href="#1-2-禁用默认驱动" class="headerlink" title="1.2 禁用默认驱动"></a>1.2 禁用默认驱动</h3><p>在安装NVIDIA驱动前需要禁止系统自带的显卡驱动 nouveau：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编辑blacklist.conf 文件</span></span><br><span class="line">sudo vi /etc/modprobe.d/blacklist.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在文件末尾添加以下内容并保存</span></span><br><span class="line">blacklist nouveau</span><br><span class="line">options nouveau modeset=0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新initramfs，然后重启电脑</span></span><br><span class="line">sudo update-initramfs -u</span><br><span class="line">sudo reboot now</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查是否关闭nouveau，若没有输出，则说明已成功关闭</span></span><br><span class="line">lsmod | grep nouveau</span><br></pre></td></tr></table></figure>
@@ -279,7 +279,7 @@
 <blockquote>
 <p>NVIDIA-SMI has failed because it couldn’t communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.</p>
 </blockquote>
-<p>但使用nvcc -v 命令可以正常显示CUDA 版本。由于之前也遇到过类似驱动失效的问题，所以选择重装显卡驱动，按照之前的步骤检查nouveau、关闭图形界面、安装驱动……然后就一路报错了……</p>
+<p>但使用nvcc -V 命令可以正常显示CUDA 版本。由于之前也遇到过类似驱动失效的问题，所以选择重装显卡驱动，按照之前的步骤检查nouveau、关闭图形界面、安装驱动……然后就一路报错了……</p>
 <blockquote>
 <p>NVIDIA-SMI has failed because it couldn‘t communicate with the NVIDIA driver.</p>
 </blockquote>
@@ -300,7 +300,7 @@
 <p>根据官网给出的下载和安装命令执行即可：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run</span><br><span class="line">sudo sh cuda_11.8.0_520.61.05_linux.run</span><br></pre></td></tr></table></figure>
 
-<h3 id="2-2-环境变量配置"><a href="#2-2-环境变量配置" class="headerlink" title="2.2 环境变量配置"></a>2.2 环境变量配置</h3><p>打开配置文件，进行以下修改：</p>
+<h3 id="2-2-环境变量配置"><a href="#2-2-环境变量配置" class="headerlink" title="2.2 环境变量配置"></a>2.2 环境变量配置</h3><p>安装完成后，打开账户的配置文件，进行以下修改：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## CUDA ENV</span></span><br><span class="line"><span class="built_in">export</span> CUDA_HOME=/usr/local/cuda</span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="variable">$&#123;LD_LIBRARY_PATH&#125;</span>:<span class="variable">$&#123;CUDA_HOME&#125;</span>/lib64</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$&#123;CUDA_HOME&#125;</span>/bin:<span class="variable">$&#123;PATH&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新配置文件设置</span></span><br><span class="line"><span class="built_in">source</span> ~/.zshrc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证安装是否成功</span></span><br><span class="line">nvcc -V</span><br></pre></td></tr></table></figure>
 
 <p>若出现下图界面，则证明CUDA 安装成功:</p>
@@ -311,7 +311,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo <span class="built_in">ln</span> -snf /usr/local/cuda-11.8 /usr/local/cuda</span><br></pre></td></tr></table></figure>
 
 <h2 id="3-安装cuDNN"><a href="#3-安装cuDNN" class="headerlink" title="3 安装cuDNN"></a>3 安装cuDNN</h2><p>注：此处可参考<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#verify">NVIDIA官网教程</a>进行安装。</p>
-<h3 id="3-1-前期准备与下载"><a href="#3-1-前期准备与下载" class="headerlink" title="3.1 前期准备与下载"></a>3.1 前期准备与下载</h3><p>首先安装必备软件：</p>
+<h3 id="3-1-前期准备与下载"><a href="#3-1-前期准备与下载" class="headerlink" title="3.1 前期准备与下载"></a>3.1 前期准备与下载</h3><p>首先安装依赖包：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install zlib1g</span><br></pre></td></tr></table></figure>
 
 <p>然后在<a target="_blank" rel="noopener" href="https://developer.nvidia.com/rdp/cudnn-download">NVIDIA官网</a>下载相应版本的安装包，注意，下载cuDNN 需要注册NVIDIA账号。选取合适的版本进行下载：</p>
@@ -333,6 +333,8 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将cuDNN samples 拷贝至主目录</span></span><br><span class="line"><span class="built_in">cp</span> -r /usr/src/cudnn_samples_v8/ <span class="variable">$HOME</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 进入samples 文件夹，并编译</span></span><br><span class="line"><span class="built_in">cd</span>  <span class="variable">$HOME</span>/cudnn_samples_v8/mnistCUDNN</span><br><span class="line">make clean &amp;&amp; make</span><br></pre></td></tr></table></figure>
 
 <p>此时可能出现如下报错：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fatal error: FreeImage.h: No such file <span class="keyword">or</span> directory</span><br><span class="line">    <span class="number">1</span> | <span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeImage.h&quot;</span></span></span><br></pre></td></tr></table></figure>
+
 <p><img src="/../images/cudnn-error.png" alt="cudnn-error" title="cuDNN报错"></p>
 <p>可安装相应包进行解决：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libfreeimage3 libfreeimage-dev</span><br></pre></td></tr></table></figure>
