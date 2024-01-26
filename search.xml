@@ -4,8 +4,7 @@
     <title>Ubuntu系统安装</title>
     <url>/2024/01/26/Ubuntu-setup/</url>
     <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作</p>
-<img src="/2024/01/26/Ubuntu-setup/rufus.png" class="" title="rufus">
-
+<p><img src="/images/rufus.png" alt="rufus" title="rufus设置界面"></p>
 <h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
 <ol>
 <li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
@@ -18,11 +17,10 @@
 <p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”&#x2F;etc&#x2F;default&#x2F;grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
 <h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
 <ol>
-<li><p>清空之前双系统的所有磁盘空间，将硬盘全置为free；</p>
-</li>
-<li><p>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</p>
-<img src="/2024/01/26/Ubuntu-setup/disk_set.png" class="" title="disk_set"></li>
+<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
+<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
 </ol>
+<p><img src="/images/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
 <p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
 <h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
 ]]></content>
@@ -34,7 +32,7 @@
       </tags>
   </entry>
   <entry>
-    <title>zsh及相关设置</title>
+    <title>zsh、Oh-My-Zsh及相关设置</title>
     <url>/2024/01/26/zsh-setup/</url>
     <content><![CDATA[<p>注：<strong>本文主要参考</strong><a href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">该文章</a>。</p>
 <h1 id="1-安装并设置zsh"><a href="#1-安装并设置zsh" class="headerlink" title="1 安装并设置zsh"></a>1 安装并设置zsh</h1><p>安装命令：</p>
@@ -70,7 +68,7 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> -g prefix C-z</span><br><span class="line">unbind C-b</span><br><span class="line"><span class="built_in">bind</span> C-a send-prefix</span><br><span class="line"></span><br><span class="line"><span class="built_in">bind</span> r source-file ~/.tmux.conf \; display-message <span class="string">&quot;Config reloaded..&quot;</span></span><br><span class="line"></span><br><span class="line">unbind <span class="string">&#x27;&quot;&#x27;</span></span><br><span class="line"><span class="built_in">bind</span> - splitw -v -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line">unbind %</span><br><span class="line"><span class="built_in">bind</span> | splitw -h -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">set-option -g mouse on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g base-index 0</span><br><span class="line"><span class="built_in">set</span> -g pane-base-index 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># setw -g utf8 on</span></span><br><span class="line"><span class="built_in">set</span> -g status-interval 1</span><br><span class="line"><span class="built_in">set</span> -g status-justify left</span><br><span class="line">setw -g monitor-activity on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g status-bg black</span><br><span class="line"><span class="built_in">set</span> -g status-fg yellow</span><br><span class="line"><span class="built_in">set</span> -g status-left <span class="string">&quot;#[bg=#FF661D] ❐ #S &quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-right <span class="string">&quot;%H:%M:%S %d-%b&quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-left-length 300</span><br><span class="line"><span class="built_in">set</span> -g status-right-length 500</span><br><span class="line"><span class="built_in">set</span> -wg window-status-current-format <span class="string">&quot; #I:#W#F &quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g message-style <span class="string">&quot;bg=#202529, fg=#91A8BA&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g default-terminal <span class="string">&quot;screen-256color&quot;</span></span><br></pre></td></tr></table></figure>
 
 <p>其他使用说明可参考上述链接。在oh my zsh 插件中添加了 tmux 后，可以使用如下快捷键：</p>
-<img src="/2024/01/26/zsh-setup/hotkey.png" class="" title="hotkey">
+<p><img src="/images/hotkey.png" alt="hotkey" title="快捷键设置"></p>
 ]]></content>
       <categories>
         <category>开发环境搭建</category>
@@ -78,6 +76,137 @@
       <tags>
         <tag>Ubuntu</tag>
         <tag>zsh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SSH免密登录设置</title>
+    <url>/2024/01/26/ssh-setup/</url>
+    <content><![CDATA[<h1 id="1-ssh服务"><a href="#1-ssh服务" class="headerlink" title="1 ssh服务"></a>1 ssh服务</h1><p>Ubuntu开启ssh服务需要下载openssh-server，命令为：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-ssh-key生成"><a href="#2-ssh-key生成" class="headerlink" title="2 ssh key生成"></a>2 ssh key生成</h1><p>生成ssh key的命令是：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
+
+<p>后续一路默认设置即可，该命令会在主目录默认生成.ssh文件，内包含以下文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa: 私钥</span><br><span class="line">id_rsa.pub: 公钥</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-无密码远程登陆服务器"><a href="#3-无密码远程登陆服务器" class="headerlink" title="3 无密码远程登陆服务器"></a>3 无密码远程登陆服务器</h1><p>将本地产生的公钥上传至服务器：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-copy-id -p <span class="comment">#port master@ubuntu</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="4-Windows免密登录Ubuntu"><a href="#4-Windows免密登录Ubuntu" class="headerlink" title="4 Windows免密登录Ubuntu"></a>4 Windows免密登录Ubuntu</h1><p>Windows在终端中执行以下命令生成公私密钥：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+
+<p>会在C:\Users\xxx.ssh 文件夹中生成以下三个文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa 本地私钥</span><br><span class="line">id_rsa.pub 公钥</span><br><span class="line">known_hosts 已知的ip</span><br></pre></td></tr></table></figure>
+
+<p>将公钥上传至Ubuntu，可使用scp命令，然后执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将公钥拷贝至Ubuntu的authorized_keys文件中</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改sshd_config文件</span></span><br><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将一下三行命令添加至sshd_config文件</span></span><br><span class="line">RSAAuthentication <span class="built_in">yes</span></span><br><span class="line">PubkeyAuthentication <span class="built_in">yes</span></span><br><span class="line">PasswordAuthentication no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启ssh</span></span><br><span class="line">sudo service sshd restart</span><br></pre></td></tr></table></figure>
+
+<p>然后即可实现Windows免密登录Ubuntu。</p>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu系统安装显卡驱动、CUDA、cuDNN</title>
+    <url>/2024/01/26/Ubuntu-dl-setup/</url>
+    <content><![CDATA[<p><strong>本文主要参考</strong><a href="https://zhuanlan.zhihu.com/p/643954422">该文章</a>。</p>
+<h2 id="1-安装显卡驱动"><a href="#1-安装显卡驱动" class="headerlink" title="1 安装显卡驱动"></a>1 安装显卡驱动</h2><h3 id="1-1-前期准备"><a href="#1-1-前期准备" class="headerlink" title="1.1 前期准备"></a>1.1 前期准备</h3><p>根据显卡型号在<a href="https://www.nvidia.com/Download/Find.aspx?lang=en-us#">Nvidia 官网</a>下载相应的驱动程序，然后安装必备软件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 更新源</span></span><br><span class="line">sudo apt-get update</span><br><span class="line"><span class="comment">## 安装必备软件</span></span><br><span class="line">sudo apt-get install g++</span><br><span class="line">sudo apt-get install gcc</span><br><span class="line">sudo apt-get install make</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-禁用默认驱动"><a href="#1-2-禁用默认驱动" class="headerlink" title="1.2 禁用默认驱动"></a>1.2 禁用默认驱动</h3><p>在安装NVIDIA驱动前需要禁止系统自带的显卡驱动 nouveau：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 编辑blacklist.conf 文件</span></span><br><span class="line">sudo vi /etc/modprobe.d/blacklist.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在文件末尾添加以下内容并保存</span></span><br><span class="line">blacklist nouveau</span><br><span class="line">options nouveau modeset=0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新initramfs，然后重启电脑</span></span><br><span class="line">sudo update-initramfs -u</span><br><span class="line">sudo reboot now</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查是否关闭nouveau，若没有输出，则说明已成功关闭</span></span><br><span class="line">lsmod | grep nouveau</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-安装驱动"><a href="#1-3-安装驱动" class="headerlink" title="1.3 安装驱动"></a>1.3 安装驱动</h3><p>进入tty 模式，并关闭图形进程：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service gdm3 stop</span><br></pre></td></tr></table></figure>
+
+<p>开始安装驱动：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 赋予执行权限</span></span><br><span class="line">sudo <span class="built_in">chmod</span> 777 NVIDIA-Linux-x86_64-535.54.03.run</span><br><span class="line"><span class="comment">## 安装：不安装OpenGL,安装时关闭X服务  </span></span><br><span class="line">sudo ./NVIDIA-Linux-x86_64-535.54.03.run –no-opengl-files -no-x-check</span><br><span class="line"><span class="comment">## Install Nvidia&#x27;s 32-bit compatibility libraries?</span></span><br><span class="line"><span class="comment">## 选择 &quot;No&quot;</span></span><br><span class="line"><span class="comment">## Would you like to run the nvidia-xconfig utility to automatically update your X configuration file so that the NVIDIA X driver dill be used dhen you restart X? Any pre-existing X configuration file will be backed up.</span></span><br><span class="line"><span class="comment">## 选择 &quot;Yes&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>成功安装之后，会进入图形界面，此时使用命令nvidia-smi 检查驱动是否安装成功，若出现下图界面，证明驱动安装成功。</p>
+<p><img src="/images/nvidia-smi.png" alt="nvidia-smi" title="nvidia-smi显示界面"></p>
+<h3 id="1-4-显卡驱动失效问题记录"><a href="#1-4-显卡驱动失效问题记录" class="headerlink" title="1.4 显卡驱动失效问题记录"></a>1.4 显卡驱动失效问题记录</h3><p>一次重启电脑后，发现Ubuntu提示某个文件发生错误，是否需要反馈给Ubuntu，本人当时没在意点了“否”，在后续操作过程中发现nvidia-smi命令报错，显示找不到显卡驱动：</p>
+<blockquote>
+<p>NVIDIA-SMI has failed because it couldn’t communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.</p>
+</blockquote>
+<p>但使用nvcc -v 命令可以正常显示CUDA 版本。由于之前也遇到过类似驱动失效的问题，所以选择重装显卡驱动，按照之前的步骤检查nouveau、关闭图形界面、安装驱动……然后就一路报错了……</p>
+<blockquote>
+<p>NVIDIA-SMI has failed because it couldn‘t communicate with the NVIDIA driver.</p>
+</blockquote>
+<p>网上找解决方案，这篇<a href="https://blog.csdn.net/wjinjie/article/details/108997692">文章</a>提到一个解决方案，使用dkms：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 首先，查看显卡驱动版本</span></span><br><span class="line"><span class="built_in">ls</span> /usr/src | grep nvidia</span><br><span class="line">nvidia-535.146.02</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 然后，安装dkms，并修复显卡驱动</span></span><br><span class="line">sudo apt-get install dkms</span><br><span class="line">sudo dkms install -m nvidia -v 535.146.02</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 输入nvidia-smi命令，一切恢复正常</span></span><br></pre></td></tr></table></figure>
+
+<p>然后搜了一下dkms的作用，wikipedia 中介绍如下：</p>
+<blockquote>
+<p>动态内核模块支持 （Dynamic Kernel Module Support，DKMS）是用来生成Linux的内核模块的一个框架，其源代码一般不在Linux内核源代码树。 当新的内核安装时，DKMS 支持的内核设备驱动程序 到时会自动重建。 DKMS 可以用在两个方向：如果一个新的内核版本安装，自动编译所有的模块，或安装新的模块（驱动程序）在现有的系统版本上，而不需要任何的手动编译或预编译软件包需要。例如，这使得新的显卡可以使用在旧的Linux系统上。</p>
+</blockquote>
+<p>唔……很奇怪，我应该没有更新Ubuntu的内核，不晓得为什么会出现这个情况，先记录一下吧，当前本人的Ubuntu内核版本为：</p>
+<blockquote>
+<p>Linux echo-dell 6.5.0-14-generic #14~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon Nov 20 18:15:30 UTC 2 x86_64 x86_64 x86_64 GNU&#x2F;Linux</p>
+</blockquote>
+<h2 id="2-安装CUDA"><a href="#2-安装CUDA" class="headerlink" title="2 安装CUDA"></a>2 安装CUDA</h2><h3 id="2-1-下载与安装"><a href="#2-1-下载与安装" class="headerlink" title="2.1 下载与安装"></a>2.1 下载与安装</h3><p>可同时安装不同的CUDA 版本，根据不同环境需求选择使用不同版本，本处以CUDA-11.8为例进行安装说明。</p>
+<p>在<a href="https://developer.nvidia.com/cuda-toolkit-archive">NVIDIA官网</a>下载对应版本，推荐使用runfile (local) 进行安装：</p>
+<p><img src="/images/CUDA.png" alt="cuda" title="CUDA安装命令"></p>
+<p>根据官网给出的下载和安装命令执行即可：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run</span><br><span class="line">sudo sh cuda_11.8.0_520.61.05_linux.run</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-环境变量配置"><a href="#2-2-环境变量配置" class="headerlink" title="2.2 环境变量配置"></a>2.2 环境变量配置</h3><p>打开配置文件，进行以下修改：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## CUDA ENV</span></span><br><span class="line"><span class="built_in">export</span> CUDA_HOME=/usr/local/cuda</span><br><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="variable">$&#123;LD_LIBRARY_PATH&#125;</span>:<span class="variable">$&#123;CUDA_HOME&#125;</span>/lib64</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$&#123;CUDA_HOME&#125;</span>/bin:<span class="variable">$&#123;PATH&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新配置文件设置</span></span><br><span class="line"><span class="built_in">source</span> ~/.zshrc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证安装是否成功</span></span><br><span class="line">nvcc -V</span><br></pre></td></tr></table></figure>
+
+<p>若出现下图界面，则证明CUDA 安装成功:</p>
+<p><img src="/images/nvcc.png" alt="cuda" title="检验CUDA安装成功"></p>
+<h3 id="2-3-多版本切换"><a href="#2-3-多版本切换" class="headerlink" title="2.3 多版本切换"></a>2.3 多版本切换</h3><p>CUDA 安装位置的文件如下图所示：</p>
+<p><img src="/images/CUDA-version.png" alt="cuda-version" title="CUDA版本切换"></p>
+<p>根据所需版本，切换cuda 的软链接即可：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo <span class="built_in">ln</span> -snf /usr/local/cuda-11.8 /usr/local/cuda</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-安装cuDNN"><a href="#3-安装cuDNN" class="headerlink" title="3 安装cuDNN"></a>3 安装cuDNN</h2><p>注：此处可参考<a href="https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#verify">NVIDIA官网教程</a>进行安装。</p>
+<h3 id="3-1-前期准备与下载"><a href="#3-1-前期准备与下载" class="headerlink" title="3.1 前期准备与下载"></a>3.1 前期准备与下载</h3><p>首先安装必备软件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install zlib1g</span><br></pre></td></tr></table></figure>
+
+<p>然后在<a href="https://developer.nvidia.com/rdp/cudnn-download">NVIDIA官网</a>下载相应版本的安装包，注意，下载cuDNN 需要注册NVIDIA账号。选取合适的版本进行下载：</p>
+<p><img src="/images/cudnn.png" alt="cudnn" title="cuDNN安装包"></p>
+<h3 id="3-2-安装"><a href="#3-2-安装" class="headerlink" title="3.2 安装"></a>3.2 安装</h3><p>解压并安装：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo dpkg -i cudnn-local-repo-ubuntu2204-8.9.3.28_1.0-1_amd64.deb</span><br></pre></td></tr></table></figure>
+
+<p>按照提示导入CUDA GPG key：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo <span class="built_in">cp</span> /var/cudnn-local-repo-ubuntu2204-8.9.3.28/cudnn-local-*-keyring.gpg /usr/share/keyrings/</span><br></pre></td></tr></table></figure>
+
+<p>更新源并安装：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line"></span><br><span class="line"><span class="comment">## 1. Install the runtime library.</span></span><br><span class="line"><span class="comment">## sudo apt-get install libcudnn8=8.x.x.x-1+cudaX.Y</span></span><br><span class="line">sudo apt-get install libcudnn8=8.9.3.28-1+cuda11.8</span><br><span class="line"><span class="comment">## 2. Install the developer library.</span></span><br><span class="line"><span class="comment">## sudo apt-get install libcudnn8-dev=8.x.x.x-1+cudaX.Y</span></span><br><span class="line">sudo apt-get install libcudnn8-dev=8.9.3.28-1+cuda11.8</span><br><span class="line"><span class="comment">## 3. Install the code samples.</span></span><br><span class="line"><span class="comment">## sudo apt-get install libcudnn8-samples=8.x.x.x-1+cudaX.Y</span></span><br><span class="line">sudo apt-get install libcudnn8-samples=8.9.3.28-1+cuda11.8</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-测试"><a href="#3-3-测试" class="headerlink" title="3.3 测试"></a>3.3 测试</h3><p>输入检查命令，出现下图证明安装初步成功。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo dpkg -l | grep cudnn</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/cudnn-dpkg.png" alt="cudnn-version" title="cuDNN安装成功"></p>
+<p>按照官网教程，进行代码测试：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将cuDNN samples 拷贝至主目录</span></span><br><span class="line"><span class="built_in">cp</span> -r /usr/src/cudnn_samples_v8/ <span class="variable">$HOME</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 进入samples 文件夹，并编译</span></span><br><span class="line"><span class="built_in">cd</span>  <span class="variable">$HOME</span>/cudnn_samples_v8/mnistCUDNN</span><br><span class="line">make clean &amp;&amp; make</span><br></pre></td></tr></table></figure>
+
+<p>此时可能出现如下报错：</p>
+<p><img src="/images/cudnn-error.png" alt="cudnn-error" title="cuDNN报错"></p>
+<p>可安装相应包进行解决：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install libfreeimage3 libfreeimage-dev</span><br></pre></td></tr></table></figure>
+
+<p>安装之后重新编译，并运行生成文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 重新编译</span></span><br><span class="line">make clean &amp;&amp; make</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行生成文件</span></span><br><span class="line">./mnistCUDNN</span><br></pre></td></tr></table></figure>
+
+<p>若出现如下结果，则证明cuDNN 安装成功：</p>
+<p><img src="/images/cudnn-success.png" alt="cudnn-success" title="cuDNN安装成功"></p>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Deep Learning</tag>
+        <tag>Nvidia</tag>
+        <tag>CUDA</tag>
+        <tag>cuDNN</tag>
       </tags>
   </entry>
 </search>
