@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="本文主要参考该文章。 1 Eigen3安装与卸载1.1 安装可通过apt命令安装，根据后面编译ORB-SLAM2 过程中遇到的问题，本人建议使用apt命令进行安装： 1sudo apt install libeigen3-dev  也可在官网下载eigen3 源码，然后编译安装（本人不推荐该方法，后续会出现程序找不到eigen3的问题）： 123456cd eigen-xxxmkdir build">
+<meta property="og:type" content="article">
+<meta property="og:title" content="orbslam2-env">
+<meta property="og:url" content="http://echo-gh.github.io/2024/01/26/orbslam2-env/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="本文主要参考该文章。 1 Eigen3安装与卸载1.1 安装可通过apt命令安装，根据后面编译ORB-SLAM2 过程中遇到的问题，本人建议使用apt命令进行安装： 1sudo apt install libeigen3-dev  也可在官网下载eigen3 源码，然后编译安装（本人不推荐该方法，后续会出现程序找不到eigen3的问题）： 123456cd eigen-xxxmkdir build">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/images/orbslam2-env/pangolin.png">
+<meta property="og:image" content="http://echo-gh.github.io/images/orbslam2-env/pangolin-success.png">
+<meta property="og:image" content="http://echo-gh.github.io/images/orbslam2-env/opencv4.png">
+<meta property="og:image" content="http://echo-gh.github.io/images/orbslam2-env/opencv4-1.png">
+<meta property="og:image" content="http://echo-gh.github.io/images/orbslam2-env/opencv4-success.png">
+<meta property="og:image" content="http://echo-gh.github.io/images/orbslam2-env/orbslam2-success.png">
+<meta property="article:published_time" content="2024-01-26T06:53:09.000Z">
+<meta property="article:modified_time" content="2024-01-26T07:19:08.888Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="ORB-SLAM2">
+<meta property="article:tag" content="OpenCV">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/images/orbslam2-env/pangolin.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/01/26/orbslam2-env/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>orbslam2-env | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/26/orbslam2-env/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="正直 快乐">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          orbslam2-env
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-26 14:53:09 / 修改时间：15:19:08" itemprop="dateCreated datePublished" datetime="2024-01-26T14:53:09+08:00">2024-01-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">开发环境搭建</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文主要参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/meng_152634/article/details/127570220">该文章</a>。</p>
+<h2 id="1-Eigen3安装与卸载"><a href="#1-Eigen3安装与卸载" class="headerlink" title="1 Eigen3安装与卸载"></a>1 Eigen3安装与卸载</h2><h3 id="1-1-安装"><a href="#1-1-安装" class="headerlink" title="1.1 安装"></a>1.1 安装</h3><p>可通过apt命令安装，根据后面编译ORB-SLAM2 过程中遇到的问题，本人<strong>建议使用apt命令进行安装</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install libeigen3-dev</span><br></pre></td></tr></table></figure>
+
+<p>也可在<a target="_blank" rel="noopener" href="https://eigen.tuxfamily.org/index.php?title=Main_Page">官网</a>下载eigen3 源码，然后编译安装（本人不推荐该方法，后续会出现程序找不到eigen3的问题）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> eigen-xxx</span><br><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<p>版本查看命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">❯ pkg-config --modversion eigen3</span><br><span class="line">3.4.0</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-卸载"><a href="#1-2-卸载" class="headerlink" title="1.2 卸载"></a>1.2 卸载</h3><p>通过apt 方式安装的采用以下方式进行卸载：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 通过remove 卸载</span></span><br><span class="line">sudo apt remove libeigen3-dev</span><br><span class="line"></span><br><span class="line"><span class="comment">## 可通过locate 进一步定位残余文件进行手动删除，并手动删除/usr/local/和/usr/include/目录下的eigen目录</span></span><br><span class="line">sudo updatedb</span><br><span class="line">locate eigen</span><br></pre></td></tr></table></figure>
+
+<p>通过源码安装的，需要手动删除&#x2F;usr&#x2F;local&#x2F;include&#x2F;等目录下的eigen3目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo updatedb</span><br><span class="line">locate eigen3  <span class="comment"># 查看eigen3的位置</span></span><br><span class="line">sudo <span class="built_in">rm</span> -rf /usr/include/eigen3</span><br><span class="line">sudo <span class="built_in">rm</span> -rf /usr/lib/cmake/eigen3</span><br><span class="line">sudo <span class="built_in">rm</span> -rf /usr/local//include/eigen3</span><br><span class="line">sudo <span class="built_in">rm</span> -rf /usr/share/doc/libeigen3-dev</span><br><span class="line">sudo <span class="built_in">rm</span> -rf /usr/local/share/pkgconfig/eigen3.pc /usr/share/pkgconfig/eigen3.pc /var/lib/dpkg/info/libeigen3-dev.list /var/lib/dpkg/info/libeigen3-dev.md5sums</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-Pangolin-安装与卸载"><a href="#2-Pangolin-安装与卸载" class="headerlink" title="2 Pangolin 安装与卸载"></a>2 Pangolin 安装与卸载</h2><h3 id="2-1-安装"><a href="#2-1-安装" class="headerlink" title="2.1 安装"></a>2.1 安装</h3><p>首先安装依赖项：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install libglew-dev</span><br><span class="line">sudo apt install libboost-dev libboost-thread-dev libboost-filesystem-dev</span><br><span class="line">sudo apt install libboost-all-dev</span><br><span class="line">sudo apt install libwayland-dev wayland-protocols</span><br><span class="line">sudo apt install libxkbcommon-dev</span><br><span class="line">sudo apt install libegl1-mesa-dev</span><br><span class="line">sudo apt install ninja-build</span><br></pre></td></tr></table></figure>
+
+<p>然后下载源码，编译安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/stevenlovegrove/Pangolin.git</span><br><span class="line"></span><br><span class="line"><span class="comment">## 编译安装</span></span><br><span class="line"><span class="built_in">cd</span> Pangolin</span><br><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<p>然后可在&#x2F;usr&#x2F;local&#x2F;include&#x2F;和&#x2F;usr&#x2F;local&#x2F;lib&#x2F;目录下找到pangolin相关的目录及库文件：</p>
+<p><img src="/../images/orbslam2-env/pangolin.png" alt="pangolin" title="Pangolin目录及库文件"></p>
+<p>安装完成后进行测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> Pangolin/build/examples/HelloPangolin/</span><br><span class="line">./HelloPangolin</span><br></pre></td></tr></table></figure>
+
+<p>出现以下界面说明安装成功：</p>
+<p><img src="/../images/orbslam2-env/pangolin-success.png" alt="pangolin success" title="Pangolin安装成功"></p>
+<h3 id="2-2-卸载"><a href="#2-2-卸载" class="headerlink" title="2.2 卸载"></a>2.2 卸载</h3><p>Pangolin 的卸载需要手动删除相关文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo updatedb</span><br><span class="line">locate pangolin</span><br><span class="line">sudo <span class="built_in">rm</span> -rf /usr/local/include/pangolin</span><br><span class="line">sudo <span class="built_in">rm</span> /usr/local/lib/libpango_*.so</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-opencv-安装与卸载"><a href="#3-opencv-安装与卸载" class="headerlink" title="3 opencv 安装与卸载"></a>3 opencv 安装与卸载</h2><p>分别到<a target="_blank" rel="noopener" href="https://opencv.org/releases/">opencv</a>、<a target="_blank" rel="noopener" href="https://github.com/opencv/opencv_contrib/tags">contrib</a> 开发库下载对应版本。</p>
+<h3 id="3-0-pkg-config"><a href="#3-0-pkg-config" class="headerlink" title="3.0 pkg-config"></a>3.0 pkg-config</h3><h4 id="3-0-1-介绍"><a href="#3-0-1-介绍" class="headerlink" title="3.0.1 介绍"></a>3.0.1 介绍</h4><p>opencv 多版本管理主要参考<a target="_blank" rel="noopener" href="https://www.cntofu.com/book/46/opencv/ubuntuxia_duo_ban_ben_opencv_qie_huan.md">文章1</a>和<a target="_blank" rel="noopener" href="https://ivanzz1001.github.io/records/post/linux/2017/09/08/linux-pkg-config#1-pkg-config%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D">文章2</a>，该文章主要利用pkg-config 包管理工具来管理多版本的opencv。</p>
+<p>一般用第三方库的时候，就少不了要使用到<strong>第三方的头文件</strong>和<strong>库文件</strong>。我们在编译、链接的时候，必须要指定这些头文件和库文件的位置。对于一个比较大的第三方库，其头文件和库文件的数量是比较多的，如果我们一个个手动地写，那将是相当的麻烦的。因此，pkg-config就应运而生了。pkg-config能够把这些头文件和库文件的位置指出来，给编译器使用。pkg-config主要提供了下面几个功能：</p>
+<ul>
+<li>检查库的版本号。 如果所需要的库的版本不满足要求，它会打印出错误信息，避免链接错误版本的库文件</li>
+<li>获得编译预处理参数，如宏定义、头文件的位置</li>
+<li>获得链接参数，如库及依赖的其他库的位置，文件名及其他一些链接参数</li>
+<li>自动加入所依赖的其他库的设置</li>
+</ul>
+<p>如以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -o <span class="built_in">test</span> test.c `pkg-config --libs --cflags glib-2.0`</span><br></pre></td></tr></table></figure>
+
+<p>其中，–libs 用于指定<strong>库文件</strong>，–cflags 用于指定<strong>头文件</strong>。</p>
+<p>pkg-config 命令基本用法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pkg-config &lt;options&gt; &lt;library-name&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-0-2-配置环境变量"><a href="#3-0-2-配置环境变量" class="headerlink" title="3.0.2 配置环境变量"></a>3.0.2 配置环境变量</h4><p>事实上，pkg-config只是一个工具，所以不是你安装了一个第三方库，pkg-config就能知道第三方库的头文件和库文件的位置的。为了让pkg-config可以得到一个库的信息，就要求库的提供者提供一个**.pc 文件**。例如，本人安装的opencv-4.6.0 中包含了对应的opencv4.pc 文件：</p>
+<p><img src="/../images/orbslam2-env/opencv4.png" alt="opencv4" title="opencv4.pc"></p>
+<p>首先，将.pc 文件拷贝至pkgconfig 路径下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo <span class="built_in">cp</span> ~/Softwares/opencv/opencv-4.6.0/lib/pkgconfig/opencv4.pc /usr/lib/pkgconfig/opencv4.pc</span><br></pre></td></tr></table></figure>
+
+<p>然后，添加链接库路径：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 新建文件并编辑</span></span><br><span class="line">sudo vi /etc/ld.so.conf.d/opencv4.conf</span><br><span class="line"></span><br><span class="line"><span class="comment">## 添加链接库路径</span></span><br><span class="line">/home/echo/Softwares/opencv/opencv-4.6.0/lib/</span><br><span class="line"></span><br><span class="line"><span class="comment">## 刷新</span></span><br><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure>
+
+<p>刷新之后，即可检验相应版本是否添加成功：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; pkg-config --modversion opencv4</span><br><span class="line">4.6.0</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/orbslam2-env/opencv4-1.png" alt="opencv4" title="opencv4库文件与头文件"></p>
+<p>相应地，编译工程时即可使用如下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -o cv_test cv_test.cpp `pkg-config --libs --cflags opencv4`</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-1-opencv-4-6-0"><a href="#3-1-opencv-4-6-0" class="headerlink" title="3.1 opencv-4.6.0"></a>3.1 opencv-4.6.0</h3><h4 id="3-1-1-编译与安装"><a href="#3-1-1-编译与安装" class="headerlink" title="3.1.1 编译与安装"></a>3.1.1 编译与安装</h4><p>编译命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">cmake -D CMAKE_BUILD_TYPE=RELEASE \</span><br><span class="line">	-D CMAKE_INSTALL_PREFIX=/home/echo/Softwares/opencv/opencv-4.6.0 \ <span class="comment">## 更换为相应位置</span></span><br><span class="line">	-D INSTALL_C_EXAMPLES=OFF \</span><br><span class="line">	-D OPENCV_ENABLE_NONFREE=ON \</span><br><span class="line">	-D WITH_CUDA=ON \</span><br><span class="line">	-D WITH_CUDNN=ON \</span><br><span class="line">	-D OPENCV_DNN_CUDA=ON \</span><br><span class="line">	-D ENABLE_FAST_MATH=1 \</span><br><span class="line">	-D CUDA_FAST_MATH=1 \</span><br><span class="line">	-D CUDA_ARCH_BIN=8.6 \  <span class="comment">## 一定更改为显卡对应的算力版本</span></span><br><span class="line">	-D WITH_CUBLAS=1 \</span><br><span class="line">	-D OPENCV_EXTRA_MODULES_PATH=/home/echo/Softwares/opencv/opencv-4.6.0/opencv_contrib/modules \</span><br><span class="line">	-D BUILD_EXAMPLES=ON ..</span><br></pre></td></tr></table></figure>
+
+<p>因为要使用pkg-config 对不同版本的opencv 进行管理，但是<strong>opencv4默认将opencv.pc 的产生选项关闭了</strong>，查看CMakelist.txt 相关语句如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">OCV_OPTION(OPENCV_GENERATE_PKGCONFIG <span class="string">&quot;Generate .pc file for pkg-config build tool (deprecated)&quot;</span> OFF)</span><br></pre></td></tr></table></figure>
+
+<p>所以需将CMakelist.txt 中对应语句的<strong>参数改为ON</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 将对应命令更改如下：</span></span><br><span class="line">OCV_OPTION(OPENCV_GENERATE_PKGCONFIG <span class="string">&quot;Generate .pc file for pkg-config build tool (deprecated)&quot;</span> ON)</span><br></pre></td></tr></table></figure>
+
+<p>编译成功之后，make、安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make -j13 -w</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是，由于是安装到了自定义目录下，在利用CMakeLists.txt 进行编译前，需要进行以下操作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 将build文件夹中的OpenCVConfig.cmake、OpenCVModules.cmake移至share/opencv4中</span></span><br><span class="line">sudo <span class="built_in">cp</span> OpenCVConfig.cmake OpenCVModules.cmake ../../share/opencv4/</span><br><span class="line"></span><br><span class="line"><span class="comment">## 修改CMakeLists.txt 文件，设置搜寻路径</span></span><br><span class="line"><span class="built_in">set</span>(OpenCV_DIR /home/echo/Softwares/opencv/opencv-4.6.0/share/opencv4)</span><br><span class="line">find_package(OpenCV)</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-1-2-多版本控制"><a href="#3-1-2-多版本控制" class="headerlink" title="3.1.2 多版本控制"></a>3.1.2 多版本控制</h4><p>按照pkgconfig  版本控制，使用opencv-4.6.0 对自带的示例进行测试，修改CMakeLists.txt 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 设置搜寻路径</span></span><br><span class="line"><span class="built_in">set</span>(OpenCV_DIR /home/echo/Softwares/opencv/opencv-4.6.0/share/opencv4)</span><br><span class="line">find_package(OpenCV)</span><br></pre></td></tr></table></figure>
+
+<p>进行cmake编译并执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># cmake 过程中会出现相应的版本号、库文件等信息</span></span><br><span class="line">cmake .</span><br><span class="line">make</span><br><span class="line">./opencv_example</span><br></pre></td></tr></table></figure>
+
+<p>得到如下输出结果，证明安装成功：</p>
+<p><img src="/../images/orbslam2-env/opencv4-success.png" alt="opencv-success" title="opencv安装成功"></p>
+<p>同样地，使用g++ 命令进行编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ -o opencv_example example.cpp `pkg-config --libs --cflags opencv4`</span><br></pre></td></tr></table></figure>
+
+<p>执行生成文件，得到上图相同的结果证明安装成功。</p>
+<h3 id="3-2-opencv-3-4-11"><a href="#3-2-opencv-3-4-11" class="headerlink" title="3.2 opencv-3.4.11"></a>3.2 opencv-3.4.11</h3><p>编译命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">cmake -D CMAKE_BUILD_TYPE=RELEASE \</span><br><span class="line">	-D CMAKE_INSTALL_PREFIX=/home/echo/Softwares/opencv/opencv-3.4.11 \</span><br><span class="line">	-D INSTALL_C_EXAMPLES=OFF \</span><br><span class="line">	-D OPENCV_ENABLE_NONFREE=ON \</span><br><span class="line">	-D WITH_CUDA=ON \</span><br><span class="line">	-D WITH_CUDNN=ON \</span><br><span class="line">	-D OPENCV_DNN_CUDA=ON \</span><br><span class="line">	-D ENABLE_FAST_MATH=1 \</span><br><span class="line">	-D CUDA_FAST_MATH=1 \</span><br><span class="line">	-D CUDA_ARCH_BIN=8.6 \</span><br><span class="line">	-D WITH_CUBLAS=1 \</span><br><span class="line">	-D OPENCV_EXTRA_MODULES_PATH=/home/echo/Softwares/opencv/opencv-3.4.11/opencv_contrib/modules \</span><br><span class="line">	-D BUILD_EXAMPLES=ON ..</span><br></pre></td></tr></table></figure>
+
+<p>该版本的opencv 会自动在share&#x2F;OpenCV 文件夹下生成OpenCVConfig.cmake、OpenCVModules.cmake 等文件，所以无需从build 文件夹中进行复制。</p>
+<p>其他使用pkg-config 进行多版本控制方法与opencv-4.6.0 一致，在此不做赘述。</p>
+<h3 id="3-3-opencv-卸载"><a href="#3-3-opencv-卸载" class="headerlink" title="3.3 opencv 卸载"></a>3.3 opencv 卸载</h3><p>首先，到编译目录build 下执行卸载命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make uninstall</span><br></pre></td></tr></table></figure>
+
+<p>然后，到opencv 的安装目录下，将bin、lib、share、include 等文件删除即可。若不再安装本版本，则将pkg-config 的相关配置清除掉。</p>
+<h2 id="4-ORB-SLAM2-编译与运行"><a href="#4-ORB-SLAM2-编译与运行" class="headerlink" title="4 ORB-SLAM2 编译与运行"></a>4 ORB-SLAM2 编译与运行</h2><h3 id="4-1-前期准备"><a href="#4-1-前期准备" class="headerlink" title="4.1 前期准备"></a>4.1 前期准备</h3><p>在此注明一下本人各个软件包的<strong>最终版本</strong>如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">opencv: 3.4.11</span><br><span class="line">eigen3: 3.4.0</span><br><span class="line">pabgolin: 0.6</span><br></pre></td></tr></table></figure>
+
+<p>明确完软件包版本后，首先到<a target="_blank" rel="noopener" href="https://github.com/raulmur/ORB_SLAM2">ORB-SLAM2仓库</a>下载，进入下载的文件夹后对以下文件进行更改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 对主目录及DBoW2下的CMakeLists.txt 文件中的opencv版本及搜寻路径进行相应修改</span></span><br><span class="line"><span class="built_in">set</span>(OpenCV_DIR /home/echo/Softwares/opencv/opencv-3.4.11/share/OpenCV)</span><br><span class="line">find_package(OpenCV 3.4.11 QUIET)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 对主目录下的CMakeLists.txt 文件中的eigen3 版本进行修改</span></span><br><span class="line">find_package(Eigen3 3.4.0 REQUIRED)</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-编译"><a href="#4-2-编译" class="headerlink" title="4.2 编译"></a>4.2 编译</h3><p>按照官方介绍进行编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> +x build.sh</span><br><span class="line">./build.sh</span><br></pre></td></tr></table></figure>
+
+<p>正常编译成功的话会在<em>lib</em> 文件夹内生成<strong>libORB_SLAM2.so</strong> 函数库，在<em>Examples</em> 文件夹内生成对应的可执行文件：<strong>mono_tum, mono_kitti, rgbd_tum, stereo_kitti, mono_euroc</strong> 和 <strong>stereo_euroc</strong>。但一般都会有各种报错，这里记录一下本人的报错及相应处理。</p>
+<ul>
+<li>首先是可能因为软件包版本问题报错：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 报错内容：</span></span><br><span class="line">Pangolin could not be found because dependency Eigen3 could not be found</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 解决方案：</span></span><br><span class="line">根据网上找的资料，可能是Pangolin和Eigen3的版本问题；按照网上教程，卸载了Pangolin和Eigen3，由于要手动选取版本，所以这里Eigen3选择了源文件安装，但后续又出现了其他问题，故又卸载新安装的Eigen3，重新使用apt安装了Eigen3，所以最终情况是：Pangolin降级为v0.6，Eigen3仍是原来的3.4.0。至此，该问题得到解决</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>再次编译可能会出现<strong>无法找到Eigen3 函数库</strong>的报错，此时根据报错内容，将Eigen3 的安装位置：&#x2F;usr&#x2F;include&#x2F;目录下的eigen目录软链接到相应位置即可。</li>
+<li>过程中没有其他报错内容，DBoW2、g2o等均编译成功，但最终编译ORB-SLAM2 各个运行程序时会提示：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 输出提示</span></span><br><span class="line">make: *** No targets specified and no makefile found.  Stop.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 在ORB-SLAM2的issues中找到解决方案：</span></span><br><span class="line"><span class="comment">## 删掉build文件，直接执行build.sh中的最后一步</span></span><br><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>出现usleep() 未声明的报错：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">## 报错内容：</span><br><span class="line">error: ‘usleep’ was <span class="keyword">not</span> declared in <span class="keyword">this</span> scope</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 解决方案：在system.h文件中加入</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>LoopClosing.h中的报错：</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">## 报错内容：</span><br><span class="line">/usr/include/c++/<span class="number">9</span>/bits/stl_map.h: In instantiation of ‘<span class="keyword">class</span> <span class="title class_">std</span>::map&lt;ORB_SLAM2::KeyFrame*, g2o::Sim3, std::less&lt;ORB_SLAM2::KeyFrame*&gt;, Eigen::aligned_allocator&lt;std::pair&lt;<span class="type">const</span> ORB_SLAM2::KeyFrame*, g2o::Sim3&gt; &gt; &gt;’:</span><br><span class="line">ORB_SLAM2/src/LoopClosing.cc:<span class="number">438</span>:<span class="number">21</span>: required from here</span><br><span class="line">/usr/include/c++/<span class="number">9</span>/bits/stl_map.h:<span class="number">122</span>:<span class="number">71</span>: error: <span class="type">static</span> assertion failed: std::map must have the same value_type as its allocator</span><br><span class="line"><span class="number">122</span> | <span class="built_in">static_assert</span>(is_same&lt;<span class="keyword">typename</span> _Alloc::value_type, value_type&gt;::value,</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 解决方案：</span><br><span class="line">修改LoopClosing.h文件中的<span class="number">49</span>和<span class="number">50</span>行：</span><br><span class="line">修改前：</span><br><span class="line"><span class="keyword">typedef</span> map&lt;KeyFrame*,g2o::Sim3,std::less&lt;KeyFrame*&gt;,</span><br><span class="line">        Eigen::aligned_allocator&lt;std::pair&lt;<span class="type">const</span> KeyFrame*, g2o::Sim3&gt; &gt; &gt; KeyFrameAndPose;</span><br><span class="line">修改后：</span><br><span class="line"><span class="keyword">typedef</span> map&lt;KeyFrame*,g2o::Sim3,std::less&lt;KeyFrame*&gt;,</span><br><span class="line">       Eigen::aligned_allocator&lt;std::pair&lt;KeyFrame *<span class="type">const</span>, g2o::Sim3&gt; &gt; &gt; KeyFrameAndPose;</span><br></pre></td></tr></table></figure>
+
+<p>至此，安装成功，生成了相应文件。</p>
+<h3 id="4-3-运行测试"><a href="#4-3-运行测试" class="headerlink" title="4.3 运行测试"></a>4.3 运行测试</h3><p>本处使用了TUM RGB-D 数据集进行测试，测试命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./Examples/RGB-D/rgbd_tum Vocabulary/ORBvoc.txt Examples/RGB-D/TUM1.yaml ~/datasets/TUM/rgbd_dataset_freiburg1_desk ~/datasets/TUM/rgbd_dataset_freiburg1_desk/associate.txt </span><br></pre></td></tr></table></figure>
+
+<p>运行界面如下图所示：</p>
+<p><img src="/../images/orbslam2-env/orbslam2-success.png" alt="orbslam2" title="ORB-SLAM2成功运行"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+              <a href="/tags/ORB-SLAM2/" rel="tag"># ORB-SLAM2</a>
+              <a href="/tags/OpenCV/" rel="tag"># OpenCV</a>
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/26/win-remote-ubuntu/" rel="prev" title="Windows远程桌面控制ubuntu">
+      <i class="fa fa-chevron-left"></i> Windows远程桌面控制ubuntu
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Eigen3%E5%AE%89%E8%A3%85%E4%B8%8E%E5%8D%B8%E8%BD%BD"><span class="nav-number">1.</span> <span class="nav-text">1 Eigen3安装与卸载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%8D%B8%E8%BD%BD"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 卸载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Pangolin-%E5%AE%89%E8%A3%85%E4%B8%8E%E5%8D%B8%E8%BD%BD"><span class="nav-number">2.</span> <span class="nav-text">2 Pangolin 安装与卸载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%AE%89%E8%A3%85"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%8D%B8%E8%BD%BD"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 卸载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-opencv-%E5%AE%89%E8%A3%85%E4%B8%8E%E5%8D%B8%E8%BD%BD"><span class="nav-number">3.</span> <span class="nav-text">3 opencv 安装与卸载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-0-pkg-config"><span class="nav-number">3.1.</span> <span class="nav-text">3.0 pkg-config</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-0-1-%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.0.1 介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-0-2-%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.0.2 配置环境变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-opencv-4-6-0"><span class="nav-number">3.2.</span> <span class="nav-text">3.1 opencv-4.6.0</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-%E7%BC%96%E8%AF%91%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.1.1 编译与安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-%E5%A4%9A%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.1.2 多版本控制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-opencv-3-4-11"><span class="nav-number">3.3.</span> <span class="nav-text">3.2 opencv-3.4.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-opencv-%E5%8D%B8%E8%BD%BD"><span class="nav-number">3.4.</span> <span class="nav-text">3.3 opencv 卸载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-ORB-SLAM2-%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">4 ORB-SLAM2 编译与运行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 前期准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E7%BC%96%E8%AF%91"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E8%BF%90%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 运行测试</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">正直 快乐</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
