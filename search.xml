@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Ubuntu系统安装</title>
+    <url>/2024/01/26/Ubuntu-setup/</url>
+    <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作</p>
+<span id="more"></span>
+
+<p><img src="/../images/rufus.png" alt="rufus" title="rufus设置界面"></p>
+<h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
+<ol>
+<li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
+</li>
+<li><p>删除”quite splash”后的”—“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
+</li>
+<li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
+</li>
+</ol>
+<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”&#x2F;etc&#x2F;default&#x2F;grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
+<h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
+<ol>
+<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
+<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
+</ol>
+<p><img src="/../images/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
+<p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
+<h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu系统安装显卡驱动、CUDA、cuDNN</title>
     <url>/2024/01/26/Ubuntu-dl-setup/</url>
     <content><![CDATA[<p><strong>本文主要参考</strong><a href="https://zhuanlan.zhihu.com/p/643954422">该文章</a>。</p>
@@ -97,109 +130,6 @@
         <tag>Nvidia</tag>
         <tag>CUDA</tag>
         <tag>cuDNN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu系统安装</title>
-    <url>/2024/01/26/Ubuntu-setup/</url>
-    <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作</p>
-<span id="more"></span>
-
-<p><img src="/../images/rufus.png" alt="rufus" title="rufus设置界面"></p>
-<h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
-<ol>
-<li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
-</li>
-<li><p>删除”quite splash”后的”—“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
-</li>
-<li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
-</li>
-</ol>
-<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”&#x2F;etc&#x2F;default&#x2F;grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
-<h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
-<ol>
-<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
-<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
-</ol>
-<p><img src="/../images/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
-<p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
-<h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>gcc、g++版本管理</title>
-    <url>/2024/01/26/gcc-g/</url>
-    <content><![CDATA[<p>本文主要参考<a href="https://zhuanlan.zhihu.com/p/261001751">文章</a>。</p>
-<h2 id="1-版本查看"><a href="#1-版本查看" class="headerlink" title="1 版本查看"></a>1 版本查看</h2><p>当前所有版本查看与安装：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br><span class="line"></span><br><span class="line"><span class="comment">## 查看系统已安装版本</span></span><br><span class="line"><span class="built_in">ls</span> /usr/bin/gcc*</span><br><span class="line"><span class="built_in">ls</span> /usr/bin/g++*</span><br><span class="line"></span><br><span class="line"><span class="comment">## 安装新版本</span></span><br><span class="line">sudo apt install gcc-11</span><br><span class="line">sudo apt install g++-11</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h2 id="2-版本切换"><a href="#2-版本切换" class="headerlink" title="2 版本切换"></a>2 版本切换</h2><p>首先将已有版本添加到update-alternatives 中：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 最后的数值代表该版本的权重参数，越大优先级越高</span></span><br><span class="line"><span class="comment"># gcc</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 70</span><br><span class="line"></span><br><span class="line"><span class="comment"># g++</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 70</span><br></pre></td></tr></table></figure>
-
-<p>若想删除某个版本的管理：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-alternatives --remove gcc /usr/bin/gcc-11</span><br></pre></td></tr></table></figure>
-
-<p>手动切换版本：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-alternatives --config gcc</span><br><span class="line">sudo update-alternatives --config g++</span><br></pre></td></tr></table></figure>
-
-<p><img src="/../images/g++.png" alt="g++" title="g++ version"></p>
-<p>如上图所示，输入相应的id 即可实现不同版本之间的切换。</p>
-<p>切换完之后，查看版本是否切换成功：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-        <tag>g++</tag>
-        <tag>gcc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Object SLAM部署过程</title>
-    <url>/2024/01/26/object-slam/</url>
-    <content><![CDATA[<p>系统代码包下载地址为<a href="https://github.com/yangliu9527/Object_SLAM.git">github地址</a>，论文为(Liu 等, 2023).</p>
-<h2 id="1-ORB-SLAM2基础问题"><a href="#1-ORB-SLAM2基础问题" class="headerlink" title="1 ORB-SLAM2基础问题"></a>1 ORB-SLAM2基础问题</h2><p>该算法是在ORB-SLAM2 的基础上进行改进的，所以编译前需要对CMakeLists.txt 文件进行修改，此处不再赘述。除此之外，还遇到了其他问题，这里记录一下。</p>
-<span id="more"></span>
-
-<h2 id="2-其他问题"><a href="#2-其他问题" class="headerlink" title="2 其他问题"></a>2 其他问题</h2><ul>
-<li>PCL 报错：</li>
-</ul>
-<blockquote>
-<p>error: #error PCL requires C++14 or above</p>
-</blockquote>
-<p>参考这篇<a href="https://blog.csdn.net/handily_1/article/details/122421305">文章</a>解释，使用C++14编译器，更改主目录下的CMakeLists.txt：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">### 修改前</span><br><span class="line"># Check C++<span class="number">11</span> <span class="keyword">or</span> C++<span class="number">0</span><span class="function">x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++11.&quot;</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">### 修改后</span></span><br><span class="line"><span class="function"># Check C++11 <span class="keyword">or</span> C++0x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++14&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++14.&quot;</span>)</span></span></span><br></pre></td></tr></table></figure>
-
-<p>修改完之后不再报错，可正常编译。</p>
-<ul>
-<li>针对不同的输入图片，需要设置不同的通道变换，否则会报与数据通道相关的错误，如下图所示；修改方法为修改frame.cc 代码 392行附近的内容：</li>
-</ul>
-<p><img src="/../images/object-slam/err1.png" alt="err1" title="err1"></p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//* for gray pictures (e.g. KITTI-odometry dataset)</span></span><br><span class="line">cv::Mat imRGB_1;</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB.<span class="built_in">clone</span>(), imRGB_1, CV_GRAY2BGR);</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB_1.<span class="built_in">clone</span>(), Img_HSV, CV_BGR2HSV);</span><br><span class="line"></span><br><span class="line"><span class="comment">//* for RGB pictures (e.g. TUM dataset)</span></span><br><span class="line"><span class="comment">// cv::cvtColor(imRGB.clone(), Img_HSV, CV_BGR2HSV);</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在VS Code 里对程序进行调试运行时，可能会报错：</li>
-</ul>
-<p><img src="/../images/object-slam/err2.png" alt="err2"></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 只有在VS Code 中调试才会出现该错误，解决办法是在VS Code 中unset GTK_PATH即可：</span></span><br><span class="line"><span class="built_in">unset</span> GTK_PATH</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>语义SLAM</category>
-      </categories>
-      <tags>
-        <tag>Semantic</tag>
-        <tag>SLAM</tag>
-        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
@@ -384,9 +314,9 @@
       <tags>
         <tag>Ubuntu</tag>
         <tag>SLAM</tag>
-        <tag>C++</tag>
         <tag>ORB-SLAM2</tag>
         <tag>OpenCV</tag>
+        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
@@ -423,6 +353,76 @@
       <tags>
         <tag>Ubuntu</tag>
         <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>gcc、g++版本管理</title>
+    <url>/2024/01/26/gcc-g/</url>
+    <content><![CDATA[<p>本文主要参考<a href="https://zhuanlan.zhihu.com/p/261001751">文章</a>。</p>
+<h2 id="1-版本查看"><a href="#1-版本查看" class="headerlink" title="1 版本查看"></a>1 版本查看</h2><p>当前所有版本查看与安装：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br><span class="line"></span><br><span class="line"><span class="comment">## 查看系统已安装版本</span></span><br><span class="line"><span class="built_in">ls</span> /usr/bin/gcc*</span><br><span class="line"><span class="built_in">ls</span> /usr/bin/g++*</span><br><span class="line"></span><br><span class="line"><span class="comment">## 安装新版本</span></span><br><span class="line">sudo apt install gcc-11</span><br><span class="line">sudo apt install g++-11</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h2 id="2-版本切换"><a href="#2-版本切换" class="headerlink" title="2 版本切换"></a>2 版本切换</h2><p>首先将已有版本添加到update-alternatives 中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 最后的数值代表该版本的权重参数，越大优先级越高</span></span><br><span class="line"><span class="comment"># gcc</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 70</span><br><span class="line"></span><br><span class="line"><span class="comment"># g++</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 70</span><br></pre></td></tr></table></figure>
+
+<p>若想删除某个版本的管理：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-alternatives --remove gcc /usr/bin/gcc-11</span><br></pre></td></tr></table></figure>
+
+<p>手动切换版本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-alternatives --config gcc</span><br><span class="line">sudo update-alternatives --config g++</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/g++.png" alt="g++" title="g++ version"></p>
+<p>如上图所示，输入相应的id 即可实现不同版本之间的切换。</p>
+<p>切换完之后，查看版本是否切换成功：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>g++</tag>
+        <tag>gcc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Object SLAM部署过程</title>
+    <url>/2024/01/26/object-slam/</url>
+    <content><![CDATA[<p>系统代码包下载地址为<a href="https://github.com/yangliu9527/Object_SLAM.git">github地址</a>，论文为(Liu 等, 2023).</p>
+<h2 id="1-ORB-SLAM2基础问题"><a href="#1-ORB-SLAM2基础问题" class="headerlink" title="1 ORB-SLAM2基础问题"></a>1 ORB-SLAM2基础问题</h2><p>该算法是在ORB-SLAM2 的基础上进行改进的，所以编译前需要对CMakeLists.txt 文件进行修改，此处不再赘述。除此之外，还遇到了其他问题，这里记录一下。</p>
+<span id="more"></span>
+
+<h2 id="2-其他问题"><a href="#2-其他问题" class="headerlink" title="2 其他问题"></a>2 其他问题</h2><ul>
+<li>PCL 报错：</li>
+</ul>
+<blockquote>
+<p>error: #error PCL requires C++14 or above</p>
+</blockquote>
+<p>参考这篇<a href="https://blog.csdn.net/handily_1/article/details/122421305">文章</a>解释，使用C++14编译器，更改主目录下的CMakeLists.txt：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">### 修改前</span><br><span class="line"># Check C++<span class="number">11</span> <span class="keyword">or</span> C++<span class="number">0</span><span class="function">x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++11.&quot;</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">### 修改后</span></span><br><span class="line"><span class="function"># Check C++11 <span class="keyword">or</span> C++0x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++14&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++14.&quot;</span>)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>修改完之后不再报错，可正常编译。</p>
+<ul>
+<li>针对不同的输入图片，需要设置不同的通道变换，否则会报与数据通道相关的错误，如下图所示；修改方法为修改frame.cc 代码 392行附近的内容：</li>
+</ul>
+<p><img src="/../images/object-slam/err1.png" alt="err1" title="err1"></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//* for gray pictures (e.g. KITTI-odometry dataset)</span></span><br><span class="line">cv::Mat imRGB_1;</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB.<span class="built_in">clone</span>(), imRGB_1, CV_GRAY2BGR);</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB_1.<span class="built_in">clone</span>(), Img_HSV, CV_BGR2HSV);</span><br><span class="line"></span><br><span class="line"><span class="comment">//* for RGB pictures (e.g. TUM dataset)</span></span><br><span class="line"><span class="comment">// cv::cvtColor(imRGB.clone(), Img_HSV, CV_BGR2HSV);</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在VS Code 里对程序进行调试运行时，可能会报错：</li>
+</ul>
+<p><img src="/../images/object-slam/err2.png" alt="err2"></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 只有在VS Code 中调试才会出现该错误，解决办法是在VS Code 中unset GTK_PATH即可：</span></span><br><span class="line"><span class="built_in">unset</span> GTK_PATH</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>语义SLAM</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>C++</tag>
+        <tag>Semantic</tag>
       </tags>
   </entry>
   <entry>
