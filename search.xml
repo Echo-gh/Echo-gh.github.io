@@ -27,12 +27,15 @@
 <p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
 <h2 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h2><p>进入Ubuntu系统后的设置不再赘述。</p>
 ]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
       <tags>
         <tag>Ubuntu</tag>
       </tags>
   </entry>
   <entry>
-    <title>zsh_setup</title>
+    <title>zsh及相关设置</title>
     <url>/2024/01/26/zsh-setup/</url>
     <content><![CDATA[<h1 id="02-zsh及相关设置"><a href="#02-zsh及相关设置" class="headerlink" title="02-zsh及相关设置"></a>02-zsh及相关设置</h1><p><strong>本文主要参考</strong><a href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">该文章</a>。</p>
 <h1 id="1-安装并设置zsh"><a href="#1-安装并设置zsh" class="headerlink" title="1 安装并设置zsh"></a>1 安装并设置zsh</h1><p>安装命令：</p>
@@ -70,8 +73,12 @@
 <p>其他使用说明可参考上述链接。在oh my zsh 插件中添加了 tmux 后，可以使用如下快捷键：</p>
 <img src="/2024/01/26/zsh-setup/hotkey.png" class="" title="hotkey">
 ]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
       <tags>
-        <tag>Ubuntu zsh</tag>
+        <tag>Ubuntu</tag>
+        <tag>zsh</tag>
       </tags>
   </entry>
 </search>
