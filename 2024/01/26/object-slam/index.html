@@ -24,26 +24,25 @@
 
 
 
-  <meta name="description" content="1 Ubuntu设置与软件安装首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：  然后安装xrdp： 1sudo apt-get install xrdp  接下来的步骤网上有很多不同的做法，其中这篇文章提到需要修改startwm.sh文件: 1sudo vi &#x2F;etc&#x2F;xrdp&#x2F;startwm.sh   将最后两行注释掉，即： 123## 注释掉这两行#">
+  <meta name="description" content="系统代码包下载地址为github地址，论文为(Liu 等, 2023). 1 ORB-SLAM2基础问题该算法是在ORB-SLAM2 的基础上进行改进的，所以编译前需要对CMakeLists.txt 文件进行修改，此处不再赘述。除此之外，还遇到了其他问题，这里记录一下。 2 其他问题 PCL 报错：   error: #error PCL requires C++14 or above  参考这篇">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Windows远程桌面控制ubuntu">
-<meta property="og:url" content="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/index.html">
+<meta property="og:title" content="object-slam">
+<meta property="og:url" content="http://echo-gh.github.io/2024/01/26/object-slam/index.html">
 <meta property="og:site_name" content="Echo&#39;s blog">
-<meta property="og:description" content="1 Ubuntu设置与软件安装首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：  然后安装xrdp： 1sudo apt-get install xrdp  接下来的步骤网上有很多不同的做法，其中这篇文章提到需要修改startwm.sh文件: 1sudo vi &#x2F;etc&#x2F;xrdp&#x2F;startwm.sh   将最后两行注释掉，即： 123## 注释掉这两行#">
+<meta property="og:description" content="系统代码包下载地址为github地址，论文为(Liu 等, 2023). 1 ORB-SLAM2基础问题该算法是在ORB-SLAM2 的基础上进行改进的，所以编译前需要对CMakeLists.txt 文件进行修改，此处不再赘述。除此之外，还遇到了其他问题，这里记录一下。 2 其他问题 PCL 报错：   error: #error PCL requires C++14 or above  参考这篇">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/images/win-remote-ubuntu/ubuntu-setting.png">
-<meta property="og:image" content="http://echo-gh.github.io/images/win-remote-ubuntu/startwm.png">
-<meta property="og:image" content="http://echo-gh.github.io/images/win-remote-ubuntu/remote-access.png">
-<meta property="og:image" content="http://echo-gh.github.io/images/win-remote-ubuntu/startwm-1.png">
-<meta property="article:published_time" content="2024-01-26T06:33:45.000Z">
-<meta property="article:modified_time" content="2024-01-26T06:45:24.461Z">
+<meta property="og:image" content="http://echo-gh.github.io/images/object-slam/err1.png">
+<meta property="og:image" content="http://echo-gh.github.io/images/object-slam/err2.png">
+<meta property="article:published_time" content="2024-01-26T07:41:56.000Z">
+<meta property="article:modified_time" content="2024-01-26T07:52:24.910Z">
 <meta property="article:author" content="Echo">
-<meta property="article:tag" content="Ubuntu">
-<meta property="article:tag" content="远程桌面">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/images/win-remote-ubuntu/ubuntu-setting.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/images/object-slam/err1.png">
 
-<link rel="canonical" href="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/">
+<link rel="canonical" href="http://echo-gh.github.io/2024/01/26/object-slam/">
 
 
 <script id="page-configurations">
@@ -56,7 +55,7 @@
   };
 </script>
 
-  <title>Windows远程桌面控制ubuntu | Echo's blog</title>
+  <title>object-slam | Echo's blog</title>
   
 
 
@@ -176,7 +175,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/26/object-slam/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/snoopy.jpg">
@@ -189,7 +188,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Windows远程桌面控制ubuntu
+          object-slam
         </h1>
 
         <div class="post-meta">
@@ -200,7 +199,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-01-26 14:33:45 / 修改时间：14:45:24" itemprop="dateCreated datePublished" datetime="2024-01-26T14:33:45+08:00">2024-01-26</time>
+              <time title="创建时间：2024-01-26 15:41:56 / 修改时间：15:52:24" itemprop="dateCreated datePublished" datetime="2024-01-26T15:41:56+08:00">2024-01-26</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -208,7 +207,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">开发环境搭建</span></a>
+                  <a href="/categories/%E8%AF%AD%E4%B9%89SLAM/" itemprop="url" rel="index"><span itemprop="name">语义SLAM</span></a>
                 </span>
             </span>
 
@@ -223,43 +222,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1-Ubuntu设置与软件安装"><a href="#1-Ubuntu设置与软件安装" class="headerlink" title="1 Ubuntu设置与软件安装"></a>1 Ubuntu设置与软件安装</h2><p>首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：</p>
-<p><img src="/../images/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
-<p>然后安装xrdp：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install xrdp</span><br></pre></td></tr></table></figure>
-
-<p>接下来的步骤网上有很多不同的做法，其中<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/145614559">这篇文章</a>提到需要修改startwm.sh文件:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
-
-<p><img src="/../images/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
-<p>将最后两行注释掉，即：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 注释掉这两行</span></span><br><span class="line"><span class="comment"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span></span><br><span class="line"><span class="comment"># exec /bin/sh /etc/X11/Xsession</span></span><br></pre></td></tr></table></figure>
-
-<p>然后即可通过win10自带的远程桌面进行连接：</p>
-<p><img src="/../images/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
-<p>到目前为止，本人可以在Windows中正常远程控制Ubuntu，且可实现Ubuntu显示和远程控制<strong>同时在线</strong>，即通过远程控制操作Ubuntu，同时另一个屏幕可正常显示Ubuntu界面，且实时显示远程控制的操作。</p>
-<h2 id="2-黑屏问题"><a href="#2-黑屏问题" class="headerlink" title="2 黑屏问题"></a>2 黑屏问题</h2><p>但是，在这之后我重新安装了NVIDIA显卡驱动、CUDA、cuDNN，然后就发现远程控制无法进入Ubuntu系统了，点击“连接”后出现一段时间的黑屏后会自动退出。在网上查询了很多案例，有各种五花八门的解决方案，如换一个桌面程序、使用dconf-editor更改配置文件、远程控制与Ubuntu本地无法同时登陆（必须有一方log out）等等，以下是个人尝试的结果：</p>
-<ul>
-<li><p>换桌面程序：由于本人安装的是桌面版Ubuntu，故系统自带桌面程序gnome，之前配置远程控制时就受到网上各种五花八门意见的影响，使用了xfce4桌面程序，后来发现完全没必要，而且就在不久前还可以正常远程连接，说明应该不是桌面程序的原因，因此就没有尝试更换桌面程序；</p>
-</li>
-<li><p>使用dconf-editor更改配置文件：在<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/345738274">文章</a>中提到，进入dconf-editor后，依次进入“org-&gt;gnome-&gt;desktop-&gt;remote-access”，将 requre-encryption 设为 False，这也是本人在上个系统（Ubuntu20.04）中的操作，但是在本系统（Ubuntu22.04）中没有发现有“remote-access”，故该方法也没有成功；</p>
-</li>
-<li><p>本地端与远程端无法共存：这个比较简单，本人试着将Ubuntu本地端账户log out，或者使用不同账户进行远程控制，发现仍然失败；但<strong>需要注意的是</strong>，在本人解决远程黑屏问题之后，发现该问题确实是存在的，若本地端或远程端没有log out，那么另一端就无法正常登陆显示界面，这边记录一下；</p>
-</li>
-<li><pre><code class="bash">## 修改startwm.sh文件，添加下面几行，仍旧没有解决问题
-unset DBUS_SESSION_BUS_ADDRESS
-unset XDG_RUNTIME_DIR
-. $HOME/.profile
-</code></pre>
-</li>
+        <p>系统代码包下载地址为<a target="_blank" rel="noopener" href="https://github.com/yangliu9527/Object_SLAM.git">github地址</a>，论文为(Liu 等, 2023).</p>
+<h2 id="1-ORB-SLAM2基础问题"><a href="#1-ORB-SLAM2基础问题" class="headerlink" title="1 ORB-SLAM2基础问题"></a>1 ORB-SLAM2基础问题</h2><p>该算法是在ORB-SLAM2 的基础上进行改进的，所以编译前需要对CMakeLists.txt 文件进行修改，此处不再赘述。除此之外，还遇到了其他问题，这里记录一下。</p>
+<h2 id="2-其他问题"><a href="#2-其他问题" class="headerlink" title="2 其他问题"></a>2 其他问题</h2><ul>
+<li>PCL 报错：</li>
 </ul>
-<p>最后，不知道怎么想起来，尝试把startwm.sh文件中注释掉的两行取消注释，峰回路转、柳暗花明，竟然成了！！！于是，本人最终的startwm.sh文件内容如下所示：</p>
-<p><img src="/../images/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
-<h2 id="3-后记"><a href="#3-后记" class="headerlink" title="3 后记"></a>3 后记</h2><p>虽然不知道原因是什么，只知道目前这样子是可行的，但同时也发现无法像安装显卡驱动前那样本地端和远程端同时登陆了，必须要有一端log out，另一端才可正常工作，现做以下记录：</p>
+<blockquote>
+<p>error: #error PCL requires C++14 or above</p>
+</blockquote>
+<p>参考这篇<a target="_blank" rel="noopener" href="https://blog.csdn.net/handily_1/article/details/122421305">文章</a>解释，使用C++14编译器，更改主目录下的CMakeLists.txt：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">### 修改前</span><br><span class="line"># Check C++<span class="number">11</span> <span class="keyword">or</span> C++<span class="number">0</span><span class="function">x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++11.&quot;</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">### 修改后</span></span><br><span class="line"><span class="function"># Check C++11 <span class="keyword">or</span> C++0x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++14&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++14.&quot;</span>)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>修改完之后不再报错，可正常编译。</p>
 <ul>
-<li>使用远程连接桌面后，不能简单地关掉远程桌面：若只是简单地关掉远程桌面后，在本地端可以正常进入账号选择、密码输入界面，输完密码后会显示黑屏；此时，只有重新进入远程桌面，选择log out，本地端方可正常登录。</li>
-<li>对于本地端Todesk等远程控制软件：经过本人测试，Todesk 软件若想正常工作需要本地端正常登录，即要求远程端log out，然后本地端log in；那么也就意味着本地端电脑需要连接显示器。</li>
+<li>针对不同的输入图片，需要设置不同的通道变换，否则会报与数据通道相关的错误，如下图所示；修改方法为修改frame.cc 代码 392行附近的内容：</li>
 </ul>
+<p><img src="/../images/object-slam/err1.png" alt="err1" title="err1"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//* for gray pictures (e.g. KITTI-odometry dataset)</span></span><br><span class="line">cv::Mat imRGB_1;</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB.<span class="built_in">clone</span>(), imRGB_1, CV_GRAY2BGR);</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB_1.<span class="built_in">clone</span>(), Img_HSV, CV_BGR2HSV);</span><br><span class="line"></span><br><span class="line"><span class="comment">//* for RGB pictures (e.g. TUM dataset)</span></span><br><span class="line"><span class="comment">// cv::cvtColor(imRGB.clone(), Img_HSV, CV_BGR2HSV);</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在VS Code 里对程序进行调试运行时，可能会报错：</li>
+</ul>
+<p><img src="/../images/object-slam/err2.png" alt="err2"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 只有在VS Code 中调试才会出现该错误，解决办法是在VS Code 中unset GTK_PATH即可：</span></span><br><span class="line"><span class="built_in">unset</span> GTK_PATH</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -269,8 +254,9 @@ unset XDG_RUNTIME_DIR
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
-              <a href="/tags/%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/" rel="tag"># 远程桌面</a>
+              <a href="/tags/C/" rel="tag"># C++</a>
+              <a href="/tags/SLAM/" rel="tag"># SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"># Semantic</a>
           </div>
 
         
@@ -279,13 +265,10 @@ unset XDG_RUNTIME_DIR
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/01/26/Ubuntu-dl-setup/" rel="prev" title="Ubuntu系统安装显卡驱动、CUDA、cuDNN">
-      <i class="fa fa-chevron-left"></i> Ubuntu系统安装显卡驱动、CUDA、cuDNN
+    <a href="/2024/01/26/mlu220/" rel="prev" title="寒武纪MLU220 开发环境Docker搭建">
+      <i class="fa fa-chevron-left"></i> 寒武纪MLU220 开发环境Docker搭建
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/01/26/orbslam2-env/" rel="next" title="orbslam2-env">
-      orbslam2-env <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -344,7 +327,7 @@ unset XDG_RUNTIME_DIR
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Ubuntu%E8%AE%BE%E7%BD%AE%E4%B8%8E%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">1 Ubuntu设置与软件安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%BB%91%E5%B1%8F%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">2 黑屏问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%90%8E%E8%AE%B0"><span class="nav-number">3.</span> <span class="nav-text">3 后记</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-ORB-SLAM2%E5%9F%BA%E7%A1%80%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">1 ORB-SLAM2基础问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%85%B6%E4%BB%96%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">2 其他问题</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
