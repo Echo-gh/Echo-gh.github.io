@@ -31,4 +31,47 @@
         <tag>Ubuntu</tag>
       </tags>
   </entry>
+  <entry>
+    <title>zsh_setup</title>
+    <url>/2024/01/26/zsh-setup/</url>
+    <content><![CDATA[<h1 id="02-zsh及相关设置"><a href="#02-zsh及相关设置" class="headerlink" title="02-zsh及相关设置"></a>02-zsh及相关设置</h1><p><strong>本文主要参考</strong><a href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">该文章</a>。</p>
+<h1 id="1-安装并设置zsh"><a href="#1-安装并设置zsh" class="headerlink" title="1 安装并设置zsh"></a>1 安装并设置zsh</h1><p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install zsh</span><br></pre></td></tr></table></figure>
+
+<p>设置zsh为默认shell：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s $(<span class="built_in">which</span> zsh)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-安装Oh-My-Zsh"><a href="#2-安装Oh-My-Zsh" class="headerlink" title="2 安装Oh My Zsh"></a>2 安装Oh My Zsh</h2><p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-安装主题PowerLevel10k"><a href="#3-安装主题PowerLevel10k" class="headerlink" title="3 安装主题PowerLevel10k"></a>3 安装主题PowerLevel10k</h2><p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/romkatv/powerlevel10k.git <span class="variable">$ZSH_CUSTOM</span>/themes/powerlevel10k</span><br></pre></td></tr></table></figure>
+
+<p>进入.zshrc设置主题：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ZSH_THEME=<span class="string">&quot;powerlevel10k/powerlevel10k&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-安装插件"><a href="#4-安装插件" class="headerlink" title="4 安装插件"></a>4 安装插件</h2><h3 id="4-1-日常插件"><a href="#4-1-日常插件" class="headerlink" title="4.1 日常插件"></a>4.1 日常插件</h3><p>zsh-autosuggestions:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-autosuggestions <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
+
+<p>zsh-syntax-highlighting:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
+
+<p>设置要启动的插件（Plugins）：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">plugins=(</span><br><span class="line">         git</span><br><span class="line">         zsh-autosuggestions </span><br><span class="line">         zsh-syntax-highlighting</span><br><span class="line">         extract</span><br><span class="line">         sudo</span><br><span class="line">         tmux</span><br><span class="line"></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是，除了zsh-autosuggestions 与zsh-syntax-highlighting 需要单独安装外，其他插件均是内嵌的，可直接使用。</p>
+<h3 id="4-2-Tmux设置"><a href="#4-2-Tmux设置" class="headerlink" title="4.2 Tmux设置"></a>4.2 Tmux设置</h3><p><strong>该部分主要参考</strong><a href="https://louiszhai.github.io/2017/09/30/tmux/#%E5%AF%BC%E8%AF%BB">文章</a>。</p>
+<p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install tmux</span><br></pre></td></tr></table></figure>
+
+<p>tmux 的个性化设置需在主目录编辑.tmux.conf 文件，本人的文件设置如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> -g prefix C-z</span><br><span class="line">unbind C-b</span><br><span class="line"><span class="built_in">bind</span> C-a send-prefix</span><br><span class="line"></span><br><span class="line"><span class="built_in">bind</span> r source-file ~/.tmux.conf \; display-message <span class="string">&quot;Config reloaded..&quot;</span></span><br><span class="line"></span><br><span class="line">unbind <span class="string">&#x27;&quot;&#x27;</span></span><br><span class="line"><span class="built_in">bind</span> - splitw -v -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line">unbind %</span><br><span class="line"><span class="built_in">bind</span> | splitw -h -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">set-option -g mouse on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g base-index 0</span><br><span class="line"><span class="built_in">set</span> -g pane-base-index 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># setw -g utf8 on</span></span><br><span class="line"><span class="built_in">set</span> -g status-interval 1</span><br><span class="line"><span class="built_in">set</span> -g status-justify left</span><br><span class="line">setw -g monitor-activity on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g status-bg black</span><br><span class="line"><span class="built_in">set</span> -g status-fg yellow</span><br><span class="line"><span class="built_in">set</span> -g status-left <span class="string">&quot;#[bg=#FF661D] ❐ #S &quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-right <span class="string">&quot;%H:%M:%S %d-%b&quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-left-length 300</span><br><span class="line"><span class="built_in">set</span> -g status-right-length 500</span><br><span class="line"><span class="built_in">set</span> -wg window-status-current-format <span class="string">&quot; #I:#W#F &quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g message-style <span class="string">&quot;bg=#202529, fg=#91A8BA&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g default-terminal <span class="string">&quot;screen-256color&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>其他使用说明可参考上述链接。在oh my zsh 插件中添加了 tmux 后，可以使用如下快捷键：</p>
+<img src="/2024/01/26/zsh-setup/hotkey.png" class="" title="hotkey">
+]]></content>
+      <tags>
+        <tag>Ubuntu zsh</tag>
+      </tags>
+  </entry>
 </search>
