@@ -32,7 +32,7 @@
 <meta property="og:site_name" content="Echo&#39;s blog">
 <meta property="og:description" content="本文主要参考文章。 1 版本查看对系统中的现有gcc、g++版本进行查看，安装所需版本：">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/images/g++.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/g++.png">
 <meta property="article:published_time" content="2024-01-26T07:41:27.000Z">
 <meta property="article:modified_time" content="2024-01-26T11:19:32.272Z">
 <meta property="article:author" content="Echo">
@@ -40,7 +40,7 @@
 <meta property="article:tag" content="g++">
 <meta property="article:tag" content="gcc">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/images/g++.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/26/images/g++.png">
 
 <link rel="canonical" href="http://echo-gh.github.io/2024/01/26/gcc-g/">
 
@@ -253,19 +253,14 @@
         <p>本文主要参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/261001751">文章</a>。</p>
 <h2 id="1-版本查看"><a href="#1-版本查看" class="headerlink" title="1 版本查看"></a>1 版本查看</h2><p>对系统中的现有gcc、g++版本进行查看，安装所需版本：</p>
 <span id="more"></span>
-
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br><span class="line"></span><br><span class="line"><span class="comment">## 查看系统已安装版本</span></span><br><span class="line"><span class="built_in">ls</span> /usr/bin/gcc*</span><br><span class="line"><span class="built_in">ls</span> /usr/bin/g++*</span><br><span class="line"></span><br><span class="line"><span class="comment">## 安装新版本</span></span><br><span class="line">sudo apt install gcc-11</span><br><span class="line">sudo apt install g++-11</span><br></pre></td></tr></table></figure>
-
 <h2 id="2-版本切换"><a href="#2-版本切换" class="headerlink" title="2 版本切换"></a>2 版本切换</h2><p>首先，将已有版本添加到update-alternatives中：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 最后的数值代表该版本的权重参数，越大优先级越高</span></span><br><span class="line"><span class="comment"># gcc</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 70</span><br><span class="line"></span><br><span class="line"><span class="comment"># g++</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 70</span><br></pre></td></tr></table></figure>
-
 <p>若想删除某个版本的管理：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo update-alternatives --remove gcc /usr/bin/gcc-11</span><br></pre></td></tr></table></figure>
-
 <p>手动切换版本：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo update-alternatives --config gcc</span><br><span class="line">sudo update-alternatives --config g++</span><br></pre></td></tr></table></figure>
-
-<p><img src="/../images/g++.png" alt="g++" title="g++ version"></p>
+<p><img src="../images/g++.png" alt="g++" title="g++ version"></p>
 <p>如上图所示，输入相应的id 即可实现不同版本之间的切换。</p>
 <p>切换完之后，查看版本是否切换成功：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br></pre></td></tr></table></figure>

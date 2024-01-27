@@ -249,27 +249,19 @@
       
         <h1 id="1-ssh服务"><a href="#1-ssh服务" class="headerlink" title="1 ssh服务"></a>1 ssh服务</h1><p>Ubuntu开启ssh服务需要下载openssh-server，命令为：</p>
 <span id="more"></span>
-
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure>
-
 <h1 id="2-ssh-key生成"><a href="#2-ssh-key生成" class="headerlink" title="2 ssh key生成"></a>2 ssh key生成</h1><p>生成ssh key的命令是：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
-
 <p>后续一路默认设置即可，该命令会在主目录默认生成.ssh文件，内包含以下文件：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id_rsa: 私钥</span><br><span class="line">id_rsa.pub: 公钥</span><br></pre></td></tr></table></figure>
-
 <h1 id="3-无密码远程登陆服务器"><a href="#3-无密码远程登陆服务器" class="headerlink" title="3 无密码远程登陆服务器"></a>3 无密码远程登陆服务器</h1><p>将本地产生的公钥上传至服务器：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -p <span class="comment">#port master@ubuntu</span></span><br></pre></td></tr></table></figure>
-
 <h1 id="4-Windows免密登录Ubuntu"><a href="#4-Windows免密登录Ubuntu" class="headerlink" title="4 Windows免密登录Ubuntu"></a>4 Windows免密登录Ubuntu</h1><p>Windows在终端中执行以下命令生成公私密钥：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
-
 <p>会在C:\Users\xxx.ssh 文件夹中生成以下三个文件：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">id_rsa 本地私钥</span><br><span class="line">id_rsa.pub 公钥</span><br><span class="line">known_hosts 已知的ip</span><br></pre></td></tr></table></figure>
-
 <p>将公钥上传至Ubuntu，可使用scp命令，然后执行以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将公钥拷贝至Ubuntu的authorized_keys文件中</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改sshd_config文件</span></span><br><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将一下三行命令添加至sshd_config文件</span></span><br><span class="line">RSAAuthentication <span class="built_in">yes</span></span><br><span class="line">PubkeyAuthentication <span class="built_in">yes</span></span><br><span class="line">PasswordAuthentication no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启ssh</span></span><br><span class="line">sudo service sshd restart</span><br></pre></td></tr></table></figure>
-
 <p>然后即可实现Windows免密登录Ubuntu。</p>
 
     </div>

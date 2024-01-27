@@ -32,8 +32,8 @@
 <meta property="og:site_name" content="Echo&#39;s blog">
 <meta property="og:description" content="系统代码包下载地址为github地址，论文为(Liu 等, 2023). 1 ORB-SLAM2基础问题该算法是在ORB-SLAM2 的基础上进行改进的，编译过程可参考ORB-SLAM2的部署教程，此处不再赘述。除此之外，本人在部署过程中还遇到了其他问题，这里记录一下。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/images/object-slam/err1.png">
-<meta property="og:image" content="http://echo-gh.github.io/images/object-slam/err2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/object-slam/err1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/object-slam/err2.png">
 <meta property="article:published_time" content="2024-01-26T07:41:56.000Z">
 <meta property="article:modified_time" content="2024-01-27T04:46:28.273Z">
 <meta property="article:author" content="Echo">
@@ -42,7 +42,7 @@
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="Object SLAM">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/images/object-slam/err1.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/26/images/object-slam/err1.png">
 
 <link rel="canonical" href="http://echo-gh.github.io/2024/01/26/object-slam/">
 
@@ -265,7 +265,6 @@
         <p>系统代码包下载地址为<a target="_blank" rel="noopener" href="https://github.com/yangliu9527/Object_SLAM.git">github地址</a>，论文为(Liu 等, 2023).</p>
 <h2 id="1-ORB-SLAM2基础问题"><a href="#1-ORB-SLAM2基础问题" class="headerlink" title="1 ORB-SLAM2基础问题"></a>1 ORB-SLAM2基础问题</h2><p>该算法是在ORB-SLAM2 的基础上进行改进的，编译过程可参考ORB-SLAM2的部署教程，此处不再赘述。除此之外，本人在部署过程中还遇到了其他问题，这里记录一下。</p>
 <span id="more"></span>
-
 <h2 id="2-其他问题"><a href="#2-其他问题" class="headerlink" title="2 其他问题"></a>2 其他问题</h2><ul>
 <li>PCL 报错：</li>
 </ul>
@@ -274,18 +273,16 @@
 </blockquote>
 <p>参考这篇<a target="_blank" rel="noopener" href="https://blog.csdn.net/handily_1/article/details/122421305">文章</a>解释，使用C++14编译器，更改主目录下的CMakeLists.txt：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">### 修改前</span><br><span class="line"># Check C++<span class="number">11</span> <span class="keyword">or</span> C++<span class="number">0</span><span class="function">x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++11.&quot;</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">### 修改后</span></span><br><span class="line"><span class="function"># Check C++11 <span class="keyword">or</span> C++0x support</span></span><br><span class="line"><span class="function"><span class="title">include</span><span class="params">(CheckCXXCompilerFlag)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++11&quot;</span> COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function"><span class="title">CHECK_CXX_COMPILER_FLAG</span><span class="params">(<span class="string">&quot;-std=c++0x&quot;</span> COMPILER_SUPPORTS_CXX0X)</span></span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(COMPILER_SUPPORTS_CXX11)</span></span></span><br><span class="line"><span class="function">   <span class="title">set</span><span class="params">(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++14&quot;</span>)</span></span></span><br><span class="line"><span class="function">   <span class="title">add_definitions</span><span class="params">(-DCOMPILEDWITHC11)</span></span></span><br><span class="line"><span class="function">   <span class="title">message</span><span class="params">(STATUS <span class="string">&quot;Using flag -std=c++14.&quot;</span>)</span></span></span><br></pre></td></tr></table></figure>
-
 <p>修改完之后不再报错，可正常编译。</p>
 <ul>
 <li>针对不同的输入图片，需要设置不同的通道变换方式，否则会报与数据通道相关的错误，如下图所示；修改方法为修改frame.cc 代码 392行附近的内容：</li>
 </ul>
-<p><img src="/../images/object-slam/err1.png" alt="err1" title="err1"></p>
+<p><img src="../images/object-slam/err1.png" alt="err1" title="err1"></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//* for gray pictures (e.g. KITTI-odometry dataset)</span></span><br><span class="line">cv::Mat imRGB_1;</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB.<span class="built_in">clone</span>(), imRGB_1, CV_GRAY2BGR);</span><br><span class="line">cv::<span class="built_in">cvtColor</span>(imRGB_1.<span class="built_in">clone</span>(), Img_HSV, CV_BGR2HSV);</span><br><span class="line"></span><br><span class="line"><span class="comment">//* for RGB pictures (e.g. TUM dataset)</span></span><br><span class="line"><span class="comment">// cv::cvtColor(imRGB.clone(), Img_HSV, CV_BGR2HSV);</span></span><br></pre></td></tr></table></figure>
-
 <ul>
 <li>在VS Code 里对程序进行调试运行时，可能会报错：</li>
 </ul>
-<p><img src="/../images/object-slam/err2.png" alt="err2"></p>
+<p><img src="../images/object-slam/err2.png" alt="err2"></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 只有在VS Code 中调试才会出现该错误，解决办法是在VS Code 中unset GTK_PATH即可：</span></span><br><span class="line"><span class="built_in">unset</span> GTK_PATH</span><br></pre></td></tr></table></figure>
 
     </div>
