@@ -144,35 +144,6 @@
       </tags>
   </entry>
   <entry>
-    <title>寒武纪MLU220 开发环境Docker搭建</title>
-    <url>/2024/01/26/mlu220/</url>
-    <content><![CDATA[<p>首先进入<a href="https://cair.cambricon.com/#/home/catalog">寒武纪开发主页</a>并登录寒武纪账号，进入cambricon_pytorch docker 页面。由于本人只使用MLU220 进行边缘端推理，所以不需要在主机上安装MLU 驱动，因此可跳过第一步直接按照提示安装docker。本人在尝试按照页面说明时遇到了一些问题，在此记录一下。</p>
-<span id="more"></span>
-<p>若是初次使用docker，则建议将Ubuntu个人账户添加进docker组里，这样就避免每次使用时都要输入sudo了，该部分参考<a href="https://www.cnblogs.com/jzcn/p/16591083.html">文章</a>：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 将当前用户添加进docker组，并更新</span><br><span class="line">sudo gpasswd -a user docker</span><br><span class="line">newgrp docker</span><br><span class="line"></span><br><span class="line">## 然后重启电脑才可永久生效</span><br></pre></td></tr></table></figure>
-<p>然后按照寒武纪提示，依次进行如下操作：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 登录harbor</span><br><span class="line">docker login cair.cambricon.com</span><br><span class="line"></span><br><span class="line">## 输入用户名、API密钥（网页用户名下拉框中有API密钥选项）</span><br><span class="line">Username: (username)</span><br><span class="line">Password: (API密钥)</span><br></pre></td></tr></table></figure>
-<p>注意，这里网页提示使用docker pull命令下载相应的镜像文件，但经过本人尝试之后发现，在后续的docker run命令中会重复下载，因此<strong>跳过使用docker pull，直接使用docker run命令创建容器</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --name mlu220 -v /home/***/work:/work cair.cambricon.com/cambricon/cambricon_pytorch:ubuntu18.04_sdk_v1.7.0_pytorch_v0.15.0-2 /bin/bash</span><br></pre></td></tr></table></figure>
-<p>上述命令会自动下载镜像文件，并改名为“mlu220”，且将主机的“/home/<em>*</em>/work”映射至docker端的“/work”。</p>
-<p>此时，可以查看新建的容器：</p>
-<p><img src="../images/docker2.png" alt="docker" title="容器查看"></p>
-<p>启动mlu220容器并查看：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">❯ docker start mlu220</span><br><span class="line">mlu220</span><br></pre></td></tr></table></figure>
-<p><img src="../images/docker2.png" alt="docker" title="启动容器"></p>
-<p>最后进入docker并激活开发环境：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mlu220 /bin/bash</span><br><span class="line"><span class="built_in">source</span> torch/venv3/pytorch/bin/activate</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-        <tag>Cambricon</tag>
-        <tag>Docker</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ubuntu系统安装</title>
     <url>/2024/01/26/Ubuntu-setup/</url>
     <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作</p>
@@ -239,6 +210,62 @@
         <tag>Semantic</tag>
         <tag>C++</tag>
         <tag>Object SLAM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>gcc、g++版本管理</title>
+    <url>/2024/01/26/gcc-g/</url>
+    <content><![CDATA[<p>本文主要参考<a href="https://zhuanlan.zhihu.com/p/261001751">文章</a>。</p>
+<h2 id="1-版本查看"><a href="#1-版本查看" class="headerlink" title="1 版本查看"></a>1 版本查看</h2><p>对系统中的现有gcc、g++版本进行查看，安装所需版本：</p>
+<span id="more"></span>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br><span class="line"></span><br><span class="line"><span class="comment">## 查看系统已安装版本</span></span><br><span class="line"><span class="built_in">ls</span> /usr/bin/gcc*</span><br><span class="line"><span class="built_in">ls</span> /usr/bin/g++*</span><br><span class="line"></span><br><span class="line"><span class="comment">## 安装新版本</span></span><br><span class="line">sudo apt install gcc-11</span><br><span class="line">sudo apt install g++-11</span><br></pre></td></tr></table></figure>
+<h2 id="2-版本切换"><a href="#2-版本切换" class="headerlink" title="2 版本切换"></a>2 版本切换</h2><p>首先，将已有版本添加到update-alternatives中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 最后的数值代表该版本的权重参数，越大优先级越高</span></span><br><span class="line"><span class="comment"># gcc</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 70</span><br><span class="line"></span><br><span class="line"><span class="comment"># g++</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 70</span><br></pre></td></tr></table></figure>
+<p>若想删除某个版本的管理：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-alternatives --remove gcc /usr/bin/gcc-11</span><br></pre></td></tr></table></figure>
+<p>手动切换版本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-alternatives --config gcc</span><br><span class="line">sudo update-alternatives --config g++</span><br></pre></td></tr></table></figure>
+<p><img src="../images/g++.png" alt="g++" title="g++ version"></p>
+<p>如上图所示，输入相应的id 即可实现不同版本之间的切换。</p>
+<p>切换完之后，查看版本是否切换成功：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>g++</tag>
+        <tag>gcc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>寒武纪MLU220 开发环境Docker搭建</title>
+    <url>/2024/01/26/mlu220/</url>
+    <content><![CDATA[<p>首先进入<a href="https://cair.cambricon.com/#/home/catalog">寒武纪开发主页</a>并登录寒武纪账号，进入cambricon_pytorch docker 页面。由于本人只使用MLU220 进行边缘端推理，所以不需要在主机上安装MLU 驱动，因此可跳过第一步直接按照提示安装docker。本人在尝试按照页面说明时遇到了一些问题，在此记录一下。</p>
+<span id="more"></span>
+<p>若是初次使用docker，则建议将Ubuntu个人账户添加进docker组里，这样就避免每次使用时都要输入sudo了，该部分参考<a href="https://www.cnblogs.com/jzcn/p/16591083.html">文章</a>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 将当前用户添加进docker组，并更新</span><br><span class="line">sudo gpasswd -a user docker</span><br><span class="line">newgrp docker</span><br><span class="line"></span><br><span class="line">## 然后重启电脑才可永久生效</span><br></pre></td></tr></table></figure>
+<p>然后按照寒武纪提示，依次进行如下操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 登录harbor</span><br><span class="line">docker login cair.cambricon.com</span><br><span class="line"></span><br><span class="line">## 输入用户名、API密钥（网页用户名下拉框中有API密钥选项）</span><br><span class="line">Username: (username)</span><br><span class="line">Password: (API密钥)</span><br></pre></td></tr></table></figure>
+<p>注意，这里网页提示使用docker pull命令下载相应的镜像文件，但经过本人尝试之后发现，在后续的docker run命令中会重复下载，因此<strong>跳过使用docker pull，直接使用docker run命令创建容器</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --name mlu220 -v /home/***/work:/work cair.cambricon.com/cambricon/cambricon_pytorch:ubuntu18.04_sdk_v1.7.0_pytorch_v0.15.0-2 /bin/bash</span><br></pre></td></tr></table></figure>
+<p>上述命令会自动下载镜像文件，并改名为“mlu220”，且将主机的“/home/<em>*</em>/work”映射至docker端的“/work”。</p>
+<p>此时，可以查看新建的容器：</p>
+<p><img src="../images/docker2.png" alt="docker" title="容器查看"></p>
+<p>启动mlu220容器并查看：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">❯ docker start mlu220</span><br><span class="line">mlu220</span><br></pre></td></tr></table></figure>
+<p><img src="../images/docker2.png" alt="docker" title="启动容器"></p>
+<p>最后进入docker并激活开发环境：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mlu220 /bin/bash</span><br><span class="line"><span class="built_in">source</span> torch/venv3/pytorch/bin/activate</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Cambricon</tag>
+        <tag>Docker</tag>
       </tags>
   </entry>
   <entry>
@@ -464,33 +491,6 @@
       <tags>
         <tag>Ubuntu</tag>
         <tag>zsh</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>gcc、g++版本管理</title>
-    <url>/2024/01/26/gcc-g/</url>
-    <content><![CDATA[<p>本文主要参考<a href="https://zhuanlan.zhihu.com/p/261001751">文章</a>。</p>
-<h2 id="1-版本查看"><a href="#1-版本查看" class="headerlink" title="1 版本查看"></a>1 版本查看</h2><p>对系统中的现有gcc、g++版本进行查看，安装所需版本：</p>
-<span id="more"></span>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br><span class="line"></span><br><span class="line"><span class="comment">## 查看系统已安装版本</span></span><br><span class="line"><span class="built_in">ls</span> /usr/bin/gcc*</span><br><span class="line"><span class="built_in">ls</span> /usr/bin/g++*</span><br><span class="line"></span><br><span class="line"><span class="comment">## 安装新版本</span></span><br><span class="line">sudo apt install gcc-11</span><br><span class="line">sudo apt install g++-11</span><br></pre></td></tr></table></figure>
-<h2 id="2-版本切换"><a href="#2-版本切换" class="headerlink" title="2 版本切换"></a>2 版本切换</h2><p>首先，将已有版本添加到update-alternatives中：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 最后的数值代表该版本的权重参数，越大优先级越高</span></span><br><span class="line"><span class="comment"># gcc</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 70</span><br><span class="line"></span><br><span class="line"><span class="comment"># g++</span></span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100</span><br><span class="line">sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 70</span><br></pre></td></tr></table></figure>
-<p>若想删除某个版本的管理：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-alternatives --remove gcc /usr/bin/gcc-11</span><br></pre></td></tr></table></figure>
-<p>手动切换版本：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-alternatives --config gcc</span><br><span class="line">sudo update-alternatives --config g++</span><br></pre></td></tr></table></figure>
-<p><img src="../images/g++.png" alt="g++" title="g++ version"></p>
-<p>如上图所示，输入相应的id 即可实现不同版本之间的切换。</p>
-<p>切换完之后，查看版本是否切换成功：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 查看当前版本</span></span><br><span class="line">gcc -v</span><br><span class="line">g++ -v</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-        <tag>g++</tag>
-        <tag>gcc</tag>
       </tags>
   </entry>
 </search>
