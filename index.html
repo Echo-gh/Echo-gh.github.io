@@ -220,7 +220,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-01-27 11:27:11 / 修改时间：11:44:10" itemprop="dateCreated datePublished" datetime="2024-01-27T11:27:11+08:00">2024-01-27</time>
+              <time title="创建时间：2024-01-27 11:27:11 / 修改时间：12:49:57" itemprop="dateCreated datePublished" datetime="2024-01-27T11:27:11+08:00">2024-01-27</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -228,11 +228,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Semantic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Semantic SLAM</span></a>
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Semantic-SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
                 </span>
             </span>
 
@@ -305,7 +305,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-27 11:41:58" itemprop="dateModified" datetime="2024-01-27T11:41:58+08:00">2024-01-27</time>
+                <time title="修改时间：2024-01-27 12:46:28" itemprop="dateModified" datetime="2024-01-27T12:46:28+08:00">2024-01-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -313,11 +313,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Semantic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Semantic SLAM</span></a>
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Semantic-SLAM/Object-SLAM/" itemprop="url" rel="index"><span itemprop="name">Object SLAM</span></a>
+                  <a href="/categories/SLAM/Object-SLAM/" itemprop="url" rel="index"><span itemprop="name">Object SLAM</span></a>
                 </span>
             </span>
 
@@ -542,7 +542,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-27 11:41:51" itemprop="dateModified" datetime="2024-01-27T11:41:51+08:00">2024-01-27</time>
+                <time title="修改时间：2024-01-27 12:47:00" itemprop="dateModified" datetime="2024-01-27T12:47:00+08:00">2024-01-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -550,11 +550,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Semantic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Semantic SLAM</span></a>
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Semantic-SLAM/ORB-SLAM2/" itemprop="url" rel="index"><span itemprop="name">ORB-SLAM2</span></a>
+                  <a href="/categories/SLAM/ORB-SLAM/" itemprop="url" rel="index"><span itemprop="name">ORB-SLAM</span></a>
                 </span>
             </span>
 
@@ -1142,6 +1142,63 @@
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
