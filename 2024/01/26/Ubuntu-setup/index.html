@@ -32,14 +32,14 @@
 <meta property="og:site_name" content="Echo&#39;s blog">
 <meta property="og:description" content="1 系统盘制作推荐使用 Rufus 这个软件进行制作">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/rufus.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/disk_set.png">
+<meta property="og:image" content="http://echo-gh.github.io/images/rufus.png">
+<meta property="og:image" content="http://echo-gh.github.io/images/disk_set.png">
 <meta property="article:published_time" content="2024-01-26T02:53:25.000Z">
 <meta property="article:modified_time" content="2024-01-26T08:10:13.816Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="Ubuntu">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/26/images/rufus.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/images/rufus.png">
 
 <link rel="canonical" href="http://echo-gh.github.io/2024/01/26/Ubuntu-setup/">
 
@@ -251,23 +251,24 @@
       
         <h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作</p>
 <span id="more"></span>
-<p><img src="../images/rufus.png" alt="rufus" title="rufus设置界面"></p>
+
+<p><img src="/../images/rufus.png" alt="rufus" title="rufus设置界面"></p>
 <h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
 <ol>
 <li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
 </li>
-<li><p>删除”quite splash”后的”—-“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
+<li><p>删除”quite splash”后的”—“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
 </li>
 <li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
 </li>
 </ol>
-<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”/etc/default/grub”这个文件，具体操作在此不做赘述，可参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
+<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”&#x2F;etc&#x2F;default&#x2F;grub”这个文件，具体操作在此不做赘述，可参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
 <h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
 <ol>
 <li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
 <li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
 </ol>
-<p><img src="../images/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
+<p><img src="/../images/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
 <p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
 <h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
 
