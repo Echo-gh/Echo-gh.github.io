@@ -32,16 +32,16 @@
 <meta property="og:site_name" content="Echo&#39;s blog">
 <meta property="og:description" content="首先进入寒武纪开发主页并登录寒武纪账号，进入cambricon_pytorch docker 页面。由于本人只使用MLU220 进行边缘端推理，所以不需要在主机上安装MLU 驱动，因此可跳过第一步直接按照提示安装docker。本人在尝试按照页面说明时遇到了一些问题，在此记录一下。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/mlu220/images/docker2.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/mlu220/images/docker2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/mlu220/docker1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/mlu220/docker2.png">
 <meta property="article:published_time" content="2024-01-26T07:41:43.000Z">
-<meta property="article:modified_time" content="2024-01-27T04:55:37.340Z">
+<meta property="article:modified_time" content="2024-01-29T02:09:32.193Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="Ubuntu">
 <meta property="article:tag" content="Cambricon">
 <meta property="article:tag" content="Docker">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/26/mlu220/images/docker2.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/26/mlu220/docker1.png">
 
 <link rel="canonical" href="http://echo-gh.github.io/2024/01/26/mlu220/">
 
@@ -234,7 +234,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-27 12:55:37" itemprop="dateModified" datetime="2024-01-27T12:55:37+08:00">2024-01-27</time>
+                <time title="修改时间：2024-01-29 10:09:32" itemprop="dateModified" datetime="2024-01-29T10:09:32+08:00">2024-01-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -267,10 +267,10 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --name mlu220 -v /home/***/work:/work cair.cambricon.com/cambricon/cambricon_pytorch:ubuntu18.04_sdk_v1.7.0_pytorch_v0.15.0-2 /bin/bash</span><br></pre></td></tr></table></figure>
 <p>上述命令会自动下载镜像文件，并改名为“mlu220”，且将主机的“/home/<em>*</em>/work”映射至docker端的“/work”。</p>
 <p>此时，可以查看新建的容器：</p>
-<p><img src="/2024/01/26/mlu220/images/docker2.png" alt="docker" title="容器查看"></p>
+<p><img src="/2024/01/26/mlu220/docker1.png" alt="docker" title="容器查看"></p>
 <p>启动mlu220容器并查看：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">❯ docker start mlu220</span><br><span class="line">mlu220</span><br></pre></td></tr></table></figure>
-<p><img src="/2024/01/26/mlu220/images/docker2.png" alt="docker" title="启动容器"></p>
+<p><img src="/2024/01/26/mlu220/docker2.png" alt="docker" title="启动容器"></p>
 <p>最后进入docker并激活开发环境：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mlu220 /bin/bash</span><br><span class="line"><span class="built_in">source</span> torch/venv3/pytorch/bin/activate</span><br></pre></td></tr></table></figure>
 
