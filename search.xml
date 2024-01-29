@@ -492,6 +492,7 @@
 <li>通过使用<strong>近远立体点和单目观测</strong>，本系统运行双目的结果要比直接双目SLAM 的 SOTA 算法精度更高；</li>
 <li>提出了一种关闭制图功能情况下，有效<strong>重使用地图</strong>的轻量级定位模式。</li>
 </ol>
+<span id="more"></span>
 <p><img src="/2024/01/29/orb-slam2/fig1.png" alt="fig1" title="fig 1"></p>
 <h1 id="3-ORB-SLAM2"><a href="#3-ORB-SLAM2" class="headerlink" title="3 ORB-SLAM2"></a>3 ORB-SLAM2</h1><p>ORB-SLAM2 的整体架构如下所示：</p>
 <p><img src="/2024/01/29/orb-slam2/fig2.png" alt="fig2" title="fig 2"></p>

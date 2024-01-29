@@ -220,7 +220,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-01-29 10:35:45 / 修改时间：10:49:50" itemprop="dateCreated datePublished" datetime="2024-01-29T10:35:45+08:00">2024-01-29</time>
+              <time title="创建时间：2024-01-29 10:35:45 / 修改时间：10:52:29" itemprop="dateCreated datePublished" datetime="2024-01-29T10:35:45+08:00">2024-01-29</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -254,44 +254,14 @@
 <li>通过使用<strong>近远立体点和单目观测</strong>，本系统运行双目的结果要比直接双目SLAM 的 SOTA 算法精度更高；</li>
 <li>提出了一种关闭制图功能情况下，有效<strong>重使用地图</strong>的轻量级定位模式。</li>
 </ol>
-<p><img src="/2024/01/29/orb-slam2/fig1.png" alt="fig1" title="fig 1"></p>
-<h1 id="3-ORB-SLAM2"><a href="#3-ORB-SLAM2" class="headerlink" title="3 ORB-SLAM2"></a>3 ORB-SLAM2</h1><p>ORB-SLAM2 的整体架构如下所示：</p>
-<p><img src="/2024/01/29/orb-slam2/fig2.png" alt="fig2" title="fig 2"></p>
-<p>系统包含三个主要的并行线程：</p>
-<ol>
-<li><strong>跟踪线程：</strong>寻找与<strong>局部地图</strong>相匹配的特征点，利用<strong>motion-only BA</strong> <strong>最小化重投影误差</strong>，来解算<strong>每帧图片</strong>对应的相机位姿；</li>
-<li><strong>局部制图：</strong>管理<strong>局部地图</strong>，并使用<strong>局部BA</strong> 对其进行优化；</li>
-<li><strong>回环检测：</strong>检测大回环，并使用<strong>位姿图优化</strong>来消除累积漂移；然后开启第四个线程，进行<strong>全局BA</strong> 优化解算地图与位姿的最优解。</li>
-</ol>
-<p>本系统还嵌入了一个基于<strong>DBoW2</strong> 的地点重识别模块进行<strong>重定位</strong>，在跟踪失败或利用现有地图进行重初始化时使用；本系统维护一个<strong>共视图</strong>，来关联任意两个具有共同观测特征点的关键帧，并使用一个<strong>最小化spanning tree</strong> 来连接所有的关键帧；这些图结构方便恢复关键帧的<strong>局部窗口</strong>以进行局部的跟踪与制图，并为回环检测中的位姿图优化提供结构。</p>
-<h2 id="3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints"><a href="#3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints" class="headerlink" title="3.1 Monocular, Close Stereo, and Far Stereo Keypoints"></a>3.1 Monocular, Close Stereo, and Far Stereo Keypoints</h2><p>本系统经过如图Fig. 2（b）的<strong>图片预处理操作</strong>，提取出关键点的特征，系统后续的操作均是基于这些<strong>特征点（立体关键点和单目关键点）</strong>的，实现独立于所使用的传感器类型。后续的操作均基于立体关键点和单目关键点。</p>
-<p><strong>立体关键点</strong>使用三个坐标进行定义：$\mathbf{x}_s = (u_L, v_L, u_R)$ ，其中 $(u_L, v_L)$ 是特征点在左边图片中的坐标，$u_R$ 是特征点在右边图片的水平座标。对于RGB-D 相机，作者将深度值 d 转化为一个<strong>虚拟的右图坐标</strong>：</p>
-<p><img src="/2024/01/29/orb-slam2/f1.png" alt="f1" title="formula 1"></p>
-<p>作者定义，如果一个关键点的<strong>深度小于基线长度的40倍</strong>，则被视为近点，否则视为远点。对于近点，可以使用一帧图片进行安全的三角化，因为其深度信息得到了准确估计，可以提供相应的<strong>尺度、平移和旋转信息</strong>；而对于远点，可以提供<strong>准确的旋转信息</strong>，但是尺度与平移信息较不可靠，只对多视角观测的远点进行三角化。</p>
-<p><strong>单目关键点</strong>使用左图的两个坐标进行定义 $\mathbf{x}_m = (u_L, v_L)$ ，是针对那些立体匹配失败或RGB-D 深度参数不可靠的点；这些点只通过多视角观测进行三角化，且不提供尺度信息，但会参与旋转与平移估计的解算。</p>
-<h2 id="3-2-System-Bootstrapping"><a href="#3-2-System-Bootstrapping" class="headerlink" title="3.2 System Bootstrapping"></a>3.2 System Bootstrapping</h2><p>使用立体相机或RGB-D 相机的一个主要优势在于：可仅使用一帧图片获取<strong>深度信息</strong>，而不需要单目相机的动作初始化操作。系统启动后，使用第一帧作为关键帧，将其位姿定为<strong>原点</strong>，并利用所有的<strong>立体关键点</strong>创建一个初始地图。</p>
-<h2 id="3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints"><a href="#3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints" class="headerlink" title="3.3 Bundle Adjustment with Monocular and Stereo Constraints"></a>3.3 Bundle Adjustment with Monocular and Stereo Constraints</h2><p>BA 在本系统中的应用：</p>
-<ul>
-<li>在跟踪线程中优化相机位姿（motion-only BA）</li>
-<li>在局部制图线程中优化局部窗口内的关键帧和特征点（local BA）</li>
-<li>回环检测之后优化所有的关键帧与特征点（full BA）</li>
-</ul>
-<h3 id="Motion-only-BA"><a href="#Motion-only-BA" class="headerlink" title="Motion-only BA"></a>Motion-only BA</h3><p>对关键点 $\mathbf{x}_{(.)}^i$ （包括单目点 $\mathbf{x}_m^i \in \mathbb{R}^2$ 和立体点 $\mathbf{x}_s^i \in \mathbb{R}^3$ ）进行最小化重投影误差，其中 $i\in \mathcal{X}$ 为所有匹配点集合：</p>
-<p><img src="/2024/01/29/orb-slam2/f2.png" alt="f2" title="formula 2"></p>
-<p>其中，$\rho$ 是<strong>鲁棒Huber 损失函数</strong>，$\sum$ 是关键点尺度参数对应的协方差矩阵。单目点和立体点的投影矩阵如下所示：</p>
-<p><img src="/2024/01/29/orb-slam2/f3.png" alt="f3" title="formula 3"></p>
-<h3 id="Local-BA"><a href="#Local-BA" class="headerlink" title="Local BA"></a>Local BA</h3><p><img src="/2024/01/29/orb-slam2/f4.png" alt="f4" title="formula 4"></p>
-<p>其中，$\mathcal{K}_L$ 为一组共视关键帧；$\mathcal{P}_L$ 为这些共视关键帧中的所有点；至于其他观测到 $\mathcal{P}_L$ 中的点且不属于 $\mathcal{K}_L$ 的关键帧 $\mathcal{K}_F$ ，会参与损失函数的构建，但是在优化中<strong>保持固定</strong>；$\mathcal{X}_k$ 表示 $\mathcal{P}_L$ 中与关键帧 k 匹配的点列表。</p>
-<h3 id="Full-BA"><a href="#Full-BA" class="headerlink" title="Full BA"></a>Full BA</h3><p>是一种局部BA 的特殊情况，除了<strong>初始关键帧</strong>是固定的，地图中其余的所有关键帧和点都参与优化过程。</p>
-<h2 id="3-4-Loop-Closing-and-Full-BA"><a href="#3-4-Loop-Closing-and-Full-BA" class="headerlink" title="3.4 Loop Closing and Full BA"></a>3.4 Loop Closing and Full BA</h2><p>回环检测包含两步：</p>
-<ol>
-<li>回环的检测与验证；</li>
-<li>通过位姿图优化来矫正回环。</li>
-</ol>
-<h2 id="3-5-Keyframe-Insertion"><a href="#3-5-Keyframe-Insertion" class="headerlink" title="3.5 Keyframe Insertion"></a>3.5 Keyframe Insertion</h2><p>本系统遵循ORB-SLAM 的关键帧插入策略，此外，基于立体远近点创建了一个新的关键帧挑选策略：如果跟踪的近点数量低于 $\tau_t = 100$，且可新增近点数量大于 $\tau_c = 70$ 时，将其作为新的关键帧进行插入。</p>
-<p><img src="/2024/01/29/orb-slam2/fig3.png" alt="fig3" title="fig 3"></p>
-<h2 id="3-6-Localization-Mode"><a href="#3-6-Localization-Mode" class="headerlink" title="3.6 Localization Mode"></a>3.6 Localization Mode</h2><p>本系统引入了一个<strong>定位模式</strong>，可在已经制图的区域进行<strong>轻量级长期定位</strong>。该过程利用<strong>视觉里程计匹配点</strong>和<strong>地图匹配点</strong>进行定位，其中视觉里程计匹配是基于当前帧的ORB 和历史帧创建的3D 点之间进行的，这些匹配可在无地图区域进行定位，但会存在累积漂移；而地图点匹配会得到与地图无偏的定位结果。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/29/orb-slam2/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
