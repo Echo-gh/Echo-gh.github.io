@@ -32,17 +32,17 @@
 <meta property="og:site_name" content="Echo&#39;s blog">
 <meta property="og:description" content="1 Ubuntu设置与软件安装首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/win-remote-ubuntu/ubuntu-setting.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/win-remote-ubuntu/startwm.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/win-remote-ubuntu/remote-access.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/images/win-remote-ubuntu/startwm-1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/ubuntu-setting.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/startwm.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/remote-access.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/startwm-1.png">
 <meta property="article:published_time" content="2024-01-26T06:33:45.000Z">
 <meta property="article:modified_time" content="2024-01-27T04:55:15.605Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="Ubuntu">
 <meta property="article:tag" content="remote access">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/26/images/win-remote-ubuntu/ubuntu-setting.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/ubuntu-setting.png">
 
 <link rel="canonical" href="http://echo-gh.github.io/2024/01/26/win-remote-ubuntu/">
 
@@ -260,16 +260,16 @@
       
         <h2 id="1-Ubuntu设置与软件安装"><a href="#1-Ubuntu设置与软件安装" class="headerlink" title="1 Ubuntu设置与软件安装"></a>1 Ubuntu设置与软件安装</h2><p>首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：</p>
 <span id="more"></span>
-<p><img src="../images/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
+<p><img src="/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
 <p>然后安装xrdp：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install xrdp</span><br></pre></td></tr></table></figure>
 <p>接下来的步骤网上有很多不同的做法，其中<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/145614559">这篇文章</a>提到需要修改startwm.sh文件:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
-<p><img src="../images/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
+<p><img src="/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
 <p>将最后两行注释掉，即：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 注释掉这两行</span></span><br><span class="line"><span class="comment"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span></span><br><span class="line"><span class="comment"># exec /bin/sh /etc/X11/Xsession</span></span><br></pre></td></tr></table></figure>
 <p>然后即可通过win10自带的远程桌面进行连接：</p>
-<p><img src="../images/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
+<p><img src="/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
 <p>到目前为止，本人可以在Windows中正常远程控制Ubuntu，且可实现Ubuntu显示和远程控制<strong>同时在线</strong>，即通过远程控制操作Ubuntu，同时另一个屏幕可正常显示Ubuntu界面，且实时显示远程控制的操作。</p>
 <h2 id="2-黑屏问题"><a href="#2-黑屏问题" class="headerlink" title="2 黑屏问题"></a>2 黑屏问题</h2><p>但是，在这之后我重新安装了NVIDIA显卡驱动、CUDA、cuDNN，然后就发现远程控制无法进入Ubuntu系统了，点击“连接”后出现一段时间的黑屏后会自动退出。在网上查询了很多案例，有各种五花八门的解决方案，如换一个桌面程序、使用dconf-editor更改配置文件、远程控制与Ubuntu本地无法同时登陆（必须有一方log out）等等，以下是个人尝试的结果：</p>
 <ul>
@@ -279,7 +279,7 @@
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 修改startwm.sh文件，添加下面几行，仍旧没有解决问题</span></span><br><span class="line"><span class="built_in">unset</span> DBUS_SESSION_BUS_ADDRESS</span><br><span class="line"><span class="built_in">unset</span> XDG_RUNTIME_DIR</span><br><span class="line">. <span class="variable">$HOME</span>/.profile</span><br></pre></td></tr></table></figure>
 <p>最后，不知道怎么想起来，尝试把startwm.sh文件中注释掉的两行取消注释，峰回路转、柳暗花明，竟然成了！！！于是，本人最终的startwm.sh文件内容如下所示：</p>
-<p><img src="../images/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
+<p><img src="/2024/01/26/win-remote-ubuntu/images/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
 <h2 id="3-后记"><a href="#3-后记" class="headerlink" title="3 后记"></a>3 后记</h2><p>虽然不知道原因是什么，只知道目前这样子是可行的，但同时也发现无法像安装显卡驱动前那样本地端和远程端同时登陆了，必须要有一端log out，另一端才可正常工作，现做以下记录：</p>
 <ul>
 <li>使用远程连接桌面后，不能简单地关掉远程桌面：若只是简单地关掉远程桌面后，在本地端可以正常进入账号选择、密码输入界面，输完密码后会显示黑屏；此时，只有重新进入远程桌面，选择log out，本地端方可正常登录。</li>

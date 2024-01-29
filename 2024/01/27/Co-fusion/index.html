@@ -32,21 +32,21 @@
 <meta property="og:site_name" content="Echo&#39;s blog">
 <meta property="og:description" content="3 Overview of our MethodCo-Fusion 是一个可以实时处理每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体存储模型，而且可以独立跟踪它们的运动，每个模型是由一组3D 点构成的。本系统维护两组物体模型：当前在视野中可见的active 模型，以及曾经观测到的模型，但是目前不在视野中，记为inactive 模型。本系统的框架如Fig. 2所示，在初始">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/images/Co-fusion/overview.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/images/Co-fusion/formula1.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/images/Co-fusion/formula2.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/images/Co-fusion/formula3.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/images/Co-fusion/formula4.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/images/Co-fusion/formula5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/overview.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/formula1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/formula2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/formula3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/formula4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/formula5.png">
 <meta property="article:published_time" content="2024-01-27T03:27:11.000Z">
-<meta property="article:modified_time" content="2024-01-27T04:49:57.254Z">
+<meta property="article:modified_time" content="2024-01-29T02:03:13.807Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="Dynamic SLAM">
 <meta property="article:tag" content="SLAM">
 <meta property="article:tag" content="Semantic">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/27/images/Co-fusion/overview.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/overview.png">
 
 <link rel="canonical" href="http://echo-gh.github.io/2024/01/27/Co-fusion/">
 
@@ -231,10 +231,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2024-01-27 11:27:11 / 修改时间：12:49:57" itemprop="dateCreated datePublished" datetime="2024-01-27T11:27:11+08:00">2024-01-27</time>
+              <time title="创建时间：2024-01-27 11:27:11" itemprop="dateCreated datePublished" datetime="2024-01-27T11:27:11+08:00">2024-01-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-29 10:03:13" itemprop="dateModified" datetime="2024-01-29T10:03:13+08:00">2024-01-29</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -262,7 +268,7 @@
       
         <h1 id="3-Overview-of-our-Method"><a href="#3-Overview-of-our-Method" class="headerlink" title="3 Overview of our Method"></a>3 Overview of our Method</h1><p>Co-Fusion 是一个可以<strong>实时处理</strong>每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体<strong>存储模型</strong>，而且可以<strong>独立跟踪</strong>它们的运动，每个模型是由<strong>一组3D 点</strong>构成的。本系统维护两组物体模型：当前在视野中可见的<strong>active 模型</strong>，以及曾经观测到的模型，但是目前不在视野中，记为<strong>inactive 模型</strong>。本系统的框架如Fig. 2所示，在初始化阶段，场景只包含一个active 模型——<strong>背景</strong>，初始化完成后，按照Fig .2的流程处理每一帧图片。</p>
 <span id="more"></span>
-<p><img src="../images/Co-fusion/overview.png" alt="overview" title="Overview"></p>
+<p><img src="/2024/01/27/Co-fusion/overview.png" alt="overview" title="Overview"></p>
 <p><strong>tracking</strong> 与 <strong>fusion</strong> 步骤是在GPU 上完成的，而<strong>segmentation</strong> 步骤是在CPU 上完成的。</p>
 <h2 id="3-1-Tracking"><a href="#3-1-Tracking" class="headerlink" title="3.1 Tracking"></a><strong>3.1 Tracking</strong></h2><p>在当前帧中跟踪每一个active 模型的6DOF 位姿，通过最小化每个模型独立的目标方程来实现，该目标方程包含：</p>
 <ul>
@@ -276,25 +282,25 @@
 <p>为了解决<strong>动态物体</strong>的跟踪问题，本系统使用 $\mathcal{T}_t = \{\mathbf{T}_{tm}()\}$ 来表示每个active 模型 $\mathcal{M}_m$ 在时间 t 相对于全局参考坐标系的位姿转换几何，即 $\mathbf{T}_{tm}$ 表示时间 t 时模型 $\mathcal{M}_m$ 的全局位姿。特别地，作者使用 $\mathbf{T}_{tb}$ 来表示<strong>背景模型</strong>的位姿转换。</p>
 <h1 id="5-Tracking-Active-Models"><a href="#5-Tracking-Active-Models" class="headerlink" title="5 Tracking Active Models"></a>5 Tracking Active Models</h1><p>对于时间t 的图像帧中的每一个active 模型  $\mathcal{M}_m$ ，系统通过配准<strong>当前的深度图</strong>和<strong>前一帧的深度图</strong>（通过将存储的3D 模型利用t-1 的估计位姿进行投影而获取）来跟踪其全局位姿 $\mathbf{T}_{tm}$ ，对每一个active 模型进行<strong>独立优化和跟踪</strong>。</p>
 <h2 id="5-1-Energy"><a href="#5-1-Energy" class="headerlink" title="5.1 Energy"></a>5.1 Energy</h2><p>误差项包含<strong>ICP 几何误差</strong>和<strong>光度误差</strong>，其中光度误差是由预测的图片（将之前帧中存储的3D 模型投影而获取）与当前图片的<strong>颜色差异</strong>构成，</p>
-<p><img src="../images/Co-fusion/formula1.png" alt="formula1"></p>
+<p><img src="/2024/01/27/Co-fusion/formula1.png" alt="formula1"></p>
 <h2 id="5-2-Geometry-Term"><a href="#5-2-Geometry-Term" class="headerlink" title="5.2 Geometry Term"></a>5.2 Geometry Term</h2><p>ICP 几何误差定义为以下两者之间的误差：</p>
 <ul>
 <li>当前帧深度图的<strong>逆向投影</strong>3D 点；</li>
 <li>前一帧t-1 <strong>预测</strong>的深度图。</li>
 </ul>
-<p><img src="../images/Co-fusion/formula2.png" alt="formula2"></p>
+<p><img src="/2024/01/27/Co-fusion/formula2.png" alt="formula2"></p>
 <p>其中，$\mathbf{v}_t^i$ 是当前帧深度图 $\mathcal{D}_t$ 中第i 个点的反向映射3D 点；$\mathbf{v}^i, \mathbf{n}^i$ 分别是t-1 时刻<strong>预测的深度图</strong>中模型m 第i 个点的反向映射点以及其法向量；$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>。</p>
 <h2 id="5-3-Photometric-Color-Term"><a href="#5-3-Photometric-Color-Term" class="headerlink" title="5.3 Photometric Color Term"></a>5.3 Photometric Color Term</h2><p>在给定(1)当前深度图、(2)每个active 模型的3D 几何估计，以及(3)将每个模型与前一帧对齐的位姿转换关系，即可将当前场景合成为一个与前一帧对齐的虚拟投影，进而，跟踪问题就变为了当前帧与合成的虚拟投影之间的<strong>光度配准</strong>问题：</p>
-<p><img src="../images/Co-fusion/formula3.png" alt="formula3"></p>
+<p><img src="/2024/01/27/Co-fusion/formula3.png" alt="formula3"></p>
 <p>其中，$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>；$\mathbf{I}_{t-1}()$ 表示提供模型在前一帧上顶点的颜色参数。</p>
 <p>为了鲁棒性和效率，本优化使用一个<strong>4层的空间金字塔</strong>来集成到一个<strong>由粗到细</strong>的方法中，并在GPU 中完成运算。</p>
 <h1 id="6-Motion-Segmentation"><a href="#6-Motion-Segmentation" class="headerlink" title="6 Motion Segmentation"></a>6 Motion Segmentation</h1><p>在跟踪步骤之后，在t 时刻有 $M_t$ 个新的位姿转换 $\{\mathbf{T}_{tm}\}$ ，来描述每个active 模型相对于全局坐标系的绝对位姿；接下来作者将帧t 的运动分割问题构建为一个<strong>分类标记问题</strong>，而标签为 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$ ，作者将 $M_t+1$ 种可能分配到<strong>每一个像素</strong>中，即 $\mathcal{l} \in \mathcal{L}_t = \{1, …, |M_t|+1\}$ ，除了 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$外还包含一个<strong>外点标签</strong> $\mathcal{l}_{|M_t|+1}$ 。</p>
 <p>为了可以在CPU上实施完成分割步骤，系统首先将当前帧分割为SLIC 超像素，并在超像素级别上进行分类标记，超像素的位置、颜色与深度由从属的所有像素均值得到。代价函数如下所示：</p>
-<p><img src="../images/Co-fusion/formula4.png" alt="formula4"></p>
+<p><img src="/2024/01/27/Co-fusion/formula4.png" alt="formula4"></p>
 <p>其中，i 和 j 图片中超像素的索引（从1到S）。</p>
 <h2 id="6-1-The-Unary-Potentials"><a href="#6-1-The-Unary-Potentials" class="headerlink" title="6.1 The Unary Potentials"></a>6.1 The Unary Potentials</h2><p>对于 $\psi_u(x_i)$ 表示为超像素 $s_i$ 分配标签为 $x_i$ 的代价，对于运动分割模式，该代价为<strong>ICP 几何对齐损失函数</strong>（式 2）。</p>
 <h2 id="6-2-The-Pairwise-Potentials"><a href="#6-2-The-Pairwise-Potentials" class="headerlink" title="6.2 The Pairwise Potentials"></a>6.2 The Pairwise Potentials</h2><p>对于 $\psi_p(x_i, x_j)$ 可表示为：</p>
-<p><img src="../images/Co-fusion/formula5.png" alt="formula5"></p>
+<p><img src="/2024/01/27/Co-fusion/formula5.png" alt="formula5"></p>
 <p>其中，$\mu(x_i, x_j)$ 惩罚<strong>临近像素标签不同</strong>的情况；$k_m(f_i, f_j)$ 测量像素外观之间的<strong>相似度</strong>，代表的含义是：两个超像素的<strong>特征向量</strong>之间的距离较小时应具有相同的标签，所谓的特征向量 $f_i$  包含2D 位置、RGB 颜色以及深度值。</p>
 <h2 id="6-3-Post-processing"><a href="#6-3-Post-processing" class="headerlink" title="6.3 Post-processing"></a>6.3 Post-processing</h2><p>在分割之后，采用一系列<strong>后处理步骤</strong>来获取更为鲁棒的结果：</p>
 <ol>
