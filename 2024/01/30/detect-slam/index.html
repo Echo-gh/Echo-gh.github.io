@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Zhong, Fangwei, Sheng Wang, Ziqi Zhang, China Chen, and Yizhou Wang. “Detect-SLAM: Making Object Detection and SLAM Mutually Beneficial.” In 2018 IEEE Winter Conference on Applications of Computer Vis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Detect-SLAM_Making Object Detection and SLAM Mutually Beneficial">
+<meta property="og:url" content="http://echo-gh.github.io/2024/01/30/detect-slam/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Zhong, Fangwei, Sheng Wang, Ziqi Zhang, China Chen, and Yizhou Wang. “Detect-SLAM: Making Object Detection and SLAM Mutually Beneficial.” In 2018 IEEE Winter Conference on Applications of Computer Vis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/f1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/f2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/f3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/f4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/f5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/f6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/fig7.png">
+<meta property="article:published_time" content="2024-01-30T12:37:49.000Z">
+<meta property="article:modified_time" content="2024-01-30T12:47:21.158Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="Dynamic SLAM">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/30/detect-slam/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/01/30/detect-slam/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Detect-SLAM_Making Object Detection and SLAM Mutually Beneficial | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/30/detect-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Detect-SLAM_Making Object Detection and SLAM Mutually Beneficial
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-30 20:37:49 / 修改时间：20:47:21" itemprop="dateCreated datePublished" datetime="2024-01-30T20:37:49+08:00">2024-01-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Zhong, Fangwei, Sheng Wang, Ziqi Zhang, China Chen, and Yizhou Wang. “Detect-SLAM: Making Object Detection and SLAM Mutually Beneficial.” In <em>2018 IEEE Winter Conference on Applications of Computer Vision (WACV)</em>, 1001–10, 2018. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/WACV.2018.00115">https://doi.org/10.1109/WACV.2018.00115</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>本文提出的Detect-SLAM 较其他SOTA 方法的优势：</p>
+<ol>
+<li>通过利用物体检测器完成对移动物体上的<strong>不可靠特征点</strong>进行剔除，极大地提高了SLAM 算法在动态环境中的<strong>准确性与鲁棒性</strong>；</li>
+<li>在线构建一个<strong>实例级语义地图</strong>；</li>
+<li>通过利用物体语义地图来<strong>提高物体检测器性能</strong>，使得其在挑战性环境中可以更有效地识别出物体。</li>
+</ol>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>Detect-SLAM 是第一个将SLAM 和 基于DNN 的检测器结合起来同时完成三种视觉任务的工作：提高SLAM 在动态环境中的鲁棒性，构建语义地图，以及增强物体检测性能。</p>
+<p><img src="/2024/01/30/detect-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-Detect-SLAM"><a href="#3-Detect-SLAM" class="headerlink" title="3 Detect-SLAM"></a>3 Detect-SLAM</h1><p>本架构是基于ORB-SLAM2 算法的，在其基础上包含三个新步骤：</p>
+<ul>
+<li>Moving objects removal：将动态物体上的特征点进行<strong>剔除</strong>；</li>
+<li>Object Mapping：对关键帧中的静态物体进行<strong>重建</strong>，物体语义地图包含带有物体ID 的稠密点云；</li>
+<li>SLAM-enhanced Detector：利用物体语义地图作为先验知识来<strong>增强</strong>探测器在挑战环境中的性能。</li>
+</ul>
+<h2 id="3-1-Moving-Objects-Removal"><a href="#3-1-Moving-Objects-Removal" class="headerlink" title="3.1 Moving Objects Removal"></a>3.1 Moving Objects Removal</h2><p>动态物体剔除如Fig. 3所示，值得注意的是，此处的动态物体指的是属于可移动种类中的物体，并不能保证其一定是移动的，即<strong>潜在动态物体</strong>。然而，利用DNN 进行动态物体检测速度较慢，SSD 只能实现3 FPS的速度。为解决该问题，作者采用两个策略进行应对：</p>
+<ol>
+<li>只在<strong>关键帧</strong>中进行动态物体检测，然后在local map 中更新特征点的<strong>移动概率</strong>来加速tracking 支流；</li>
+<li>在tracking 支流中利用<strong>特征匹配</strong>和<strong>匹配点扩张</strong>来传递移动概率，从而在相机位姿估计前有效移除动态物体上的特征点。</li>
+</ol>
+<p>作者将物体的移动概率分为4个层次，如Fig. 2所示，使用<strong>高置信度点</strong>在<strong>匹配点扩张</strong>中将移动概率传递给周围<strong>未匹配</strong>的特征点，在每个点都得到相应的移动概率后，去除动态特征点并使用RANSAC 滤除其他外点，然后进行位姿估计。</p>
+<p><img src="/2024/01/30/detect-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h3 id="3-1-1-Updating-Moving-Probability"><a href="#3-1-1-Updating-Moving-Probability" class="headerlink" title="3.1.1 Updating Moving Probability"></a>3.1.1 Updating Moving Probability</h3><p><img src="/2024/01/30/detect-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<p>关键帧的物体检测完成后会被插入到local map 中并更新地图中特征点的移动概率：</p>
+<p><img src="/2024/01/30/detect-slam/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$P_{t-1}(X^i)$ 表示3D 点 $X^i$ 在上个关键帧更新后的移动概率，若点 $X^i$ 是新添加的点，则令 $P_{t-1}(X^i)=0.5$ ；与点 $X^i$ 匹配的关键帧中的点 $x_i$ 若位于动态物体的bbox 内，则令 $S_t(x^i) = 1$ ，其他情况下令其为0。</p>
+<h3 id="3-1-2-Moving-Probability-Propagation"><a href="#3-1-2-Moving-Probability-Propagation" class="headerlink" title="3.1.2 Moving Probability Propagation"></a>3.1.2 Moving Probability Propagation</h3><p>移动概率传递在帧间通过两种方式确定：<strong>特征匹配</strong>和<strong>匹配点扩张</strong>，如Fig. 4所示。</p>
+<p><img src="/2024/01/30/detect-slam/fig4.png" alt="fig4" title="figure 4"></p>
+<p>对于<strong>特征匹配</strong>的情况，若一个特征点同时与上一帧特征点和地图中的3D 点匹配上时，应该<strong>以地图中3D 点的移动概率为准</strong>。将未匹配的特征点移动概率初始化为0.5。特征匹配的情况总结为下式：</p>
+<p><img src="/2024/01/30/detect-slam/f2.png" alt="f2" title="formula 2"></p>
+<p>对于匹配点扩张的情况，是利用<strong>高置信度的特征点</strong>（包括高静态可能和高动态可能特征点）对周围未匹配特征点的移动概率进行确认，确认过程如下所示：</p>
+<p><img src="/2024/01/30/detect-slam/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$\chi_t$ 为高置信度特征点；$P_{init}$ 为初始化概率值，为0.5；$\lambda(d)$ 为距离因子，若d 小于半径阈值，则令 $\lambda(d) = Ce^{-d/r}$ 。</p>
+<h2 id="3-2-Mapping-Objects"><a href="#3-2-Mapping-Objects" class="headerlink" title="3.2 Mapping Objects"></a>3.2 Mapping Objects</h2><h3 id="3-2-1-Predicting-Region-ID"><a href="#3-2-1-Predicting-Region-ID" class="headerlink" title="3.2.1 Predicting Region ID"></a>3.2.1 Predicting Region ID</h3><p>物体ID 的预测是基于一个<strong>几何假设</strong>：地图中物体投影到关键帧中的区域与帧中物体检测区域<strong>存在重叠</strong>，且区域属于同一个物体。利用IOU 来表示两个区域的重叠程度：</p>
+<p><img src="/2024/01/30/detect-slam/f4.png" alt="f4" title="formula 4"></p>
+<p>若IOU 大于0.5，则进一步估计<strong>深度似然</strong>：</p>
+<p><img src="/2024/01/30/detect-slam/f5.png" alt="f5" title="formula 5"></p>
+<p>其中，Err 是重叠区域内观测与投影深度的MSE：</p>
+<p><img src="/2024/01/30/detect-slam/f6.png" alt="f6" title="formula 6"></p>
+<p>若深度似然大于设定阈值，则将地图物体的ID 赋予给检测区域，否则，分配一个新的ID 给该检测区域。</p>
+<h3 id="3-2-2-Cutting-Background"><a href="#3-2-2-Cutting-Background" class="headerlink" title="3.2.2 Cutting Background"></a>3.2.2 Cutting Background</h3><p>将投影与观测重叠区域的点作为前景seed，将bbox 外的点作为背景seed，利用Grab-Cut 算法得到物体的分割掩码。</p>
+<p><img src="/2024/01/30/detect-slam/fig5.png" alt="fig5" title="figure 5"></p>
+<h3 id="3-2-3-Recobstruction"><a href="#3-2-3-Recobstruction" class="headerlink" title="3.2.3 Recobstruction"></a>3.2.3 Recobstruction</h3><p>利用物体掩码，创建物体点云并剔除噪声点，最终将物体点云转换至世界坐标系中并添加至物体语义地图。</p>
+<h2 id="3-3-SLAM-enhanced-Detector"><a href="#3-3-SLAM-enhanced-Detector" class="headerlink" title="3.3 SLAM-enhanced Detector"></a>3.3 SLAM-enhanced Detector</h2><p>利用物体语义地图和相机位姿来增强物体检测器的性能。</p>
+<h3 id="3-3-1-Region-Proposal"><a href="#3-3-1-Region-Proposal" class="headerlink" title="3.3.1 Region Proposal"></a>3.3.1 Region Proposal</h3><p>利用当前估计的相机位姿将语义地图中的3D 物体投影至2D 平面，将具有相同物体ID 的<strong>像素进行聚类</strong>来确定可能含有物体的区域。</p>
+<h3 id="3-3-2-Region-Filter"><a href="#3-3-2-Region-Filter" class="headerlink" title="3.3.2 Region Filter"></a>3.3.2 Region Filter</h3><p>去除掉较小尺寸（20<em>20像素）的候选区域，并估计观测深度与投影深度之间的<em>*似然</em></em>来检测遮挡的候选目标。</p>
+<h3 id="3-3-3-Hard-Example-Mining"><a href="#3-3-3-Hard-Example-Mining" class="headerlink" title="3.3.3 Hard Example Mining"></a>3.3.3 Hard Example Mining</h3><p>前人的工作证明了选择使用<strong>困难的数据</strong>来训练或者细调DNN 网络可以极大促进检测效果，于是，作者使用SLAM-enhanced 物体检测器来挖掘困难的数据（Fig. 7所示）来<strong>强化训练集</strong>，然后用这些强化的数据集来细调SSD 网络。</p>
+<p><img src="/2024/01/30/detect-slam/fig7.png" alt="fig7" title="figure 7"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Dynamic-SLAM/" rel="tag"><i class="fa fa-tag"></i> Dynamic SLAM</a>
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/30/zhang2018/" rel="prev" title="论文记录 Semantic SLAM Based on Object Detection and Improved Octomap">
+      <i class="fa fa-chevron-left"></i> 论文记录 Semantic SLAM Based on Object Detection and Improved Octomap
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/30/dynaslam/" rel="next" title="论文记录 DynaSLAM_Tracking, Mapping, and Inpainting in Dynamic Scenes">
+      论文记录 DynaSLAM_Tracking, Mapping, and Inpainting in Dynamic Scenes <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Detect-SLAM"><span class="nav-text">3 Detect-SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Moving-Objects-Removal"><span class="nav-text">3.1 Moving Objects Removal</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-Updating-Moving-Probability"><span class="nav-text">3.1.1 Updating Moving Probability</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-Moving-Probability-Propagation"><span class="nav-text">3.1.2 Moving Probability Propagation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Mapping-Objects"><span class="nav-text">3.2 Mapping Objects</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-Predicting-Region-ID"><span class="nav-text">3.2.1 Predicting Region ID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-Cutting-Background"><span class="nav-text">3.2.2 Cutting Background</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3-Recobstruction"><span class="nav-text">3.2.3 Recobstruction</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-SLAM-enhanced-Detector"><span class="nav-text">3.3 SLAM-enhanced Detector</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-Region-Proposal"><span class="nav-text">3.3.1 Region Proposal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-Region-Filter"><span class="nav-text">3.3.2 Region Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-3-Hard-Example-Mining"><span class="nav-text">3.3.3 Hard Example Mining</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
