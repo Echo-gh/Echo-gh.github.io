@@ -708,10 +708,11 @@
 ]]></content>
       <categories>
         <category>SLAM</category>
-        <category>Map-Match</category>
+        <category>Map Match</category>
       </categories>
       <tags>
         <tag>SLAM</tag>
+        <tag>Semantic</tag>
         <tag>C++</tag>
         <tag>Map Match</tag>
       </tags>
@@ -772,7 +773,7 @@
 ]]></content>
       <categories>
         <category>SLAM</category>
-        <category>Pose-Optimization</category>
+        <category>Pose Optimization</category>
       </categories>
       <tags>
         <tag>SLAM</tag>
