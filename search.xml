@@ -1,99 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>论文记录 Co-fusion_Real-time segmentation, tracking and fusion of multiple objects</title>
-    <url>/2024/01/27/Co-fusion/</url>
-    <content><![CDATA[<p>Runz, Martin, and Lourdes Agapito. “Co-Fusion: Real-Time Segmentation, Tracking and Fusion of Multiple Objects.” In <em>2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, 4471–78. Singapore, Singapore: IEEE, 2017. <a href="https://doi.org/10.1109/ICRA.2017.7989518">https://doi.org/10.1109/ICRA.2017.7989518</a>.</p>
-<h1 id="3-Overview-of-our-Method"><a href="#3-Overview-of-our-Method" class="headerlink" title="3 Overview of our Method"></a>3 Overview of our Method</h1><p>Co-Fusion 是一个可以<strong>实时处理</strong>每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体<strong>存储模型</strong>，而且可以<strong>独立跟踪</strong>它们的运动，每个模型是由<strong>一组3D 点</strong>构成的。本系统维护两组物体模型：当前在视野中可见的<strong>active 模型</strong>，以及曾经观测到的模型，但是目前不在视野中，记为<strong>inactive 模型</strong>。本系统的框架如Fig. 2所示，在初始化阶段，场景只包含一个active 模型——<strong>背景</strong>，初始化完成后，按照Fig .2的流程处理每一帧图片。</p>
-<span id="more"></span>
-<p><img src="/2024/01/27/Co-fusion/overview.png" alt="overview" title="Overview"></p>
-<p><strong>tracking</strong> 与 <strong>fusion</strong> 步骤是在GPU 上完成的，而<strong>segmentation</strong> 步骤是在CPU 上完成的。</p>
-<h2 id="3-1-Tracking"><a href="#3-1-Tracking" class="headerlink" title="3.1 Tracking"></a><strong>3.1 Tracking</strong></h2><p>在当前帧中跟踪每一个active 模型的6DOF 位姿，通过最小化每个模型独立的目标方程来实现，该目标方程包含：</p>
-<ul>
-<li><strong>几何误差</strong>：基于稠密的iterative closest point (ICP) 对齐；</li>
-<li><strong>光度误差</strong>：基于当前帧和存储的3D 模型之间的颜色差异。</li>
-</ul>
-<h2 id="3-2-Segmentation"><a href="#3-2-Segmentation" class="headerlink" title="3.2 Segmentation"></a><strong>3.2 Segmentation</strong></h2><p>该阶段将当前帧中的每一个像素与某个active 模型/物体联系起来，有两种手段来实现该过程：motion 以及 semantic labels。</p>
-<h3 id="3-2-1-Motion-segmentation"><a href="#3-2-1-Motion-segmentation" class="headerlink" title="3.2.1 Motion segmentation"></a>3.2.1 Motion segmentation</h3><p>将运动分割构建为一个使用全连接的Conditional Random Field (CRF) 解决的<strong>分类问题</strong>，可在CPU 上实时处理。当将一个像素与一个运动模型联系起来时，unary potentials 编码一个几何 <strong>ICP 损失函数</strong>。</p>
-<h3 id="3-2-2-Multi-class-image-segmentation"><a href="#3-2-2-Multi-class-image-segmentation" class="headerlink" title="3.2.2 Multi-class image segmentation"></a>3.2.2 Multi-class image segmentation</h3><p>利用基于<strong>深度学习</strong>的方法实现像素级的语义分割，作为动作分割的备选方案。</p>
-<h2 id="3-3-Fusion"><a href="#3-3-Fusion" class="headerlink" title="3.3 Fusion"></a>3.3 Fusion</h2><p>本系统使用surfel-based 融合方法，利用新估计的6DOF 位姿将属于某个模型的点更新至其active 模型。其中，每个模型是由一个sufel 列表构成的，$\mathcal{M}_m^s \in (\mathbf{p}\in \mathbb{R}^3, \mathbf{n}\in \mathbb{R}^3, \mathbf{c}\in \mathbb{N}^3, w \in \mathbb{R}, r \in \mathbb{R}, \mathbf{t}\in \mathbb{R}^2)$ ，分别表示位置、法向量、颜色、权重、半径以及两个时间戳。</p>
-<p>为了解决<strong>动态物体</strong>的跟踪问题，本系统使用 $\mathcal{T}_t = \{\mathbf{T}_{tm}()\}$ 来表示每个active 模型 $\mathcal{M}_m$ 在时间 t 相对于全局参考坐标系的位姿转换几何，即 $\mathbf{T}_{tm}$ 表示时间 t 时模型 $\mathcal{M}_m$ 的全局位姿。特别地，作者使用 $\mathbf{T}_{tb}$ 来表示<strong>背景模型</strong>的位姿转换。</p>
-<h1 id="5-Tracking-Active-Models"><a href="#5-Tracking-Active-Models" class="headerlink" title="5 Tracking Active Models"></a>5 Tracking Active Models</h1><p>对于时间t 的图像帧中的每一个active 模型  $\mathcal{M}_m$ ，系统通过配准<strong>当前的深度图</strong>和<strong>前一帧的深度图</strong>（通过将存储的3D 模型利用t-1 的估计位姿进行投影而获取）来跟踪其全局位姿 $\mathbf{T}_{tm}$ ，对每一个active 模型进行<strong>独立优化和跟踪</strong>。</p>
-<h2 id="5-1-Energy"><a href="#5-1-Energy" class="headerlink" title="5.1 Energy"></a>5.1 Energy</h2><p>误差项包含<strong>ICP 几何误差</strong>和<strong>光度误差</strong>，其中光度误差是由预测的图片（将之前帧中存储的3D 模型投影而获取）与当前图片的<strong>颜色差异</strong>构成，</p>
-<p><img src="/2024/01/27/Co-fusion/formula1.png" alt="formula1"></p>
-<h2 id="5-2-Geometry-Term"><a href="#5-2-Geometry-Term" class="headerlink" title="5.2 Geometry Term"></a>5.2 Geometry Term</h2><p>ICP 几何误差定义为以下两者之间的误差：</p>
-<ul>
-<li>当前帧深度图的<strong>逆向投影</strong>3D 点；</li>
-<li>前一帧t-1 <strong>预测</strong>的深度图。</li>
-</ul>
-<p><img src="/2024/01/27/Co-fusion/formula2.png" alt="formula2"></p>
-<p>其中，$\mathbf{v}_t^i$ 是当前帧深度图 $\mathcal{D}_t$ 中第i 个点的反向映射3D 点；$\mathbf{v}^i, \mathbf{n}^i$ 分别是t-1 时刻<strong>预测的深度图</strong>中模型m 第i 个点的反向映射点以及其法向量；$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>。</p>
-<h2 id="5-3-Photometric-Color-Term"><a href="#5-3-Photometric-Color-Term" class="headerlink" title="5.3 Photometric Color Term"></a>5.3 Photometric Color Term</h2><p>在给定(1)当前深度图、(2)每个active 模型的3D 几何估计，以及(3)将每个模型与前一帧对齐的位姿转换关系，即可将当前场景合成为一个与前一帧对齐的虚拟投影，进而，跟踪问题就变为了当前帧与合成的虚拟投影之间的<strong>光度配准</strong>问题：</p>
-<p><img src="/2024/01/27/Co-fusion/formula3.png" alt="formula3"></p>
-<p>其中，$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>；$\mathbf{I}_{t-1}()$ 表示提供模型在前一帧上顶点的颜色参数。</p>
-<p>为了鲁棒性和效率，本优化使用一个<strong>4层的空间金字塔</strong>来集成到一个<strong>由粗到细</strong>的方法中，并在GPU 中完成运算。</p>
-<h1 id="6-Motion-Segmentation"><a href="#6-Motion-Segmentation" class="headerlink" title="6 Motion Segmentation"></a>6 Motion Segmentation</h1><p>在跟踪步骤之后，在t 时刻有 $M_t$ 个新的位姿转换 $\{\mathbf{T}_{tm}\}$ ，来描述每个active 模型相对于全局坐标系的绝对位姿；接下来作者将帧t 的运动分割问题构建为一个<strong>分类标记问题</strong>，而标签为 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$ ，作者将 $M_t+1$ 种可能分配到<strong>每一个像素</strong>中，即 $\mathcal{l} \in \mathcal{L}_t = \{1, …, |M_t|+1\}$ ，除了 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$外还包含一个<strong>外点标签</strong> $\mathcal{l}_{|M_t|+1}$ 。</p>
-<p>为了可以在CPU上实施完成分割步骤，系统首先将当前帧分割为SLIC 超像素，并在超像素级别上进行分类标记，超像素的位置、颜色与深度由从属的所有像素均值得到。代价函数如下所示：</p>
-<p><img src="/2024/01/27/Co-fusion/formula4.png" alt="formula4"></p>
-<p>其中，i 和 j 图片中超像素的索引（从1到S）。</p>
-<h2 id="6-1-The-Unary-Potentials"><a href="#6-1-The-Unary-Potentials" class="headerlink" title="6.1 The Unary Potentials"></a>6.1 The Unary Potentials</h2><p>对于 $\psi_u(x_i)$ 表示为超像素 $s_i$ 分配标签为 $x_i$ 的代价，对于运动分割模式，该代价为<strong>ICP 几何对齐损失函数</strong>（式 2）。</p>
-<h2 id="6-2-The-Pairwise-Potentials"><a href="#6-2-The-Pairwise-Potentials" class="headerlink" title="6.2 The Pairwise Potentials"></a>6.2 The Pairwise Potentials</h2><p>对于 $\psi_p(x_i, x_j)$ 可表示为：</p>
-<p><img src="/2024/01/27/Co-fusion/formula5.png" alt="formula5"></p>
-<p>其中，$\mu(x_i, x_j)$ 惩罚<strong>临近像素标签不同</strong>的情况；$k_m(f_i, f_j)$ 测量像素外观之间的<strong>相似度</strong>，代表的含义是：两个超像素的<strong>特征向量</strong>之间的距离较小时应具有相同的标签，所谓的特征向量 $f_i$  包含2D 位置、RGB 颜色以及深度值。</p>
-<h2 id="6-3-Post-processing"><a href="#6-3-Post-processing" class="headerlink" title="6.3 Post-processing"></a>6.3 Post-processing</h2><p>在分割之后，采用一系列<strong>后处理步骤</strong>来获取更为鲁棒的结果：</p>
-<ol>
-<li>对具有相似位姿转换关系的模型进行<strong>融合操作</strong>；</li>
-<li>抑制相同标签中除最大之外的所有区域来保证不连接区域的<strong>独立建模</strong>；</li>
-<li>小于一定阈值的区域被<strong>舍弃</strong>。</li>
-</ol>
-<h2 id="6-4-Addition-of-New-Models"><a href="#6-4-Addition-of-New-Models" class="headerlink" title="6.4 Addition of New Models"></a>6.4 Addition of New Models</h2><p>一个区域内的外点数量若大于总像素数的3%，则判定该物体为一个新物体；若该新物体的部分几何结构已存在于地图中，会对重复的构建进行剔除。</p>
-<p>如果一个物体消失在视野中，并在一定帧内不再出现，则将该模型添加进inactive 列表中。</p>
-<h1 id="7-Object-Instance-Segmentation"><a href="#7-Object-Instance-Segmentation" class="headerlink" title="7 Object Instance Segmentation"></a>7 Object Instance Segmentation</h1><p>使用实例分割网络SharpMask 进行物体语义信息的获取。</p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>Dynamic SLAM</category>
-      </categories>
-      <tags>
-        <tag>Dynamic SLAM</tag>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>C++</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu系统安装</title>
-    <url>/2024/01/26/Ubuntu-setup/</url>
-    <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作：</p>
-<span id="more"></span>
-<p><img src="/2024/01/26/Ubuntu-setup/rufus.png" alt="rufus" title="rufus设置界面"></p>
-<h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
-<ol>
-<li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
-</li>
-<li><p>删除”quite splash”后的”—-“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
-</li>
-<li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
-</li>
-</ol>
-<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”/etc/default/grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
-<h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
-<ol>
-<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
-<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
-</ol>
-<p><img src="/2024/01/26/Ubuntu-setup/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
-<p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
-<h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ubuntu系统安装显卡驱动、CUDA、cuDNN</title>
     <url>/2024/01/26/Ubuntu-dl-setup/</url>
     <content><![CDATA[<p><strong>本文主要参考</strong><a href="https://zhuanlan.zhihu.com/p/643954422">该文章</a>。</p>
@@ -239,8 +146,69 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>C++</tag>
         <tag>Map Match</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Co-fusion_Real-time segmentation, tracking and fusion of multiple objects</title>
+    <url>/2024/01/27/Co-fusion/</url>
+    <content><![CDATA[<p>Runz, Martin, and Lourdes Agapito. “Co-Fusion: Real-Time Segmentation, Tracking and Fusion of Multiple Objects.” In <em>2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, 4471–78. Singapore, Singapore: IEEE, 2017. <a href="https://doi.org/10.1109/ICRA.2017.7989518">https://doi.org/10.1109/ICRA.2017.7989518</a>.</p>
+<h1 id="3-Overview-of-our-Method"><a href="#3-Overview-of-our-Method" class="headerlink" title="3 Overview of our Method"></a>3 Overview of our Method</h1><p>Co-Fusion 是一个可以<strong>实时处理</strong>每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体<strong>存储模型</strong>，而且可以<strong>独立跟踪</strong>它们的运动，每个模型是由<strong>一组3D 点</strong>构成的。本系统维护两组物体模型：当前在视野中可见的<strong>active 模型</strong>，以及曾经观测到的模型，但是目前不在视野中，记为<strong>inactive 模型</strong>。本系统的框架如Fig. 2所示，在初始化阶段，场景只包含一个active 模型——<strong>背景</strong>，初始化完成后，按照Fig .2的流程处理每一帧图片。</p>
+<span id="more"></span>
+<p><img src="/2024/01/27/Co-fusion/overview.png" alt="overview" title="Overview"></p>
+<p><strong>tracking</strong> 与 <strong>fusion</strong> 步骤是在GPU 上完成的，而<strong>segmentation</strong> 步骤是在CPU 上完成的。</p>
+<h2 id="3-1-Tracking"><a href="#3-1-Tracking" class="headerlink" title="3.1 Tracking"></a><strong>3.1 Tracking</strong></h2><p>在当前帧中跟踪每一个active 模型的6DOF 位姿，通过最小化每个模型独立的目标方程来实现，该目标方程包含：</p>
+<ul>
+<li><strong>几何误差</strong>：基于稠密的iterative closest point (ICP) 对齐；</li>
+<li><strong>光度误差</strong>：基于当前帧和存储的3D 模型之间的颜色差异。</li>
+</ul>
+<h2 id="3-2-Segmentation"><a href="#3-2-Segmentation" class="headerlink" title="3.2 Segmentation"></a><strong>3.2 Segmentation</strong></h2><p>该阶段将当前帧中的每一个像素与某个active 模型/物体联系起来，有两种手段来实现该过程：motion 以及 semantic labels。</p>
+<h3 id="3-2-1-Motion-segmentation"><a href="#3-2-1-Motion-segmentation" class="headerlink" title="3.2.1 Motion segmentation"></a>3.2.1 Motion segmentation</h3><p>将运动分割构建为一个使用全连接的Conditional Random Field (CRF) 解决的<strong>分类问题</strong>，可在CPU 上实时处理。当将一个像素与一个运动模型联系起来时，unary potentials 编码一个几何 <strong>ICP 损失函数</strong>。</p>
+<h3 id="3-2-2-Multi-class-image-segmentation"><a href="#3-2-2-Multi-class-image-segmentation" class="headerlink" title="3.2.2 Multi-class image segmentation"></a>3.2.2 Multi-class image segmentation</h3><p>利用基于<strong>深度学习</strong>的方法实现像素级的语义分割，作为动作分割的备选方案。</p>
+<h2 id="3-3-Fusion"><a href="#3-3-Fusion" class="headerlink" title="3.3 Fusion"></a>3.3 Fusion</h2><p>本系统使用surfel-based 融合方法，利用新估计的6DOF 位姿将属于某个模型的点更新至其active 模型。其中，每个模型是由一个sufel 列表构成的，$\mathcal{M}_m^s \in (\mathbf{p}\in \mathbb{R}^3, \mathbf{n}\in \mathbb{R}^3, \mathbf{c}\in \mathbb{N}^3, w \in \mathbb{R}, r \in \mathbb{R}, \mathbf{t}\in \mathbb{R}^2)$ ，分别表示位置、法向量、颜色、权重、半径以及两个时间戳。</p>
+<p>为了解决<strong>动态物体</strong>的跟踪问题，本系统使用 $\mathcal{T}_t = \{\mathbf{T}_{tm}()\}$ 来表示每个active 模型 $\mathcal{M}_m$ 在时间 t 相对于全局参考坐标系的位姿转换几何，即 $\mathbf{T}_{tm}$ 表示时间 t 时模型 $\mathcal{M}_m$ 的全局位姿。特别地，作者使用 $\mathbf{T}_{tb}$ 来表示<strong>背景模型</strong>的位姿转换。</p>
+<h1 id="5-Tracking-Active-Models"><a href="#5-Tracking-Active-Models" class="headerlink" title="5 Tracking Active Models"></a>5 Tracking Active Models</h1><p>对于时间t 的图像帧中的每一个active 模型  $\mathcal{M}_m$ ，系统通过配准<strong>当前的深度图</strong>和<strong>前一帧的深度图</strong>（通过将存储的3D 模型利用t-1 的估计位姿进行投影而获取）来跟踪其全局位姿 $\mathbf{T}_{tm}$ ，对每一个active 模型进行<strong>独立优化和跟踪</strong>。</p>
+<h2 id="5-1-Energy"><a href="#5-1-Energy" class="headerlink" title="5.1 Energy"></a>5.1 Energy</h2><p>误差项包含<strong>ICP 几何误差</strong>和<strong>光度误差</strong>，其中光度误差是由预测的图片（将之前帧中存储的3D 模型投影而获取）与当前图片的<strong>颜色差异</strong>构成，</p>
+<p><img src="/2024/01/27/Co-fusion/formula1.png" alt="formula1"></p>
+<h2 id="5-2-Geometry-Term"><a href="#5-2-Geometry-Term" class="headerlink" title="5.2 Geometry Term"></a>5.2 Geometry Term</h2><p>ICP 几何误差定义为以下两者之间的误差：</p>
+<ul>
+<li>当前帧深度图的<strong>逆向投影</strong>3D 点；</li>
+<li>前一帧t-1 <strong>预测</strong>的深度图。</li>
+</ul>
+<p><img src="/2024/01/27/Co-fusion/formula2.png" alt="formula2"></p>
+<p>其中，$\mathbf{v}_t^i$ 是当前帧深度图 $\mathcal{D}_t$ 中第i 个点的反向映射3D 点；$\mathbf{v}^i, \mathbf{n}^i$ 分别是t-1 时刻<strong>预测的深度图</strong>中模型m 第i 个点的反向映射点以及其法向量；$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>。</p>
+<h2 id="5-3-Photometric-Color-Term"><a href="#5-3-Photometric-Color-Term" class="headerlink" title="5.3 Photometric Color Term"></a>5.3 Photometric Color Term</h2><p>在给定(1)当前深度图、(2)每个active 模型的3D 几何估计，以及(3)将每个模型与前一帧对齐的位姿转换关系，即可将当前场景合成为一个与前一帧对齐的虚拟投影，进而，跟踪问题就变为了当前帧与合成的虚拟投影之间的<strong>光度配准</strong>问题：</p>
+<p><img src="/2024/01/27/Co-fusion/formula3.png" alt="formula3"></p>
+<p>其中，$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>；$\mathbf{I}_{t-1}()$ 表示提供模型在前一帧上顶点的颜色参数。</p>
+<p>为了鲁棒性和效率，本优化使用一个<strong>4层的空间金字塔</strong>来集成到一个<strong>由粗到细</strong>的方法中，并在GPU 中完成运算。</p>
+<h1 id="6-Motion-Segmentation"><a href="#6-Motion-Segmentation" class="headerlink" title="6 Motion Segmentation"></a>6 Motion Segmentation</h1><p>在跟踪步骤之后，在t 时刻有 $M_t$ 个新的位姿转换 $\{\mathbf{T}_{tm}\}$ ，来描述每个active 模型相对于全局坐标系的绝对位姿；接下来作者将帧t 的运动分割问题构建为一个<strong>分类标记问题</strong>，而标签为 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$ ，作者将 $M_t+1$ 种可能分配到<strong>每一个像素</strong>中，即 $\mathcal{l} \in \mathcal{L}_t = \{1, …, |M_t|+1\}$ ，除了 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$外还包含一个<strong>外点标签</strong> $\mathcal{l}_{|M_t|+1}$ 。</p>
+<p>为了可以在CPU上实施完成分割步骤，系统首先将当前帧分割为SLIC 超像素，并在超像素级别上进行分类标记，超像素的位置、颜色与深度由从属的所有像素均值得到。代价函数如下所示：</p>
+<p><img src="/2024/01/27/Co-fusion/formula4.png" alt="formula4"></p>
+<p>其中，i 和 j 图片中超像素的索引（从1到S）。</p>
+<h2 id="6-1-The-Unary-Potentials"><a href="#6-1-The-Unary-Potentials" class="headerlink" title="6.1 The Unary Potentials"></a>6.1 The Unary Potentials</h2><p>对于 $\psi_u(x_i)$ 表示为超像素 $s_i$ 分配标签为 $x_i$ 的代价，对于运动分割模式，该代价为<strong>ICP 几何对齐损失函数</strong>（式 2）。</p>
+<h2 id="6-2-The-Pairwise-Potentials"><a href="#6-2-The-Pairwise-Potentials" class="headerlink" title="6.2 The Pairwise Potentials"></a>6.2 The Pairwise Potentials</h2><p>对于 $\psi_p(x_i, x_j)$ 可表示为：</p>
+<p><img src="/2024/01/27/Co-fusion/formula5.png" alt="formula5"></p>
+<p>其中，$\mu(x_i, x_j)$ 惩罚<strong>临近像素标签不同</strong>的情况；$k_m(f_i, f_j)$ 测量像素外观之间的<strong>相似度</strong>，代表的含义是：两个超像素的<strong>特征向量</strong>之间的距离较小时应具有相同的标签，所谓的特征向量 $f_i$  包含2D 位置、RGB 颜色以及深度值。</p>
+<h2 id="6-3-Post-processing"><a href="#6-3-Post-processing" class="headerlink" title="6.3 Post-processing"></a>6.3 Post-processing</h2><p>在分割之后，采用一系列<strong>后处理步骤</strong>来获取更为鲁棒的结果：</p>
+<ol>
+<li>对具有相似位姿转换关系的模型进行<strong>融合操作</strong>；</li>
+<li>抑制相同标签中除最大之外的所有区域来保证不连接区域的<strong>独立建模</strong>；</li>
+<li>小于一定阈值的区域被<strong>舍弃</strong>。</li>
+</ol>
+<h2 id="6-4-Addition-of-New-Models"><a href="#6-4-Addition-of-New-Models" class="headerlink" title="6.4 Addition of New Models"></a>6.4 Addition of New Models</h2><p>一个区域内的外点数量若大于总像素数的3%，则判定该物体为一个新物体；若该新物体的部分几何结构已存在于地图中，会对重复的构建进行剔除。</p>
+<p>如果一个物体消失在视野中，并在一定帧内不再出现，则将该模型添加进inactive 列表中。</p>
+<h1 id="7-Object-Instance-Segmentation"><a href="#7-Object-Instance-Segmentation" class="headerlink" title="7 Object Instance Segmentation"></a>7 Object Instance Segmentation</h1><p>使用实例分割网络SharpMask 进行物体语义信息的获取。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>C++</tag>
+        <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
   <entry>
@@ -301,10 +269,10 @@
         <category>Dynamic SLAM</category>
       </categories>
       <tags>
-        <tag>Dynamic SLAM</tag>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
         <tag>C++</tag>
+        <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
   <entry>
@@ -333,10 +301,10 @@
         <category>Dynamic SLAM</category>
       </categories>
       <tags>
-        <tag>Dynamic SLAM</tag>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
         <tag>C++</tag>
+        <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
   <entry>
@@ -364,6 +332,35 @@
         <tag>Ubuntu</tag>
         <tag>g++</tag>
         <tag>gcc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>寒武纪MLU220 开发环境Docker搭建</title>
+    <url>/2024/01/26/mlu220/</url>
+    <content><![CDATA[<p>首先进入<a href="https://cair.cambricon.com/#/home/catalog">寒武纪开发主页</a>并登录寒武纪账号，进入cambricon_pytorch docker 页面。由于本人只使用MLU220 进行边缘端推理，所以不需要在主机上安装MLU 驱动，因此可跳过第一步直接按照提示安装docker。本人在尝试按照页面说明时遇到了一些问题，在此记录一下。</p>
+<span id="more"></span>
+<p>若是初次使用docker，则建议将Ubuntu个人账户添加进docker组里，这样就避免每次使用时都要输入sudo了，该部分参考<a href="https://www.cnblogs.com/jzcn/p/16591083.html">文章</a>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 将当前用户添加进docker组，并更新</span><br><span class="line">sudo gpasswd -a user docker</span><br><span class="line">newgrp docker</span><br><span class="line"></span><br><span class="line">## 然后重启电脑才可永久生效</span><br></pre></td></tr></table></figure>
+<p>然后按照寒武纪提示，依次进行如下操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 登录harbor</span><br><span class="line">docker login cair.cambricon.com</span><br><span class="line"></span><br><span class="line">## 输入用户名、API密钥（网页用户名下拉框中有API密钥选项）</span><br><span class="line">Username: (username)</span><br><span class="line">Password: (API密钥)</span><br></pre></td></tr></table></figure>
+<p>注意，这里网页提示使用docker pull命令下载相应的镜像文件，但经过本人尝试之后发现，在后续的docker run命令中会重复下载，因此<strong>跳过使用docker pull，直接使用docker run命令创建容器</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --name mlu220 -v /home/***/work:/work cair.cambricon.com/cambricon/cambricon_pytorch:ubuntu18.04_sdk_v1.7.0_pytorch_v0.15.0-2 /bin/bash</span><br></pre></td></tr></table></figure>
+<p>上述命令会自动下载镜像文件，并改名为“mlu220”，且将主机的“/home/<em>*</em>/work”映射至docker端的“/work”。</p>
+<p>此时，可以查看新建的容器：</p>
+<p><img src="/2024/01/26/mlu220/docker1.png" alt="docker" title="容器查看"></p>
+<p>启动mlu220容器并查看：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">❯ docker start mlu220</span><br><span class="line">mlu220</span><br></pre></td></tr></table></figure>
+<p><img src="/2024/01/26/mlu220/docker2.png" alt="docker" title="启动容器"></p>
+<p>最后进入docker并激活开发环境：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mlu220 /bin/bash</span><br><span class="line"><span class="built_in">source</span> torch/venv3/pytorch/bin/activate</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Cambricon</tag>
+        <tag>Docker</tag>
       </tags>
   </entry>
   <entry>
@@ -404,32 +401,91 @@
       </tags>
   </entry>
   <entry>
-    <title>寒武纪MLU220 开发环境Docker搭建</title>
-    <url>/2024/01/26/mlu220/</url>
-    <content><![CDATA[<p>首先进入<a href="https://cair.cambricon.com/#/home/catalog">寒武纪开发主页</a>并登录寒武纪账号，进入cambricon_pytorch docker 页面。由于本人只使用MLU220 进行边缘端推理，所以不需要在主机上安装MLU 驱动，因此可跳过第一步直接按照提示安装docker。本人在尝试按照页面说明时遇到了一些问题，在此记录一下。</p>
+    <title>SSH免密登录设置</title>
+    <url>/2024/01/26/ssh-setup/</url>
+    <content><![CDATA[<h1 id="1-ssh服务"><a href="#1-ssh服务" class="headerlink" title="1 ssh服务"></a>1 ssh服务</h1><p>Ubuntu开启ssh服务需要下载openssh-server，命令为：</p>
 <span id="more"></span>
-<p>若是初次使用docker，则建议将Ubuntu个人账户添加进docker组里，这样就避免每次使用时都要输入sudo了，该部分参考<a href="https://www.cnblogs.com/jzcn/p/16591083.html">文章</a>：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 将当前用户添加进docker组，并更新</span><br><span class="line">sudo gpasswd -a user docker</span><br><span class="line">newgrp docker</span><br><span class="line"></span><br><span class="line">## 然后重启电脑才可永久生效</span><br></pre></td></tr></table></figure>
-<p>然后按照寒武纪提示，依次进行如下操作：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 登录harbor</span><br><span class="line">docker login cair.cambricon.com</span><br><span class="line"></span><br><span class="line">## 输入用户名、API密钥（网页用户名下拉框中有API密钥选项）</span><br><span class="line">Username: (username)</span><br><span class="line">Password: (API密钥)</span><br></pre></td></tr></table></figure>
-<p>注意，这里网页提示使用docker pull命令下载相应的镜像文件，但经过本人尝试之后发现，在后续的docker run命令中会重复下载，因此<strong>跳过使用docker pull，直接使用docker run命令创建容器</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --name mlu220 -v /home/***/work:/work cair.cambricon.com/cambricon/cambricon_pytorch:ubuntu18.04_sdk_v1.7.0_pytorch_v0.15.0-2 /bin/bash</span><br></pre></td></tr></table></figure>
-<p>上述命令会自动下载镜像文件，并改名为“mlu220”，且将主机的“/home/<em>*</em>/work”映射至docker端的“/work”。</p>
-<p>此时，可以查看新建的容器：</p>
-<p><img src="/2024/01/26/mlu220/docker1.png" alt="docker" title="容器查看"></p>
-<p>启动mlu220容器并查看：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">❯ docker start mlu220</span><br><span class="line">mlu220</span><br></pre></td></tr></table></figure>
-<p><img src="/2024/01/26/mlu220/docker2.png" alt="docker" title="启动容器"></p>
-<p>最后进入docker并激活开发环境：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mlu220 /bin/bash</span><br><span class="line"><span class="built_in">source</span> torch/venv3/pytorch/bin/activate</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure>
+<h1 id="2-ssh-key生成"><a href="#2-ssh-key生成" class="headerlink" title="2 ssh key生成"></a>2 ssh key生成</h1><p>生成ssh key的命令是：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
+<p>后续一路默认设置即可，该命令会在主目录默认生成.ssh文件，内包含以下文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa: 私钥</span><br><span class="line">id_rsa.pub: 公钥</span><br></pre></td></tr></table></figure>
+<h1 id="3-无密码远程登陆服务器"><a href="#3-无密码远程登陆服务器" class="headerlink" title="3 无密码远程登陆服务器"></a>3 无密码远程登陆服务器</h1><p>将本地产生的公钥上传至服务器：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-copy-id -p <span class="comment">#port master@ubuntu</span></span><br></pre></td></tr></table></figure>
+<h1 id="4-Windows免密登录Ubuntu"><a href="#4-Windows免密登录Ubuntu" class="headerlink" title="4 Windows免密登录Ubuntu"></a>4 Windows免密登录Ubuntu</h1><p>Windows在终端中执行以下命令生成公私密钥：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+<p>会在C:\Users\xxx.ssh 文件夹中生成以下三个文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa 本地私钥</span><br><span class="line">id_rsa.pub 公钥</span><br><span class="line">known_hosts 已知的ip</span><br></pre></td></tr></table></figure>
+<p>将公钥上传至Ubuntu，可使用scp命令，然后执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将公钥拷贝至Ubuntu的authorized_keys文件中</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改sshd_config文件</span></span><br><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将一下三行命令添加至sshd_config文件</span></span><br><span class="line">RSAAuthentication <span class="built_in">yes</span></span><br><span class="line">PubkeyAuthentication <span class="built_in">yes</span></span><br><span class="line">PasswordAuthentication no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启ssh</span></span><br><span class="line">sudo service sshd restart</span><br></pre></td></tr></table></figure>
+<p>然后即可实现Windows免密登录Ubuntu。</p>
 ]]></content>
       <categories>
         <category>开发环境搭建</category>
       </categories>
       <tags>
         <tag>Ubuntu</tag>
-        <tag>Cambricon</tag>
-        <tag>Docker</tag>
+        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 ORB-SLAM2_An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras</title>
+    <url>/2024/01/29/orb-slam2/</url>
+    <content><![CDATA[<p>Mur-Artal, Raul, and Juan D. Tardos. “ORB-SLAM2: An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras.” <em>IEEE Transactions on Robotics</em> 33, no. 5 (October 2017): 1255–62. <a href="https://doi.org/10.1109/TRO.2017.2705103">https://doi.org/10.1109/TRO.2017.2705103</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>第一个适用于<strong>单目</strong>、<strong>双目</strong>以及<strong>RGB-D 相机</strong>的开源SLAM 系统，该系统包含回环检测、重定位以及地图重用；</li>
+<li>本系统运行RGB-D 的结果证明：使用<strong>BA</strong> 可以实现比基于ICP 或者光度深度误差最小化的SOTA 方法更高的精度；</li>
+<li>通过使用<strong>近远立体点和单目观测</strong>，本系统运行双目的结果要比直接双目SLAM 的 SOTA 算法精度更高；</li>
+<li>提出了一种关闭制图功能情况下，有效<strong>重使用地图</strong>的轻量级定位模式。</li>
+</ol>
+<span id="more"></span>
+<p><img src="/2024/01/29/orb-slam2/fig1.png" alt="fig1" title="fig 1"></p>
+<h1 id="3-ORB-SLAM2"><a href="#3-ORB-SLAM2" class="headerlink" title="3 ORB-SLAM2"></a>3 ORB-SLAM2</h1><p>ORB-SLAM2 的整体架构如下所示：</p>
+<p><img src="/2024/01/29/orb-slam2/fig2.png" alt="fig2" title="fig 2"></p>
+<p>系统包含三个主要的并行线程：</p>
+<ol>
+<li><strong>跟踪线程：</strong>寻找与<strong>局部地图</strong>相匹配的特征点，利用<strong>motion-only BA</strong> <strong>最小化重投影误差</strong>，来解算<strong>每帧图片</strong>对应的相机位姿；</li>
+<li><strong>局部制图：</strong>管理<strong>局部地图</strong>，并使用<strong>局部BA</strong> 对其进行优化；</li>
+<li><strong>回环检测：</strong>检测大回环，并使用<strong>位姿图优化</strong>来消除累积漂移；然后开启第四个线程，进行<strong>全局BA</strong> 优化解算地图与位姿的最优解。</li>
+</ol>
+<p>本系统还嵌入了一个基于<strong>DBoW2</strong> 的地点重识别模块进行<strong>重定位</strong>，在跟踪失败或利用现有地图进行重初始化时使用；本系统维护一个<strong>共视图</strong>，来关联任意两个具有共同观测特征点的关键帧，并使用一个<strong>最小化spanning tree</strong> 来连接所有的关键帧；这些图结构方便恢复关键帧的<strong>局部窗口</strong>以进行局部的跟踪与制图，并为回环检测中的位姿图优化提供结构。</p>
+<h2 id="3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints"><a href="#3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints" class="headerlink" title="3.1 Monocular, Close Stereo, and Far Stereo Keypoints"></a>3.1 Monocular, Close Stereo, and Far Stereo Keypoints</h2><p>本系统经过如图Fig. 2（b）的<strong>图片预处理操作</strong>，提取出关键点的特征，系统后续的操作均是基于这些<strong>特征点（立体关键点和单目关键点）</strong>的，实现独立于所使用的传感器类型。后续的操作均基于立体关键点和单目关键点。</p>
+<p><strong>立体关键点</strong>使用三个坐标进行定义：$\mathbf{x}_s = (u_L, v_L, u_R)$ ，其中 $(u_L, v_L)$ 是特征点在左边图片中的坐标，$u_R$ 是特征点在右边图片的水平座标。对于RGB-D 相机，作者将深度值 d 转化为一个<strong>虚拟的右图坐标</strong>：</p>
+<p><img src="/2024/01/29/orb-slam2/f1.png" alt="f1" title="formula 1"></p>
+<p>作者定义，如果一个关键点的<strong>深度小于基线长度的40倍</strong>，则被视为近点，否则视为远点。对于近点，可以使用一帧图片进行安全的三角化，因为其深度信息得到了准确估计，可以提供相应的<strong>尺度、平移和旋转信息</strong>；而对于远点，可以提供<strong>准确的旋转信息</strong>，但是尺度与平移信息较不可靠，只对多视角观测的远点进行三角化。</p>
+<p><strong>单目关键点</strong>使用左图的两个坐标进行定义 $\mathbf{x}_m = (u_L, v_L)$ ，是针对那些立体匹配失败或RGB-D 深度参数不可靠的点；这些点只通过多视角观测进行三角化，且不提供尺度信息，但会参与旋转与平移估计的解算。</p>
+<h2 id="3-2-System-Bootstrapping"><a href="#3-2-System-Bootstrapping" class="headerlink" title="3.2 System Bootstrapping"></a>3.2 System Bootstrapping</h2><p>使用立体相机或RGB-D 相机的一个主要优势在于：可仅使用一帧图片获取<strong>深度信息</strong>，而不需要单目相机的动作初始化操作。系统启动后，使用第一帧作为关键帧，将其位姿定为<strong>原点</strong>，并利用所有的<strong>立体关键点</strong>创建一个初始地图。</p>
+<h2 id="3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints"><a href="#3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints" class="headerlink" title="3.3 Bundle Adjustment with Monocular and Stereo Constraints"></a>3.3 Bundle Adjustment with Monocular and Stereo Constraints</h2><p>BA 在本系统中的应用：</p>
+<ul>
+<li>在跟踪线程中优化相机位姿（motion-only BA）</li>
+<li>在局部制图线程中优化局部窗口内的关键帧和特征点（local BA）</li>
+<li>回环检测之后优化所有的关键帧与特征点（full BA）</li>
+</ul>
+<h3 id="Motion-only-BA"><a href="#Motion-only-BA" class="headerlink" title="Motion-only BA"></a>Motion-only BA</h3><p>对关键点 $\mathbf{x}_{(.)}^i$ （包括单目点 $\mathbf{x}_m^i \in \mathbb{R}^2$ 和立体点 $\mathbf{x}_s^i \in \mathbb{R}^3$ ）进行最小化重投影误差，其中 $i\in \mathcal{X}$ 为所有匹配点集合：</p>
+<p><img src="/2024/01/29/orb-slam2/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$\rho$ 是<strong>鲁棒Huber 损失函数</strong>，$\sum$ 是关键点尺度参数对应的协方差矩阵。单目点和立体点的投影矩阵如下所示：</p>
+<p><img src="/2024/01/29/orb-slam2/f3.png" alt="f3" title="formula 3"></p>
+<h3 id="Local-BA"><a href="#Local-BA" class="headerlink" title="Local BA"></a>Local BA</h3><p><img src="/2024/01/29/orb-slam2/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$\mathcal{K}_L$ 为一组共视关键帧；$\mathcal{P}_L$ 为这些共视关键帧中的所有点；至于其他观测到 $\mathcal{P}_L$ 中的点且不属于 $\mathcal{K}_L$ 的关键帧 $\mathcal{K}_F$ ，会参与损失函数的构建，但是在优化中<strong>保持固定</strong>；$\mathcal{X}_k$ 表示 $\mathcal{P}_L$ 中与关键帧 k 匹配的点列表。</p>
+<h3 id="Full-BA"><a href="#Full-BA" class="headerlink" title="Full BA"></a>Full BA</h3><p>是一种局部BA 的特殊情况，除了<strong>初始关键帧</strong>是固定的，地图中其余的所有关键帧和点都参与优化过程。</p>
+<h2 id="3-4-Loop-Closing-and-Full-BA"><a href="#3-4-Loop-Closing-and-Full-BA" class="headerlink" title="3.4 Loop Closing and Full BA"></a>3.4 Loop Closing and Full BA</h2><p>回环检测包含两步：</p>
+<ol>
+<li>回环的检测与验证；</li>
+<li>通过位姿图优化来矫正回环。</li>
+</ol>
+<h2 id="3-5-Keyframe-Insertion"><a href="#3-5-Keyframe-Insertion" class="headerlink" title="3.5 Keyframe Insertion"></a>3.5 Keyframe Insertion</h2><p>本系统遵循ORB-SLAM 的关键帧插入策略，此外，基于立体远近点创建了一个新的关键帧挑选策略：如果跟踪的近点数量低于 $\tau_t = 100$，且可新增近点数量大于 $\tau_c = 70$ 时，将其作为新的关键帧进行插入。</p>
+<p><img src="/2024/01/29/orb-slam2/fig3.png" alt="fig3" title="fig 3"></p>
+<h2 id="3-6-Localization-Mode"><a href="#3-6-Localization-Mode" class="headerlink" title="3.6 Localization Mode"></a>3.6 Localization Mode</h2><p>本系统引入了一个<strong>定位模式</strong>，可在已经制图的区域进行<strong>轻量级长期定位</strong>。该过程利用<strong>视觉里程计匹配点</strong>和<strong>地图匹配点</strong>进行定位，其中视觉里程计匹配是基于当前帧的ORB 和历史帧创建的3D 点之间进行的，这些匹配可在无地图区域进行定位，但会存在累积漂移；而地图点匹配会得到与地图无偏的定位结果。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>ORB-SLAM</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>C++</tag>
+        <tag>ORB-SLAM2</tag>
       </tags>
   </entry>
   <entry>
@@ -640,99 +696,83 @@
         <category>ORB-SLAM</category>
       </categories>
       <tags>
+        <tag>Ubuntu</tag>
         <tag>SLAM</tag>
         <tag>C++</tag>
-        <tag>Ubuntu</tag>
         <tag>ORB-SLAM2</tag>
         <tag>OpenCV</tag>
       </tags>
   </entry>
   <entry>
-    <title>论文记录 ORB-SLAM2_An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras</title>
-    <url>/2024/01/29/orb-slam2/</url>
-    <content><![CDATA[<p>Mur-Artal, Raul, and Juan D. Tardos. “ORB-SLAM2: An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras.” <em>IEEE Transactions on Robotics</em> 33, no. 5 (October 2017): 1255–62. <a href="https://doi.org/10.1109/TRO.2017.2705103">https://doi.org/10.1109/TRO.2017.2705103</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
-<ol>
-<li>第一个适用于<strong>单目</strong>、<strong>双目</strong>以及<strong>RGB-D 相机</strong>的开源SLAM 系统，该系统包含回环检测、重定位以及地图重用；</li>
-<li>本系统运行RGB-D 的结果证明：使用<strong>BA</strong> 可以实现比基于ICP 或者光度深度误差最小化的SOTA 方法更高的精度；</li>
-<li>通过使用<strong>近远立体点和单目观测</strong>，本系统运行双目的结果要比直接双目SLAM 的 SOTA 算法精度更高；</li>
-<li>提出了一种关闭制图功能情况下，有效<strong>重使用地图</strong>的轻量级定位模式。</li>
-</ol>
+    <title>Ubuntu系统安装</title>
+    <url>/2024/01/26/Ubuntu-setup/</url>
+    <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作：</p>
 <span id="more"></span>
-<p><img src="/2024/01/29/orb-slam2/fig1.png" alt="fig1" title="fig 1"></p>
-<h1 id="3-ORB-SLAM2"><a href="#3-ORB-SLAM2" class="headerlink" title="3 ORB-SLAM2"></a>3 ORB-SLAM2</h1><p>ORB-SLAM2 的整体架构如下所示：</p>
-<p><img src="/2024/01/29/orb-slam2/fig2.png" alt="fig2" title="fig 2"></p>
-<p>系统包含三个主要的并行线程：</p>
+<p><img src="/2024/01/26/Ubuntu-setup/rufus.png" alt="rufus" title="rufus设置界面"></p>
+<h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
 <ol>
-<li><strong>跟踪线程：</strong>寻找与<strong>局部地图</strong>相匹配的特征点，利用<strong>motion-only BA</strong> <strong>最小化重投影误差</strong>，来解算<strong>每帧图片</strong>对应的相机位姿；</li>
-<li><strong>局部制图：</strong>管理<strong>局部地图</strong>，并使用<strong>局部BA</strong> 对其进行优化；</li>
-<li><strong>回环检测：</strong>检测大回环，并使用<strong>位姿图优化</strong>来消除累积漂移；然后开启第四个线程，进行<strong>全局BA</strong> 优化解算地图与位姿的最优解。</li>
+<li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
+</li>
+<li><p>删除”quite splash”后的”—-“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
+</li>
+<li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
+</li>
 </ol>
-<p>本系统还嵌入了一个基于<strong>DBoW2</strong> 的地点重识别模块进行<strong>重定位</strong>，在跟踪失败或利用现有地图进行重初始化时使用；本系统维护一个<strong>共视图</strong>，来关联任意两个具有共同观测特征点的关键帧，并使用一个<strong>最小化spanning tree</strong> 来连接所有的关键帧；这些图结构方便恢复关键帧的<strong>局部窗口</strong>以进行局部的跟踪与制图，并为回环检测中的位姿图优化提供结构。</p>
-<h2 id="3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints"><a href="#3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints" class="headerlink" title="3.1 Monocular, Close Stereo, and Far Stereo Keypoints"></a>3.1 Monocular, Close Stereo, and Far Stereo Keypoints</h2><p>本系统经过如图Fig. 2（b）的<strong>图片预处理操作</strong>，提取出关键点的特征，系统后续的操作均是基于这些<strong>特征点（立体关键点和单目关键点）</strong>的，实现独立于所使用的传感器类型。后续的操作均基于立体关键点和单目关键点。</p>
-<p><strong>立体关键点</strong>使用三个坐标进行定义：$\mathbf{x}_s = (u_L, v_L, u_R)$ ，其中 $(u_L, v_L)$ 是特征点在左边图片中的坐标，$u_R$ 是特征点在右边图片的水平座标。对于RGB-D 相机，作者将深度值 d 转化为一个<strong>虚拟的右图坐标</strong>：</p>
-<p><img src="/2024/01/29/orb-slam2/f1.png" alt="f1" title="formula 1"></p>
-<p>作者定义，如果一个关键点的<strong>深度小于基线长度的40倍</strong>，则被视为近点，否则视为远点。对于近点，可以使用一帧图片进行安全的三角化，因为其深度信息得到了准确估计，可以提供相应的<strong>尺度、平移和旋转信息</strong>；而对于远点，可以提供<strong>准确的旋转信息</strong>，但是尺度与平移信息较不可靠，只对多视角观测的远点进行三角化。</p>
-<p><strong>单目关键点</strong>使用左图的两个坐标进行定义 $\mathbf{x}_m = (u_L, v_L)$ ，是针对那些立体匹配失败或RGB-D 深度参数不可靠的点；这些点只通过多视角观测进行三角化，且不提供尺度信息，但会参与旋转与平移估计的解算。</p>
-<h2 id="3-2-System-Bootstrapping"><a href="#3-2-System-Bootstrapping" class="headerlink" title="3.2 System Bootstrapping"></a>3.2 System Bootstrapping</h2><p>使用立体相机或RGB-D 相机的一个主要优势在于：可仅使用一帧图片获取<strong>深度信息</strong>，而不需要单目相机的动作初始化操作。系统启动后，使用第一帧作为关键帧，将其位姿定为<strong>原点</strong>，并利用所有的<strong>立体关键点</strong>创建一个初始地图。</p>
-<h2 id="3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints"><a href="#3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints" class="headerlink" title="3.3 Bundle Adjustment with Monocular and Stereo Constraints"></a>3.3 Bundle Adjustment with Monocular and Stereo Constraints</h2><p>BA 在本系统中的应用：</p>
-<ul>
-<li>在跟踪线程中优化相机位姿（motion-only BA）</li>
-<li>在局部制图线程中优化局部窗口内的关键帧和特征点（local BA）</li>
-<li>回环检测之后优化所有的关键帧与特征点（full BA）</li>
-</ul>
-<h3 id="Motion-only-BA"><a href="#Motion-only-BA" class="headerlink" title="Motion-only BA"></a>Motion-only BA</h3><p>对关键点 $\mathbf{x}_{(.)}^i$ （包括单目点 $\mathbf{x}_m^i \in \mathbb{R}^2$ 和立体点 $\mathbf{x}_s^i \in \mathbb{R}^3$ ）进行最小化重投影误差，其中 $i\in \mathcal{X}$ 为所有匹配点集合：</p>
-<p><img src="/2024/01/29/orb-slam2/f2.png" alt="f2" title="formula 2"></p>
-<p>其中，$\rho$ 是<strong>鲁棒Huber 损失函数</strong>，$\sum$ 是关键点尺度参数对应的协方差矩阵。单目点和立体点的投影矩阵如下所示：</p>
-<p><img src="/2024/01/29/orb-slam2/f3.png" alt="f3" title="formula 3"></p>
-<h3 id="Local-BA"><a href="#Local-BA" class="headerlink" title="Local BA"></a>Local BA</h3><p><img src="/2024/01/29/orb-slam2/f4.png" alt="f4" title="formula 4"></p>
-<p>其中，$\mathcal{K}_L$ 为一组共视关键帧；$\mathcal{P}_L$ 为这些共视关键帧中的所有点；至于其他观测到 $\mathcal{P}_L$ 中的点且不属于 $\mathcal{K}_L$ 的关键帧 $\mathcal{K}_F$ ，会参与损失函数的构建，但是在优化中<strong>保持固定</strong>；$\mathcal{X}_k$ 表示 $\mathcal{P}_L$ 中与关键帧 k 匹配的点列表。</p>
-<h3 id="Full-BA"><a href="#Full-BA" class="headerlink" title="Full BA"></a>Full BA</h3><p>是一种局部BA 的特殊情况，除了<strong>初始关键帧</strong>是固定的，地图中其余的所有关键帧和点都参与优化过程。</p>
-<h2 id="3-4-Loop-Closing-and-Full-BA"><a href="#3-4-Loop-Closing-and-Full-BA" class="headerlink" title="3.4 Loop Closing and Full BA"></a>3.4 Loop Closing and Full BA</h2><p>回环检测包含两步：</p>
+<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”/etc/default/grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
+<h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
 <ol>
-<li>回环的检测与验证；</li>
-<li>通过位姿图优化来矫正回环。</li>
+<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
+<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
 </ol>
-<h2 id="3-5-Keyframe-Insertion"><a href="#3-5-Keyframe-Insertion" class="headerlink" title="3.5 Keyframe Insertion"></a>3.5 Keyframe Insertion</h2><p>本系统遵循ORB-SLAM 的关键帧插入策略，此外，基于立体远近点创建了一个新的关键帧挑选策略：如果跟踪的近点数量低于 $\tau_t = 100$，且可新增近点数量大于 $\tau_c = 70$ 时，将其作为新的关键帧进行插入。</p>
-<p><img src="/2024/01/29/orb-slam2/fig3.png" alt="fig3" title="fig 3"></p>
-<h2 id="3-6-Localization-Mode"><a href="#3-6-Localization-Mode" class="headerlink" title="3.6 Localization Mode"></a>3.6 Localization Mode</h2><p>本系统引入了一个<strong>定位模式</strong>，可在已经制图的区域进行<strong>轻量级长期定位</strong>。该过程利用<strong>视觉里程计匹配点</strong>和<strong>地图匹配点</strong>进行定位，其中视觉里程计匹配是基于当前帧的ORB 和历史帧创建的3D 点之间进行的，这些匹配可在无地图区域进行定位，但会存在累积漂移；而地图点匹配会得到与地图无偏的定位结果。</p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>ORB-SLAM</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
-        <tag>C++</tag>
-        <tag>ORB-SLAM2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SSH免密登录设置</title>
-    <url>/2024/01/26/ssh-setup/</url>
-    <content><![CDATA[<h1 id="1-ssh服务"><a href="#1-ssh服务" class="headerlink" title="1 ssh服务"></a>1 ssh服务</h1><p>Ubuntu开启ssh服务需要下载openssh-server，命令为：</p>
-<span id="more"></span>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure>
-<h1 id="2-ssh-key生成"><a href="#2-ssh-key生成" class="headerlink" title="2 ssh key生成"></a>2 ssh key生成</h1><p>生成ssh key的命令是：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
-<p>后续一路默认设置即可，该命令会在主目录默认生成.ssh文件，内包含以下文件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa: 私钥</span><br><span class="line">id_rsa.pub: 公钥</span><br></pre></td></tr></table></figure>
-<h1 id="3-无密码远程登陆服务器"><a href="#3-无密码远程登陆服务器" class="headerlink" title="3 无密码远程登陆服务器"></a>3 无密码远程登陆服务器</h1><p>将本地产生的公钥上传至服务器：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-copy-id -p <span class="comment">#port master@ubuntu</span></span><br></pre></td></tr></table></figure>
-<h1 id="4-Windows免密登录Ubuntu"><a href="#4-Windows免密登录Ubuntu" class="headerlink" title="4 Windows免密登录Ubuntu"></a>4 Windows免密登录Ubuntu</h1><p>Windows在终端中执行以下命令生成公私密钥：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
-<p>会在C:\Users\xxx.ssh 文件夹中生成以下三个文件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa 本地私钥</span><br><span class="line">id_rsa.pub 公钥</span><br><span class="line">known_hosts 已知的ip</span><br></pre></td></tr></table></figure>
-<p>将公钥上传至Ubuntu，可使用scp命令，然后执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将公钥拷贝至Ubuntu的authorized_keys文件中</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改sshd_config文件</span></span><br><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将一下三行命令添加至sshd_config文件</span></span><br><span class="line">RSAAuthentication <span class="built_in">yes</span></span><br><span class="line">PubkeyAuthentication <span class="built_in">yes</span></span><br><span class="line">PasswordAuthentication no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启ssh</span></span><br><span class="line">sudo service sshd restart</span><br></pre></td></tr></table></figure>
-<p>然后即可实现Windows免密登录Ubuntu。</p>
+<p><img src="/2024/01/26/Ubuntu-setup/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
+<p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
+<h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
 ]]></content>
       <categories>
         <category>开发环境搭建</category>
       </categories>
       <tags>
         <tag>Ubuntu</tag>
-        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Windows远程桌面控制ubuntu</title>
+    <url>/2024/01/26/win-remote-ubuntu/</url>
+    <content><![CDATA[<h2 id="1-Ubuntu设置与软件安装"><a href="#1-Ubuntu设置与软件安装" class="headerlink" title="1 Ubuntu设置与软件安装"></a>1 Ubuntu设置与软件安装</h2><p>首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：</p>
+<span id="more"></span>
+<p><img src="/2024/01/26/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
+<p>然后安装xrdp：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install xrdp</span><br></pre></td></tr></table></figure>
+<p>接下来的步骤网上有很多不同的做法，其中<a href="https://zhuanlan.zhihu.com/p/145614559">这篇文章</a>提到需要修改startwm.sh文件:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
+<p><img src="/2024/01/26/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
+<p>将最后两行注释掉，即：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 注释掉这两行</span></span><br><span class="line"><span class="comment"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span></span><br><span class="line"><span class="comment"># exec /bin/sh /etc/X11/Xsession</span></span><br></pre></td></tr></table></figure>
+<p>然后即可通过win10自带的远程桌面（或在Microsoft Store安装的远程桌面）进行连接：</p>
+<p><img src="/2024/01/26/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
+<p><img src="/2024/01/26/win-remote-ubuntu/image-20240129103319493.png" alt="远程桌面" title="远程桌面"></p>
+<p>到目前为止，本人可以在Windows中正常远程控制Ubuntu，且可实现Ubuntu显示和远程控制<strong>同时在线</strong>，即通过远程控制操作Ubuntu，同时另一个屏幕可正常显示Ubuntu界面，且实时显示远程控制的操作。</p>
+<h2 id="2-黑屏问题"><a href="#2-黑屏问题" class="headerlink" title="2 黑屏问题"></a>2 黑屏问题</h2><p>但是，在这之后我重新安装了NVIDIA显卡驱动、CUDA、cuDNN，然后就发现远程控制无法进入Ubuntu系统了，点击“连接”后出现一段时间的黑屏后会自动退出。在网上查询了很多案例，有各种五花八门的解决方案，如换一个桌面程序、使用dconf-editor更改配置文件、远程控制与Ubuntu本地无法同时登陆（必须有一方log out）等等，以下是个人尝试的结果：</p>
+<ul>
+<li>换桌面程序：由于本人安装的是桌面版Ubuntu，故系统自带桌面程序gnome，之前配置远程控制时就受到网上各种五花八门意见的影响，使用了xfce4桌面程序，后来发现完全没必要，而且就在不久前还可以正常远程连接，说明应该不是桌面程序的原因，因此就没有尝试更换桌面程序；</li>
+<li>使用dconf-editor更改配置文件：在<a href="https://zhuanlan.zhihu.com/p/345738274">文章</a>中提到，进入dconf-editor后，依次进入“org-&gt;gnome-&gt;desktop-&gt;remote-access”，将 requre-encryption 设为 False，这也是本人在上个系统（Ubuntu20.04）中的操作，但是在本系统（Ubuntu22.04）中没有发现有“remote-access”，故该方法也没有成功；</li>
+<li>本地端与远程端无法共存：这个比较简单，本人试着将Ubuntu本地端账户log out，或者使用不同账户进行远程控制，发现仍然失败；但<strong>需要注意的是</strong>，在本人解决远程黑屏问题之后，发现该问题确实是存在的，若本地端或远程端没有log out，那么另一端就无法正常登陆显示界面，这边记录一下；</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 修改startwm.sh文件，添加下面几行，仍旧没有解决问题</span></span><br><span class="line"><span class="built_in">unset</span> DBUS_SESSION_BUS_ADDRESS</span><br><span class="line"><span class="built_in">unset</span> XDG_RUNTIME_DIR</span><br><span class="line">. <span class="variable">$HOME</span>/.profile</span><br></pre></td></tr></table></figure>
+<p>最后，不知道怎么想起来，尝试把startwm.sh文件中注释掉的两行取消注释，峰回路转、柳暗花明，竟然成了！！！于是，本人最终的startwm.sh文件内容如下所示：</p>
+<p><img src="/2024/01/26/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
+<h2 id="3-后记"><a href="#3-后记" class="headerlink" title="3 后记"></a>3 后记</h2><p>虽然不知道原因是什么，只知道目前这样子是可行的，但同时也发现无法像安装显卡驱动前那样本地端和远程端同时登陆了，必须要有一端log out，另一端才可正常工作，现做以下记录：</p>
+<ul>
+<li>使用远程连接桌面后，不能简单地关掉远程桌面：若只是简单地关掉远程桌面后，在本地端可以正常进入账号选择、密码输入界面，输完密码后会显示黑屏；此时，只有重新进入远程桌面，选择log out，本地端方可正常登录。</li>
+<li>对于本地端Todesk等远程控制软件：经过本人测试，Todesk 软件若想正常工作需要本地端正常登录，即要求远程端log out，然后本地端log in；那么也就意味着本地端电脑需要连接显示器。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>remote access</tag>
       </tags>
   </entry>
   <entry>
@@ -864,44 +904,6 @@
       </tags>
   </entry>
   <entry>
-    <title>zsh、Oh-My-Zsh及相关设置</title>
-    <url>/2024/01/26/zsh-setup/</url>
-    <content><![CDATA[<p>注：<strong>本文主要参考</strong><a href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">该文章</a>。</p>
-<h1 id="1-安装并设置zsh"><a href="#1-安装并设置zsh" class="headerlink" title="1 安装并设置zsh"></a>1 安装并设置zsh</h1><p>安装命令：</p>
-<span id="more"></span>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install zsh</span><br></pre></td></tr></table></figure>
-<p>设置zsh为默认shell：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s $(<span class="built_in">which</span> zsh)</span><br></pre></td></tr></table></figure>
-<h1 id="2-安装Oh-My-Zsh"><a href="#2-安装Oh-My-Zsh" class="headerlink" title="2 安装Oh My Zsh"></a>2 安装Oh My Zsh</h1><p>安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
-<h1 id="3-安装主题PowerLevel10k"><a href="#3-安装主题PowerLevel10k" class="headerlink" title="3 安装主题PowerLevel10k"></a>3 安装主题PowerLevel10k</h1><p>安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/romkatv/powerlevel10k.git <span class="variable">$ZSH_CUSTOM</span>/themes/powerlevel10k</span><br></pre></td></tr></table></figure>
-<p>进入.zshrc设置主题：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ZSH_THEME=<span class="string">&quot;powerlevel10k/powerlevel10k&quot;</span></span><br></pre></td></tr></table></figure>
-<h1 id="4-安装插件"><a href="#4-安装插件" class="headerlink" title="4 安装插件"></a>4 安装插件</h1><h2 id="4-1-日常插件"><a href="#4-1-日常插件" class="headerlink" title="4.1 日常插件"></a>4.1 日常插件</h2><p>zsh-autosuggestions:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-autosuggestions <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
-<p>zsh-syntax-highlighting:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
-<p>设置要启动的插件（Plugins）：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">plugins=(</span><br><span class="line">         git</span><br><span class="line">         zsh-autosuggestions </span><br><span class="line">         zsh-syntax-highlighting</span><br><span class="line">         extract</span><br><span class="line">         sudo</span><br><span class="line">         tmux</span><br><span class="line"></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>值得注意的是，除了zsh-autosuggestions 与zsh-syntax-highlighting 需要单独安装外，上述的其他插件均是内嵌的，可直接添加至配置文件中直接使用。</p>
-<h2 id="4-2-Tmux设置"><a href="#4-2-Tmux设置" class="headerlink" title="4.2 Tmux设置"></a>4.2 Tmux设置</h2><p><strong>该部分主要参考</strong><a href="https://louiszhai.github.io/2017/09/30/tmux/#导读">文章</a>。</p>
-<p>安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install tmux</span><br></pre></td></tr></table></figure>
-<p>tmux 的个性化设置需在主目录编辑.tmux.conf 文件，本人的文件设置如下：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> -g prefix C-z</span><br><span class="line">unbind C-b</span><br><span class="line"><span class="built_in">bind</span> C-a send-prefix</span><br><span class="line"></span><br><span class="line"><span class="built_in">bind</span> r source-file ~/.tmux.conf \; display-message <span class="string">&quot;Config reloaded..&quot;</span></span><br><span class="line"></span><br><span class="line">unbind <span class="string">&#x27;&quot;&#x27;</span></span><br><span class="line"><span class="built_in">bind</span> - splitw -v -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line">unbind %</span><br><span class="line"><span class="built_in">bind</span> | splitw -h -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">set-option -g mouse on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g base-index 0</span><br><span class="line"><span class="built_in">set</span> -g pane-base-index 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># setw -g utf8 on</span></span><br><span class="line"><span class="built_in">set</span> -g status-interval 1</span><br><span class="line"><span class="built_in">set</span> -g status-justify left</span><br><span class="line">setw -g monitor-activity on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g status-bg black</span><br><span class="line"><span class="built_in">set</span> -g status-fg yellow</span><br><span class="line"><span class="built_in">set</span> -g status-left <span class="string">&quot;#[bg=#FF661D] ❐ #S &quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-right <span class="string">&quot;%H:%M:%S %d-%b&quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-left-length 300</span><br><span class="line"><span class="built_in">set</span> -g status-right-length 500</span><br><span class="line"><span class="built_in">set</span> -wg window-status-current-format <span class="string">&quot; #I:#W#F &quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g message-style <span class="string">&quot;bg=#202529, fg=#91A8BA&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g default-terminal <span class="string">&quot;screen-256color&quot;</span></span><br></pre></td></tr></table></figure>
-<p>其他使用说明可参考上述链接。在oh my zsh 插件中添加了 tmux 后，可以使用如下快捷键：</p>
-<p><img src="/2024/01/26/zsh-setup/hotkey.png" alt="hotkey" title="快捷键设置"></p>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-        <tag>zsh</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>论文记录 Semantic SLAM Based on Object Detection and Improved Octomap</title>
     <url>/2024/01/30/zhang2018/</url>
     <content><![CDATA[<p>Zhang, Liang, Leqi Wei, Peiyi Shen, Wei Wei, Guangming Zhu, and Juan Song. “Semantic SLAM Based on Object Detection and Improved Octomap.” <em>IEEE Access</em> 6 (2018): 75545–59. <a href="https://doi.org/10.1109/ACCESS.2018.2873617">https://doi.org/10.1109/ACCESS.2018.2873617</a>.</p>
@@ -987,50 +989,48 @@
         <category>Dynamic SLAM</category>
       </categories>
       <tags>
-        <tag>Dynamic SLAM</tag>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
         <tag>C++</tag>
+        <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
   <entry>
-    <title>Windows远程桌面控制ubuntu</title>
-    <url>/2024/01/26/win-remote-ubuntu/</url>
-    <content><![CDATA[<h2 id="1-Ubuntu设置与软件安装"><a href="#1-Ubuntu设置与软件安装" class="headerlink" title="1 Ubuntu设置与软件安装"></a>1 Ubuntu设置与软件安装</h2><p>首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：</p>
+    <title>zsh、Oh-My-Zsh及相关设置</title>
+    <url>/2024/01/26/zsh-setup/</url>
+    <content><![CDATA[<p>注：<strong>本文主要参考</strong><a href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">该文章</a>。</p>
+<h1 id="1-安装并设置zsh"><a href="#1-安装并设置zsh" class="headerlink" title="1 安装并设置zsh"></a>1 安装并设置zsh</h1><p>安装命令：</p>
 <span id="more"></span>
-<p><img src="/2024/01/26/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
-<p>然后安装xrdp：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install xrdp</span><br></pre></td></tr></table></figure>
-<p>接下来的步骤网上有很多不同的做法，其中<a href="https://zhuanlan.zhihu.com/p/145614559">这篇文章</a>提到需要修改startwm.sh文件:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
-<p><img src="/2024/01/26/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
-<p>将最后两行注释掉，即：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 注释掉这两行</span></span><br><span class="line"><span class="comment"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span></span><br><span class="line"><span class="comment"># exec /bin/sh /etc/X11/Xsession</span></span><br></pre></td></tr></table></figure>
-<p>然后即可通过win10自带的远程桌面（或在Microsoft Store安装的远程桌面）进行连接：</p>
-<p><img src="/2024/01/26/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
-<p><img src="/2024/01/26/win-remote-ubuntu/image-20240129103319493.png" alt="远程桌面" title="远程桌面"></p>
-<p>到目前为止，本人可以在Windows中正常远程控制Ubuntu，且可实现Ubuntu显示和远程控制<strong>同时在线</strong>，即通过远程控制操作Ubuntu，同时另一个屏幕可正常显示Ubuntu界面，且实时显示远程控制的操作。</p>
-<h2 id="2-黑屏问题"><a href="#2-黑屏问题" class="headerlink" title="2 黑屏问题"></a>2 黑屏问题</h2><p>但是，在这之后我重新安装了NVIDIA显卡驱动、CUDA、cuDNN，然后就发现远程控制无法进入Ubuntu系统了，点击“连接”后出现一段时间的黑屏后会自动退出。在网上查询了很多案例，有各种五花八门的解决方案，如换一个桌面程序、使用dconf-editor更改配置文件、远程控制与Ubuntu本地无法同时登陆（必须有一方log out）等等，以下是个人尝试的结果：</p>
-<ul>
-<li>换桌面程序：由于本人安装的是桌面版Ubuntu，故系统自带桌面程序gnome，之前配置远程控制时就受到网上各种五花八门意见的影响，使用了xfce4桌面程序，后来发现完全没必要，而且就在不久前还可以正常远程连接，说明应该不是桌面程序的原因，因此就没有尝试更换桌面程序；</li>
-<li>使用dconf-editor更改配置文件：在<a href="https://zhuanlan.zhihu.com/p/345738274">文章</a>中提到，进入dconf-editor后，依次进入“org-&gt;gnome-&gt;desktop-&gt;remote-access”，将 requre-encryption 设为 False，这也是本人在上个系统（Ubuntu20.04）中的操作，但是在本系统（Ubuntu22.04）中没有发现有“remote-access”，故该方法也没有成功；</li>
-<li>本地端与远程端无法共存：这个比较简单，本人试着将Ubuntu本地端账户log out，或者使用不同账户进行远程控制，发现仍然失败；但<strong>需要注意的是</strong>，在本人解决远程黑屏问题之后，发现该问题确实是存在的，若本地端或远程端没有log out，那么另一端就无法正常登陆显示界面，这边记录一下；</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 修改startwm.sh文件，添加下面几行，仍旧没有解决问题</span></span><br><span class="line"><span class="built_in">unset</span> DBUS_SESSION_BUS_ADDRESS</span><br><span class="line"><span class="built_in">unset</span> XDG_RUNTIME_DIR</span><br><span class="line">. <span class="variable">$HOME</span>/.profile</span><br></pre></td></tr></table></figure>
-<p>最后，不知道怎么想起来，尝试把startwm.sh文件中注释掉的两行取消注释，峰回路转、柳暗花明，竟然成了！！！于是，本人最终的startwm.sh文件内容如下所示：</p>
-<p><img src="/2024/01/26/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
-<h2 id="3-后记"><a href="#3-后记" class="headerlink" title="3 后记"></a>3 后记</h2><p>虽然不知道原因是什么，只知道目前这样子是可行的，但同时也发现无法像安装显卡驱动前那样本地端和远程端同时登陆了，必须要有一端log out，另一端才可正常工作，现做以下记录：</p>
-<ul>
-<li>使用远程连接桌面后，不能简单地关掉远程桌面：若只是简单地关掉远程桌面后，在本地端可以正常进入账号选择、密码输入界面，输完密码后会显示黑屏；此时，只有重新进入远程桌面，选择log out，本地端方可正常登录。</li>
-<li>对于本地端Todesk等远程控制软件：经过本人测试，Todesk 软件若想正常工作需要本地端正常登录，即要求远程端log out，然后本地端log in；那么也就意味着本地端电脑需要连接显示器。</li>
-</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install zsh</span><br></pre></td></tr></table></figure>
+<p>设置zsh为默认shell：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s $(<span class="built_in">which</span> zsh)</span><br></pre></td></tr></table></figure>
+<h1 id="2-安装Oh-My-Zsh"><a href="#2-安装Oh-My-Zsh" class="headerlink" title="2 安装Oh My Zsh"></a>2 安装Oh My Zsh</h1><p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<h1 id="3-安装主题PowerLevel10k"><a href="#3-安装主题PowerLevel10k" class="headerlink" title="3 安装主题PowerLevel10k"></a>3 安装主题PowerLevel10k</h1><p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/romkatv/powerlevel10k.git <span class="variable">$ZSH_CUSTOM</span>/themes/powerlevel10k</span><br></pre></td></tr></table></figure>
+<p>进入.zshrc设置主题：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ZSH_THEME=<span class="string">&quot;powerlevel10k/powerlevel10k&quot;</span></span><br></pre></td></tr></table></figure>
+<h1 id="4-安装插件"><a href="#4-安装插件" class="headerlink" title="4 安装插件"></a>4 安装插件</h1><h2 id="4-1-日常插件"><a href="#4-1-日常插件" class="headerlink" title="4.1 日常插件"></a>4.1 日常插件</h2><p>zsh-autosuggestions:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-autosuggestions <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
+<p>zsh-syntax-highlighting:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
+<p>设置要启动的插件（Plugins）：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">plugins=(</span><br><span class="line">         git</span><br><span class="line">         zsh-autosuggestions </span><br><span class="line">         zsh-syntax-highlighting</span><br><span class="line">         extract</span><br><span class="line">         sudo</span><br><span class="line">         tmux</span><br><span class="line"></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>值得注意的是，除了zsh-autosuggestions 与zsh-syntax-highlighting 需要单独安装外，上述的其他插件均是内嵌的，可直接添加至配置文件中直接使用。</p>
+<h2 id="4-2-Tmux设置"><a href="#4-2-Tmux设置" class="headerlink" title="4.2 Tmux设置"></a>4.2 Tmux设置</h2><p><strong>该部分主要参考</strong><a href="https://louiszhai.github.io/2017/09/30/tmux/#导读">文章</a>。</p>
+<p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install tmux</span><br></pre></td></tr></table></figure>
+<p>tmux 的个性化设置需在主目录编辑.tmux.conf 文件，本人的文件设置如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> -g prefix C-z</span><br><span class="line">unbind C-b</span><br><span class="line"><span class="built_in">bind</span> C-a send-prefix</span><br><span class="line"></span><br><span class="line"><span class="built_in">bind</span> r source-file ~/.tmux.conf \; display-message <span class="string">&quot;Config reloaded..&quot;</span></span><br><span class="line"></span><br><span class="line">unbind <span class="string">&#x27;&quot;&#x27;</span></span><br><span class="line"><span class="built_in">bind</span> - splitw -v -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line">unbind %</span><br><span class="line"><span class="built_in">bind</span> | splitw -h -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">set-option -g mouse on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g base-index 0</span><br><span class="line"><span class="built_in">set</span> -g pane-base-index 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># setw -g utf8 on</span></span><br><span class="line"><span class="built_in">set</span> -g status-interval 1</span><br><span class="line"><span class="built_in">set</span> -g status-justify left</span><br><span class="line">setw -g monitor-activity on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g status-bg black</span><br><span class="line"><span class="built_in">set</span> -g status-fg yellow</span><br><span class="line"><span class="built_in">set</span> -g status-left <span class="string">&quot;#[bg=#FF661D] ❐ #S &quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-right <span class="string">&quot;%H:%M:%S %d-%b&quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-left-length 300</span><br><span class="line"><span class="built_in">set</span> -g status-right-length 500</span><br><span class="line"><span class="built_in">set</span> -wg window-status-current-format <span class="string">&quot; #I:#W#F &quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g message-style <span class="string">&quot;bg=#202529, fg=#91A8BA&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g default-terminal <span class="string">&quot;screen-256color&quot;</span></span><br></pre></td></tr></table></figure>
+<p>其他使用说明可参考上述链接。在oh my zsh 插件中添加了 tmux 后，可以使用如下快捷键：</p>
+<p><img src="/2024/01/26/zsh-setup/hotkey.png" alt="hotkey" title="快捷键设置"></p>
 ]]></content>
       <categories>
         <category>开发环境搭建</category>
       </categories>
       <tags>
         <tag>Ubuntu</tag>
-        <tag>remote access</tag>
+        <tag>zsh</tag>
       </tags>
   </entry>
 </search>
