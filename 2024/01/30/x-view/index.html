@@ -25,28 +25,32 @@
 
 
 
-  <meta name="description" content="Civera, J., D. Galvez-Lopez, L. Riazuelo, J. D. Tardos, and J. M. M. Montiel. “Towards Semantic SLAM Using a Monocular Camera.” In 2011 IEEE&#x2F;RSJ International Conference on Intelligent Robots and Syst">
+  <meta name="description" content="Gawel, Abel, Carlo Del Don, Roland Siegwart, Juan Nieto, and Cesar Cadena. “X-View: Graph-Based Semantic Multi-View Localization.” IEEE Robotics and Automation Letters (RA-L) 3, no. 3 (2018): 1687–94.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="论文记录 Towards semantic SLAM using a monocular camera">
-<meta property="og:url" content="http://echo-gh.github.io/2024/01/30/civera2011/index.html">
+<meta property="og:title" content="论文记录 X-View_Graph-Based Semantic Multi-View Localization">
+<meta property="og:url" content="http://echo-gh.github.io/2024/01/30/x-view/index.html">
 <meta property="og:site_name" content="Echo&#39;s blog">
-<meta property="og:description" content="Civera, J., D. Galvez-Lopez, L. Riazuelo, J. D. Tardos, and J. M. M. Montiel. “Towards Semantic SLAM Using a Monocular Camera.” In 2011 IEEE&#x2F;RSJ International Conference on Intelligent Robots and Syst">
+<meta property="og:description" content="Gawel, Abel, Carlo Del Don, Roland Siegwart, Juan Nieto, and Cesar Cadena. “X-View: Graph-Based Semantic Multi-View Localization.” IEEE Robotics and Automation Letters (RA-L) 3, no. 3 (2018): 1687–94.">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/civera2011/fig1.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/civera2011/fig2.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/civera2011/f1.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/civera2011/f2.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/civera2011/f5.png">
-<meta property="article:published_time" content="2024-01-30T00:54:41.000Z">
-<meta property="article:modified_time" content="2024-01-30T01:09:09.135Z">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/x-view/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/x-view/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/x-view/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/x-view/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/x-view/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/x-view/fig6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/x-view/fig7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/x-view/t1.png">
+<meta property="article:published_time" content="2024-01-30T01:29:31.000Z">
+<meta property="article:modified_time" content="2024-01-30T01:39:53.690Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
 <meta property="article:tag" content="C++">
-<meta property="article:tag" content="Map Match">
+<meta property="article:tag" content="Topology">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/30/civera2011/fig1.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/30/x-view/fig1.png">
 
-<link rel="canonical" href="http://echo-gh.github.io/2024/01/30/civera2011/">
+<link rel="canonical" href="http://echo-gh.github.io/2024/01/30/x-view/">
 
 
 <script id="page-configurations">
@@ -59,7 +63,7 @@
   };
 </script>
 
-  <title>论文记录 Towards semantic SLAM using a monocular camera | Echo's blog</title>
+  <title>论文记录 X-View_Graph-Based Semantic Multi-View Localization | Echo's blog</title>
   
 
 
@@ -207,7 +211,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/30/civera2011/">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/30/x-view/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/snoopy.jpg">
@@ -220,7 +224,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          论文记录 Towards semantic SLAM using a monocular camera
+          论文记录 X-View_Graph-Based Semantic Multi-View Localization
         </h1>
 
         <div class="post-meta">
@@ -231,7 +235,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-01-30 08:54:41 / 修改时间：09:09:09" itemprop="dateCreated datePublished" datetime="2024-01-30T08:54:41+08:00">2024-01-30</time>
+              <time title="创建时间：2024-01-30 09:29:31 / 修改时间：09:39:53" itemprop="dateCreated datePublished" datetime="2024-01-30T09:29:31+08:00">2024-01-30</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -243,7 +247,7 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Map-Match/" itemprop="url" rel="index"><span itemprop="name">Map-Match</span></a>
+                  <a href="/categories/SLAM/Topology/" itemprop="url" rel="index"><span itemprop="name">Topology</span></a>
                 </span>
             </span>
 
@@ -258,58 +262,54 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Civera, J., D. Galvez-Lopez, L. Riazuelo, J. D. Tardos, and J. M. M. Montiel. “Towards Semantic SLAM Using a Monocular Camera.” In <em>2011 IEEE/RSJ International Conference on Intelligent Robots and Systems</em>, 1277–84. San Francisco, CA: IEEE, 2011. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/IROS.2011.6094648">https://doi.org/10.1109/IROS.2011.6094648</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文提出了一种语义SLAM 算法，本算法将传统<strong>无意义的特征点</strong>和<strong>物体</strong>融合进到地图中。</p>
-<p>本算法融合了三个不同领域的SOTA：</p>
+        <p>Gawel, Abel, Carlo Del Don, Roland Siegwart, Juan Nieto, and Cesar Cadena. “X-View: Graph-Based Semantic Multi-View Localization.” <em>IEEE Robotics and Automation Letters (RA-L)</em> 3, no. 3 (2018): 1687–94.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
 <ol>
-<li>一个<strong>EKF 单目SLAM</strong> 提供相机位姿的在线实时估计，以及包含点特征的稀疏地图；</li>
-<li>利用 <strong>Structure from Motion (SfM)</strong> 从稀疏图片中计算一个物体模型数据库；</li>
-<li><strong>视觉识别</strong>来检测图片流中物体是否存在。</li>
+<li>提出一个新颖的<strong>语义拓扑图表示</strong>方法；</li>
+<li>引进了一个<strong>基于随机游走的图描述子</strong>，可以有效地使用既定的匹配方法进行高效匹配；</li>
+<li>用于全局定位的语义分割完整pipeline；</li>
+<li>开源<em>X-View</em> 算法；</li>
+<li>公开数据集的测试结果。</li>
 </ol>
 <span id="more"></span>
-<h1 id="3-Notation-and-General-Overview"><a href="#3-Notation-and-General-Overview" class="headerlink" title="3 Notation and General Overview"></a>3 Notation and General Overview</h1><p>本算法分为两个支流：</p>
-<ol>
-<li>单目SLAM；</li>
-<li>物体识别（通常要慢于SLAM支流）。</li>
-</ol>
-<p>本算法的整体视图如Fig. 1所示：</p>
-<p><img src="/2024/01/30/civera2011/fig1.png" alt="fig1" title="figure 1"></p>
-<p>单目SLAM 利用图片从<strong>k-m-1 到 k-m</strong>更新几何状态向量 x，而视觉识别结果会在<strong>步骤k</strong> 处得到，但是物体插入应当是相对于输入图片 $I_{k-m}$ 而言的。</p>
-<p>作者提前对每一个想要识别的物体进行建模，这些模型包含<strong>外观和几何信息</strong>：</p>
+<p><img src="/2024/01/30/x-view/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-X-View"><a href="#3-X-View" class="headerlink" title="3 X-View"></a>3 X-View</h1><p>X-View 利用从输入语义数据提取得到的图，并使用图描述子进行图匹配，本文提出的全局定位算法架构如Fig. 2所示，本系统被设计为可以用于任何给定的语义信息作为输入的里程估计系统，为了简化表示，Fig. 2中只列举了语义分割图片作为输入。</p>
+<p><img src="/2024/01/30/x-view/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-System-input"><a href="#3-1-System-input" class="headerlink" title="3.1 System input"></a>3.1 System input</h2><p>将语义分割或实例分割图片作为系统输入，且假定外部里程系统的估计，以及一个参考语义图 $G_{db}$ 。</p>
+<h2 id="3-2-Graph-extraction-and-assembly"><a href="#3-2-Graph-extraction-and-assembly" class="headerlink" title="3.2 Graph extraction and assembly"></a>3.2 Graph extraction and assembly</h2><p>将一系列语义分割图片 $I_q$ 转化为一个质询图 $G_q$ ，从连接区域中提取斑点 blobs，例如每幅图中具有相同语义标签 $l_j$ 的区域。为了应对语义分割的噪声（如标签中的洞、断连的边、边缘错误的标签等），作者使用 dilating 和 eroding 对每个班点的边界进行柔化，且设定最小像素数阈值为4以排除过小及次要物体的影响。斑点的中心位置 $p_j$ 被提取出来，与标签一起存储为顶点 $v_j = \{l_j, p_j\}$ 。</p>
+<p>顶点之间的无向边可以是图像空间或3D 空间的，当考虑图像空间中的边时，认为图片在时间序列中根据几幅连续的输入图片流来生成图（利用连续图片获取3D距离信息），在3D 空间中不需要考虑这方面。</p>
+<p>利用深度通道数据或者深度估计来组成3D空间结构，使用图片斑点的3D位置来计算欧氏距离，图提取与组合的过程如Fig. 3所示，当对多幅连续图片的图进行组合时，将距离较近且拥有相同语义标签的重复顶点融合为一个顶点，该顶点位置选择为初次观测到的位置。</p>
+<p><img src="/2024/01/30/x-view/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-3-Descriptors"><a href="#3-3-Descriptors" class="headerlink" title="3.3 Descriptors"></a>3.3 Descriptors</h2><p>子图匹配是一个 NP-complete 难题，且为了实现机器人的实时定位问题，作者提出了为图中每个节点建立随机游走描述子并进行匹配，这样做的优势是根据给定的静态或者增长的参考图，匹配时间分别是常数或者线性变化的。每个顶点的描述子是一个 $n \times m$ 的矩阵，包含 <em>n</em> 个深度为 <em>m</em> 的随机游走，每个随机游走开始于源顶点 $v_j$ ，并存储访问过顶点的分类标签，随机游走描述子提取过程如Fig. 4所示。</p>
+<p><img src="/2024/01/30/x-view/fig4.png" alt="fig4" title="figure 4"></p>
+<h2 id="3-4-Descriptor-Matching"><a href="#3-4-Descriptor-Matching" class="headerlink" title="3.4 Descriptor Matching"></a>3.4 Descriptor Matching</h2><p>在质询图 $G_q$ 与 参考图 $G_{db}$ 完成之后，通过计算相应的图描述子之间的similarity score来建立两图顶点之间的联系：</p>
 <ul>
-<li>外观信息是由<strong>SURF 描述子</strong>组成的；</li>
-<li>几何信息是这些<strong>SURF 特征点的3D 位置</strong>信息。</li>
+<li>相似性是通过对质询图与参考图中顶点的语义描述子的每一行进行匹配计算获取的；</li>
+<li>两个描述子拥有的相同随机游走数量决定了similarity score（分布在0与1之间）；</li>
+<li>然后选取得分最高的前 k 个匹配顶点对来计算质询图在参考图中的定位信息。</li>
 </ul>
-<p>物体识别支流将数据库中的物体插入到SLAM 地图的步骤如下：</p>
+<h2 id="3-5-Localization-Back-End"><a href="#3-5-Localization-Back-End" class="headerlink" title="3.5 Localization Back-End"></a>3.5 Localization Back-End</h2><p>一共有三种类型的约束：</p>
 <ol>
-<li>算法搜寻图片 $I_{k-m}$ 中SURF 特征点与数据库中每一个物体之间的关联；</li>
-<li>利用RANSAC 来计算每个物体的<strong>一致几何模型</strong>，来最大化关联数量；</li>
-<li>如果存在足够的一致关联，那么这个特征点就被认为属于该物体，并插入SLAM 地图中；</li>
-<li>被插入地图中的特征点会被持续跟踪与位置优化。</li>
+<li>来自语义描述子匹配的约束；</li>
+<li>联系定位图中连续位姿的机器人估计位姿约束；</li>
+<li>每一个robot-vertex观测的转换信息编码得到的robot-vertex约束。</li>
 </ol>
-<h1 id="4-Object-Model"><a href="#4-Object-Model" class="headerlink" title="4 Object Model"></a>4 Object Model</h1><p>如上文所述，物体模型包含由SURF 特征描述子构成的<strong>外观信息</strong>和特征点位置<strong>几何信息</strong>，其构建示例如Fig. 2所示：</p>
-<p><img src="/2024/01/30/civera2011/fig2.png" alt="fig2" title="figure 2"></p>
-<p>图中的黄色圆圈代表用来进行识别的SURF 特征。</p>
-<p>物体的构建是通过不同的faces 完成的，而构建模型的<strong>每一幅图片</strong>是一个face 的<strong>基础</strong>。作者用一个tuple F 来表示face，该tuple中包含了SURF 特征点的位置坐标和描述子，以及形成该face 的图片的位置信息和朝向信息。</p>
-<h1 id="5-Object-Recognition"><a href="#5-Object-Recognition" class="headerlink" title="5 Object Recognition"></a>5 Object Recognition</h1><p>物体识别是通过计算图片 $I_{k-m}$ 与物体数据库中每个物体的关联来实现的：</p>
+<p>作者根据以上三个约束参数计算最大后验估计 (MAP)来获取定位信息。</p>
+<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1><p>在两个不同的合成户外数据集进行评估，包括<strong>前视——后视</strong>视角变化、<strong>前视——空视</strong>视角变化，以及一个真实世界户外数据集，包含<strong>前视——后视</strong>视角变化。</p>
+<h2 id="4-1-Datasets"><a href="#4-1-Datasets" class="headerlink" title="4.1 Datasets"></a>4.1 Datasets</h2><p>SYNTHIA 数据集是在城市环境模拟生成的，采集汽车有8个摄像头，四个方向各有两个，相邻图片间的距离在0~1m。作者使用photo-realistic Arisim 生成了空对地观测的数据集，包含空中向地面观测与地面前向观测两种数据，两种数据之间只有在 z 轴存在偏差，其余均相同，相邻图片间的距离总是1m。真实户外场景的数据集是通过Google StreetView 获取的，类似于SYNTHIA 数据集，只使用前视与后视摄像头，相邻图片间的距离接近10m。</p>
+<p><img src="/2024/01/30/x-view/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="4-3-Localization-performance"><a href="#4-3-Localization-performance" class="headerlink" title="4.3 Localization performance"></a>4.3 Localization performance</h2><p>设置两组实验：</p>
 <ol>
-<li>对于每个物体而言，计算图片 $I_{k-m}$ 与属于该物体的faces F之间的关联；</li>
-<li>然后使用RANSAC 进行外点剔除；</li>
-<li>最终至少包含5对关系才能确认为图片 $I_{k-m}$ 与物体 $I_F$ 之间建立了联系；</li>
-<li>利用PnP 来估计相对位姿转换关系。</li>
+<li>在SYNTHIA 数据集上测试不同的参数设置，如随机游走参数、质询图片数量、动态分类物体、图边缘构建技术等；</li>
+<li>在SYNTHIA、Airsim 以及 StreetView 上进行对比分析实验。</li>
 </ol>
-<h1 id="6-Monocular-SLAM"><a href="#6-Monocular-SLAM" class="headerlink" title="6 Monocular SLAM"></a>6 Monocular SLAM</h1><h2 id="6-1-Standard-Mode-EKF"><a href="#6-1-Standard-Mode-EKF" class="headerlink" title="6.1 Standard Mode EKF"></a>6.1 Standard Mode EKF</h2><p>估计参数建模为多维高斯变量x，包含相机的运动参数以及n 个特征点：</p>
-<p><img src="/2024/01/30/civera2011/f1.png" alt="f1" title="formula 1"></p>
-<p>其中，运动参数 $\mathbf{x}_{C_k}$ 包含相机的位置参数 $\mathbf{t}_{C_{k-m}}$ 和方向参数 $\mathbf{q}_{C_{k-m}}$ ，以及线速度和角速度。</p>
-<h2 id="6-2-State-Augmentation-with-Past-Camera-Pose"><a href="#6-2-State-Augmentation-with-Past-Camera-Pose" class="headerlink" title="6.2 State Augmentation with Past Camera Pose"></a>6.2 State Augmentation with Past Camera Pose</h2><p>当<strong>物体识别支流</strong>在步骤k-m 开始时，SLAM的状态向量需要使用当前步骤的<strong>相机位姿进行增强</strong>：将当前步骤的位姿参数复制到状态向量中去，并传播相应的协方差矩阵。假设 k 步完成了物体识别与插入操作，那么k-1 步骤的状态向量表示如下：</p>
-<p><img src="/2024/01/30/civera2011/f2.png" alt="f2" title="formula 2"></p>
-<p>如果物体识别成功，则过去的相机位姿（本例中为步骤 k-m）被用来进行物体的<strong>延迟初始化</strong>。在此完成之后，用来增强的相机位姿不再需要，即可从状态向量中进行剔除。</p>
-<h2 id="6-3-Object-Insertion"><a href="#6-3-Object-Insertion" class="headerlink" title="6.3 Object Insertion"></a>6.3 Object Insertion</h2><p><strong>物体识别支流的输出</strong>是一组物体参考坐标系中的特征点 $\mathbf{y}_F^O$ ，并由此计算face F 与k-m 时刻相机之间的位姿转换关系  $\mathbf{t}^{C_{k-m}}_F, \mathbf{q}^{C_{k-m}}_F$  ；基于此并利用6.2节中的k-m 步骤的增强相机位姿，实现物体特征点到SLAM 地图的插入操作：</p>
-<p><img src="/2024/01/30/civera2011/f5.png" alt="f5" title="formula 5"></p>
-<p>因为物体模型中点的3D 位置信息是已知的，因此该模型的所有点可以根据 $\mathbf{y}_F^W$ 结合欧式坐标添加进SLAM 地图中。</p>
-<p>在完成插入操作后，物体点被跟踪并利用单目SLAM 算法进行位姿优化。</p>
-<h1 id="8-Conclusions-and-Future-Works"><a href="#8-Conclusions-and-Future-Works" class="headerlink" title="8 Conclusions and Future Works"></a>8 Conclusions and Future Works</h1><p>本文提出的算法只使用相机作为传感器，是第一个将普通3D 物体<strong>实时加入几何SLAM 地图</strong>中的算法。</p>
-<p>作者提到本算法将<strong>相机运动和3D 场景理解</strong>结合了起来，提供了部分标注的地图和相机位姿，方便后期机器人的任务开发（如抓住某个物体等）；此外，基于提前构建的物体3D 模型库，可以实现在观察到物体某一面之后即可将整个3D 物体添加进地图中去，完成对于未观测信息的补充。</p>
+<p>与基于外观匹配的算法进行对比，使用了BoW、NetVLAD 算法。</p>
+<h2 id="4-4-Results"><a href="#4-4-Results" class="headerlink" title="4.4 Results"></a>4.4 Results</h2><p>Fig. 6是对SYNTHIA 数据集进行的参数对比试验结果。6(a) 中 n 代表随机游走的个数， m 代表随机游走的深度。</p>
+<p><img src="/2024/01/30/x-view/fig6.png" alt="fig6" title="figure 6"></p>
+<p>PR评估曲线以及不同定位误差下的成功率结果如Fig. 7所示。</p>
+<p><img src="/2024/01/30/x-view/fig7.png" alt="fig7" title="figure 7"></p>
+<p>系统组件的时间消耗如Table 1所示。</p>
+<p><img src="/2024/01/30/x-view/t1.png" alt="t1" title="table 1"></p>
 
     </div>
 
@@ -321,8 +321,9 @@
           
           <div class="post-tags">
               <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
               <a href="/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
-              <a href="/tags/Map-Match/" rel="tag"><i class="fa fa-tag"></i> Map Match</a>
+              <a href="/tags/Topology/" rel="tag"><i class="fa fa-tag"></i> Topology</a>
           </div>
 
         
@@ -331,13 +332,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/01/29/orb-slam2/" rel="prev" title="论文记录 ORB-SLAM2_An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras">
-      <i class="fa fa-chevron-left"></i> 论文记录 ORB-SLAM2_An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras
+    <a href="/2024/01/30/vso/" rel="prev" title="论文记录 VSO_Visual Semantic Odometry">
+      <i class="fa fa-chevron-left"></i> 论文记录 VSO_Visual Semantic Odometry
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/01/30/vso/" rel="next" title="论文记录 VSO_Visual Semantic Odometry">
-      论文记录 VSO_Visual Semantic Odometry <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -396,7 +394,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Notation-and-General-Overview"><span class="nav-text">3 Notation and General Overview</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Object-Model"><span class="nav-text">4 Object Model</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Object-Recognition"><span class="nav-text">5 Object Recognition</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-Monocular-SLAM"><span class="nav-text">6 Monocular SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-Standard-Mode-EKF"><span class="nav-text">6.1 Standard Mode EKF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-State-Augmentation-with-Past-Camera-Pose"><span class="nav-text">6.2 State Augmentation with Past Camera Pose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-Object-Insertion"><span class="nav-text">6.3 Object Insertion</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-Conclusions-and-Future-Works"><span class="nav-text">8 Conclusions and Future Works</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-X-View"><span class="nav-text">3 X-View</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-System-input"><span class="nav-text">3.1 System input</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Graph-extraction-and-assembly"><span class="nav-text">3.2 Graph extraction and assembly</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Descriptors"><span class="nav-text">3.3 Descriptors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Descriptor-Matching"><span class="nav-text">3.4 Descriptor Matching</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-Localization-Back-End"><span class="nav-text">3.5 Localization Back-End</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Experiments"><span class="nav-text">4 Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Datasets"><span class="nav-text">4.1 Datasets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Localization-performance"><span class="nav-text">4.3 Localization performance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-Results"><span class="nav-text">4.4 Results</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
