@@ -25,12 +25,12 @@
 
 
 
-  <meta name="description" content="3 Overview of our MethodCo-Fusion 是一个可以实时处理每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体存储模型，而且可以独立跟踪它们的运动，每个模型是由一组3D 点构成的。本系统维护两组物体模型：当前在视野中可见的active 模型，以及曾经观测到的模型，但是目前不在视野中，记为inactive 模型。本系统的框架如Fig. 2所示，在初始">
+  <meta name="description" content="Runz, Martin, and Lourdes Agapito. “Co-Fusion: Real-Time Segmentation, Tracking and Fusion of Multiple Objects.” In 2017 IEEE International Conference on Robotics and Automation (ICRA), 4471–78. Singa">
 <meta property="og:type" content="article">
 <meta property="og:title" content="论文记录 Co-fusion_Real-time segmentation, tracking and fusion of multiple objects">
 <meta property="og:url" content="http://echo-gh.github.io/2024/01/27/Co-fusion/index.html">
 <meta property="og:site_name" content="Echo&#39;s blog">
-<meta property="og:description" content="3 Overview of our MethodCo-Fusion 是一个可以实时处理每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体存储模型，而且可以独立跟踪它们的运动，每个模型是由一组3D 点构成的。本系统维护两组物体模型：当前在视野中可见的active 模型，以及曾经观测到的模型，但是目前不在视野中，记为inactive 模型。本系统的框架如Fig. 2所示，在初始">
+<meta property="og:description" content="Runz, Martin, and Lourdes Agapito. “Co-Fusion: Real-Time Segmentation, Tracking and Fusion of Multiple Objects.” In 2017 IEEE International Conference on Robotics and Automation (ICRA), 4471–78. Singa">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/overview.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/formula1.png">
@@ -39,7 +39,7 @@
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/formula4.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/27/Co-fusion/formula5.png">
 <meta property="article:published_time" content="2024-01-27T03:27:11.000Z">
-<meta property="article:modified_time" content="2024-01-29T02:42:31.416Z">
+<meta property="article:modified_time" content="2024-01-30T01:10:53.667Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="Dynamic SLAM">
 <meta property="article:tag" content="SLAM">
@@ -239,7 +239,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-29 10:42:31" itemprop="dateModified" datetime="2024-01-29T10:42:31+08:00">2024-01-29</time>
+                <time title="修改时间：2024-01-30 09:10:53" itemprop="dateModified" datetime="2024-01-30T09:10:53+08:00">2024-01-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -266,7 +266,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="3-Overview-of-our-Method"><a href="#3-Overview-of-our-Method" class="headerlink" title="3 Overview of our Method"></a>3 Overview of our Method</h1><p>Co-Fusion 是一个可以<strong>实时处理</strong>每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体<strong>存储模型</strong>，而且可以<strong>独立跟踪</strong>它们的运动，每个模型是由<strong>一组3D 点</strong>构成的。本系统维护两组物体模型：当前在视野中可见的<strong>active 模型</strong>，以及曾经观测到的模型，但是目前不在视野中，记为<strong>inactive 模型</strong>。本系统的框架如Fig. 2所示，在初始化阶段，场景只包含一个active 模型——<strong>背景</strong>，初始化完成后，按照Fig .2的流程处理每一帧图片。</p>
+        <p>Runz, Martin, and Lourdes Agapito. “Co-Fusion: Real-Time Segmentation, Tracking and Fusion of Multiple Objects.” In <em>2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, 4471–78. Singapore, Singapore: IEEE, 2017. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ICRA.2017.7989518">https://doi.org/10.1109/ICRA.2017.7989518</a>.</p>
+<h1 id="3-Overview-of-our-Method"><a href="#3-Overview-of-our-Method" class="headerlink" title="3 Overview of our Method"></a>3 Overview of our Method</h1><p>Co-Fusion 是一个可以<strong>实时处理</strong>每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体<strong>存储模型</strong>，而且可以<strong>独立跟踪</strong>它们的运动，每个模型是由<strong>一组3D 点</strong>构成的。本系统维护两组物体模型：当前在视野中可见的<strong>active 模型</strong>，以及曾经观测到的模型，但是目前不在视野中，记为<strong>inactive 模型</strong>。本系统的框架如Fig. 2所示，在初始化阶段，场景只包含一个active 模型——<strong>背景</strong>，初始化完成后，按照Fig .2的流程处理每一帧图片。</p>
 <span id="more"></span>
 <p><img src="/2024/01/27/Co-fusion/overview.png" alt="overview" title="Overview"></p>
 <p><strong>tracking</strong> 与 <strong>fusion</strong> 步骤是在GPU 上完成的，而<strong>segmentation</strong> 步骤是在CPU 上完成的。</p>
@@ -414,20 +415,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
