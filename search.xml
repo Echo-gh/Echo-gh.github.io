@@ -147,7 +147,6 @@
         <tag>SLAM</tag>
         <tag>Semantic</tag>
         <tag>Map Match</tag>
-        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
@@ -207,7 +206,6 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>C++</tag>
         <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
@@ -271,7 +269,6 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>C++</tag>
         <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
@@ -303,7 +300,6 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>C++</tag>
         <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
@@ -836,7 +832,6 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>C++</tag>
         <tag>Pose Optimization</tag>
       </tags>
   </entry>
@@ -899,7 +894,6 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>C++</tag>
         <tag>Topology</tag>
       </tags>
   </entry>
@@ -991,7 +985,6 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>C++</tag>
         <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
@@ -1185,6 +1178,103 @@
         <tag>C++</tag>
         <tag>VINS</tag>
         <tag>IMU</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 CubeSLAM_Monocular 3-D Object SLAM</title>
+    <url>/2024/01/31/cubeslam/</url>
+    <content><![CDATA[<p>Yang, Shichao, and Sebastian Scherer. “CubeSLAM: Monocular 3-D Object SLAM.” <em>IEEE Transactions on Robotics</em> 35, no. 4 (August 2019): 925–38. <a href="https://doi.org/10.1109/TRO.2019.2909168">https://doi.org/10.1109/TRO.2019.2909168</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于静态与动态场景中，将2D、3D 物体探测与SLAM 位姿估计相结合的系统，如Fig. 1所示。当给定检测到的2D 物体时，利用vanishing point (VP) 产生3D 立方体，然后通过多视角BA ，利用点和相机对立方体进行进一步的优化。</p>
+<span id="more"></span>
+<p><img src="/2024/01/31/cubeslam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>3D 物体在本系统中的作用有两个方面：</p>
+<ol>
+<li>在BA 过程中提供几何和尺寸约束；</li>
+<li>为难以进行三角测量的点提供深度信息初始化。</li>
+</ol>
+<p>在动态场景中，本系统不是简单地将动态观测物体视为外点，而是基于动态点观察与动作模型约束，联合优化相机与物体的轨迹。</p>
+<p>本文做出的贡献总结如下：</p>
+<ul>
+<li>不使用先验物体模型的高效、准确以及鲁棒的<strong>单张图片3D 立方体探测方法</strong>；</li>
+<li>在相机、物体与点之间使用新颖测量手段的<strong>物体SLAM 方法</strong>，在许多数据集上实现了更好的位姿估计；</li>
+<li>实验结果证明<strong>物体探测</strong>与<strong>SLAM</strong> 两者相得益彰；</li>
+<li>一个在动态场景中<strong>利用移动物体来提高位姿估计</strong>的方法。</li>
+</ul>
+<h1 id="3-Single-Image-3-D-Object-Detection"><a href="#3-Single-Image-3-D-Object-Detection" class="headerlink" title="3 Single Image 3-D Object Detection"></a>3 Single Image 3-D Object Detection</h1><p><img src="/2024/01/31/cubeslam/fig2.png" alt="fig2" title="figure 2"></p>
+<p><img src="/2024/01/31/cubeslam/fig3.png" alt="fig3" title="figure 3"></p>
+<p><img src="/2024/01/31/cubeslam/fig4.png" alt="fig4" title="figure 4"></p>
+<h1 id="4-Object-SLAM"><a href="#4-Object-SLAM" class="headerlink" title="4 Object SLAM"></a>4 Object SLAM</h1><h2 id="4-3-Data-Association"><a href="#4-3-Data-Association" class="headerlink" title="4.3 Data Association"></a>4.3 Data Association</h2><p>作者进行数据关联的步骤如下：</p>
+<ol>
+<li>首先，如果特征点在至少两帧图片中被观测到位于2D 物体检测框中，且它们距离3D 的立方体中心小于1m 时，将这些特征点与对应的物体关联起来；</li>
+<li>如果两个物体在不同帧中拥有最多数量的共同特征点，且点的数量超过一定阈值（本文设定为10）时，判定两个物体为同一物体并进行数据关联。</li>
+<li>需要注意的是，当物体几乎没有与其他帧相关联的特征点时，将该物体判定为动态物体，如Fig. 5中的青色框汽车。</li>
+</ol>
+<p><img src="/2024/01/31/cubeslam/fig5.png" alt="fig5" title="figure 5"></p>
+<h1 id="5-Dynamic-SLAM"><a href="#5-Dynamic-SLAM" class="headerlink" title="5 Dynamic SLAM"></a>5 Dynamic SLAM</h1><p>为了减少未知参量让问题可解，作者使用了两个假设：<strong>刚体假设</strong>与<strong>物理运动模型假设</strong>。</p>
+<ul>
+<li>刚体假设是为了保证特征点在关联物体上的位置保持不变，这使得作者可以使用标准的3D 地图点重投影误差来优化位置参数；</li>
+<li>最简单的运动模型就是有着统一速度的常数运动模型，至于一些特定物体，如自行车，会额外受限于nonholonomic wheel model。</li>
+</ul>
+<h2 id="5-2-SLAM-Optimization"><a href="#5-2-SLAM-Optimization" class="headerlink" title="5.2 SLAM Optimization"></a>5.2 SLAM Optimization</h2><p>动态物体估计的因子图如Fig. 6所示，其中绿色方框是测量因子，包含：camera-object 因子，object-velocity 因子，以及point-camera-object 因子。</p>
+<p><img src="/2024/01/31/cubeslam/fig6.png" alt="fig6" title="figure 6"></p>
+<h2 id="5-3-Dynamic-Data-Association"><a href="#5-3-Dynamic-Data-Association" class="headerlink" title="5.3 Dynamic Data Association"></a>5.3 Dynamic Data Association</h2><p>4.3节使用的静态物体数据关联不适用于动态物体，因为单眼相机动态场景中，很难准确预测物体与特征点的运动，且当物体运动不准确时难以应用对极几何进行计算。因此，作者使用2D KLT 稀疏光流算法进行动态物体特征点的跟踪，该算法并不需要3D 点位置信息。在使用像素追踪之后，考虑物体的运动利用三角测量计算动态特征的3D 位置。</p>
+<h1 id="8-Experiments-Object-SLAM"><a href="#8-Experiments-Object-SLAM" class="headerlink" title="8 Experiments-Object SLAM"></a>8 Experiments-Object SLAM</h1><h2 id="8-1-TUM-RGBD-and-ICL-NUIM-Dataset"><a href="#8-1-TUM-RGBD-and-ICL-NUIM-Dataset" class="headerlink" title="8.1 TUM RGBD and ICL-NUIM Dataset"></a>8.1 TUM RGBD and ICL-NUIM Dataset</h2><p>为了更好地评估单目位姿偏移，作者在使用及结果对比时关掉了ORB SLAM 的回环检测模块。</p>
+<p>Fig. 9所示的是在TUM fr3_cabinet 数据集上的实验结果，由于该场景特征点太少，导致现有的单目SLAM 算法均无法完成实验。而本文提出的算法仅使用物体进行定位，实现了较好的定位效果。Fig. 9左边下图中估计的立方体存在较大的误差，但经过多视角优化后，可以与真实点云实现良好的契合。实验结果如Table 2所示。</p>
+<p><img src="/2024/01/31/cubeslam/fig9.png" alt="fig9" title="figure 9"></p>
+<p><img src="/2024/01/31/cubeslam/t2.png" alt="t2" title="table 2"></p>
+<h2 id="8-2-Collected-Chair-Dataset"><a href="#8-2-Collected-Chair-Dataset" class="headerlink" title="8.2 Collected Chair Dataset"></a>8.2 Collected Chair Dataset</h2><p><img src="/2024/01/31/cubeslam/fig10.png" alt="fig10" title="figure 10"></p>
+<h2 id="8-4-Dynamic-Object"><a href="#8-4-Dynamic-Object" class="headerlink" title="8.4 Dynamic Object"></a>8.4 Dynamic Object</h2><p><img src="/2024/01/31/cubeslam/fig12.png" alt="fig12" title="figure 12"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Pose Optimization</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Pose Optimization</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 LaneLoc_Lane marking based localization using highly accurate maps</title>
+    <url>/2024/01/31/laneloc/</url>
+    <content><![CDATA[<p>Schreiber, Markus, Carsten Knoppel, and Uwe Franke. “LaneLoc: Lane Marking Based Localization Using Highly Accurate Maps.” In <em>2013 IEEE Intelligent Vehicles Symposium (IV)</em>, 449–54. Gold Coast City, Australia: IEEE, 2013. <a href="https://doi.org/10.1109/IVS.2013.6629509">https://doi.org/10.1109/IVS.2013.6629509</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>作者利用双目立体相机系统和包含路沿与道路标志的先验高精度地图实现车辆定位。定位过程中，GNSS 位置只是用来进行初始化，后续的定位解算不需要GNSS。作者在长约50 km的郊区道路进行测试，最终的定位精度在分米级。</p>
+<span id="more"></span>
+<h1 id="2-Mapping"><a href="#2-Mapping" class="headerlink" title="2 Mapping"></a>2 Mapping</h1><p>制图过程如下所示：</p>
+<p><img src="/2024/01/31/laneloc/fig2.png" alt="fig2" title="figure 2"></p>
+<p>利用各个传感器采集到的数据制作鸟瞰视角地图，如下图所示：</p>
+<p><img src="/2024/01/31/laneloc/fig4.png" alt="fig4" title="figure 4"></p>
+<h1 id="3-Online-Localization"><a href="#3-Online-Localization" class="headerlink" title="3 Online Localization"></a>3 Online Localization</h1><p>作者的定位系统选择一个前向的立体相机系统以及一个IMU，如下图所示，其中GNSS 模块进行初始化。</p>
+<p><img src="/2024/01/31/laneloc/fig6.png" alt="fig6" title="figure 6"></p>
+<p>作者使用基于Kalman 滤波器的定位模型。</p>
+<h2 id="3-1-Localization-Model"><a href="#3-1-Localization-Model" class="headerlink" title="3.1 Localization Model"></a>3.1 Localization Model</h2><p><strong>观测模型</strong>表示：所有测量点 $\vec{P}_{e,i}’$ 的<strong>预期位置</strong>（依赖于状态向量的方程${h}(\vec{x}_{veh})$ ）和所有<strong>观测值</strong> $\vec{P}_{m,i}$ （表示为 $\vec{y}$ ）在汽车坐标系下的<strong>残差</strong>：</p>
+<p><img src="/2024/01/31/laneloc/fig7.png" alt="fig7" title="figure 7"></p>
+<p><img src="/2024/01/31/laneloc/f6.png" alt="f6" title="formula 6"></p>
+<p><strong>观测噪声</strong>的方差包含：</p>
+<ul>
+<li>地图数据噪声 $\sigma_{map}^2$ ;</li>
+<li>back-projection 噪声 $\sigma_{cam}^2$ ，取决于相机高度和路的朝向。</li>
+</ul>
+<p><img src="/2024/01/31/laneloc/f7.png" alt="f7" title="formula 7"></p>
+<p>作者在实验过程中分别假设：$\sigma_{map}^2 = 10 cm$ ，$\sigma_{cam}^2 = 3 px$ 。观测噪声表示为一个<strong>取决于残差的概率函数</strong>。</p>
+<h2 id="3-2-Map-Matching"><a href="#3-2-Map-Matching" class="headerlink" title="3.2 Map Matching"></a>3.2 Map Matching</h2><p>用来定位的高精度地图包含表示<strong>路标和路沿的线段</strong>，而观测数据包含<strong>点</strong>；地图匹配的目标是实现<strong>测量点与线段之间的最佳可能匹配</strong>，必须满足横向和纵向匹配残差的最小化方可实现最佳匹配，因此，作者选择对地图上的线段<strong>采样为地图点进行匹配</strong>，如Fig. 8所示。</p>
+<p><img src="/2024/01/31/laneloc/fig8.png" alt="fig8" title="figure 8"></p>
+<h2 id="3-3-Measurement-Extraction"><a href="#3-3-Measurement-Extraction" class="headerlink" title="3.3 Measurement Extraction"></a>3.3 Measurement Extraction</h2><h3 id="3-3-1-Lane-Marking-Measurement"><a href="#3-3-1-Lane-Marking-Measurement" class="headerlink" title="3.3.1 Lane Marking Measurement"></a>3.3.1 Lane Marking Measurement</h3><p>作者使用一个<strong>定向匹配滤波器 oriented matched filter</strong>（在<strong>普通车道线检测系统</strong>中得到了成功应用）来检测车道线。</p>
+<p>为了检测车道线，利用当前位姿估计将地图投影到图片中，并将<strong>搜索线</strong>置于预期的车道线周围，定向匹配滤波器会在这些搜索线中根据图片中测量的路标识别出一个<strong>low-high-low灰度值模式</strong>，利用立体相机提供的深度信息，这些被探测到的位置会投影至道路平面上来决定在汽车坐标系中所需的观测值（即残差 $\vec{r}’$ ）。</p>
+<p>由于该投影过程对于汽车的俯仰角非常敏感，所以作者使用一个基于V-Diaparity 方法的<strong>俯仰角估计器</strong>来解决该问题。</p>
+<p><img src="/2024/01/31/laneloc/fig10.png" alt="fig10" title="figure 10"></p>
+<h3 id="3-3-2-Curb-Measurement"><a href="#3-3-2-Curb-Measurement" class="headerlink" title="3.3.2 Curb Measurement"></a>3.3.2 Curb Measurement</h3><p>作者使用一个基于强度图片 intensity image 和高度信息的<strong>基于分类器的识别</strong>来进行路沿探测，得到路沿在图片中的位置以及存在的概率参数。</p>
+<p><img src="/2024/01/31/laneloc/fig11.png" alt="fig11" title="figure 11"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
       </tags>
   </entry>
 </search>

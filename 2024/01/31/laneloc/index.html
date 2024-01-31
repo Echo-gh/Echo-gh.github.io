@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Schreiber, Markus, Carsten Knoppel, and Uwe Franke. “LaneLoc: Lane Marking Based Localization Using Highly Accurate Maps.” In 2013 IEEE Intelligent Vehicles Symposium (IV), 449–54. Gold Coast City, Au">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 LaneLoc_Lane marking based localization using highly accurate maps">
+<meta property="og:url" content="http://echo-gh.github.io/2024/01/31/laneloc/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Schreiber, Markus, Carsten Knoppel, and Uwe Franke. “LaneLoc: Lane Marking Based Localization Using Highly Accurate Maps.” In 2013 IEEE Intelligent Vehicles Symposium (IV), 449–54. Gold Coast City, Au">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/fig6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/fig7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/f6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/f7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/fig8.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/fig10.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/laneloc/fig11.png">
+<meta property="article:published_time" content="2024-01-31T14:19:25.000Z">
+<meta property="article:modified_time" content="2024-01-31T14:27:32.116Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Map Match">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/31/laneloc/fig2.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/01/31/laneloc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 LaneLoc_Lane marking based localization using highly accurate maps | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/31/laneloc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 LaneLoc_Lane marking based localization using highly accurate maps
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-01-31 22:19:25 / 修改时间：22:27:32" itemprop="dateCreated datePublished" datetime="2024-01-31T22:19:25+08:00">2024-01-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Map-Match/" itemprop="url" rel="index"><span itemprop="name">Map Match</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Schreiber, Markus, Carsten Knoppel, and Uwe Franke. “LaneLoc: Lane Marking Based Localization Using Highly Accurate Maps.” In <em>2013 IEEE Intelligent Vehicles Symposium (IV)</em>, 449–54. Gold Coast City, Australia: IEEE, 2013. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/IVS.2013.6629509">https://doi.org/10.1109/IVS.2013.6629509</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>作者利用双目立体相机系统和包含路沿与道路标志的先验高精度地图实现车辆定位。定位过程中，GNSS 位置只是用来进行初始化，后续的定位解算不需要GNSS。作者在长约50 km的郊区道路进行测试，最终的定位精度在分米级。</p>
+<span id="more"></span>
+<h1 id="2-Mapping"><a href="#2-Mapping" class="headerlink" title="2 Mapping"></a>2 Mapping</h1><p>制图过程如下所示：</p>
+<p><img src="/2024/01/31/laneloc/fig2.png" alt="fig2" title="figure 2"></p>
+<p>利用各个传感器采集到的数据制作鸟瞰视角地图，如下图所示：</p>
+<p><img src="/2024/01/31/laneloc/fig4.png" alt="fig4" title="figure 4"></p>
+<h1 id="3-Online-Localization"><a href="#3-Online-Localization" class="headerlink" title="3 Online Localization"></a>3 Online Localization</h1><p>作者的定位系统选择一个前向的立体相机系统以及一个IMU，如下图所示，其中GNSS 模块进行初始化。</p>
+<p><img src="/2024/01/31/laneloc/fig6.png" alt="fig6" title="figure 6"></p>
+<p>作者使用基于Kalman 滤波器的定位模型。</p>
+<h2 id="3-1-Localization-Model"><a href="#3-1-Localization-Model" class="headerlink" title="3.1 Localization Model"></a>3.1 Localization Model</h2><p><strong>观测模型</strong>表示：所有测量点 $\vec{P}_{e,i}’$ 的<strong>预期位置</strong>（依赖于状态向量的方程${h}(\vec{x}_{veh})$ ）和所有<strong>观测值</strong> $\vec{P}_{m,i}$ （表示为 $\vec{y}$ ）在汽车坐标系下的<strong>残差</strong>：</p>
+<p><img src="/2024/01/31/laneloc/fig7.png" alt="fig7" title="figure 7"></p>
+<p><img src="/2024/01/31/laneloc/f6.png" alt="f6" title="formula 6"></p>
+<p><strong>观测噪声</strong>的方差包含：</p>
+<ul>
+<li>地图数据噪声 $\sigma_{map}^2$ ;</li>
+<li>back-projection 噪声 $\sigma_{cam}^2$ ，取决于相机高度和路的朝向。</li>
+</ul>
+<p><img src="/2024/01/31/laneloc/f7.png" alt="f7" title="formula 7"></p>
+<p>作者在实验过程中分别假设：$\sigma_{map}^2 = 10 cm$ ，$\sigma_{cam}^2 = 3 px$ 。观测噪声表示为一个<strong>取决于残差的概率函数</strong>。</p>
+<h2 id="3-2-Map-Matching"><a href="#3-2-Map-Matching" class="headerlink" title="3.2 Map Matching"></a>3.2 Map Matching</h2><p>用来定位的高精度地图包含表示<strong>路标和路沿的线段</strong>，而观测数据包含<strong>点</strong>；地图匹配的目标是实现<strong>测量点与线段之间的最佳可能匹配</strong>，必须满足横向和纵向匹配残差的最小化方可实现最佳匹配，因此，作者选择对地图上的线段<strong>采样为地图点进行匹配</strong>，如Fig. 8所示。</p>
+<p><img src="/2024/01/31/laneloc/fig8.png" alt="fig8" title="figure 8"></p>
+<h2 id="3-3-Measurement-Extraction"><a href="#3-3-Measurement-Extraction" class="headerlink" title="3.3 Measurement Extraction"></a>3.3 Measurement Extraction</h2><h3 id="3-3-1-Lane-Marking-Measurement"><a href="#3-3-1-Lane-Marking-Measurement" class="headerlink" title="3.3.1 Lane Marking Measurement"></a>3.3.1 Lane Marking Measurement</h3><p>作者使用一个<strong>定向匹配滤波器 oriented matched filter</strong>（在<strong>普通车道线检测系统</strong>中得到了成功应用）来检测车道线。</p>
+<p>为了检测车道线，利用当前位姿估计将地图投影到图片中，并将<strong>搜索线</strong>置于预期的车道线周围，定向匹配滤波器会在这些搜索线中根据图片中测量的路标识别出一个<strong>low-high-low灰度值模式</strong>，利用立体相机提供的深度信息，这些被探测到的位置会投影至道路平面上来决定在汽车坐标系中所需的观测值（即残差 $\vec{r}’$ ）。</p>
+<p>由于该投影过程对于汽车的俯仰角非常敏感，所以作者使用一个基于V-Diaparity 方法的<strong>俯仰角估计器</strong>来解决该问题。</p>
+<p><img src="/2024/01/31/laneloc/fig10.png" alt="fig10" title="figure 10"></p>
+<h3 id="3-3-2-Curb-Measurement"><a href="#3-3-2-Curb-Measurement" class="headerlink" title="3.3.2 Curb Measurement"></a>3.3.2 Curb Measurement</h3><p>作者使用一个基于强度图片 intensity image 和高度信息的<strong>基于分类器的识别</strong>来进行路沿探测，得到路沿在图片中的位置以及存在的概率参数。</p>
+<p><img src="/2024/01/31/laneloc/fig11.png" alt="fig11" title="figure 11"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Map-Match/" rel="tag"><i class="fa fa-tag"></i> Map Match</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/31/vins/" rel="prev" title="论文记录 VINS-Mono_A Robust and Versatile Monocular Visual-Inertial State Estimator">
+      <i class="fa fa-chevron-left"></i> 论文记录 VINS-Mono_A Robust and Versatile Monocular Visual-Inertial State Estimator
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/31/cubeslam/" rel="next" title="论文记录 CubeSLAM_Monocular 3-D Object SLAM">
+      论文记录 CubeSLAM_Monocular 3-D Object SLAM <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Mapping"><span class="nav-text">2 Mapping</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Online-Localization"><span class="nav-text">3 Online Localization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Localization-Model"><span class="nav-text">3.1 Localization Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Map-Matching"><span class="nav-text">3.2 Map Matching</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Measurement-Extraction"><span class="nav-text">3.3 Measurement Extraction</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-Lane-Marking-Measurement"><span class="nav-text">3.3.1 Lane Marking Measurement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-Curb-Measurement"><span class="nav-text">3.3.2 Curb Measurement</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
