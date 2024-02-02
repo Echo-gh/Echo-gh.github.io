@@ -387,13 +387,14 @@
 ]]></content>
       <categories>
         <category>SLAM</category>
-        <category>Object SLAM</category>
+        <category>Pose Optimization</category>
       </categories>
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
         <tag>C++</tag>
         <tag>Object SLAM</tag>
+        <tag>Pose Optimization</tag>
       </tags>
   </entry>
   <entry>
@@ -1232,6 +1233,7 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
+        <tag>Object SLAM</tag>
         <tag>Pose Optimization</tag>
       </tags>
   </entry>
@@ -1275,6 +1277,107 @@
         <tag>SLAM</tag>
         <tag>Semantic</tag>
         <tag>Map Match</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Semantic Monocular SLAM for Highly Dynamic Environments</title>
+    <url>/2024/02/02/brasch2018/</url>
+    <content><![CDATA[<p>Brasch, Nikolas, Aljaz Bozic, Joe Lallemand, and Federico Tombari. “Semantic Monocular SLAM for Highly Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 393–400. Madrid: IEEE, 2018. <a href="https://doi.org/10.1109/IROS.2018.8593828">https://doi.org/10.1109/IROS.2018.8593828</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者通过结合<strong>基于特征法</strong>与<strong>直接法</strong>，来实现动态环境中的鲁棒性。</p>
+<p>本文的贡献：</p>
+<ul>
+<li>利用语义分割获取场景的语义信息，可检测<strong>潜在动态物体</strong>，并在后续跟踪中避免使用潜在动态物体上的特征点；</li>
+<li>提出一个<strong>概率模型</strong>，考虑观测到某个地图点的<strong>所有帧的语义信息</strong>来更新该地图点的语义类别；</li>
+<li>除了使用语义信息，还是用<strong>临时动作信息temporal dynamic information</strong> 来判断地图点是否是静态的；</li>
+<li>为了实现实时性能，作者设计了一个<strong>高效的在线概率更新方法</strong>；</li>
+<li>作者在合成和实际场景中测试了本算法，证明了本算法在高动态场景中可以获取更稳定的结果。</li>
+</ul>
+<span id="more"></span>
+<p><img src="/2024/02/02/brasch2018/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-Probabilistic-Semantic-SLAM"><a href="#3-Probabilistic-Semantic-SLAM" class="headerlink" title="3 Probabilistic Semantic SLAM"></a>3 Probabilistic Semantic SLAM</h1><p>本系统是基于ORB-SLAM 开发的，整体架构如Fig. 2所示，</p>
+<p><img src="/2024/02/02/brasch2018/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-Pose-estimation-and-mapping"><a href="#3-1-Pose-estimation-and-mapping" class="headerlink" title="3.1 Pose estimation and mapping"></a>3.1 Pose estimation and mapping</h2><p>鉴于ORB 特征点法和直接法的特点，作者会<strong>优先选择使用ORB 特征点法</strong>；而在特征点不充足的情况下（低纹理特征场景），使用直接法。包含重投影误差 $E_R$ 和光度误差 $E_P$ 的<strong>综合误差项</strong>如下所示：</p>
+<p><img src="/2024/02/02/brasch2018/f1.png" alt="f1" title="formula 1"></p>
+<p>作者使用带有鲁棒Huber 核的高斯牛顿法来求解非线性最小二乘问题，并使用逆协方差来代表<strong>观测的不确定度</strong>；对于每个新的观测，使用下式进行<strong>协方差传递更新</strong>：</p>
+<p><img src="/2024/02/02/brasch2018/f5.png" alt="f5" title="formula 5"></p>
+<h2 id="3-2-Probabilistic-outlier-rejection"><a href="#3-2-Probabilistic-outlier-rejection" class="headerlink" title="3.2 Probabilistic outlier rejection"></a>3.2 Probabilistic outlier rejection</h2><p>在更新地图点的位置参数时，由于一些观测较其他观测更为可靠，因此，使用一个概率模型将<strong>观测的方差</strong>作为权重的方法要比所有观测使用相同权重的方法表现更好。作者使用参数 $\phi$ 表示地图点的<strong>内点概率</strong>（静态点的可能），这样，地图点除了位置参数外，还包含深度 d，内点概率 $\phi$ ，以及语义类别 c。</p>
+<p>当地图点被观测到时，利用三角化计算深度估计值 $d_i$ ，以及估计的方差 $\tau_i^2$ 。作者用 $CNN(c_k | I_i) \in [0, 1]$ 表示CNN 网络输出结果，表示当前图片 $I_i$ 中该特征点属于类别 $c_k$ 的概率。特征点的<strong>深度观测似然概率</strong>如下所示：</p>
+<p><img src="/2024/02/02/brasch2018/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$\alpha_i$ 表示<strong>匹配准确度</strong>；$\bar{x} = (1 - x)$ 。上式的内在机理为：若当前特征点正确匹配，且地图点是静态的，那么 $\alpha_i, \phi$ 接近于1，则深度估计 $d_i$ 近似服从<strong>高斯分布</strong> $\mathcal{N}(\mu, \sigma^2)$ ；若当前匹配错误，或者特征点是动态的，则当前观测被认为服从均匀分布 $\mathcal{U}(a, b)$ ，在平均深度的估计中不提供任何有用的信息。与深度估计类似，作者将<strong>地图点的语义信息</strong>建模为网络输出 $CNN(c_k | I_i)$ 和错误匹配的均匀分布的混合：</p>
+<p><img src="/2024/02/02/brasch2018/f7.png" alt="f7" title="formula 7"></p>
+<p>这使得地图点可以高效地在线更新，以及在动态和静态之间进行<strong>平滑转换</strong>。</p>
+<p>对于特征点的<strong>内点概率与语义类别的关系</strong>，可用Beta 分布来建模：</p>
+<p><img src="/2024/02/02/brasch2018/f8.png" alt="f8" title="formula 8"></p>
+<p>其中，$A_k, B_k$ 是针对每种类别 k 的固定常数，表示种类 k 属于静态或动态的概率，如，对于汽车，$A_k$ 较低、$B_k$ 较高，意味着汽车具有较高的动态概率；此外，$A_k, B_k$ 还可以作为调整语义观测与深度观测之间的权重参数：较高的$A_k, B_k$ 会给予语义先验较运动先验在内点概率估计中更高的权重。</p>
+<p>Fig. 3给出了深度信息、内点概率和语义类别联合概率模型的依赖图：</p>
+<p><img src="/2024/02/02/brasch2018/fig3.png" alt="fig3" title="figure 3"></p>
+<p>近似推导可得到一个<strong>结合三项的后验概率</strong>：</p>
+<p><img src="/2024/02/02/brasch2018/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，第一项将深度视为高斯分布；第二项为内点概率服从关于深度观测信息的Beta 分布；第三项为内点概率服从关于语义类别的Beta 分布；$D = \{d_1, …, d_N\}$ 表示深度观测信息；$S = \{s_1, …, s_N\}$ 表示语义观测信息，其中，$s_i = (CNN(c_1|I_i), …, CNN(c_K|I_i))$ 为CNN 网络在K 个类别上的<strong>概率密度</strong>。</p>
+<p>当前<strong>内点概率</strong>可通过下式计算得到：</p>
+<p><img src="/2024/02/02/brasch2018/f15.png" alt="f15" title="formula 15"></p>
+<h2 id="3-3-Real-time-semantic-segmentation"><a href="#3-3-Real-time-semantic-segmentation" class="headerlink" title="3.3 Real-time semantic segmentation"></a>3.3 Real-time semantic segmentation</h2><p>高动态场景中，图片内容会快速发生变化，因此需要在每一帧中提取新的关键点来保持足够多的数量进行跟踪，为了让每个新的地图点得到一致的语义观测，作者对<strong>所有帧</strong>进行语义分割。作者使用<strong>ICNet</strong> 进行语义分割。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Dynamic SLAM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Semantic Mapping for View-Invariant Relocalization</title>
+    <url>/2024/02/02/li2019/</url>
+    <content><![CDATA[<p>Li, Jimmy, David Meger, and Gregory Dudek. “Semantic Mapping for View-Invariant Relocalization.” In <em>2019 International Conference on Robotics and Automation (ICRA)</em>, 7108–15. Montreal, QC, Canada: IEEE, 2019. <a href="https://doi.org/10.1109/ICRA.2019.8793624">https://doi.org/10.1109/ICRA.2019.8793624</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文使用了<strong>基于外观的几何特征</strong>与<strong>物体级语义特征</strong>的混合策略，主要贡献就是将传统视觉SLAM 和语义地标进行<strong>协同集成</strong>。</p>
+<span id="more"></span>
+<h1 id="3-Method"><a href="#3-Method" class="headerlink" title="3 Method"></a>3 Method</h1><h2 id="3-1-Problem-Statement"><a href="#3-1-Problem-Statement" class="headerlink" title="3.1 Problem Statement"></a>3.1 Problem Statement</h2><p>本文方法包含两个组件：</p>
+<ol>
+<li><strong>语义制图算法</strong>：跟踪物体帧间的3D 位姿变换，并产生包含物体的度量地图；</li>
+<li><strong>重定位算法</strong>：给定同一场景的两个语义地图，进行对齐并产生位姿变换。</li>
+</ol>
+<h2 id="3-2-Semantic-Mapping"><a href="#3-2-Semantic-Mapping" class="headerlink" title="3.2 Semantic Mapping"></a>3.2 Semantic Mapping</h2><p>使用<strong>立方体</strong>来表示物体，包含9自由度：位置、朝向以及尺寸。</p>
+<p>利用ORB-SLAM2 获取相机位姿，对物体检测算法处理过的图片中的物体进行三角化，通过<strong>基于采样的推理程序</strong>得到<strong>3D 立体框</strong>。为了简化3D 物体的几何推理，作者假定物体与场景布局是<strong>对齐的</strong>，场景布局包含三个正交轴。</p>
+<p><img src="/2024/02/02/li2019/a1.png" alt="a1" title="algorithm 1"></p>
+<h3 id="3-2-2-Data-Association"><a href="#3-2-2-Data-Association" class="headerlink" title="3.2.2 Data Association"></a>3.2.2 Data Association</h3><p>利用ORB-SLAM 获取关键帧的位姿后，将3D 物体地标<strong>投影至关键帧</strong>中得到相应 p 的bbox，关键帧中检测到的物体的bbox 记为 d，则定义p 与 d 之间的<strong>损失函数</strong>：</p>
+<p><img src="/2024/02/02/li2019/f1.png" alt="f1" title="formula 1"></p>
+<p>下标 $l, t, r, b$ 分别表示bbox 在像素坐标系中的左边、上边、右边、下边四条边。分母作用是<strong>归一化</strong>，防止较大物体的bbox 主导损失函数。</p>
+<h3 id="3-2-3-Object-Pose-Update"><a href="#3-2-3-Object-Pose-Update" class="headerlink" title="3.2.3 Object Pose Update"></a>3.2.3 Object Pose Update</h3><p>物体3D 框的<strong>复杂几何性质</strong>以及<strong>模糊的投影过程</strong>，会造成强烈的<strong>非凸性搜索空间</strong>；作者提出一种高效的搜索策略：</p>
+<ul>
+<li>首先，在一个<strong>缩小的</strong>搜索空间中高效产生多个物体假设；</li>
+<li>然后，利用它们在<strong>完整的</strong>搜索空间中快速探索多个局部最小值。</li>
+</ul>
+<p>将位于物体<strong>上表面的中心点</strong>X 投影至图像平面，构建服从高斯分布的概率模型：</p>
+<p><img src="/2024/02/02/li2019/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$f_k$ 表示将3D 点X 投影至图片关键帧k 中。计算后验分布：</p>
+<p><img src="/2024/02/02/li2019/f3.png" alt="f3" title="formula 3"></p>
+<p>得到一组3D 采样点，然后将其视为<strong>上表面的中心点</strong>来形成相应的3D bbox，将方向与场景布局进行<strong>对齐</strong>，尺寸选择该物体的<strong>平均尺寸</strong>，由此形成完整的3D bbox 估计集合 L，假设 $o\in L$ 对应的假设为 $H_o$ ，路标 $o$ 对应的物体假设 $h$ 的<strong>得分</strong>为：</p>
+<p><img src="/2024/02/02/li2019/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$K_o$ 表示有 o 关联检测的所有关键帧集合；$\delta_k$ 表示在关键帧 $k$ 中的关联检测；$f_k$ 将物体假设 h 投影至关键帧 $k$ 中；损失函数 $c$ 由式1描述；$\Gamma$ 表示两个物体 $h, h’$ <strong>在上下文环境中的相关性</strong>（如键盘和鼠标更有可能同时出现在一表面上）。</p>
+<p>得到所有假设的得分之后，利用最高得分的假设（且必须比现有假设的得分更高）来更新每个路标。</p>
+<h3 id="3-2-4-Contextual-Coherence"><a href="#3-2-4-Contextual-Coherence" class="headerlink" title="3.2.4 Contextual Coherence"></a>3.2.4 Contextual Coherence</h3><p>作者使用上下文约束来对物体的位姿估计进行<strong>正则化</strong>，以鼓励物体地标更符合典型的空间关系，作者之前的研究也证明了物体的<strong>共面性coplanarity</strong> 可视为对物体位姿估计的可靠约束。作者定义相关性函数 $\Gamma$ ：</p>
+<p><img src="/2024/02/02/li2019/f5.png" alt="f5" title="formula 5"></p>
+<p>其中，$BOTTOMDIST(h, h’)$ 给定两个3D bbox 的底面距离，$COPLANAR$ 指的是位于相同的表面上的两个物体。</p>
+<h2 id="3-3-Relocalization"><a href="#3-3-Relocalization" class="headerlink" title="3.3 Relocalization"></a>3.3 Relocalization</h2><p>给定两个包含一组物体地标的语义地图 $L_1, L_2$ ，重定位过程可通过下述公式解决：</p>
+<p><img src="/2024/02/02/li2019/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$\theta(o, L)$ 返回一组地标，地标位姿在坐标系 $o$ 中来表示；$\psi(s, L)$ 返回一组尺寸放大 $s$ 倍的地标；函数 $\Omega(L_1, L_2)$ 包含两个操作：</p>
+<ol>
+<li>利用Hungarian 算法计算两组地标的<strong>最佳匹配</strong>；</li>
+<li>对匹配结果进行内点识别，最终返回<strong>内点数量</strong>。</li>
+</ol>
+<p>完成地图匹配之后即可得到两个相机轨迹之间的相对转换关系。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Topology</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Topology</tag>
       </tags>
   </entry>
 </search>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Brasch, Nikolas, Aljaz Bozic, Joe Lallemand, and Federico Tombari. “Semantic Monocular SLAM for Highly Dynamic Environments.” In 2018 IEEE&#x2F;RSJ International Conference on Intelligent Robots and System">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Semantic Monocular SLAM for Highly Dynamic Environments">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/02/brasch2018/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Brasch, Nikolas, Aljaz Bozic, Joe Lallemand, and Federico Tombari. “Semantic Monocular SLAM for Highly Dynamic Environments.” In 2018 IEEE&#x2F;RSJ International Conference on Intelligent Robots and System">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/f1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/f5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/f6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/f7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/f8.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/f9.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/f15.png">
+<meta property="article:published_time" content="2024-02-02T02:53:48.000Z">
+<meta property="article:modified_time" content="2024-02-02T03:00:46.379Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Dynamic SLAM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/02/brasch2018/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/02/brasch2018/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Semantic Monocular SLAM for Highly Dynamic Environments | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/02/brasch2018/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Semantic Monocular SLAM for Highly Dynamic Environments
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-02 10:53:48 / 修改时间：11:00:46" itemprop="dateCreated datePublished" datetime="2024-02-02T10:53:48+08:00">2024-02-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Brasch, Nikolas, Aljaz Bozic, Joe Lallemand, and Federico Tombari. “Semantic Monocular SLAM for Highly Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 393–400. Madrid: IEEE, 2018. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/IROS.2018.8593828">https://doi.org/10.1109/IROS.2018.8593828</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者通过结合<strong>基于特征法</strong>与<strong>直接法</strong>，来实现动态环境中的鲁棒性。</p>
+<p>本文的贡献：</p>
+<ul>
+<li>利用语义分割获取场景的语义信息，可检测<strong>潜在动态物体</strong>，并在后续跟踪中避免使用潜在动态物体上的特征点；</li>
+<li>提出一个<strong>概率模型</strong>，考虑观测到某个地图点的<strong>所有帧的语义信息</strong>来更新该地图点的语义类别；</li>
+<li>除了使用语义信息，还是用<strong>临时动作信息temporal dynamic information</strong> 来判断地图点是否是静态的；</li>
+<li>为了实现实时性能，作者设计了一个<strong>高效的在线概率更新方法</strong>；</li>
+<li>作者在合成和实际场景中测试了本算法，证明了本算法在高动态场景中可以获取更稳定的结果。</li>
+</ul>
+<span id="more"></span>
+<p><img src="/2024/02/02/brasch2018/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-Probabilistic-Semantic-SLAM"><a href="#3-Probabilistic-Semantic-SLAM" class="headerlink" title="3 Probabilistic Semantic SLAM"></a>3 Probabilistic Semantic SLAM</h1><p>本系统是基于ORB-SLAM 开发的，整体架构如Fig. 2所示，</p>
+<p><img src="/2024/02/02/brasch2018/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-Pose-estimation-and-mapping"><a href="#3-1-Pose-estimation-and-mapping" class="headerlink" title="3.1 Pose estimation and mapping"></a>3.1 Pose estimation and mapping</h2><p>鉴于ORB 特征点法和直接法的特点，作者会<strong>优先选择使用ORB 特征点法</strong>；而在特征点不充足的情况下（低纹理特征场景），使用直接法。包含重投影误差 $E_R$ 和光度误差 $E_P$ 的<strong>综合误差项</strong>如下所示：</p>
+<p><img src="/2024/02/02/brasch2018/f1.png" alt="f1" title="formula 1"></p>
+<p>作者使用带有鲁棒Huber 核的高斯牛顿法来求解非线性最小二乘问题，并使用逆协方差来代表<strong>观测的不确定度</strong>；对于每个新的观测，使用下式进行<strong>协方差传递更新</strong>：</p>
+<p><img src="/2024/02/02/brasch2018/f5.png" alt="f5" title="formula 5"></p>
+<h2 id="3-2-Probabilistic-outlier-rejection"><a href="#3-2-Probabilistic-outlier-rejection" class="headerlink" title="3.2 Probabilistic outlier rejection"></a>3.2 Probabilistic outlier rejection</h2><p>在更新地图点的位置参数时，由于一些观测较其他观测更为可靠，因此，使用一个概率模型将<strong>观测的方差</strong>作为权重的方法要比所有观测使用相同权重的方法表现更好。作者使用参数 $\phi$ 表示地图点的<strong>内点概率</strong>（静态点的可能），这样，地图点除了位置参数外，还包含深度 d，内点概率 $\phi$ ，以及语义类别 c。</p>
+<p>当地图点被观测到时，利用三角化计算深度估计值 $d_i$ ，以及估计的方差 $\tau_i^2$ 。作者用 $CNN(c_k | I_i) \in [0, 1]$ 表示CNN 网络输出结果，表示当前图片 $I_i$ 中该特征点属于类别 $c_k$ 的概率。特征点的<strong>深度观测似然概率</strong>如下所示：</p>
+<p><img src="/2024/02/02/brasch2018/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$\alpha_i$ 表示<strong>匹配准确度</strong>；$\bar{x} = (1 - x)$ 。上式的内在机理为：若当前特征点正确匹配，且地图点是静态的，那么 $\alpha_i, \phi$ 接近于1，则深度估计 $d_i$ 近似服从<strong>高斯分布</strong> $\mathcal{N}(\mu, \sigma^2)$ ；若当前匹配错误，或者特征点是动态的，则当前观测被认为服从均匀分布 $\mathcal{U}(a, b)$ ，在平均深度的估计中不提供任何有用的信息。与深度估计类似，作者将<strong>地图点的语义信息</strong>建模为网络输出 $CNN(c_k | I_i)$ 和错误匹配的均匀分布的混合：</p>
+<p><img src="/2024/02/02/brasch2018/f7.png" alt="f7" title="formula 7"></p>
+<p>这使得地图点可以高效地在线更新，以及在动态和静态之间进行<strong>平滑转换</strong>。</p>
+<p>对于特征点的<strong>内点概率与语义类别的关系</strong>，可用Beta 分布来建模：</p>
+<p><img src="/2024/02/02/brasch2018/f8.png" alt="f8" title="formula 8"></p>
+<p>其中，$A_k, B_k$ 是针对每种类别 k 的固定常数，表示种类 k 属于静态或动态的概率，如，对于汽车，$A_k$ 较低、$B_k$ 较高，意味着汽车具有较高的动态概率；此外，$A_k, B_k$ 还可以作为调整语义观测与深度观测之间的权重参数：较高的$A_k, B_k$ 会给予语义先验较运动先验在内点概率估计中更高的权重。</p>
+<p>Fig. 3给出了深度信息、内点概率和语义类别联合概率模型的依赖图：</p>
+<p><img src="/2024/02/02/brasch2018/fig3.png" alt="fig3" title="figure 3"></p>
+<p>近似推导可得到一个<strong>结合三项的后验概率</strong>：</p>
+<p><img src="/2024/02/02/brasch2018/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，第一项将深度视为高斯分布；第二项为内点概率服从关于深度观测信息的Beta 分布；第三项为内点概率服从关于语义类别的Beta 分布；$D = \{d_1, …, d_N\}$ 表示深度观测信息；$S = \{s_1, …, s_N\}$ 表示语义观测信息，其中，$s_i = (CNN(c_1|I_i), …, CNN(c_K|I_i))$ 为CNN 网络在K 个类别上的<strong>概率密度</strong>。</p>
+<p>当前<strong>内点概率</strong>可通过下式计算得到：</p>
+<p><img src="/2024/02/02/brasch2018/f15.png" alt="f15" title="formula 15"></p>
+<h2 id="3-3-Real-time-semantic-segmentation"><a href="#3-3-Real-time-semantic-segmentation" class="headerlink" title="3.3 Real-time semantic segmentation"></a>3.3 Real-time semantic segmentation</h2><p>高动态场景中，图片内容会快速发生变化，因此需要在每一帧中提取新的关键点来保持足够多的数量进行跟踪，为了让每个新的地图点得到一致的语义观测，作者对<strong>所有帧</strong>进行语义分割。作者使用<strong>ICNet</strong> 进行语义分割。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Dynamic-SLAM/" rel="tag"><i class="fa fa-tag"></i> Dynamic SLAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/02/li2019/" rel="prev" title="论文记录 Semantic Mapping for View-Invariant Relocalization">
+      <i class="fa fa-chevron-left"></i> 论文记录 Semantic Mapping for View-Invariant Relocalization
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Probabilistic-Semantic-SLAM"><span class="nav-text">3 Probabilistic Semantic SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Pose-estimation-and-mapping"><span class="nav-text">3.1 Pose estimation and mapping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Probabilistic-outlier-rejection"><span class="nav-text">3.2 Probabilistic outlier rejection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Real-time-semantic-segmentation"><span class="nav-text">3.3 Real-time semantic segmentation</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
