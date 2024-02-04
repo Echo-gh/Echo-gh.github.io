@@ -1380,4 +1380,43 @@
         <tag>Topology</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 DS-SLAM_A Semantic Visual SLAM towards Dynamic Environments</title>
+    <url>/2024/02/04/ds-slam/</url>
+    <content><![CDATA[<p>Yu, Chao, Zuxin Liu, Xin-Jun Liu, Fugui Xie, Yi Yang, Qi Wei, and Qiao Fei. “DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 1168–74. Madrid: IEEE, 2018. <a href="https://doi.org/10.1109/IROS.2018.8593691">https://doi.org/10.1109/IROS.2018.8593691</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>提出一个基于ORB-SLAM2 应用于动态环境中的语义SLAM 系统——DS-SLAM，在公开数据集上进行测试，证明了本系统在动态环境中的<strong>精度与鲁棒性</strong>；</li>
+<li>添加一个<strong>实时语义分割网络线程</strong>，结合<strong>语义分割和运动一致性检验</strong>来滤除场景中的动态区域；</li>
+<li>创建了一个构建稠密3D 语义八叉树地图的线程。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-System-Introduction"><a href="#3-System-Introduction" class="headerlink" title="3 System Introduction"></a>3 System Introduction</h1><h2 id="3-1-Framework-of-DS-SLAM"><a href="#3-1-Framework-of-DS-SLAM" class="headerlink" title="3.1 Framework of DS-SLAM"></a>3.1 Framework of DS-SLAM</h2><p>系统架构如Fig. 1所示，DS-SLAM 运行5个线程：tracking, semantic segmentation, local mapping, loop closing and dense map creation。</p>
+<p><img src="/2024/02/04/ds-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>系统框架如Fig. 2所示，RGB 图片同时被跟踪线程和语义分割线程处理，跟踪线程提取ORB 特征点，<strong>粗略检验特征点的运动一致性，并保存潜在的外点；</strong>待像素级语义分割结果生成后，位于<strong>移动物体中的ORB 外点</strong>会被舍弃，然后利用剩余匹配的稳定特征点来计算转换矩阵。</p>
+<p><img src="/2024/02/04/ds-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-3-Moving-Consistency-Check"><a href="#3-3-Moving-Consistency-Check" class="headerlink" title="3.3 Moving Consistency Check"></a>3.3 Moving Consistency Check</h2><p>本系统认为，<strong>如果一个分割物体内的一些点被识别为动态的，那么就判定该物体是动态物体</strong>。</p>
+<p><strong>运动一致性检验</strong>步骤如下：</p>
+<ol>
+<li>首先，计算<strong>光流金字塔</strong>来获取当前帧中的匹配特征点；</li>
+<li>然后，如果特征点匹配对太靠近图片边缘，或者特征点匹配对中心的3*3 图像块的像素差异过大，那么该匹配对会被舍弃；</li>
+<li>接着，利用<strong>RANSAC</strong> 策略计算<strong>基础矩阵</strong>，在此基础上在当前帧中计算<strong>极线</strong>；</li>
+<li>最后，根据匹配点对与极线之间的距离来判断该匹配点对是否是动态的。</li>
+</ol>
+<p><img src="/2024/02/04/ds-slam/a1.png" alt="a1" title="algorithm1"></p>
+<h2 id="3-4-Outliers-Rejection"><a href="#3-4-Outliers-Rejection" class="headerlink" title="3.4 Outliers Rejection"></a>3.4 Outliers Rejection</h2><p>利用几何方法确定物体的轮廓太难，因此DS-SLAM 结合语义分割结果得到的物体轮廓，利用几何模块的运动一致性检验得到的<strong>动态特征点</strong>，判断物体轮廓内动态特征点的数量<strong>是否超过阈值</strong>，若超过阈值，则判定该物体属于<strong>动态物体</strong>，然后剔除掉属于该物体的<strong>所有特征点</strong>。</p>
+<p>作者的实验证明，本系统ORB 特征提取时间+移动一致性检验的时间，与语义分割线程所需的时间基本一致。</p>
+<p><img src="/2024/02/04/ds-slam/t1.png" alt="t1" title="table 4"></p>
+<p>由于人类活动会在大部分真实场景中影响机器人的定位，所以作者以人类作为一个典型示例，展示DS-SLAM 的效果，<strong>但理论上DS-SLAM 可以应用于多种不同的动态物体检测。</strong>如果语义分割结果中没有人类被检测到，则使用所有的ORB 特征点进行匹配与位姿解算；如果有人类被检测到，则结合运动一致性来判断是否属于动态物体。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Dynamic SLAM</tag>
+      </tags>
+  </entry>
 </search>

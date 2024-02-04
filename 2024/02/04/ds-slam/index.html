@@ -25,33 +25,27 @@
 
 
 
-  <meta name="description" content="Lianos, Konstantinos-Nektarios, Johannes L. Schönberger, Marc Pollefeys, and Torsten Sattler. “VSO: Visual Semantic Odometry.” In Computer Vision – ECCV 2018, edited by Vittorio Ferrari, Martial Heber">
+  <meta name="description" content="Yu, Chao, Zuxin Liu, Xin-Jun Liu, Fugui Xie, Yi Yang, Qi Wei, and Qiao Fei. “DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments.” In 2018 IEEE&#x2F;RSJ International Conference on Intelligent Rob">
 <meta property="og:type" content="article">
-<meta property="og:title" content="论文记录 VSO_Visual Semantic Odometry">
-<meta property="og:url" content="http://echo-gh.github.io/2024/01/30/vso/index.html">
+<meta property="og:title" content="论文记录 DS-SLAM_A Semantic Visual SLAM towards Dynamic Environments">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/04/ds-slam/index.html">
 <meta property="og:site_name" content="Echo&#39;s blog">
-<meta property="og:description" content="Lianos, Konstantinos-Nektarios, Johannes L. Schönberger, Marc Pollefeys, and Torsten Sattler. “VSO: Visual Semantic Odometry.” In Computer Vision – ECCV 2018, edited by Vittorio Ferrari, Martial Heber">
+<meta property="og:description" content="Yu, Chao, Zuxin Liu, Xin-Jun Liu, Fugui Xie, Yi Yang, Qi Wei, and Qiao Fei. “DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments.” In 2018 IEEE&#x2F;RSJ International Conference on Intelligent Rob">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/fig1.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/f1.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/f2.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/f3.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/f4.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/fig2.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/f4-1.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/f5.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/f6.png">
-<meta property="og:image" content="http://echo-gh.github.io/2024/01/30/vso/fig3.png">
-<meta property="article:published_time" content="2024-01-30T01:16:17.000Z">
-<meta property="article:modified_time" content="2024-01-31T14:29:28.690Z">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/04/ds-slam/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/04/ds-slam/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/04/ds-slam/a1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/04/ds-slam/t1.png">
+<meta property="article:published_time" content="2024-02-04T07:49:18.000Z">
+<meta property="article:modified_time" content="2024-02-04T07:59:56.877Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="SLAM">
 <meta property="article:tag" content="Semantic">
-<meta property="article:tag" content="Pose Optimization">
+<meta property="article:tag" content="Dynamic SLAM">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://echo-gh.github.io/2024/01/30/vso/fig1.png">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/04/ds-slam/fig1.png">
 
-<link rel="canonical" href="http://echo-gh.github.io/2024/01/30/vso/">
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/04/ds-slam/">
 
 
 <script id="page-configurations">
@@ -64,7 +58,7 @@
   };
 </script>
 
-  <title>论文记录 VSO_Visual Semantic Odometry | Echo's blog</title>
+  <title>论文记录 DS-SLAM_A Semantic Visual SLAM towards Dynamic Environments | Echo's blog</title>
   
 
 
@@ -208,7 +202,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/30/vso/">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/04/ds-slam/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/snoopy.jpg">
@@ -221,7 +215,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          论文记录 VSO_Visual Semantic Odometry
+          论文记录 DS-SLAM_A Semantic Visual SLAM towards Dynamic Environments
         </h1>
 
         <div class="post-meta">
@@ -230,16 +224,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2024-01-30 09:16:17" itemprop="dateCreated datePublished" datetime="2024-01-30T09:16:17+08:00">2024-01-30</time>
+              <time title="创建时间：2024-02-04 15:49:18 / 修改时间：15:59:56" itemprop="dateCreated datePublished" datetime="2024-02-04T15:49:18+08:00">2024-02-04</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-31 22:29:28" itemprop="dateModified" datetime="2024-01-31T22:29:28+08:00">2024-01-31</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -250,7 +238,7 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Pose-Optimization/" itemprop="url" rel="index"><span itemprop="name">Pose Optimization</span></a>
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
                 </span>
             </span>
 
@@ -265,56 +253,31 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Lianos, Konstantinos-Nektarios, Johannes L. Schönberger, Marc Pollefeys, and Torsten Sattler. “VSO: Visual Semantic Odometry.” In <em>Computer Vision – ECCV 2018</em>, edited by Vittorio Ferrari, Martial Hebert, Cristian Sminchisescu, and Yair Weiss, 11208:246–63. Lecture Notes in Computer Science. Cham: Springer International Publishing, 2018. <a target="_blank" rel="noopener" href="https://doi.org/10.1007/978-3-030-01225-0_15">https://doi.org/10.1007/978-3-030-01225-0_15</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者认为，VO 的核心问题在于<strong>数据关联DA</strong>。</p>
-<p>通常来讲，有两种方法来减少VO 中的漂移：</p>
+        <p>Yu, Chao, Zuxin Liu, Xin-Jun Liu, Fugui Xie, Yi Yang, Qi Wei, and Qiao Fei. “DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 1168–74. Madrid: IEEE, 2018. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/IROS.2018.8593691">https://doi.org/10.1109/IROS.2018.8593691</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
 <ol>
-<li>方法一：利用连续图片之间的<strong>短期关联</strong>来进行偏移矫正；</li>
-<li>方法二：利用回环检测实现<strong>长期关联</strong>。</li>
+<li>提出一个基于ORB-SLAM2 应用于动态环境中的语义SLAM 系统——DS-SLAM，在公开数据集上进行测试，证明了本系统在动态环境中的<strong>精度与鲁棒性</strong>；</li>
+<li>添加一个<strong>实时语义分割网络线程</strong>，结合<strong>语义分割和运动一致性检验</strong>来滤除场景中的动态区域；</li>
+<li>创建了一个构建稠密3D 语义八叉树地图的线程。</li>
 </ol>
-<p>传统的几何特征（点、线、面）在光照、视角变化下鲁棒性较差，不能在长距离上保持持续跟踪，而语义特征作为更高级的特征，语义特征在光照、视角、尺寸发生较大变化时仍然可以保持不变，使得<strong>中期关联</strong>成为可能，如Fig. 1所示。</p>
 <span id="more"></span>
-<p><img src="/2024/01/30/vso/fig1.png" alt="fig1" title="figure 1"></p>
-<p>本文的贡献如下：</p>
-<ul>
-<li>构建一个新的<strong>损失函数</strong>来最小化<strong>语义特征的重投影误差</strong>，并使用<strong>EM 算法</strong>进行最小化，且可以适用于任何语义分割算法；</li>
-<li>作者证明了将语义损失考虑进VO 中可以大幅减小平移漂移，且本算法可以<strong>直接集成</strong>到现有的VO 算法中，无论是直接法还是间接法；</li>
-<li>作者进行了实验验证，表明了该算法在特定条件下的效果，并讨论了当前的限制。</li>
-</ul>
-<h1 id="3-Visual-Semantic-Odometry"><a href="#3-Visual-Semantic-Odometry" class="headerlink" title="3 Visual Semantic Odometry"></a>3 Visual Semantic Odometry</h1><p>与文章(Bowman 等, 2017)采用物体的离散DA不同，本文考虑与物体边界的<strong>连续距离</strong>来定义损失函数。</p>
-<h2 id="3-1-Visual-Semantic-Odometry-Framework"><a href="#3-1-Visual-Semantic-Odometry-Framework" class="headerlink" title="3.1 Visual Semantic Odometry Framework"></a>3.1 Visual Semantic Odometry Framework</h2><p>传统里程计的目标函数是：</p>
-<p><img src="/2024/01/30/vso/f1.png" alt="f1" title="formula 1"></p>
-<p>作者定义的语义损失函数是：</p>
-<p><img src="/2024/01/30/vso/f2.png" alt="f2" title="formula 2"></p>
-<p>将传统的损失函数和语义损失函数结合起来便形成了本文算法的目标函数：</p>
-<p><img src="/2024/01/30/vso/f3.png" alt="f3" title="formula 3"></p>
-<h2 id="3-2-Semantic-Cost-Function"><a href="#3-2-Semantic-Cost-Function" class="headerlink" title="3.2 Semantic Cost Function"></a>3.2 Semantic Cost Function</h2><p>联系语义观测 $S_k$ ，相机位姿 $T_k$ 和3D 点 $P_i$ （包含标签 $Z_i$ 和位置 $X_i$ ）来定义<strong>观测似然模型</strong>：$p(S_k|T_k, X_i, Z_i=c)$ ，该似然函数应该随着 3D 点 $P_i$ 在图片中的投影位置 $\pi(T_k, X_i)$ 与标注为类别 c 的区域的最近<strong>距离成反比</strong>；基于此，作者利用了distance transform，如Fig. 2所示，作者首先由语义分割图片（a）为每一个分类 c 生成相应的二分值灰度图片（b），然后基于该灰度图片定义一个distance transform：</p>
-<p><img src="/2024/01/30/vso/f4.png" alt="DT" title="DT"></p>
-<p><img src="/2024/01/30/vso/fig2.png" alt="fig2" title="figure 2"></p>
-<p>利用 $DT^{(c)}_k(p)$ 定义观测似然函数：</p>
-<p><img src="/2024/01/30/vso/f4-1.png" alt="f4" title="formula 4"></p>
-<p>其中，$\pi$ 表示投影函数；$\sigma$ 表示语义图片分类的<strong>不确定性</strong>。为了简明起见，作者省略了归一化因子。根据上式，可通过调整相机位姿与点的位置，使得投影点移动到正确标签的区域内，以此最大化该似然函数。</p>
-<p>根据式（4）作者定义了语义损失项：</p>
-<p><img src="/2024/01/30/vso/f5.png" alt="f5" title="formula 5"></p>
-<p>其中，$w_i^{(c)}$ 表示点 $P_i$ 属于种类 c 的概率。从上式可以看出，$e_{sem}(k,i)$ 表示<strong>2D 距离的加权平均</strong>，每个投影点 $\pi(T_k, X_i)$ 到最近属于种类 c 的距离 $DT^{(c)}_k(\pi(T_k, X_i))$ 被相应的类别概率 $w_i^{(c)}$ 加权。</p>
-<p>值得注意的是，对于点 $P_i$ 的标签概率向量 $w_i$ 是通过所有对到该点的观测计算得到的：</p>
-<p><img src="/2024/01/30/vso/f6.png" alt="f6" title="formula 6"></p>
-<p>其中，$\mathcal{T}_i$ 表示观测到点 $P_i$ 的相机位姿集合；参数 $\alpha$ 为归一化参数。利用该准则可以通过累积语义观测来实现对标签概率向量 $w_i$ 的<strong>增量式细调</strong>。</p>
-<h2 id="3-3-Optimization"><a href="#3-3-Optimization" class="headerlink" title="3.3 Optimization"></a>3.3 Optimization</h2><p>式（5）、（6）表明优化参数涉及3D 点位置坐标，相机位姿以及种类关联参数，作者使用EM 算法进行求解，步骤如下：</p>
-<ul>
-<li>E step：基于式（6）计算每个点的权重向量 $w_i$ ，此步骤点坐标和相机位姿保持固定；</li>
-<li>M step：优化点坐标和相机位姿，此步骤权重参数保持固定。</li>
-</ul>
-<p>该优化框架中，将点 $P_i$ 的标签 $Z_i$ 视为<strong>隐变量</strong>。</p>
-<p>作者提到，使用本文提出的语义约束，可以实现不变观测，但是<strong>缺乏结构信息</strong>；仅使用语义项对地图点和相机位姿进行优化会导致<strong>欠约束</strong>，因为等式（4）表示的似然函数在物体边界内部服从<strong>均匀分布</strong>，为解决该问题，对于 $E_{sem}$ 的优化操作如下：</p>
+<h1 id="3-System-Introduction"><a href="#3-System-Introduction" class="headerlink" title="3 System Introduction"></a>3 System Introduction</h1><h2 id="3-1-Framework-of-DS-SLAM"><a href="#3-1-Framework-of-DS-SLAM" class="headerlink" title="3.1 Framework of DS-SLAM"></a>3.1 Framework of DS-SLAM</h2><p>系统架构如Fig. 1所示，DS-SLAM 运行5个线程：tracking, semantic segmentation, local mapping, loop closing and dense map creation。</p>
+<p><img src="/2024/02/04/ds-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>系统框架如Fig. 2所示，RGB 图片同时被跟踪线程和语义分割线程处理，跟踪线程提取ORB 特征点，<strong>粗略检验特征点的运动一致性，并保存潜在的外点；</strong>待像素级语义分割结果生成后，位于<strong>移动物体中的ORB 外点</strong>会被舍弃，然后利用剩余匹配的稳定特征点来计算转换矩阵。</p>
+<p><img src="/2024/02/04/ds-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-3-Moving-Consistency-Check"><a href="#3-3-Moving-Consistency-Check" class="headerlink" title="3.3 Moving Consistency Check"></a>3.3 Moving Consistency Check</h2><p>本系统认为，<strong>如果一个分割物体内的一些点被识别为动态的，那么就判定该物体是动态物体</strong>。</p>
+<p><strong>运动一致性检验</strong>步骤如下：</p>
 <ol>
-<li>如式（3）所示，与传统的VO 进行<strong>联合优化</strong>；</li>
-<li>利用<strong>多重点和语义约束</strong>来优化相机位姿；</li>
-<li>仅提供语义约束的点得到固定，然后只优化与它们相关的相机位姿来减小漂移，该方法不仅可以限制优化参数的数量，而且会在点之间引入<strong>结构相关</strong>，从而约束位姿求解（如Fig. 3所示）；</li>
-<li><strong>频繁</strong>使用语义优化可以减少一个点错误关联的概率，因为基于distance transform 梯度的优化可以保证该点足够靠近正确标签的区域，并不断拉向该区域。</li>
+<li>首先，计算<strong>光流金字塔</strong>来获取当前帧中的匹配特征点；</li>
+<li>然后，如果特征点匹配对太靠近图片边缘，或者特征点匹配对中心的3*3 图像块的像素差异过大，那么该匹配对会被舍弃；</li>
+<li>接着，利用<strong>RANSAC</strong> 策略计算<strong>基础矩阵</strong>，在此基础上在当前帧中计算<strong>极线</strong>；</li>
+<li>最后，根据匹配点对与极线之间的距离来判断该匹配点对是否是动态的。</li>
 </ol>
-<p><img src="/2024/01/30/vso/fig3.png" alt="fig3" title="figure 3"></p>
-<h2 id="3-4-Obtaining-Semantic-Constraints-amp-System-Integration"><a href="#3-4-Obtaining-Semantic-Constraints-amp-System-Integration" class="headerlink" title="3.4 Obtaining Semantic Constraints &amp; System Integration"></a>3.4 Obtaining Semantic Constraints &amp; System Integration</h2><p>类似于传统VO 使用的关键帧active window (AW)，作者也定义了一个关键帧active semantic window (ASW)，一个关键帧从AW 中剔除后会被添加进ASW，本算法在尽可能覆盖更多的轨迹的同时，也会限制ASW 中关键帧的数量。且，ASW 中关键帧的位姿<strong>不再进行优化</strong>，因为这些关键帧通常与目前的帧缺少光度/几何约束。</p>
+<p><img src="/2024/02/04/ds-slam/a1.png" alt="a1" title="algorithm1"></p>
+<h2 id="3-4-Outliers-Rejection"><a href="#3-4-Outliers-Rejection" class="headerlink" title="3.4 Outliers Rejection"></a>3.4 Outliers Rejection</h2><p>利用几何方法确定物体的轮廓太难，因此DS-SLAM 结合语义分割结果得到的物体轮廓，利用几何模块的运动一致性检验得到的<strong>动态特征点</strong>，判断物体轮廓内动态特征点的数量<strong>是否超过阈值</strong>，若超过阈值，则判定该物体属于<strong>动态物体</strong>，然后剔除掉属于该物体的<strong>所有特征点</strong>。</p>
+<p>作者的实验证明，本系统ORB 特征提取时间+移动一致性检验的时间，与语义分割线程所需的时间基本一致。</p>
+<p><img src="/2024/02/04/ds-slam/t1.png" alt="t1" title="table 4"></p>
+<p>由于人类活动会在大部分真实场景中影响机器人的定位，所以作者以人类作为一个典型示例，展示DS-SLAM 的效果，<strong>但理论上DS-SLAM 可以应用于多种不同的动态物体检测。</strong>如果语义分割结果中没有人类被检测到，则使用所有的ORB 特征点进行匹配与位姿解算；如果有人类被检测到，则结合运动一致性来判断是否属于动态物体。</p>
 
     </div>
 
@@ -327,7 +290,7 @@
           <div class="post-tags">
               <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
               <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
-              <a href="/tags/Pose-Optimization/" rel="tag"><i class="fa fa-tag"></i> Pose Optimization</a>
+              <a href="/tags/Dynamic-SLAM/" rel="tag"><i class="fa fa-tag"></i> Dynamic SLAM</a>
           </div>
 
         
@@ -336,13 +299,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2024/01/30/civera2011/" rel="prev" title="论文记录 Towards semantic SLAM using a monocular camera">
-      <i class="fa fa-chevron-left"></i> 论文记录 Towards semantic SLAM using a monocular camera
+    <a href="/2024/02/02/brasch2018/" rel="prev" title="论文记录 Semantic Monocular SLAM for Highly Dynamic Environments">
+      <i class="fa fa-chevron-left"></i> 论文记录 Semantic Monocular SLAM for Highly Dynamic Environments
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/01/30/x-view/" rel="next" title="论文记录 X-View_Graph-Based Semantic Multi-View Localization">
-      论文记录 X-View_Graph-Based Semantic Multi-View Localization <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -401,7 +361,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Visual-Semantic-Odometry"><span class="nav-text">3 Visual Semantic Odometry</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Visual-Semantic-Odometry-Framework"><span class="nav-text">3.1 Visual Semantic Odometry Framework</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Semantic-Cost-Function"><span class="nav-text">3.2 Semantic Cost Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Optimization"><span class="nav-text">3.3 Optimization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Obtaining-Semantic-Constraints-amp-System-Integration"><span class="nav-text">3.4 Obtaining Semantic Constraints &amp; System Integration</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-System-Introduction"><span class="nav-text">3 System Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Framework-of-DS-SLAM"><span class="nav-text">3.1 Framework of DS-SLAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Moving-Consistency-Check"><span class="nav-text">3.3 Moving Consistency Check</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Outliers-Rejection"><span class="nav-text">3.4 Outliers Rejection</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
