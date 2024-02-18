@@ -1,6 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>论文记录 Co-fusion_Real-time segmentation, tracking and fusion of multiple objects</title>
+    <url>/2024/01/27/Co-fusion/</url>
+    <content><![CDATA[<p>Runz, Martin, and Lourdes Agapito. “Co-Fusion: Real-Time Segmentation, Tracking and Fusion of Multiple Objects.” In <em>2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, 4471–78. Singapore, Singapore: IEEE, 2017. <a href="https://doi.org/10.1109/ICRA.2017.7989518">https://doi.org/10.1109/ICRA.2017.7989518</a>.</p>
+<h1 id="3-Overview-of-our-Method"><a href="#3-Overview-of-our-Method" class="headerlink" title="3 Overview of our Method"></a>3 Overview of our Method</h1><p>Co-Fusion 是一个可以<strong>实时处理</strong>每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体<strong>存储模型</strong>，而且可以<strong>独立跟踪</strong>它们的运动，每个模型是由<strong>一组3D 点</strong>构成的。本系统维护两组物体模型：当前在视野中可见的<strong>active 模型</strong>，以及曾经观测到的模型，但是目前不在视野中，记为<strong>inactive 模型</strong>。本系统的框架如Fig. 2所示，在初始化阶段，场景只包含一个active 模型——<strong>背景</strong>，初始化完成后，按照Fig .2的流程处理每一帧图片。</p>
+<span id="more"></span>
+<p><img src="/2024/01/27/Co-fusion/overview.png" alt="overview" title="Overview"></p>
+<p><strong>tracking</strong> 与 <strong>fusion</strong> 步骤是在GPU 上完成的，而<strong>segmentation</strong> 步骤是在CPU 上完成的。</p>
+<h2 id="3-1-Tracking"><a href="#3-1-Tracking" class="headerlink" title="3.1 Tracking"></a><strong>3.1 Tracking</strong></h2><p>在当前帧中跟踪每一个active 模型的6DOF 位姿，通过最小化每个模型独立的目标方程来实现，该目标方程包含：</p>
+<ul>
+<li><strong>几何误差</strong>：基于稠密的iterative closest point (ICP) 对齐；</li>
+<li><strong>光度误差</strong>：基于当前帧和存储的3D 模型之间的颜色差异。</li>
+</ul>
+<h2 id="3-2-Segmentation"><a href="#3-2-Segmentation" class="headerlink" title="3.2 Segmentation"></a><strong>3.2 Segmentation</strong></h2><p>该阶段将当前帧中的每一个像素与某个active 模型/物体联系起来，有两种手段来实现该过程：motion 以及 semantic labels。</p>
+<h3 id="3-2-1-Motion-segmentation"><a href="#3-2-1-Motion-segmentation" class="headerlink" title="3.2.1 Motion segmentation"></a>3.2.1 Motion segmentation</h3><p>将运动分割构建为一个使用全连接的Conditional Random Field (CRF) 解决的<strong>分类问题</strong>，可在CPU 上实时处理。当将一个像素与一个运动模型联系起来时，unary potentials 编码一个几何 <strong>ICP 损失函数</strong>。</p>
+<h3 id="3-2-2-Multi-class-image-segmentation"><a href="#3-2-2-Multi-class-image-segmentation" class="headerlink" title="3.2.2 Multi-class image segmentation"></a>3.2.2 Multi-class image segmentation</h3><p>利用基于<strong>深度学习</strong>的方法实现像素级的语义分割，作为动作分割的备选方案。</p>
+<h2 id="3-3-Fusion"><a href="#3-3-Fusion" class="headerlink" title="3.3 Fusion"></a>3.3 Fusion</h2><p>本系统使用surfel-based 融合方法，利用新估计的6DOF 位姿将属于某个模型的点更新至其active 模型。其中，每个模型是由一个sufel 列表构成的，$\mathcal{M}_m^s \in (\mathbf{p}\in \mathbb{R}^3, \mathbf{n}\in \mathbb{R}^3, \mathbf{c}\in \mathbb{N}^3, w \in \mathbb{R}, r \in \mathbb{R}, \mathbf{t}\in \mathbb{R}^2)$ ，分别表示位置、法向量、颜色、权重、半径以及两个时间戳。</p>
+<p>为了解决<strong>动态物体</strong>的跟踪问题，本系统使用 $\mathcal{T}_t = \{\mathbf{T}_{tm}()\}$ 来表示每个active 模型 $\mathcal{M}_m$ 在时间 t 相对于全局参考坐标系的位姿转换几何，即 $\mathbf{T}_{tm}$ 表示时间 t 时模型 $\mathcal{M}_m$ 的全局位姿。特别地，作者使用 $\mathbf{T}_{tb}$ 来表示<strong>背景模型</strong>的位姿转换。</p>
+<h1 id="5-Tracking-Active-Models"><a href="#5-Tracking-Active-Models" class="headerlink" title="5 Tracking Active Models"></a>5 Tracking Active Models</h1><p>对于时间t 的图像帧中的每一个active 模型  $\mathcal{M}_m$ ，系统通过配准<strong>当前的深度图</strong>和<strong>前一帧的深度图</strong>（通过将存储的3D 模型利用t-1 的估计位姿进行投影而获取）来跟踪其全局位姿 $\mathbf{T}_{tm}$ ，对每一个active 模型进行<strong>独立优化和跟踪</strong>。</p>
+<h2 id="5-1-Energy"><a href="#5-1-Energy" class="headerlink" title="5.1 Energy"></a>5.1 Energy</h2><p>误差项包含<strong>ICP 几何误差</strong>和<strong>光度误差</strong>，其中光度误差是由预测的图片（将之前帧中存储的3D 模型投影而获取）与当前图片的<strong>颜色差异</strong>构成，</p>
+<p><img src="/2024/01/27/Co-fusion/formula1.png" alt="formula1"></p>
+<h2 id="5-2-Geometry-Term"><a href="#5-2-Geometry-Term" class="headerlink" title="5.2 Geometry Term"></a>5.2 Geometry Term</h2><p>ICP 几何误差定义为以下两者之间的误差：</p>
+<ul>
+<li>当前帧深度图的<strong>逆向投影</strong>3D 点；</li>
+<li>前一帧t-1 <strong>预测</strong>的深度图。</li>
+</ul>
+<p><img src="/2024/01/27/Co-fusion/formula2.png" alt="formula2"></p>
+<p>其中，$\mathbf{v}_t^i$ 是当前帧深度图 $\mathcal{D}_t$ 中第i 个点的反向映射3D 点；$\mathbf{v}^i, \mathbf{n}^i$ 分别是t-1 时刻<strong>预测的深度图</strong>中模型m 第i 个点的反向映射点以及其法向量；$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>。</p>
+<h2 id="5-3-Photometric-Color-Term"><a href="#5-3-Photometric-Color-Term" class="headerlink" title="5.3 Photometric Color Term"></a>5.3 Photometric Color Term</h2><p>在给定(1)当前深度图、(2)每个active 模型的3D 几何估计，以及(3)将每个模型与前一帧对齐的位姿转换关系，即可将当前场景合成为一个与前一帧对齐的虚拟投影，进而，跟踪问题就变为了当前帧与合成的虚拟投影之间的<strong>光度配准</strong>问题：</p>
+<p><img src="/2024/01/27/Co-fusion/formula3.png" alt="formula3"></p>
+<p>其中，$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>；$\mathbf{I}_{t-1}()$ 表示提供模型在前一帧上顶点的颜色参数。</p>
+<p>为了鲁棒性和效率，本优化使用一个<strong>4层的空间金字塔</strong>来集成到一个<strong>由粗到细</strong>的方法中，并在GPU 中完成运算。</p>
+<h1 id="6-Motion-Segmentation"><a href="#6-Motion-Segmentation" class="headerlink" title="6 Motion Segmentation"></a>6 Motion Segmentation</h1><p>在跟踪步骤之后，在t 时刻有 $M_t$ 个新的位姿转换 $\{\mathbf{T}_{tm}\}$ ，来描述每个active 模型相对于全局坐标系的绝对位姿；接下来作者将帧t 的运动分割问题构建为一个<strong>分类标记问题</strong>，而标签为 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$ ，作者将 $M_t+1$ 种可能分配到<strong>每一个像素</strong>中，即 $\mathcal{l} \in \mathcal{L}_t = \{1, …, |M_t|+1\}$ ，除了 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$外还包含一个<strong>外点标签</strong> $\mathcal{l}_{|M_t|+1}$ 。</p>
+<p>为了可以在CPU上实施完成分割步骤，系统首先将当前帧分割为SLIC 超像素，并在超像素级别上进行分类标记，超像素的位置、颜色与深度由从属的所有像素均值得到。代价函数如下所示：</p>
+<p><img src="/2024/01/27/Co-fusion/formula4.png" alt="formula4"></p>
+<p>其中，i 和 j 图片中超像素的索引（从1到S）。</p>
+<h2 id="6-1-The-Unary-Potentials"><a href="#6-1-The-Unary-Potentials" class="headerlink" title="6.1 The Unary Potentials"></a>6.1 The Unary Potentials</h2><p>对于 $\psi_u(x_i)$ 表示为超像素 $s_i$ 分配标签为 $x_i$ 的代价，对于运动分割模式，该代价为<strong>ICP 几何对齐损失函数</strong>（式 2）。</p>
+<h2 id="6-2-The-Pairwise-Potentials"><a href="#6-2-The-Pairwise-Potentials" class="headerlink" title="6.2 The Pairwise Potentials"></a>6.2 The Pairwise Potentials</h2><p>对于 $\psi_p(x_i, x_j)$ 可表示为：</p>
+<p><img src="/2024/01/27/Co-fusion/formula5.png" alt="formula5"></p>
+<p>其中，$\mu(x_i, x_j)$ 惩罚<strong>临近像素标签不同</strong>的情况；$k_m(f_i, f_j)$ 测量像素外观之间的<strong>相似度</strong>，代表的含义是：两个超像素的<strong>特征向量</strong>之间的距离较小时应具有相同的标签，所谓的特征向量 $f_i$  包含2D 位置、RGB 颜色以及深度值。</p>
+<h2 id="6-3-Post-processing"><a href="#6-3-Post-processing" class="headerlink" title="6.3 Post-processing"></a>6.3 Post-processing</h2><p>在分割之后，采用一系列<strong>后处理步骤</strong>来获取更为鲁棒的结果：</p>
+<ol>
+<li>对具有相似位姿转换关系的模型进行<strong>融合操作</strong>；</li>
+<li>抑制相同标签中除最大之外的所有区域来保证不连接区域的<strong>独立建模</strong>；</li>
+<li>小于一定阈值的区域被<strong>舍弃</strong>。</li>
+</ol>
+<h2 id="6-4-Addition-of-New-Models"><a href="#6-4-Addition-of-New-Models" class="headerlink" title="6.4 Addition of New Models"></a>6.4 Addition of New Models</h2><p>一个区域内的外点数量若大于总像素数的3%，则判定该物体为一个新物体；若该新物体的部分几何结构已存在于地图中，会对重复的构建进行剔除。</p>
+<p>如果一个物体消失在视野中，并在一定帧内不再出现，则将该模型添加进inactive 列表中。</p>
+<h1 id="7-Object-Instance-Segmentation"><a href="#7-Object-Instance-Segmentation" class="headerlink" title="7 Object Instance Segmentation"></a>7 Object Instance Segmentation</h1><p>使用实例分割网络SharpMask 进行物体语义信息的获取。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu系统安装</title>
+    <url>/2024/01/26/Ubuntu-setup/</url>
+    <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作：</p>
+<span id="more"></span>
+<p><img src="/2024/01/26/Ubuntu-setup/rufus.png" alt="rufus" title="rufus设置界面"></p>
+<h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
+<ol>
+<li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
+</li>
+<li><p>删除”quite splash”后的”—-“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
+</li>
+<li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
+</li>
+</ol>
+<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”/etc/default/grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
+<h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
+<ol>
+<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
+<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
+</ol>
+<p><img src="/2024/01/26/Ubuntu-setup/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
+<p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
+<h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Ubuntu系统安装显卡驱动、CUDA、cuDNN</title>
     <url>/2024/01/26/Ubuntu-dl-setup/</url>
     <content><![CDATA[<p><strong>本文主要参考</strong><a href="https://zhuanlan.zhihu.com/p/643954422">该文章</a>。</p>
@@ -84,6 +176,180 @@
       </tags>
   </entry>
   <entry>
+    <title>论文记录 Probabilistic data association for semantic SLAM</title>
+    <url>/2024/02/18/bowman2017/</url>
+    <content><![CDATA[<p>Bowman, Sean L., Nikolay Atanasov, Kostas Daniilidis, and George J. Pappas. “Probabilistic Data Association for Semantic SLAM.” In <em>2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, 1722–29. Singapore, Singapore: IEEE, 2017. <a href="https://doi.org/10.1109/ICRA.2017.7989203">https://doi.org/10.1109/ICRA.2017.7989203</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
+<ul>
+<li>第一个将惯性、几何以及语义观测信息<strong>紧耦合至一个优化框架</strong>的定位算法；</li>
+<li>将联合metric-semantic SLAM 问题分解为<strong>连续（位姿）</strong>和<strong>离散（数据关联DA和语义标签）</strong>优化子问题；</li>
+<li>在包含<strong>光照变化的杂乱场景中</strong>利用里程计和视觉测量信息进行<strong>室内外真实场景</strong>的长轨迹测试实验。</li>
+</ul>
+<span id="more"></span>
+<h1 id="2-Probabilistic-Data-Association-in-SLAM"><a href="#2-Probabilistic-Data-Association-in-SLAM" class="headerlink" title="2 Probabilistic Data Association in SLAM"></a>2 Probabilistic Data Association in SLAM</h1><p>经典的SLAM问题可表述如下：移动传感器穿越一个未知环境，环境中包含M 个静态路标集合 $\mathcal{L} = \{l_m\}^M_{m=1}$ ，给定一组传感器测量数据 $\mathcal{Z} = \{z_k\}^K_{k=1}$ ，任务是估计地标位置 $\mathcal{L}$ 以及传感器的位姿序列 $\mathcal{X} = \{x_t\}^T_{t=1}$ 。</p>
+<p>大部分现有的工作都聚焦于估计  $\mathcal{L}$ 和  $\mathcal{X}$ ，很少强调数据关联 $\mathcal{D}$ <strong>实际上是未知的</strong>。这里的数据关联 $\mathcal{D} = \{(\alpha_k, \beta_k)\}^K_{k=1}$ 指的是在传感器位姿 $x_{\alpha_k}$ 情况下对路标 $l_{\beta_k}$ 的观测数据为 $z_k$ ，即在相机位姿 $x_{\alpha_k}$ 下，观测数据 $z_k$ 和路标 $l_{\beta_k}$ 之间的关联。</p>
+<p>SLAM问题的求解可表述为：在给定观测数据 $\mathcal{Z}$ 时，求解  $\mathcal{L}$ ，$\mathcal{X}$ 和 $\mathcal{D}$ 的最大似然估计：</p>
+<p><img src="/2024/02/18/bowman2017/f1.png" alt="f1" title="f1"></p>
+<p><strong>求解方法一：</strong></p>
+<p>给定先验估计 $\mathcal{X}^0,\mathcal{L}^0$ ，求得数据关联的最大似然估计 $\hat{\mathcal{D}}$ ，然后利用 $\hat{\mathcal{D}}$ 计算路标与传感器状态  $\mathcal{L}$ ，$\mathcal{X}$ 的最大似然估计。</p>
+<p><img src="/2024/02/18/bowman2017/f2.png" alt="f2" title="f2"></p>
+<p>上述方法的缺点在于，错误的数据匹配会严重影响估计结果；而如果为了避免错误匹配而舍弃模糊测量，在后续位姿优化后也无法利用这些模糊测量。</p>
+<p><strong>求解方法二：坐标下降法coordinate descent</strong></p>
+<p>为了避免方法一简单的一步处理，本方法使用迭代计算：</p>
+<p><img src="/2024/02/18/bowman2017/f3.png" alt="f3" title="f3"></p>
+<p>本方法可以在状态估计得到优化后返回来重新估计数据关联；然而，本方法不能解决模糊测量的问题，因为仍然需要一个<strong>硬数据关联</strong>。</p>
+<p>为解决模糊测量导致的数据关联问题，当估计数据关联时，作者不是简单地选取物体属于某个特定的类别 $\hat{\mathcal{D}}=p(\mathcal{D}|\mathcal{X}, \mathcal{L}, \mathcal{Z})$ ，而是<strong>考虑观测数据与路标之间所有可能的数据关联</strong> $D$ 。给定一个初始估计 $\mathcal{X}^i, \mathcal{L}^i$ ,使用 $\mathcal{D}$ 中的全部可能可得到一个更优的估计值，作者采用了expectation maximization (EM) 方法来最大化 expected measurement likelihood 进行计算：</p>
+<p><img src="/2024/02/18/bowman2017/f4.png" alt="f4" title="f4"></p>
+<p>其中， $\mathbb{D}$ 是 $\mathcal{D}$ 的所有取值空间。本EM 方程优势在于不需要硬数据关联 hard decisions on data association，而是平均所有可能的数据关联情况。</p>
+<p>为了与坐标下降法进行比较，上式可重写为：</p>
+<p><img src="/2024/02/18/bowman2017/f5.png" alt="f5" title="f5"></p>
+<p>其中，$w_{kj}^i$ 是一个量化了<strong>软数据关联</strong>的权重参数，表示K 个观测和M 个路标之间所有关联对应的权重参数，$w_{kj}^i = \sum_{\mathcal{D}\in\mathbb{D}(k,j)}p(\mathcal{D}|\mathcal{X}^i, \mathcal{L}^i, \mathcal{Z})$ ，其中，$\mathbb{D}(k,j) = \{\mathcal{D}\in\mathbb{D} | \beta_k = j\}\subseteq \mathbb{D}$ 是观测 $k$ 分配给地标 $j$ 的所有数据关联组合。</p>
+<p>上式的求解同样采用<strong>EM 方法</strong>：</p>
+<ul>
+<li>E 步骤：以权重参数 $w_{kj}^i$ 的形式来估计<strong>数据关联分布</strong> $p(\mathcal{D}|\mathcal{X}^i, \mathcal{L}^i, \mathcal{Z})$ ；</li>
+<li>M 步骤：根据E 步骤计算得到的分布来最大化 expected measurement log likelihood。</li>
+</ul>
+<h1 id="3-Semantic-SLAM"><a href="#3-Semantic-SLAM" class="headerlink" title="3 Semantic SLAM"></a>3 Semantic SLAM</h1><p>作者设定地标的状态 $l$ 包含位置信息 $l^p \in \mathbb{R}^3$ 和类别标签 $l^c$ 。为了估计<strong>地标状态</strong> $\mathcal{L}$ <strong>（位姿与种类）和传感器运动轨迹</strong> $\mathcal{X}$ ，作者使用三种信息源：惯性、几何点特征和物体语义观测。</p>
+<p><img src="/2024/02/18/bowman2017/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-1-Inertial-information"><a href="#3-1-Inertial-information" class="headerlink" title="3.1 Inertial information"></a>3.1 Inertial information</h2><p>作者每隔n 帧选取一张单目相机采集到的图像作为关键帧，第t 帧对应的传感器状态表示为 $x_t$  ，包含6自由度的位姿、速度以及IMU 偏差值。在相邻两个关键帧之间还有一组IMU 测量数据 $\mathcal{I}$ ，包含线性加速度和旋转角速度。</p>
+<h2 id="3-2-Geometric-information"><a href="#3-2-Geometric-information" class="headerlink" title="3.2 Geometric information"></a>3.2 Geometric information</h2><p>作者从每一个关键帧中提取ORB 特征点，并与后续的关键帧进行匹配。</p>
+<h2 id="3-3-Semantic-information"><a href="#3-3-Semantic-information" class="headerlink" title="3.3 Semantic information"></a>3.3 Semantic information</h2><p>从第t 个关键帧中检测到一组物体 $\mathcal{S}_t$ ，其中每个物体表示为 $\mathbf{s}_k = (s_k^c, s_k^s, s_k^b) \in \mathcal{S}_t$ ，三个参数分别表示所属的物体种类、量化的检测置信度得分，以及bounding box。本文的物体检测使用deformable parts model (DPM) 算法完成，该算法可以在CPU上实时运行。</p>
+<p>如果语义观测 $\mathbf{s}_k$ 的数据关联 $\mathcal{D} = \{(\alpha_k, \beta_k)\}$ 已知，<strong>语义观测似然</strong>可以分解为：</p>
+<script type="math/tex; mode=display">p(\mathbf{s}_k|x_{\alpha_k},l_{\beta_k})=p(s_k^c|l_{\beta_k}^c)p(s_k^s|l_{\beta_k}^c,s_k^c)p(s_k^b|x_{\alpha_k},l_{\beta_k}^p)</script><p>其中，类别估计概率分布 $p(s_k^c|l_{\beta_k}^c)$ 对应于物体检测的<strong>混淆矩阵</strong>，其与得分分布（置信度）$p(s_k^s|l_{\beta_k}^c,s_k^c)$ 可以经过离线学习获取。而bounding-box 似然 $p(s_k^b|x_{\alpha_k},l_{\beta_k}^p)$ 被假设服从正态分布，其均值为物体中心在成像平面上的透视投影 (???)，协方差与探测的bounding-box 尺寸成比例关系。</p>
+<blockquote>
+<p>作者将<strong>语义SLAM 问题</strong>表述如下：</p>
+<p>给定惯性测量 $\mathcal{I} = \{\mathcal{I}_t\}^T_{t=1}$ ，几何测量 $\mathcal{Y} = \{\mathcal{Y}_t\}^T_{t=1}$ 和语义测量 $\mathcal{S} = \{\mathcal{S}_t\}^T_{t=1}$ ，估计传感器的状态轨迹 $\mathcal{X}$ 以及环境中物体的位置和类别 $\mathcal{L}$ 。</p>
+</blockquote>
+<p>作者使用惯性和视觉几何测量信息来跟踪<strong>传感器的局部运动轨迹</strong>，不恢复几何结构。而语义测量信息用来构建包含物体信息的地图用以<strong>回环检测</strong>，不仅鲁棒性更好、精确度更高，而且相较于保留全部几何结构信息的SLAM 方法更为高效。</p>
+<h1 id="4-Semantic-SLAM-using-EM"><a href="#4-Semantic-SLAM-using-EM" class="headerlink" title="4 Semantic SLAM using EM"></a>4 Semantic SLAM using EM</h1><blockquote>
+<p>在优化过程中，作者除了将<strong>数据关联</strong>视为一个隐变量外，也将离散的<strong>路标类别</strong>视为一个隐变量，从而对离散变量和连续变量完成干净且高效的区分。</p>
+</blockquote>
+<p>几何特征点的数据关联由现有的特征跟踪算法提供，因此，本文提到的隐变量为语义观测信息的数据关联 $\mathcal{D}$  和地标所属类别 $l_{1:M}^c$  。</p>
+<p>利用EM 求解语义SLAM 过程如下：</p>
+<p><img src="/2024/02/18/bowman2017/f6.png" alt="f6" title="f6"></p>
+<p>其中，$\mathbb{D}_t$ 是在时间戳 t 时刻观测数据中所有可能数据关联的组合，$\mathbb{D}_t(i,j)\subseteq \mathbb{D}_t$ 是所有可能的数据关联中观测 $i$ 分配给地标 $j$ 的组合。</p>
+<h2 id="Object-classes-and-data-association-E-step"><a href="#Object-classes-and-data-association-E-step" class="headerlink" title="Object classes and data association (E step)"></a>Object classes and data association (E step)</h2><p>一旦每一个<strong>测量-地标匹配对</strong>的权重参数 $w_{kj}^{t,(i)}$ 得到之后，即可用于传感器状态和地标位置的连续优化中。此外，物体类别的最大似然 $l^c$ 也可以通过计算得到的 k 值进行恢复：</p>
+<p><img src="/2024/02/18/bowman2017/f7.png" alt="f7" title="f7"></p>
+<h2 id="Pose-graph-optimization-M-step"><a href="#Pose-graph-optimization-M-step" class="headerlink" title="Pose graph optimization (M step)"></a>Pose graph optimization (M step)</h2><p>作者使用位姿图进行优化。图包含一组顶点 $\mathcal{V}$ ，每个顶点对应一个优化变量；顶点之间还包含一组因子 $\mathcal{F}$ ，对应损失函数。优化方程如下所示：</p>
+<p><img src="/2024/02/18/bowman2017/f8.png" alt="f8" title="f8"></p>
+<p>前人的工作使用硬数据关联 a hard data association，在传感器位姿节点和地标节点之间定义一个单独的因子factor；而本文考虑使用soft semantic data association multiple factors，在节点间使用多个因子进行关联：Semantic Factors, Geometric Factors and Inertial Factors。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Semantic Monocular SLAM for Highly Dynamic Environments</title>
+    <url>/2024/02/02/brasch2018/</url>
+    <content><![CDATA[<p>Brasch, Nikolas, Aljaz Bozic, Joe Lallemand, and Federico Tombari. “Semantic Monocular SLAM for Highly Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 393–400. Madrid: IEEE, 2018. <a href="https://doi.org/10.1109/IROS.2018.8593828">https://doi.org/10.1109/IROS.2018.8593828</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者通过结合<strong>基于特征法</strong>与<strong>直接法</strong>，来实现动态环境中的鲁棒性。</p>
+<p>本文的贡献：</p>
+<ul>
+<li>利用语义分割获取场景的语义信息，可检测<strong>潜在动态物体</strong>，并在后续跟踪中避免使用潜在动态物体上的特征点；</li>
+<li>提出一个<strong>概率模型</strong>，考虑观测到某个地图点的<strong>所有帧的语义信息</strong>来更新该地图点的语义类别；</li>
+<li>除了使用语义信息，还是用<strong>临时动作信息temporal dynamic information</strong> 来判断地图点是否是静态的；</li>
+<li>为了实现实时性能，作者设计了一个<strong>高效的在线概率更新方法</strong>；</li>
+<li>作者在合成和实际场景中测试了本算法，证明了本算法在高动态场景中可以获取更稳定的结果。</li>
+</ul>
+<span id="more"></span>
+<p><img src="/2024/02/02/brasch2018/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-Probabilistic-Semantic-SLAM"><a href="#3-Probabilistic-Semantic-SLAM" class="headerlink" title="3 Probabilistic Semantic SLAM"></a>3 Probabilistic Semantic SLAM</h1><p>本系统是基于ORB-SLAM 开发的，整体架构如Fig. 2所示，</p>
+<p><img src="/2024/02/02/brasch2018/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-Pose-estimation-and-mapping"><a href="#3-1-Pose-estimation-and-mapping" class="headerlink" title="3.1 Pose estimation and mapping"></a>3.1 Pose estimation and mapping</h2><p>鉴于ORB 特征点法和直接法的特点，作者会<strong>优先选择使用ORB 特征点法</strong>；而在特征点不充足的情况下（低纹理特征场景），使用直接法。包含重投影误差 $E_R$ 和光度误差 $E_P$ 的<strong>综合误差项</strong>如下所示：</p>
+<p><img src="/2024/02/02/brasch2018/f1.png" alt="f1" title="formula 1"></p>
+<p>作者使用带有鲁棒Huber 核的高斯牛顿法来求解非线性最小二乘问题，并使用逆协方差来代表<strong>观测的不确定度</strong>；对于每个新的观测，使用下式进行<strong>协方差传递更新</strong>：</p>
+<p><img src="/2024/02/02/brasch2018/f5.png" alt="f5" title="formula 5"></p>
+<h2 id="3-2-Probabilistic-outlier-rejection"><a href="#3-2-Probabilistic-outlier-rejection" class="headerlink" title="3.2 Probabilistic outlier rejection"></a>3.2 Probabilistic outlier rejection</h2><p>在更新地图点的位置参数时，由于一些观测较其他观测更为可靠，因此，使用一个概率模型将<strong>观测的方差</strong>作为权重的方法要比所有观测使用相同权重的方法表现更好。作者使用参数 $\phi$ 表示地图点的<strong>内点概率</strong>（静态点的可能），这样，地图点除了位置参数外，还包含深度 d，内点概率 $\phi$ ，以及语义类别 c。</p>
+<p>当地图点被观测到时，利用三角化计算深度估计值 $d_i$ ，以及估计的方差 $\tau_i^2$ 。作者用 $CNN(c_k | I_i) \in [0, 1]$ 表示CNN 网络输出结果，表示当前图片 $I_i$ 中该特征点属于类别 $c_k$ 的概率。特征点的<strong>深度观测似然概率</strong>如下所示：</p>
+<p><img src="/2024/02/02/brasch2018/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$\alpha_i$ 表示<strong>匹配准确度</strong>；$\bar{x} = (1 - x)$ 。上式的内在机理为：若当前特征点正确匹配，且地图点是静态的，那么 $\alpha_i, \phi$ 接近于1，则深度估计 $d_i$ 近似服从<strong>高斯分布</strong> $\mathcal{N}(\mu, \sigma^2)$ ；若当前匹配错误，或者特征点是动态的，则当前观测被认为服从均匀分布 $\mathcal{U}(a, b)$ ，在平均深度的估计中不提供任何有用的信息。与深度估计类似，作者将<strong>地图点的语义信息</strong>建模为网络输出 $CNN(c_k | I_i)$ 和错误匹配的均匀分布的混合：</p>
+<p><img src="/2024/02/02/brasch2018/f7.png" alt="f7" title="formula 7"></p>
+<p>这使得地图点可以高效地在线更新，以及在动态和静态之间进行<strong>平滑转换</strong>。</p>
+<p>对于特征点的<strong>内点概率与语义类别的关系</strong>，可用Beta 分布来建模：</p>
+<p><img src="/2024/02/02/brasch2018/f8.png" alt="f8" title="formula 8"></p>
+<p>其中，$A_k, B_k$ 是针对每种类别 k 的固定常数，表示种类 k 属于静态或动态的概率，如，对于汽车，$A_k$ 较低、$B_k$ 较高，意味着汽车具有较高的动态概率；此外，$A_k, B_k$ 还可以作为调整语义观测与深度观测之间的权重参数：较高的$A_k, B_k$ 会给予语义先验较运动先验在内点概率估计中更高的权重。</p>
+<p>Fig. 3给出了深度信息、内点概率和语义类别联合概率模型的依赖图：</p>
+<p><img src="/2024/02/02/brasch2018/fig3.png" alt="fig3" title="figure 3"></p>
+<p>近似推导可得到一个<strong>结合三项的后验概率</strong>：</p>
+<p><img src="/2024/02/02/brasch2018/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，第一项将深度视为高斯分布；第二项为内点概率服从关于深度观测信息的Beta 分布；第三项为内点概率服从关于语义类别的Beta 分布；$D = \{d_1, …, d_N\}$ 表示深度观测信息；$S = \{s_1, …, s_N\}$ 表示语义观测信息，其中，$s_i = (CNN(c_1|I_i), …, CNN(c_K|I_i))$ 为CNN 网络在K 个类别上的<strong>概率密度</strong>。</p>
+<p>当前<strong>内点概率</strong>可通过下式计算得到：</p>
+<p><img src="/2024/02/02/brasch2018/f15.png" alt="f15" title="formula 15"></p>
+<h2 id="3-3-Real-time-semantic-segmentation"><a href="#3-3-Real-time-semantic-segmentation" class="headerlink" title="3.3 Real-time semantic segmentation"></a>3.3 Real-time semantic segmentation</h2><p>高动态场景中，图片内容会快速发生变化，因此需要在每一帧中提取新的关键点来保持足够多的数量进行跟踪，为了让每个新的地图点得到一致的语义观测，作者对<strong>所有帧</strong>进行语义分割。作者使用<strong>ICNet</strong> 进行语义分割。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 CubeSLAM_Monocular 3-D Object SLAM</title>
+    <url>/2024/01/31/cubeslam/</url>
+    <content><![CDATA[<p>Yang, Shichao, and Sebastian Scherer. “CubeSLAM: Monocular 3-D Object SLAM.” <em>IEEE Transactions on Robotics</em> 35, no. 4 (August 2019): 925–38. <a href="https://doi.org/10.1109/TRO.2019.2909168">https://doi.org/10.1109/TRO.2019.2909168</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于静态与动态场景中，将2D、3D 物体探测与SLAM 位姿估计相结合的系统，如Fig. 1所示。当给定检测到的2D 物体时，利用vanishing point (VP) 产生3D 立方体，然后通过多视角BA ，利用点和相机对立方体进行进一步的优化。</p>
+<span id="more"></span>
+<p><img src="/2024/01/31/cubeslam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>3D 物体在本系统中的作用有两个方面：</p>
+<ol>
+<li>在BA 过程中提供几何和尺寸约束；</li>
+<li>为难以进行三角测量的点提供深度信息初始化。</li>
+</ol>
+<p>在动态场景中，本系统不是简单地将动态观测物体视为外点，而是基于动态点观察与动作模型约束，联合优化相机与物体的轨迹。</p>
+<p>本文做出的贡献总结如下：</p>
+<ul>
+<li>不使用先验物体模型的高效、准确以及鲁棒的<strong>单张图片3D 立方体探测方法</strong>；</li>
+<li>在相机、物体与点之间使用新颖测量手段的<strong>物体SLAM 方法</strong>，在许多数据集上实现了更好的位姿估计；</li>
+<li>实验结果证明<strong>物体探测</strong>与<strong>SLAM</strong> 两者相得益彰；</li>
+<li>一个在动态场景中<strong>利用移动物体来提高位姿估计</strong>的方法。</li>
+</ul>
+<h1 id="3-Single-Image-3-D-Object-Detection"><a href="#3-Single-Image-3-D-Object-Detection" class="headerlink" title="3 Single Image 3-D Object Detection"></a>3 Single Image 3-D Object Detection</h1><p><img src="/2024/01/31/cubeslam/fig2.png" alt="fig2" title="figure 2"></p>
+<p><img src="/2024/01/31/cubeslam/fig3.png" alt="fig3" title="figure 3"></p>
+<p><img src="/2024/01/31/cubeslam/fig4.png" alt="fig4" title="figure 4"></p>
+<h1 id="4-Object-SLAM"><a href="#4-Object-SLAM" class="headerlink" title="4 Object SLAM"></a>4 Object SLAM</h1><h2 id="4-3-Data-Association"><a href="#4-3-Data-Association" class="headerlink" title="4.3 Data Association"></a>4.3 Data Association</h2><p>作者进行数据关联的步骤如下：</p>
+<ol>
+<li>首先，如果特征点在至少两帧图片中被观测到位于2D 物体检测框中，且它们距离3D 的立方体中心小于1m 时，将这些特征点与对应的物体关联起来；</li>
+<li>如果两个物体在不同帧中拥有最多数量的共同特征点，且点的数量超过一定阈值（本文设定为10）时，判定两个物体为同一物体并进行数据关联。</li>
+<li>需要注意的是，当物体几乎没有与其他帧相关联的特征点时，将该物体判定为动态物体，如Fig. 5中的青色框汽车。</li>
+</ol>
+<p><img src="/2024/01/31/cubeslam/fig5.png" alt="fig5" title="figure 5"></p>
+<h1 id="5-Dynamic-SLAM"><a href="#5-Dynamic-SLAM" class="headerlink" title="5 Dynamic SLAM"></a>5 Dynamic SLAM</h1><p>为了减少未知参量让问题可解，作者使用了两个假设：<strong>刚体假设</strong>与<strong>物理运动模型假设</strong>。</p>
+<ul>
+<li>刚体假设是为了保证特征点在关联物体上的位置保持不变，这使得作者可以使用标准的3D 地图点重投影误差来优化位置参数；</li>
+<li>最简单的运动模型就是有着统一速度的常数运动模型，至于一些特定物体，如自行车，会额外受限于nonholonomic wheel model。</li>
+</ul>
+<h2 id="5-2-SLAM-Optimization"><a href="#5-2-SLAM-Optimization" class="headerlink" title="5.2 SLAM Optimization"></a>5.2 SLAM Optimization</h2><p>动态物体估计的因子图如Fig. 6所示，其中绿色方框是测量因子，包含：camera-object 因子，object-velocity 因子，以及point-camera-object 因子。</p>
+<p><img src="/2024/01/31/cubeslam/fig6.png" alt="fig6" title="figure 6"></p>
+<h2 id="5-3-Dynamic-Data-Association"><a href="#5-3-Dynamic-Data-Association" class="headerlink" title="5.3 Dynamic Data Association"></a>5.3 Dynamic Data Association</h2><p>4.3节使用的静态物体数据关联不适用于动态物体，因为单眼相机动态场景中，很难准确预测物体与特征点的运动，且当物体运动不准确时难以应用对极几何进行计算。因此，作者使用2D KLT 稀疏光流算法进行动态物体特征点的跟踪，该算法并不需要3D 点位置信息。在使用像素追踪之后，考虑物体的运动利用三角测量计算动态特征的3D 位置。</p>
+<h1 id="8-Experiments-Object-SLAM"><a href="#8-Experiments-Object-SLAM" class="headerlink" title="8 Experiments-Object SLAM"></a>8 Experiments-Object SLAM</h1><h2 id="8-1-TUM-RGBD-and-ICL-NUIM-Dataset"><a href="#8-1-TUM-RGBD-and-ICL-NUIM-Dataset" class="headerlink" title="8.1 TUM RGBD and ICL-NUIM Dataset"></a>8.1 TUM RGBD and ICL-NUIM Dataset</h2><p>为了更好地评估单目位姿偏移，作者在使用及结果对比时关掉了ORB SLAM 的回环检测模块。</p>
+<p>Fig. 9所示的是在TUM fr3_cabinet 数据集上的实验结果，由于该场景特征点太少，导致现有的单目SLAM 算法均无法完成实验。而本文提出的算法仅使用物体进行定位，实现了较好的定位效果。Fig. 9左边下图中估计的立方体存在较大的误差，但经过多视角优化后，可以与真实点云实现良好的契合。实验结果如Table 2所示。</p>
+<p><img src="/2024/01/31/cubeslam/fig9.png" alt="fig9" title="figure 9"></p>
+<p><img src="/2024/01/31/cubeslam/t2.png" alt="t2" title="table 2"></p>
+<h2 id="8-2-Collected-Chair-Dataset"><a href="#8-2-Collected-Chair-Dataset" class="headerlink" title="8.2 Collected Chair Dataset"></a>8.2 Collected Chair Dataset</h2><p><img src="/2024/01/31/cubeslam/fig10.png" alt="fig10" title="figure 10"></p>
+<h2 id="8-4-Dynamic-Object"><a href="#8-4-Dynamic-Object" class="headerlink" title="8.4 Dynamic Object"></a>8.4 Dynamic Object</h2><p><img src="/2024/01/31/cubeslam/fig12.png" alt="fig12" title="figure 12"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Pose Optimization</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Pose Optimization</tag>
+        <tag>Object SLAM</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>论文记录 Towards semantic SLAM using a monocular camera</title>
     <url>/2024/01/30/civera2011/</url>
     <content><![CDATA[<p>Civera, J., D. Galvez-Lopez, L. Riazuelo, J. D. Tardos, and J. M. M. Montiel. “Towards Semantic SLAM Using a Monocular Camera.” In <em>2011 IEEE/RSJ International Conference on Intelligent Robots and Systems</em>, 1277–84. San Francisco, CA: IEEE, 2011. <a href="https://doi.org/10.1109/IROS.2011.6094648">https://doi.org/10.1109/IROS.2011.6094648</a>.</p>
@@ -150,66 +416,6 @@
       </tags>
   </entry>
   <entry>
-    <title>论文记录 Co-fusion_Real-time segmentation, tracking and fusion of multiple objects</title>
-    <url>/2024/01/27/Co-fusion/</url>
-    <content><![CDATA[<p>Runz, Martin, and Lourdes Agapito. “Co-Fusion: Real-Time Segmentation, Tracking and Fusion of Multiple Objects.” In <em>2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, 4471–78. Singapore, Singapore: IEEE, 2017. <a href="https://doi.org/10.1109/ICRA.2017.7989518">https://doi.org/10.1109/ICRA.2017.7989518</a>.</p>
-<h1 id="3-Overview-of-our-Method"><a href="#3-Overview-of-our-Method" class="headerlink" title="3 Overview of our Method"></a>3 Overview of our Method</h1><p>Co-Fusion 是一个可以<strong>实时处理</strong>每一帧输入图片的RGB-D SLAM 系统，本系统为场景中每一个分割的物体<strong>存储模型</strong>，而且可以<strong>独立跟踪</strong>它们的运动，每个模型是由<strong>一组3D 点</strong>构成的。本系统维护两组物体模型：当前在视野中可见的<strong>active 模型</strong>，以及曾经观测到的模型，但是目前不在视野中，记为<strong>inactive 模型</strong>。本系统的框架如Fig. 2所示，在初始化阶段，场景只包含一个active 模型——<strong>背景</strong>，初始化完成后，按照Fig .2的流程处理每一帧图片。</p>
-<span id="more"></span>
-<p><img src="/2024/01/27/Co-fusion/overview.png" alt="overview" title="Overview"></p>
-<p><strong>tracking</strong> 与 <strong>fusion</strong> 步骤是在GPU 上完成的，而<strong>segmentation</strong> 步骤是在CPU 上完成的。</p>
-<h2 id="3-1-Tracking"><a href="#3-1-Tracking" class="headerlink" title="3.1 Tracking"></a><strong>3.1 Tracking</strong></h2><p>在当前帧中跟踪每一个active 模型的6DOF 位姿，通过最小化每个模型独立的目标方程来实现，该目标方程包含：</p>
-<ul>
-<li><strong>几何误差</strong>：基于稠密的iterative closest point (ICP) 对齐；</li>
-<li><strong>光度误差</strong>：基于当前帧和存储的3D 模型之间的颜色差异。</li>
-</ul>
-<h2 id="3-2-Segmentation"><a href="#3-2-Segmentation" class="headerlink" title="3.2 Segmentation"></a><strong>3.2 Segmentation</strong></h2><p>该阶段将当前帧中的每一个像素与某个active 模型/物体联系起来，有两种手段来实现该过程：motion 以及 semantic labels。</p>
-<h3 id="3-2-1-Motion-segmentation"><a href="#3-2-1-Motion-segmentation" class="headerlink" title="3.2.1 Motion segmentation"></a>3.2.1 Motion segmentation</h3><p>将运动分割构建为一个使用全连接的Conditional Random Field (CRF) 解决的<strong>分类问题</strong>，可在CPU 上实时处理。当将一个像素与一个运动模型联系起来时，unary potentials 编码一个几何 <strong>ICP 损失函数</strong>。</p>
-<h3 id="3-2-2-Multi-class-image-segmentation"><a href="#3-2-2-Multi-class-image-segmentation" class="headerlink" title="3.2.2 Multi-class image segmentation"></a>3.2.2 Multi-class image segmentation</h3><p>利用基于<strong>深度学习</strong>的方法实现像素级的语义分割，作为动作分割的备选方案。</p>
-<h2 id="3-3-Fusion"><a href="#3-3-Fusion" class="headerlink" title="3.3 Fusion"></a>3.3 Fusion</h2><p>本系统使用surfel-based 融合方法，利用新估计的6DOF 位姿将属于某个模型的点更新至其active 模型。其中，每个模型是由一个sufel 列表构成的，$\mathcal{M}_m^s \in (\mathbf{p}\in \mathbb{R}^3, \mathbf{n}\in \mathbb{R}^3, \mathbf{c}\in \mathbb{N}^3, w \in \mathbb{R}, r \in \mathbb{R}, \mathbf{t}\in \mathbb{R}^2)$ ，分别表示位置、法向量、颜色、权重、半径以及两个时间戳。</p>
-<p>为了解决<strong>动态物体</strong>的跟踪问题，本系统使用 $\mathcal{T}_t = \{\mathbf{T}_{tm}()\}$ 来表示每个active 模型 $\mathcal{M}_m$ 在时间 t 相对于全局参考坐标系的位姿转换几何，即 $\mathbf{T}_{tm}$ 表示时间 t 时模型 $\mathcal{M}_m$ 的全局位姿。特别地，作者使用 $\mathbf{T}_{tb}$ 来表示<strong>背景模型</strong>的位姿转换。</p>
-<h1 id="5-Tracking-Active-Models"><a href="#5-Tracking-Active-Models" class="headerlink" title="5 Tracking Active Models"></a>5 Tracking Active Models</h1><p>对于时间t 的图像帧中的每一个active 模型  $\mathcal{M}_m$ ，系统通过配准<strong>当前的深度图</strong>和<strong>前一帧的深度图</strong>（通过将存储的3D 模型利用t-1 的估计位姿进行投影而获取）来跟踪其全局位姿 $\mathbf{T}_{tm}$ ，对每一个active 模型进行<strong>独立优化和跟踪</strong>。</p>
-<h2 id="5-1-Energy"><a href="#5-1-Energy" class="headerlink" title="5.1 Energy"></a>5.1 Energy</h2><p>误差项包含<strong>ICP 几何误差</strong>和<strong>光度误差</strong>，其中光度误差是由预测的图片（将之前帧中存储的3D 模型投影而获取）与当前图片的<strong>颜色差异</strong>构成，</p>
-<p><img src="/2024/01/27/Co-fusion/formula1.png" alt="formula1"></p>
-<h2 id="5-2-Geometry-Term"><a href="#5-2-Geometry-Term" class="headerlink" title="5.2 Geometry Term"></a>5.2 Geometry Term</h2><p>ICP 几何误差定义为以下两者之间的误差：</p>
-<ul>
-<li>当前帧深度图的<strong>逆向投影</strong>3D 点；</li>
-<li>前一帧t-1 <strong>预测</strong>的深度图。</li>
-</ul>
-<p><img src="/2024/01/27/Co-fusion/formula2.png" alt="formula2"></p>
-<p>其中，$\mathbf{v}_t^i$ 是当前帧深度图 $\mathcal{D}_t$ 中第i 个点的反向映射3D 点；$\mathbf{v}^i, \mathbf{n}^i$ 分别是t-1 时刻<strong>预测的深度图</strong>中模型m 第i 个点的反向映射点以及其法向量；$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>。</p>
-<h2 id="5-3-Photometric-Color-Term"><a href="#5-3-Photometric-Color-Term" class="headerlink" title="5.3 Photometric Color Term"></a>5.3 Photometric Color Term</h2><p>在给定(1)当前深度图、(2)每个active 模型的3D 几何估计，以及(3)将每个模型与前一帧对齐的位姿转换关系，即可将当前场景合成为一个与前一帧对齐的虚拟投影，进而，跟踪问题就变为了当前帧与合成的虚拟投影之间的<strong>光度配准</strong>问题：</p>
-<p><img src="/2024/01/27/Co-fusion/formula3.png" alt="formula3"></p>
-<p>其中，$\mathbf{T}_m$ 是将前一帧与当前帧的模型m 对齐的<strong>位姿转换</strong>；$\mathbf{I}_{t-1}()$ 表示提供模型在前一帧上顶点的颜色参数。</p>
-<p>为了鲁棒性和效率，本优化使用一个<strong>4层的空间金字塔</strong>来集成到一个<strong>由粗到细</strong>的方法中，并在GPU 中完成运算。</p>
-<h1 id="6-Motion-Segmentation"><a href="#6-Motion-Segmentation" class="headerlink" title="6 Motion Segmentation"></a>6 Motion Segmentation</h1><p>在跟踪步骤之后，在t 时刻有 $M_t$ 个新的位姿转换 $\{\mathbf{T}_{tm}\}$ ，来描述每个active 模型相对于全局坐标系的绝对位姿；接下来作者将帧t 的运动分割问题构建为一个<strong>分类标记问题</strong>，而标签为 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$ ，作者将 $M_t+1$ 种可能分配到<strong>每一个像素</strong>中，即 $\mathcal{l} \in \mathcal{L}_t = \{1, …, |M_t|+1\}$ ，除了 $M_t$ 个位姿转换 $\{\mathbf{T}_{tm}\}$外还包含一个<strong>外点标签</strong> $\mathcal{l}_{|M_t|+1}$ 。</p>
-<p>为了可以在CPU上实施完成分割步骤，系统首先将当前帧分割为SLIC 超像素，并在超像素级别上进行分类标记，超像素的位置、颜色与深度由从属的所有像素均值得到。代价函数如下所示：</p>
-<p><img src="/2024/01/27/Co-fusion/formula4.png" alt="formula4"></p>
-<p>其中，i 和 j 图片中超像素的索引（从1到S）。</p>
-<h2 id="6-1-The-Unary-Potentials"><a href="#6-1-The-Unary-Potentials" class="headerlink" title="6.1 The Unary Potentials"></a>6.1 The Unary Potentials</h2><p>对于 $\psi_u(x_i)$ 表示为超像素 $s_i$ 分配标签为 $x_i$ 的代价，对于运动分割模式，该代价为<strong>ICP 几何对齐损失函数</strong>（式 2）。</p>
-<h2 id="6-2-The-Pairwise-Potentials"><a href="#6-2-The-Pairwise-Potentials" class="headerlink" title="6.2 The Pairwise Potentials"></a>6.2 The Pairwise Potentials</h2><p>对于 $\psi_p(x_i, x_j)$ 可表示为：</p>
-<p><img src="/2024/01/27/Co-fusion/formula5.png" alt="formula5"></p>
-<p>其中，$\mu(x_i, x_j)$ 惩罚<strong>临近像素标签不同</strong>的情况；$k_m(f_i, f_j)$ 测量像素外观之间的<strong>相似度</strong>，代表的含义是：两个超像素的<strong>特征向量</strong>之间的距离较小时应具有相同的标签，所谓的特征向量 $f_i$  包含2D 位置、RGB 颜色以及深度值。</p>
-<h2 id="6-3-Post-processing"><a href="#6-3-Post-processing" class="headerlink" title="6.3 Post-processing"></a>6.3 Post-processing</h2><p>在分割之后，采用一系列<strong>后处理步骤</strong>来获取更为鲁棒的结果：</p>
-<ol>
-<li>对具有相似位姿转换关系的模型进行<strong>融合操作</strong>；</li>
-<li>抑制相同标签中除最大之外的所有区域来保证不连接区域的<strong>独立建模</strong>；</li>
-<li>小于一定阈值的区域被<strong>舍弃</strong>。</li>
-</ol>
-<h2 id="6-4-Addition-of-New-Models"><a href="#6-4-Addition-of-New-Models" class="headerlink" title="6.4 Addition of New Models"></a>6.4 Addition of New Models</h2><p>一个区域内的外点数量若大于总像素数的3%，则判定该物体为一个新物体；若该新物体的部分几何结构已存在于地图中，会对重复的构建进行剔除。</p>
-<p>如果一个物体消失在视野中，并在一定帧内不再出现，则将该模型添加进inactive 列表中。</p>
-<h1 id="7-Object-Instance-Segmentation"><a href="#7-Object-Instance-Segmentation" class="headerlink" title="7 Object Instance Segmentation"></a>7 Object Instance Segmentation</h1><p>使用实例分割网络SharpMask 进行物体语义信息的获取。</p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>Dynamic SLAM</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>Dynamic SLAM</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>论文记录 Detect-SLAM_Making Object Detection and SLAM Mutually Beneficial</title>
     <url>/2024/01/30/detect-slam/</url>
     <content><![CDATA[<p>Zhong, Fangwei, Sheng Wang, Ziqi Zhang, China Chen, and Yizhou Wang. “Detect-SLAM: Making Object Detection and SLAM Mutually Beneficial.” In <em>2018 IEEE Winter Conference on Applications of Computer Vision (WACV)</em>, 1001–10, 2018. <a href="https://doi.org/10.1109/WACV.2018.00115">https://doi.org/10.1109/WACV.2018.00115</a>.</p>
@@ -267,9 +473,48 @@
         <category>Dynamic SLAM</category>
       </categories>
       <tags>
+        <tag>Dynamic SLAM</tag>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 DS-SLAM_A Semantic Visual SLAM towards Dynamic Environments</title>
+    <url>/2024/02/04/ds-slam/</url>
+    <content><![CDATA[<p>Yu, Chao, Zuxin Liu, Xin-Jun Liu, Fugui Xie, Yi Yang, Qi Wei, and Qiao Fei. “DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 1168–74. Madrid: IEEE, 2018. <a href="https://doi.org/10.1109/IROS.2018.8593691">https://doi.org/10.1109/IROS.2018.8593691</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>提出一个基于ORB-SLAM2 应用于动态环境中的语义SLAM 系统——DS-SLAM，在公开数据集上进行测试，证明了本系统在动态环境中的<strong>精度与鲁棒性</strong>；</li>
+<li>添加一个<strong>实时语义分割网络线程</strong>，结合<strong>语义分割和运动一致性检验</strong>来滤除场景中的动态区域；</li>
+<li>创建了一个构建稠密3D 语义八叉树地图的线程。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-System-Introduction"><a href="#3-System-Introduction" class="headerlink" title="3 System Introduction"></a>3 System Introduction</h1><h2 id="3-1-Framework-of-DS-SLAM"><a href="#3-1-Framework-of-DS-SLAM" class="headerlink" title="3.1 Framework of DS-SLAM"></a>3.1 Framework of DS-SLAM</h2><p>系统架构如Fig. 1所示，DS-SLAM 运行5个线程：tracking, semantic segmentation, local mapping, loop closing and dense map creation。</p>
+<p><img src="/2024/02/04/ds-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>系统框架如Fig. 2所示，RGB 图片同时被跟踪线程和语义分割线程处理，跟踪线程提取ORB 特征点，<strong>粗略检验特征点的运动一致性，并保存潜在的外点；</strong>待像素级语义分割结果生成后，位于<strong>移动物体中的ORB 外点</strong>会被舍弃，然后利用剩余匹配的稳定特征点来计算转换矩阵。</p>
+<p><img src="/2024/02/04/ds-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-3-Moving-Consistency-Check"><a href="#3-3-Moving-Consistency-Check" class="headerlink" title="3.3 Moving Consistency Check"></a>3.3 Moving Consistency Check</h2><p>本系统认为，<strong>如果一个分割物体内的一些点被识别为动态的，那么就判定该物体是动态物体</strong>。</p>
+<p><strong>运动一致性检验</strong>步骤如下：</p>
+<ol>
+<li>首先，计算<strong>光流金字塔</strong>来获取当前帧中的匹配特征点；</li>
+<li>然后，如果特征点匹配对太靠近图片边缘，或者特征点匹配对中心的3*3 图像块的像素差异过大，那么该匹配对会被舍弃；</li>
+<li>接着，利用<strong>RANSAC</strong> 策略计算<strong>基础矩阵</strong>，在此基础上在当前帧中计算<strong>极线</strong>；</li>
+<li>最后，根据匹配点对与极线之间的距离来判断该匹配点对是否是动态的。</li>
+</ol>
+<p><img src="/2024/02/04/ds-slam/a1.png" alt="a1" title="algorithm1"></p>
+<h2 id="3-4-Outliers-Rejection"><a href="#3-4-Outliers-Rejection" class="headerlink" title="3.4 Outliers Rejection"></a>3.4 Outliers Rejection</h2><p>利用几何方法确定物体的轮廓太难，因此DS-SLAM 结合语义分割结果得到的物体轮廓，利用几何模块的运动一致性检验得到的<strong>动态特征点</strong>，判断物体轮廓内动态特征点的数量<strong>是否超过阈值</strong>，若超过阈值，则判定该物体属于<strong>动态物体</strong>，然后剔除掉属于该物体的<strong>所有特征点</strong>。</p>
+<p>作者的实验证明，本系统ORB 特征提取时间+移动一致性检验的时间，与语义分割线程所需的时间基本一致。</p>
+<p><img src="/2024/02/04/ds-slam/t1.png" alt="t1" title="table 4"></p>
+<p>由于人类活动会在大部分真实场景中影响机器人的定位，所以作者以人类作为一个典型示例，展示DS-SLAM 的效果，<strong>但理论上DS-SLAM 可以应用于多种不同的动态物体检测。</strong>如果语义分割结果中没有人类被检测到，则使用所有的ORB 特征点进行匹配与位姿解算；如果有人类被检测到，则结合运动一致性来判断是否属于动态物体。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
         <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
       </tags>
   </entry>
   <entry>
@@ -298,9 +543,9 @@
         <category>Dynamic SLAM</category>
       </categories>
       <tags>
+        <tag>Dynamic SLAM</tag>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
   <entry>
@@ -331,32 +576,97 @@
       </tags>
   </entry>
   <entry>
-    <title>寒武纪MLU220 开发环境Docker搭建</title>
-    <url>/2024/01/26/mlu220/</url>
-    <content><![CDATA[<p>首先进入<a href="https://cair.cambricon.com/#/home/catalog">寒武纪开发主页</a>并登录寒武纪账号，进入cambricon_pytorch docker 页面。由于本人只使用MLU220 进行边缘端推理，所以不需要在主机上安装MLU 驱动，因此可跳过第一步直接按照提示安装docker。本人在尝试按照页面说明时遇到了一些问题，在此记录一下。</p>
+    <title>论文记录 Semantic Mapping for View-Invariant Relocalization</title>
+    <url>/2024/02/02/li2019/</url>
+    <content><![CDATA[<p>Li, Jimmy, David Meger, and Gregory Dudek. “Semantic Mapping for View-Invariant Relocalization.” In <em>2019 International Conference on Robotics and Automation (ICRA)</em>, 7108–15. Montreal, QC, Canada: IEEE, 2019. <a href="https://doi.org/10.1109/ICRA.2019.8793624">https://doi.org/10.1109/ICRA.2019.8793624</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文使用了<strong>基于外观的几何特征</strong>与<strong>物体级语义特征</strong>的混合策略，主要贡献就是将传统视觉SLAM 和语义地标进行<strong>协同集成</strong>。</p>
 <span id="more"></span>
-<p>若是初次使用docker，则建议将Ubuntu个人账户添加进docker组里，这样就避免每次使用时都要输入sudo了，该部分参考<a href="https://www.cnblogs.com/jzcn/p/16591083.html">文章</a>：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 将当前用户添加进docker组，并更新</span><br><span class="line">sudo gpasswd -a user docker</span><br><span class="line">newgrp docker</span><br><span class="line"></span><br><span class="line">## 然后重启电脑才可永久生效</span><br></pre></td></tr></table></figure>
-<p>然后按照寒武纪提示，依次进行如下操作：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 登录harbor</span><br><span class="line">docker login cair.cambricon.com</span><br><span class="line"></span><br><span class="line">## 输入用户名、API密钥（网页用户名下拉框中有API密钥选项）</span><br><span class="line">Username: (username)</span><br><span class="line">Password: (API密钥)</span><br></pre></td></tr></table></figure>
-<p>注意，这里网页提示使用docker pull命令下载相应的镜像文件，但经过本人尝试之后发现，在后续的docker run命令中会重复下载，因此<strong>跳过使用docker pull，直接使用docker run命令创建容器</strong>：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --name mlu220 -v /home/***/work:/work cair.cambricon.com/cambricon/cambricon_pytorch:ubuntu18.04_sdk_v1.7.0_pytorch_v0.15.0-2 /bin/bash</span><br></pre></td></tr></table></figure>
-<p>上述命令会自动下载镜像文件，并改名为“mlu220”，且将主机的“/home/<em>*</em>/work”映射至docker端的“/work”。</p>
-<p>此时，可以查看新建的容器：</p>
-<p><img src="/2024/01/26/mlu220/docker1.png" alt="docker" title="容器查看"></p>
-<p>启动mlu220容器并查看：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">❯ docker start mlu220</span><br><span class="line">mlu220</span><br></pre></td></tr></table></figure>
-<p><img src="/2024/01/26/mlu220/docker2.png" alt="docker" title="启动容器"></p>
-<p>最后进入docker并激活开发环境：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mlu220 /bin/bash</span><br><span class="line"><span class="built_in">source</span> torch/venv3/pytorch/bin/activate</span><br></pre></td></tr></table></figure>
+<h1 id="3-Method"><a href="#3-Method" class="headerlink" title="3 Method"></a>3 Method</h1><h2 id="3-1-Problem-Statement"><a href="#3-1-Problem-Statement" class="headerlink" title="3.1 Problem Statement"></a>3.1 Problem Statement</h2><p>本文方法包含两个组件：</p>
+<ol>
+<li><strong>语义制图算法</strong>：跟踪物体帧间的3D 位姿变换，并产生包含物体的度量地图；</li>
+<li><strong>重定位算法</strong>：给定同一场景的两个语义地图，进行对齐并产生位姿变换。</li>
+</ol>
+<h2 id="3-2-Semantic-Mapping"><a href="#3-2-Semantic-Mapping" class="headerlink" title="3.2 Semantic Mapping"></a>3.2 Semantic Mapping</h2><p>使用<strong>立方体</strong>来表示物体，包含9自由度：位置、朝向以及尺寸。</p>
+<p>利用ORB-SLAM2 获取相机位姿，对物体检测算法处理过的图片中的物体进行三角化，通过<strong>基于采样的推理程序</strong>得到<strong>3D 立体框</strong>。为了简化3D 物体的几何推理，作者假定物体与场景布局是<strong>对齐的</strong>，场景布局包含三个正交轴。</p>
+<p><img src="/2024/02/02/li2019/a1.png" alt="a1" title="algorithm 1"></p>
+<h3 id="3-2-2-Data-Association"><a href="#3-2-2-Data-Association" class="headerlink" title="3.2.2 Data Association"></a>3.2.2 Data Association</h3><p>利用ORB-SLAM 获取关键帧的位姿后，将3D 物体地标<strong>投影至关键帧</strong>中得到相应 p 的bbox，关键帧中检测到的物体的bbox 记为 d，则定义p 与 d 之间的<strong>损失函数</strong>：</p>
+<p><img src="/2024/02/02/li2019/f1.png" alt="f1" title="formula 1"></p>
+<p>下标 $l, t, r, b$ 分别表示bbox 在像素坐标系中的左边、上边、右边、下边四条边。分母作用是<strong>归一化</strong>，防止较大物体的bbox 主导损失函数。</p>
+<h3 id="3-2-3-Object-Pose-Update"><a href="#3-2-3-Object-Pose-Update" class="headerlink" title="3.2.3 Object Pose Update"></a>3.2.3 Object Pose Update</h3><p>物体3D 框的<strong>复杂几何性质</strong>以及<strong>模糊的投影过程</strong>，会造成强烈的<strong>非凸性搜索空间</strong>；作者提出一种高效的搜索策略：</p>
+<ul>
+<li>首先，在一个<strong>缩小的</strong>搜索空间中高效产生多个物体假设；</li>
+<li>然后，利用它们在<strong>完整的</strong>搜索空间中快速探索多个局部最小值。</li>
+</ul>
+<p>将位于物体<strong>上表面的中心点</strong>X 投影至图像平面，构建服从高斯分布的概率模型：</p>
+<p><img src="/2024/02/02/li2019/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$f_k$ 表示将3D 点X 投影至图片关键帧k 中。计算后验分布：</p>
+<p><img src="/2024/02/02/li2019/f3.png" alt="f3" title="formula 3"></p>
+<p>得到一组3D 采样点，然后将其视为<strong>上表面的中心点</strong>来形成相应的3D bbox，将方向与场景布局进行<strong>对齐</strong>，尺寸选择该物体的<strong>平均尺寸</strong>，由此形成完整的3D bbox 估计集合 L，假设 $o\in L$ 对应的假设为 $H_o$ ，路标 $o$ 对应的物体假设 $h$ 的<strong>得分</strong>为：</p>
+<p><img src="/2024/02/02/li2019/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$K_o$ 表示有 o 关联检测的所有关键帧集合；$\delta_k$ 表示在关键帧 $k$ 中的关联检测；$f_k$ 将物体假设 h 投影至关键帧 $k$ 中；损失函数 $c$ 由式1描述；$\Gamma$ 表示两个物体 $h, h’$ <strong>在上下文环境中的相关性</strong>（如键盘和鼠标更有可能同时出现在一表面上）。</p>
+<p>得到所有假设的得分之后，利用最高得分的假设（且必须比现有假设的得分更高）来更新每个路标。</p>
+<h3 id="3-2-4-Contextual-Coherence"><a href="#3-2-4-Contextual-Coherence" class="headerlink" title="3.2.4 Contextual Coherence"></a>3.2.4 Contextual Coherence</h3><p>作者使用上下文约束来对物体的位姿估计进行<strong>正则化</strong>，以鼓励物体地标更符合典型的空间关系，作者之前的研究也证明了物体的<strong>共面性coplanarity</strong> 可视为对物体位姿估计的可靠约束。作者定义相关性函数 $\Gamma$ ：</p>
+<p><img src="/2024/02/02/li2019/f5.png" alt="f5" title="formula 5"></p>
+<p>其中，$BOTTOMDIST(h, h’)$ 给定两个3D bbox 的底面距离，$COPLANAR$ 指的是位于相同的表面上的两个物体。</p>
+<h2 id="3-3-Relocalization"><a href="#3-3-Relocalization" class="headerlink" title="3.3 Relocalization"></a>3.3 Relocalization</h2><p>给定两个包含一组物体地标的语义地图 $L_1, L_2$ ，重定位过程可通过下述公式解决：</p>
+<p><img src="/2024/02/02/li2019/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$\theta(o, L)$ 返回一组地标，地标位姿在坐标系 $o$ 中来表示；$\psi(s, L)$ 返回一组尺寸放大 $s$ 倍的地标；函数 $\Omega(L_1, L_2)$ 包含两个操作：</p>
+<ol>
+<li>利用Hungarian 算法计算两组地标的<strong>最佳匹配</strong>；</li>
+<li>对匹配结果进行内点识别，最终返回<strong>内点数量</strong>。</li>
+</ol>
+<p>完成地图匹配之后即可得到两个相机轨迹之间的相对转换关系。</p>
 ]]></content>
       <categories>
-        <category>开发环境搭建</category>
+        <category>SLAM</category>
+        <category>Topology</category>
       </categories>
       <tags>
-        <tag>Ubuntu</tag>
-        <tag>Cambricon</tag>
-        <tag>Docker</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Topology</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 LaneLoc_Lane marking based localization using highly accurate maps</title>
+    <url>/2024/01/31/laneloc/</url>
+    <content><![CDATA[<p>Schreiber, Markus, Carsten Knoppel, and Uwe Franke. “LaneLoc: Lane Marking Based Localization Using Highly Accurate Maps.” In <em>2013 IEEE Intelligent Vehicles Symposium (IV)</em>, 449–54. Gold Coast City, Australia: IEEE, 2013. <a href="https://doi.org/10.1109/IVS.2013.6629509">https://doi.org/10.1109/IVS.2013.6629509</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>作者利用双目立体相机系统和包含路沿与道路标志的先验高精度地图实现车辆定位。定位过程中，GNSS 位置只是用来进行初始化，后续的定位解算不需要GNSS。作者在长约50 km的郊区道路进行测试，最终的定位精度在分米级。</p>
+<span id="more"></span>
+<h1 id="2-Mapping"><a href="#2-Mapping" class="headerlink" title="2 Mapping"></a>2 Mapping</h1><p>制图过程如下所示：</p>
+<p><img src="/2024/01/31/laneloc/fig2.png" alt="fig2" title="figure 2"></p>
+<p>利用各个传感器采集到的数据制作鸟瞰视角地图，如下图所示：</p>
+<p><img src="/2024/01/31/laneloc/fig4.png" alt="fig4" title="figure 4"></p>
+<h1 id="3-Online-Localization"><a href="#3-Online-Localization" class="headerlink" title="3 Online Localization"></a>3 Online Localization</h1><p>作者的定位系统选择一个前向的立体相机系统以及一个IMU，如下图所示，其中GNSS 模块进行初始化。</p>
+<p><img src="/2024/01/31/laneloc/fig6.png" alt="fig6" title="figure 6"></p>
+<p>作者使用基于Kalman 滤波器的定位模型。</p>
+<h2 id="3-1-Localization-Model"><a href="#3-1-Localization-Model" class="headerlink" title="3.1 Localization Model"></a>3.1 Localization Model</h2><p><strong>观测模型</strong>表示：所有测量点 $\vec{P}_{e,i}’$ 的<strong>预期位置</strong>（依赖于状态向量的方程${h}(\vec{x}_{veh})$ ）和所有<strong>观测值</strong> $\vec{P}_{m,i}$ （表示为 $\vec{y}$ ）在汽车坐标系下的<strong>残差</strong>：</p>
+<p><img src="/2024/01/31/laneloc/fig7.png" alt="fig7" title="figure 7"></p>
+<p><img src="/2024/01/31/laneloc/f6.png" alt="f6" title="formula 6"></p>
+<p><strong>观测噪声</strong>的方差包含：</p>
+<ul>
+<li>地图数据噪声 $\sigma_{map}^2$ ;</li>
+<li>back-projection 噪声 $\sigma_{cam}^2$ ，取决于相机高度和路的朝向。</li>
+</ul>
+<p><img src="/2024/01/31/laneloc/f7.png" alt="f7" title="formula 7"></p>
+<p>作者在实验过程中分别假设：$\sigma_{map}^2 = 10 cm$ ，$\sigma_{cam}^2 = 3 px$ 。观测噪声表示为一个<strong>取决于残差的概率函数</strong>。</p>
+<h2 id="3-2-Map-Matching"><a href="#3-2-Map-Matching" class="headerlink" title="3.2 Map Matching"></a>3.2 Map Matching</h2><p>用来定位的高精度地图包含表示<strong>路标和路沿的线段</strong>，而观测数据包含<strong>点</strong>；地图匹配的目标是实现<strong>测量点与线段之间的最佳可能匹配</strong>，必须满足横向和纵向匹配残差的最小化方可实现最佳匹配，因此，作者选择对地图上的线段<strong>采样为地图点进行匹配</strong>，如Fig. 8所示。</p>
+<p><img src="/2024/01/31/laneloc/fig8.png" alt="fig8" title="figure 8"></p>
+<h2 id="3-3-Measurement-Extraction"><a href="#3-3-Measurement-Extraction" class="headerlink" title="3.3 Measurement Extraction"></a>3.3 Measurement Extraction</h2><h3 id="3-3-1-Lane-Marking-Measurement"><a href="#3-3-1-Lane-Marking-Measurement" class="headerlink" title="3.3.1 Lane Marking Measurement"></a>3.3.1 Lane Marking Measurement</h3><p>作者使用一个<strong>定向匹配滤波器 oriented matched filter</strong>（在<strong>普通车道线检测系统</strong>中得到了成功应用）来检测车道线。</p>
+<p>为了检测车道线，利用当前位姿估计将地图投影到图片中，并将<strong>搜索线</strong>置于预期的车道线周围，定向匹配滤波器会在这些搜索线中根据图片中测量的路标识别出一个<strong>low-high-low灰度值模式</strong>，利用立体相机提供的深度信息，这些被探测到的位置会投影至道路平面上来决定在汽车坐标系中所需的观测值（即残差 $\vec{r}’$ ）。</p>
+<p>由于该投影过程对于汽车的俯仰角非常敏感，所以作者使用一个基于V-Diaparity 方法的<strong>俯仰角估计器</strong>来解决该问题。</p>
+<p><img src="/2024/01/31/laneloc/fig10.png" alt="fig10" title="figure 10"></p>
+<h3 id="3-3-2-Curb-Measurement"><a href="#3-3-2-Curb-Measurement" class="headerlink" title="3.3.2 Curb Measurement"></a>3.3.2 Curb Measurement</h3><p>作者使用一个基于强度图片 intensity image 和高度信息的<strong>基于分类器的识别</strong>来进行路沿探测，得到路沿在图片中的位置以及存在的概率参数。</p>
+<p><img src="/2024/01/31/laneloc/fig11.png" alt="fig11" title="figure 11"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
       </tags>
   </entry>
   <entry>
@@ -392,97 +702,9 @@
       <tags>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>C++</tag>
-        <tag>Object SLAM</tag>
         <tag>Pose Optimization</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SSH免密登录设置</title>
-    <url>/2024/01/26/ssh-setup/</url>
-    <content><![CDATA[<h1 id="1-ssh服务"><a href="#1-ssh服务" class="headerlink" title="1 ssh服务"></a>1 ssh服务</h1><p>Ubuntu开启ssh服务需要下载openssh-server，命令为：</p>
-<span id="more"></span>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure>
-<h1 id="2-ssh-key生成"><a href="#2-ssh-key生成" class="headerlink" title="2 ssh key生成"></a>2 ssh key生成</h1><p>生成ssh key的命令是：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
-<p>后续一路默认设置即可，该命令会在主目录默认生成.ssh文件，内包含以下文件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa: 私钥</span><br><span class="line">id_rsa.pub: 公钥</span><br></pre></td></tr></table></figure>
-<h1 id="3-无密码远程登陆服务器"><a href="#3-无密码远程登陆服务器" class="headerlink" title="3 无密码远程登陆服务器"></a>3 无密码远程登陆服务器</h1><p>将本地产生的公钥上传至服务器：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-copy-id -p <span class="comment">#port master@ubuntu</span></span><br></pre></td></tr></table></figure>
-<h1 id="4-Windows免密登录Ubuntu"><a href="#4-Windows免密登录Ubuntu" class="headerlink" title="4 Windows免密登录Ubuntu"></a>4 Windows免密登录Ubuntu</h1><p>Windows在终端中执行以下命令生成公私密钥：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
-<p>会在C:\Users\xxx.ssh 文件夹中生成以下三个文件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa 本地私钥</span><br><span class="line">id_rsa.pub 公钥</span><br><span class="line">known_hosts 已知的ip</span><br></pre></td></tr></table></figure>
-<p>将公钥上传至Ubuntu，可使用scp命令，然后执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将公钥拷贝至Ubuntu的authorized_keys文件中</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改sshd_config文件</span></span><br><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将一下三行命令添加至sshd_config文件</span></span><br><span class="line">RSAAuthentication <span class="built_in">yes</span></span><br><span class="line">PubkeyAuthentication <span class="built_in">yes</span></span><br><span class="line">PasswordAuthentication no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启ssh</span></span><br><span class="line">sudo service sshd restart</span><br></pre></td></tr></table></figure>
-<p>然后即可实现Windows免密登录Ubuntu。</p>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-        <tag>SSH</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>论文记录 ORB-SLAM2_An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras</title>
-    <url>/2024/01/29/orb-slam2/</url>
-    <content><![CDATA[<p>Mur-Artal, Raul, and Juan D. Tardos. “ORB-SLAM2: An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras.” <em>IEEE Transactions on Robotics</em> 33, no. 5 (October 2017): 1255–62. <a href="https://doi.org/10.1109/TRO.2017.2705103">https://doi.org/10.1109/TRO.2017.2705103</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
-<ol>
-<li>第一个适用于<strong>单目</strong>、<strong>双目</strong>以及<strong>RGB-D 相机</strong>的开源SLAM 系统，该系统包含回环检测、重定位以及地图重用；</li>
-<li>本系统运行RGB-D 的结果证明：使用<strong>BA</strong> 可以实现比基于ICP 或者光度深度误差最小化的SOTA 方法更高的精度；</li>
-<li>通过使用<strong>近远立体点和单目观测</strong>，本系统运行双目的结果要比直接双目SLAM 的 SOTA 算法精度更高；</li>
-<li>提出了一种关闭制图功能情况下，有效<strong>重使用地图</strong>的轻量级定位模式。</li>
-</ol>
-<span id="more"></span>
-<p><img src="/2024/01/29/orb-slam2/fig1.png" alt="fig1" title="fig 1"></p>
-<h1 id="3-ORB-SLAM2"><a href="#3-ORB-SLAM2" class="headerlink" title="3 ORB-SLAM2"></a>3 ORB-SLAM2</h1><p>ORB-SLAM2 的整体架构如下所示：</p>
-<p><img src="/2024/01/29/orb-slam2/fig2.png" alt="fig2" title="fig 2"></p>
-<p>系统包含三个主要的并行线程：</p>
-<ol>
-<li><strong>跟踪线程：</strong>寻找与<strong>局部地图</strong>相匹配的特征点，利用<strong>motion-only BA</strong> <strong>最小化重投影误差</strong>，来解算<strong>每帧图片</strong>对应的相机位姿；</li>
-<li><strong>局部制图：</strong>管理<strong>局部地图</strong>，并使用<strong>局部BA</strong> 对其进行优化；</li>
-<li><strong>回环检测：</strong>检测大回环，并使用<strong>位姿图优化</strong>来消除累积漂移；然后开启第四个线程，进行<strong>全局BA</strong> 优化解算地图与位姿的最优解。</li>
-</ol>
-<p>本系统还嵌入了一个基于<strong>DBoW2</strong> 的地点重识别模块进行<strong>重定位</strong>，在跟踪失败或利用现有地图进行重初始化时使用；本系统维护一个<strong>共视图</strong>，来关联任意两个具有共同观测特征点的关键帧，并使用一个<strong>最小化spanning tree</strong> 来连接所有的关键帧；这些图结构方便恢复关键帧的<strong>局部窗口</strong>以进行局部的跟踪与制图，并为回环检测中的位姿图优化提供结构。</p>
-<h2 id="3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints"><a href="#3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints" class="headerlink" title="3.1 Monocular, Close Stereo, and Far Stereo Keypoints"></a>3.1 Monocular, Close Stereo, and Far Stereo Keypoints</h2><p>本系统经过如图Fig. 2（b）的<strong>图片预处理操作</strong>，提取出关键点的特征，系统后续的操作均是基于这些<strong>特征点（立体关键点和单目关键点）</strong>的，实现独立于所使用的传感器类型。后续的操作均基于立体关键点和单目关键点。</p>
-<p><strong>立体关键点</strong>使用三个坐标进行定义：$\mathbf{x}_s = (u_L, v_L, u_R)$ ，其中 $(u_L, v_L)$ 是特征点在左边图片中的坐标，$u_R$ 是特征点在右边图片的水平座标。对于RGB-D 相机，作者将深度值 d 转化为一个<strong>虚拟的右图坐标</strong>：</p>
-<p><img src="/2024/01/29/orb-slam2/f1.png" alt="f1" title="formula 1"></p>
-<p>作者定义，如果一个关键点的<strong>深度小于基线长度的40倍</strong>，则被视为近点，否则视为远点。对于近点，可以使用一帧图片进行安全的三角化，因为其深度信息得到了准确估计，可以提供相应的<strong>尺度、平移和旋转信息</strong>；而对于远点，可以提供<strong>准确的旋转信息</strong>，但是尺度与平移信息较不可靠，只对多视角观测的远点进行三角化。</p>
-<p><strong>单目关键点</strong>使用左图的两个坐标进行定义 $\mathbf{x}_m = (u_L, v_L)$ ，是针对那些立体匹配失败或RGB-D 深度参数不可靠的点；这些点只通过多视角观测进行三角化，且不提供尺度信息，但会参与旋转与平移估计的解算。</p>
-<h2 id="3-2-System-Bootstrapping"><a href="#3-2-System-Bootstrapping" class="headerlink" title="3.2 System Bootstrapping"></a>3.2 System Bootstrapping</h2><p>使用立体相机或RGB-D 相机的一个主要优势在于：可仅使用一帧图片获取<strong>深度信息</strong>，而不需要单目相机的动作初始化操作。系统启动后，使用第一帧作为关键帧，将其位姿定为<strong>原点</strong>，并利用所有的<strong>立体关键点</strong>创建一个初始地图。</p>
-<h2 id="3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints"><a href="#3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints" class="headerlink" title="3.3 Bundle Adjustment with Monocular and Stereo Constraints"></a>3.3 Bundle Adjustment with Monocular and Stereo Constraints</h2><p>BA 在本系统中的应用：</p>
-<ul>
-<li>在跟踪线程中优化相机位姿（motion-only BA）</li>
-<li>在局部制图线程中优化局部窗口内的关键帧和特征点（local BA）</li>
-<li>回环检测之后优化所有的关键帧与特征点（full BA）</li>
-</ul>
-<h3 id="Motion-only-BA"><a href="#Motion-only-BA" class="headerlink" title="Motion-only BA"></a>Motion-only BA</h3><p>对关键点 $\mathbf{x}_{(.)}^i$ （包括单目点 $\mathbf{x}_m^i \in \mathbb{R}^2$ 和立体点 $\mathbf{x}_s^i \in \mathbb{R}^3$ ）进行最小化重投影误差，其中 $i\in \mathcal{X}$ 为所有匹配点集合：</p>
-<p><img src="/2024/01/29/orb-slam2/f2.png" alt="f2" title="formula 2"></p>
-<p>其中，$\rho$ 是<strong>鲁棒Huber 损失函数</strong>，$\sum$ 是关键点尺度参数对应的协方差矩阵。单目点和立体点的投影矩阵如下所示：</p>
-<p><img src="/2024/01/29/orb-slam2/f3.png" alt="f3" title="formula 3"></p>
-<h3 id="Local-BA"><a href="#Local-BA" class="headerlink" title="Local BA"></a>Local BA</h3><p><img src="/2024/01/29/orb-slam2/f4.png" alt="f4" title="formula 4"></p>
-<p>其中，$\mathcal{K}_L$ 为一组共视关键帧；$\mathcal{P}_L$ 为这些共视关键帧中的所有点；至于其他观测到 $\mathcal{P}_L$ 中的点且不属于 $\mathcal{K}_L$ 的关键帧 $\mathcal{K}_F$ ，会参与损失函数的构建，但是在优化中<strong>保持固定</strong>；$\mathcal{X}_k$ 表示 $\mathcal{P}_L$ 中与关键帧 k 匹配的点列表。</p>
-<h3 id="Full-BA"><a href="#Full-BA" class="headerlink" title="Full BA"></a>Full BA</h3><p>是一种局部BA 的特殊情况，除了<strong>初始关键帧</strong>是固定的，地图中其余的所有关键帧和点都参与优化过程。</p>
-<h2 id="3-4-Loop-Closing-and-Full-BA"><a href="#3-4-Loop-Closing-and-Full-BA" class="headerlink" title="3.4 Loop Closing and Full BA"></a>3.4 Loop Closing and Full BA</h2><p>回环检测包含两步：</p>
-<ol>
-<li>回环的检测与验证；</li>
-<li>通过位姿图优化来矫正回环。</li>
-</ol>
-<h2 id="3-5-Keyframe-Insertion"><a href="#3-5-Keyframe-Insertion" class="headerlink" title="3.5 Keyframe Insertion"></a>3.5 Keyframe Insertion</h2><p>本系统遵循ORB-SLAM 的关键帧插入策略，此外，基于立体远近点创建了一个新的关键帧挑选策略：如果跟踪的近点数量低于 $\tau_t = 100$，且可新增近点数量大于 $\tau_c = 70$ 时，将其作为新的关键帧进行插入。</p>
-<p><img src="/2024/01/29/orb-slam2/fig3.png" alt="fig3" title="fig 3"></p>
-<h2 id="3-6-Localization-Mode"><a href="#3-6-Localization-Mode" class="headerlink" title="3.6 Localization Mode"></a>3.6 Localization Mode</h2><p>本系统引入了一个<strong>定位模式</strong>，可在已经制图的区域进行<strong>轻量级长期定位</strong>。该过程利用<strong>视觉里程计匹配点</strong>和<strong>地图匹配点</strong>进行定位，其中视觉里程计匹配是基于当前帧的ORB 和历史帧创建的3D 点之间进行的，这些匹配可在无地图区域进行定位，但会存在累积漂移；而地图点匹配会得到与地图无偏的定位结果。</p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>ORB-SLAM</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
+        <tag>Object SLAM</tag>
         <tag>C++</tag>
-        <tag>ORB-SLAM2</tag>
       </tags>
   </entry>
   <entry>
@@ -578,6 +800,115 @@
         <tag>SLAM</tag>
         <tag>C++</tag>
         <tag>ORB-SLAM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>寒武纪MLU220 开发环境Docker搭建</title>
+    <url>/2024/01/26/mlu220/</url>
+    <content><![CDATA[<p>首先进入<a href="https://cair.cambricon.com/#/home/catalog">寒武纪开发主页</a>并登录寒武纪账号，进入cambricon_pytorch docker 页面。由于本人只使用MLU220 进行边缘端推理，所以不需要在主机上安装MLU 驱动，因此可跳过第一步直接按照提示安装docker。本人在尝试按照页面说明时遇到了一些问题，在此记录一下。</p>
+<span id="more"></span>
+<p>若是初次使用docker，则建议将Ubuntu个人账户添加进docker组里，这样就避免每次使用时都要输入sudo了，该部分参考<a href="https://www.cnblogs.com/jzcn/p/16591083.html">文章</a>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 将当前用户添加进docker组，并更新</span><br><span class="line">sudo gpasswd -a user docker</span><br><span class="line">newgrp docker</span><br><span class="line"></span><br><span class="line">## 然后重启电脑才可永久生效</span><br></pre></td></tr></table></figure>
+<p>然后按照寒武纪提示，依次进行如下操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">## 登录harbor</span><br><span class="line">docker login cair.cambricon.com</span><br><span class="line"></span><br><span class="line">## 输入用户名、API密钥（网页用户名下拉框中有API密钥选项）</span><br><span class="line">Username: (username)</span><br><span class="line">Password: (API密钥)</span><br></pre></td></tr></table></figure>
+<p>注意，这里网页提示使用docker pull命令下载相应的镜像文件，但经过本人尝试之后发现，在后续的docker run命令中会重复下载，因此<strong>跳过使用docker pull，直接使用docker run命令创建容器</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker run -it --name mlu220 -v /home/***/work:/work cair.cambricon.com/cambricon/cambricon_pytorch:ubuntu18.04_sdk_v1.7.0_pytorch_v0.15.0-2 /bin/bash</span><br></pre></td></tr></table></figure>
+<p>上述命令会自动下载镜像文件，并改名为“mlu220”，且将主机的“/home/<em>*</em>/work”映射至docker端的“/work”。</p>
+<p>此时，可以查看新建的容器：</p>
+<p><img src="/2024/01/26/mlu220/docker1.png" alt="docker" title="容器查看"></p>
+<p>启动mlu220容器并查看：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">❯ docker start mlu220</span><br><span class="line">mlu220</span><br></pre></td></tr></table></figure>
+<p><img src="/2024/01/26/mlu220/docker2.png" alt="docker" title="启动容器"></p>
+<p>最后进入docker并激活开发环境：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it mlu220 /bin/bash</span><br><span class="line"><span class="built_in">source</span> torch/venv3/pytorch/bin/activate</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Cambricon</tag>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 ORB-SLAM2_An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras</title>
+    <url>/2024/01/29/orb-slam2/</url>
+    <content><![CDATA[<p>Mur-Artal, Raul, and Juan D. Tardos. “ORB-SLAM2: An Open-Source SLAM System for Monocular, Stereo, and RGB-D Cameras.” <em>IEEE Transactions on Robotics</em> 33, no. 5 (October 2017): 1255–62. <a href="https://doi.org/10.1109/TRO.2017.2705103">https://doi.org/10.1109/TRO.2017.2705103</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>第一个适用于<strong>单目</strong>、<strong>双目</strong>以及<strong>RGB-D 相机</strong>的开源SLAM 系统，该系统包含回环检测、重定位以及地图重用；</li>
+<li>本系统运行RGB-D 的结果证明：使用<strong>BA</strong> 可以实现比基于ICP 或者光度深度误差最小化的SOTA 方法更高的精度；</li>
+<li>通过使用<strong>近远立体点和单目观测</strong>，本系统运行双目的结果要比直接双目SLAM 的 SOTA 算法精度更高；</li>
+<li>提出了一种关闭制图功能情况下，有效<strong>重使用地图</strong>的轻量级定位模式。</li>
+</ol>
+<span id="more"></span>
+<p><img src="/2024/01/29/orb-slam2/fig1.png" alt="fig1" title="fig 1"></p>
+<h1 id="3-ORB-SLAM2"><a href="#3-ORB-SLAM2" class="headerlink" title="3 ORB-SLAM2"></a>3 ORB-SLAM2</h1><p>ORB-SLAM2 的整体架构如下所示：</p>
+<p><img src="/2024/01/29/orb-slam2/fig2.png" alt="fig2" title="fig 2"></p>
+<p>系统包含三个主要的并行线程：</p>
+<ol>
+<li><strong>跟踪线程：</strong>寻找与<strong>局部地图</strong>相匹配的特征点，利用<strong>motion-only BA</strong> <strong>最小化重投影误差</strong>，来解算<strong>每帧图片</strong>对应的相机位姿；</li>
+<li><strong>局部制图：</strong>管理<strong>局部地图</strong>，并使用<strong>局部BA</strong> 对其进行优化；</li>
+<li><strong>回环检测：</strong>检测大回环，并使用<strong>位姿图优化</strong>来消除累积漂移；然后开启第四个线程，进行<strong>全局BA</strong> 优化解算地图与位姿的最优解。</li>
+</ol>
+<p>本系统还嵌入了一个基于<strong>DBoW2</strong> 的地点重识别模块进行<strong>重定位</strong>，在跟踪失败或利用现有地图进行重初始化时使用；本系统维护一个<strong>共视图</strong>，来关联任意两个具有共同观测特征点的关键帧，并使用一个<strong>最小化spanning tree</strong> 来连接所有的关键帧；这些图结构方便恢复关键帧的<strong>局部窗口</strong>以进行局部的跟踪与制图，并为回环检测中的位姿图优化提供结构。</p>
+<h2 id="3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints"><a href="#3-1-Monocular-Close-Stereo-and-Far-Stereo-Keypoints" class="headerlink" title="3.1 Monocular, Close Stereo, and Far Stereo Keypoints"></a>3.1 Monocular, Close Stereo, and Far Stereo Keypoints</h2><p>本系统经过如图Fig. 2（b）的<strong>图片预处理操作</strong>，提取出关键点的特征，系统后续的操作均是基于这些<strong>特征点（立体关键点和单目关键点）</strong>的，实现独立于所使用的传感器类型。后续的操作均基于立体关键点和单目关键点。</p>
+<p><strong>立体关键点</strong>使用三个坐标进行定义：$\mathbf{x}_s = (u_L, v_L, u_R)$ ，其中 $(u_L, v_L)$ 是特征点在左边图片中的坐标，$u_R$ 是特征点在右边图片的水平座标。对于RGB-D 相机，作者将深度值 d 转化为一个<strong>虚拟的右图坐标</strong>：</p>
+<p><img src="/2024/01/29/orb-slam2/f1.png" alt="f1" title="formula 1"></p>
+<p>作者定义，如果一个关键点的<strong>深度小于基线长度的40倍</strong>，则被视为近点，否则视为远点。对于近点，可以使用一帧图片进行安全的三角化，因为其深度信息得到了准确估计，可以提供相应的<strong>尺度、平移和旋转信息</strong>；而对于远点，可以提供<strong>准确的旋转信息</strong>，但是尺度与平移信息较不可靠，只对多视角观测的远点进行三角化。</p>
+<p><strong>单目关键点</strong>使用左图的两个坐标进行定义 $\mathbf{x}_m = (u_L, v_L)$ ，是针对那些立体匹配失败或RGB-D 深度参数不可靠的点；这些点只通过多视角观测进行三角化，且不提供尺度信息，但会参与旋转与平移估计的解算。</p>
+<h2 id="3-2-System-Bootstrapping"><a href="#3-2-System-Bootstrapping" class="headerlink" title="3.2 System Bootstrapping"></a>3.2 System Bootstrapping</h2><p>使用立体相机或RGB-D 相机的一个主要优势在于：可仅使用一帧图片获取<strong>深度信息</strong>，而不需要单目相机的动作初始化操作。系统启动后，使用第一帧作为关键帧，将其位姿定为<strong>原点</strong>，并利用所有的<strong>立体关键点</strong>创建一个初始地图。</p>
+<h2 id="3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints"><a href="#3-3-Bundle-Adjustment-with-Monocular-and-Stereo-Constraints" class="headerlink" title="3.3 Bundle Adjustment with Monocular and Stereo Constraints"></a>3.3 Bundle Adjustment with Monocular and Stereo Constraints</h2><p>BA 在本系统中的应用：</p>
+<ul>
+<li>在跟踪线程中优化相机位姿（motion-only BA）</li>
+<li>在局部制图线程中优化局部窗口内的关键帧和特征点（local BA）</li>
+<li>回环检测之后优化所有的关键帧与特征点（full BA）</li>
+</ul>
+<h3 id="Motion-only-BA"><a href="#Motion-only-BA" class="headerlink" title="Motion-only BA"></a>Motion-only BA</h3><p>对关键点 $\mathbf{x}_{(.)}^i$ （包括单目点 $\mathbf{x}_m^i \in \mathbb{R}^2$ 和立体点 $\mathbf{x}_s^i \in \mathbb{R}^3$ ）进行最小化重投影误差，其中 $i\in \mathcal{X}$ 为所有匹配点集合：</p>
+<p><img src="/2024/01/29/orb-slam2/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$\rho$ 是<strong>鲁棒Huber 损失函数</strong>，$\sum$ 是关键点尺度参数对应的协方差矩阵。单目点和立体点的投影矩阵如下所示：</p>
+<p><img src="/2024/01/29/orb-slam2/f3.png" alt="f3" title="formula 3"></p>
+<h3 id="Local-BA"><a href="#Local-BA" class="headerlink" title="Local BA"></a>Local BA</h3><p><img src="/2024/01/29/orb-slam2/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$\mathcal{K}_L$ 为一组共视关键帧；$\mathcal{P}_L$ 为这些共视关键帧中的所有点；至于其他观测到 $\mathcal{P}_L$ 中的点且不属于 $\mathcal{K}_L$ 的关键帧 $\mathcal{K}_F$ ，会参与损失函数的构建，但是在优化中<strong>保持固定</strong>；$\mathcal{X}_k$ 表示 $\mathcal{P}_L$ 中与关键帧 k 匹配的点列表。</p>
+<h3 id="Full-BA"><a href="#Full-BA" class="headerlink" title="Full BA"></a>Full BA</h3><p>是一种局部BA 的特殊情况，除了<strong>初始关键帧</strong>是固定的，地图中其余的所有关键帧和点都参与优化过程。</p>
+<h2 id="3-4-Loop-Closing-and-Full-BA"><a href="#3-4-Loop-Closing-and-Full-BA" class="headerlink" title="3.4 Loop Closing and Full BA"></a>3.4 Loop Closing and Full BA</h2><p>回环检测包含两步：</p>
+<ol>
+<li>回环的检测与验证；</li>
+<li>通过位姿图优化来矫正回环。</li>
+</ol>
+<h2 id="3-5-Keyframe-Insertion"><a href="#3-5-Keyframe-Insertion" class="headerlink" title="3.5 Keyframe Insertion"></a>3.5 Keyframe Insertion</h2><p>本系统遵循ORB-SLAM 的关键帧插入策略，此外，基于立体远近点创建了一个新的关键帧挑选策略：如果跟踪的近点数量低于 $\tau_t = 100$，且可新增近点数量大于 $\tau_c = 70$ 时，将其作为新的关键帧进行插入。</p>
+<p><img src="/2024/01/29/orb-slam2/fig3.png" alt="fig3" title="fig 3"></p>
+<h2 id="3-6-Localization-Mode"><a href="#3-6-Localization-Mode" class="headerlink" title="3.6 Localization Mode"></a>3.6 Localization Mode</h2><p>本系统引入了一个<strong>定位模式</strong>，可在已经制图的区域进行<strong>轻量级长期定位</strong>。该过程利用<strong>视觉里程计匹配点</strong>和<strong>地图匹配点</strong>进行定位，其中视觉里程计匹配是基于当前帧的ORB 和历史帧创建的3D 点之间进行的，这些匹配可在无地图区域进行定位，但会存在累积漂移；而地图点匹配会得到与地图无偏的定位结果。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>ORB-SLAM</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>C++</tag>
+        <tag>ORB-SLAM2</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 SOF-SLAM_A Semantic Visual SLAM for Dynamic Environments</title>
+    <url>/2024/02/18/sof-slam/</url>
+    <content><![CDATA[<p>Cui, Linyan, and Chaowei Ma. “SOF-SLAM: A Semantic Visual SLAM for Dynamic Environments.” <em>IEEE Access</em> 7 (2019): 166528–39. <a href="https://doi.org/10.1109/ACCESS.2019.2952161">https://doi.org/10.1109/ACCESS.2019.2952161</a>.</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>无论是DynaSLAM还是DS-SLAM，它们都是简单地将先验语义信息和几何一致性信息进行<strong>“松组合”</strong>，即利用语义信息和几何信息分别确定出各自认定的动态特征点，然后采用<strong>投票机制</strong>对最终的动态特征点进行确认；其中，DynaSLAM 认为只要有一种方法判定一个点属于动态点就认为该点是动态点（<strong>OR操作</strong>），而DS-SLAM 认为只有两种方法同时认定该点属于动态点才将该点视为动态点（<strong>AND操作</strong>）。由于动态语义先验信息的不确定性，如人或汽车存在静止的情况，而DynaSLAM所代表的方法会剔除掉大量静态特征点，导致位姿估计精度下降，甚至在部分场景中由于特征点的缺少导致解算失败；同时，语义分割存在准确度不够的情况，如物体边缘部分的分割效果较差，DS-SLAM 代表的方法可能会保留实际的动态特征点，从而导致位姿估计精度下降。</p>
+<p>针对以上存在的问题，Cui 等人提出了 SOF-SLAM——Semantic Optical Flow SLAM，一种将语义信息和几何信息进行<strong>“紧组合”</strong>来实现动态目标检测和剔除的鲁棒SLAM方法；所谓的紧组合指的是<strong>利用语义信息来辅助几何信息进行动态物体的探测</strong>：作者首先利用语义分割结果去除掉场景中动态物体和潜在动态物体上的特征点，仅利用<strong>高可能性静态物体</strong>上的特征点进行基础矩阵的求解，进而利用该可靠性更高的基础矩阵应用<strong>对极几何理论</strong>实现对动态特征点的剔除，从而实现更为鲁棒可靠的动态特征点剔除方法；最终，作者在公开数据集和真实场景中进行了测试，证明了本方法较ORB-SLAM2以及其他语义SLAM算法的优势。</p>
+<span id="more"></span>
+<p><img src="/2024/02/18/sof-slam/image-20240218103807414.png" alt="image-20240218103807414" title="figure 2"></p>
+<p><img src="/2024/02/18/sof-slam/image-20240218104037049.png" alt="image-20240218104037049" title="figure 3"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
       </tags>
   </entry>
   <entry>
@@ -693,83 +1024,39 @@
         <category>ORB-SLAM</category>
       </categories>
       <tags>
-        <tag>Ubuntu</tag>
         <tag>SLAM</tag>
+        <tag>Ubuntu</tag>
         <tag>C++</tag>
         <tag>ORB-SLAM2</tag>
         <tag>OpenCV</tag>
       </tags>
   </entry>
   <entry>
-    <title>Ubuntu系统安装</title>
-    <url>/2024/01/26/Ubuntu-setup/</url>
-    <content><![CDATA[<h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作：</p>
+    <title>SSH免密登录设置</title>
+    <url>/2024/01/26/ssh-setup/</url>
+    <content><![CDATA[<h1 id="1-ssh服务"><a href="#1-ssh服务" class="headerlink" title="1 ssh服务"></a>1 ssh服务</h1><p>Ubuntu开启ssh服务需要下载openssh-server，命令为：</p>
 <span id="more"></span>
-<p><img src="/2024/01/26/Ubuntu-setup/rufus.png" alt="rufus" title="rufus设置界面"></p>
-<h1 id="2-进入BIOS更改启动顺序"><a href="#2-进入BIOS更改启动顺序" class="headerlink" title="2 进入BIOS更改启动顺序"></a>2 进入BIOS更改启动顺序</h1><p>将制作好的U盘插入电脑，启动电脑进入BIOS，设置第一启动项为U盘启动，保存BIOS设置并重新启动电脑，启动后选择”Try or install Ubuntu”选项，注意，此时可能会出现电脑黑屏的情况，但是屏幕是点亮的、鼠标有灯效，证明确实进入了安装系统，但是由于Ubuntu显卡驱动的问题，此时需要进行额外设置：</p>
-<ol>
-<li><p>重新启动电脑，在光标选择”Try or install Ubuntu”选项后，不要点击Enter键，而是点击”e”键进入命令行编辑模型；</p>
-</li>
-<li><p>删除”quite splash”后的”—-“，并添加”nomodeset”（依照不同显卡进行不同显卡驱动选项的添加，对于Nvidia显卡，添加nomodeset）；</p>
-</li>
-<li><p>然后，点击”F10”开始安装，此时电脑屏幕会正常。</p>
-</li>
-</ol>
-<p>值得注意的是，装机成功重启后可能也会出现黑屏的情况（本人没有遇到），此时应在开机后点击”e”键，同样找到”quite splash” 并在后面添加”nomodeset”，按”F10”启动系统 ，进去系统之后编辑”/etc/default/grub”这个文件，具体操作在此不做赘述，可参考<a href="https://blog.csdn.net/qq_32285693/article/details/118900765">该文章</a>。</p>
-<h1 id="3-设置硬盘分区"><a href="#3-设置硬盘分区" class="headerlink" title="3 设置硬盘分区"></a>3 设置硬盘分区</h1><p>本人想将之前的双系统进行清空，但又不想使用默认设置，故选择”something else”：</p>
-<ol>
-<li>清空之前双系统的所有磁盘空间，将硬盘全置为free；</li>
-<li>根据个人需求设置硬盘分区，以下是重点部分，本人设置情况如下所示（<strong>注意分区类型</strong>）：</li>
-</ol>
-<p><img src="/2024/01/26/Ubuntu-setup/disk_set.png" alt="磁盘分区设置" title="磁盘分区设置"></p>
-<p>具体空间分配可根据个人使用习惯和硬盘大小进行设置，值得注意的是，<strong>EFI 分区一定是第一个设置的！！！</strong></p>
-<h1 id="4-Ubuntu设置"><a href="#4-Ubuntu设置" class="headerlink" title="4 Ubuntu设置"></a>4 Ubuntu设置</h1><p>进入Ubuntu系统后的设置不再赘述。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install openssh-server</span><br></pre></td></tr></table></figure>
+<h1 id="2-ssh-key生成"><a href="#2-ssh-key生成" class="headerlink" title="2 ssh key生成"></a>2 ssh key生成</h1><p>生成ssh key的命令是：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen</span><br></pre></td></tr></table></figure>
+<p>后续一路默认设置即可，该命令会在主目录默认生成.ssh文件，内包含以下文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa: 私钥</span><br><span class="line">id_rsa.pub: 公钥</span><br></pre></td></tr></table></figure>
+<h1 id="3-无密码远程登陆服务器"><a href="#3-无密码远程登陆服务器" class="headerlink" title="3 无密码远程登陆服务器"></a>3 无密码远程登陆服务器</h1><p>将本地产生的公钥上传至服务器：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-copy-id -p <span class="comment">#port master@ubuntu</span></span><br></pre></td></tr></table></figure>
+<h1 id="4-Windows免密登录Ubuntu"><a href="#4-Windows免密登录Ubuntu" class="headerlink" title="4 Windows免密登录Ubuntu"></a>4 Windows免密登录Ubuntu</h1><p>Windows在终端中执行以下命令生成公私密钥：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+<p>会在C:\Users\xxx.ssh 文件夹中生成以下三个文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">id_rsa 本地私钥</span><br><span class="line">id_rsa.pub 公钥</span><br><span class="line">known_hosts 已知的ip</span><br></pre></td></tr></table></figure>
+<p>将公钥上传至Ubuntu，可使用scp命令，然后执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将公钥拷贝至Ubuntu的authorized_keys文件中</span></span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改sshd_config文件</span></span><br><span class="line">sudo vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将一下三行命令添加至sshd_config文件</span></span><br><span class="line">RSAAuthentication <span class="built_in">yes</span></span><br><span class="line">PubkeyAuthentication <span class="built_in">yes</span></span><br><span class="line">PasswordAuthentication no</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启ssh</span></span><br><span class="line">sudo service sshd restart</span><br></pre></td></tr></table></figure>
+<p>然后即可实现Windows免密登录Ubuntu。</p>
 ]]></content>
       <categories>
         <category>开发环境搭建</category>
       </categories>
       <tags>
         <tag>Ubuntu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Windows远程桌面控制ubuntu</title>
-    <url>/2024/01/26/win-remote-ubuntu/</url>
-    <content><![CDATA[<h2 id="1-Ubuntu设置与软件安装"><a href="#1-Ubuntu设置与软件安装" class="headerlink" title="1 Ubuntu设置与软件安装"></a>1 Ubuntu设置与软件安装</h2><p>首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：</p>
-<span id="more"></span>
-<p><img src="/2024/01/26/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
-<p>然后安装xrdp：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install xrdp</span><br></pre></td></tr></table></figure>
-<p>接下来的步骤网上有很多不同的做法，其中<a href="https://zhuanlan.zhihu.com/p/145614559">这篇文章</a>提到需要修改startwm.sh文件:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
-<p><img src="/2024/01/26/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
-<p>将最后两行注释掉，即：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 注释掉这两行</span></span><br><span class="line"><span class="comment"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span></span><br><span class="line"><span class="comment"># exec /bin/sh /etc/X11/Xsession</span></span><br></pre></td></tr></table></figure>
-<p>然后即可通过win10自带的远程桌面（或在Microsoft Store安装的远程桌面）进行连接：</p>
-<p><img src="/2024/01/26/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
-<p><img src="/2024/01/26/win-remote-ubuntu/image-20240129103319493.png" alt="远程桌面" title="远程桌面"></p>
-<p>到目前为止，本人可以在Windows中正常远程控制Ubuntu，且可实现Ubuntu显示和远程控制<strong>同时在线</strong>，即通过远程控制操作Ubuntu，同时另一个屏幕可正常显示Ubuntu界面，且实时显示远程控制的操作。</p>
-<h2 id="2-黑屏问题"><a href="#2-黑屏问题" class="headerlink" title="2 黑屏问题"></a>2 黑屏问题</h2><p>但是，在这之后我重新安装了NVIDIA显卡驱动、CUDA、cuDNN，然后就发现远程控制无法进入Ubuntu系统了，点击“连接”后出现一段时间的黑屏后会自动退出。在网上查询了很多案例，有各种五花八门的解决方案，如换一个桌面程序、使用dconf-editor更改配置文件、远程控制与Ubuntu本地无法同时登陆（必须有一方log out）等等，以下是个人尝试的结果：</p>
-<ul>
-<li>换桌面程序：由于本人安装的是桌面版Ubuntu，故系统自带桌面程序gnome，之前配置远程控制时就受到网上各种五花八门意见的影响，使用了xfce4桌面程序，后来发现完全没必要，而且就在不久前还可以正常远程连接，说明应该不是桌面程序的原因，因此就没有尝试更换桌面程序；</li>
-<li>使用dconf-editor更改配置文件：在<a href="https://zhuanlan.zhihu.com/p/345738274">文章</a>中提到，进入dconf-editor后，依次进入“org-&gt;gnome-&gt;desktop-&gt;remote-access”，将 requre-encryption 设为 False，这也是本人在上个系统（Ubuntu20.04）中的操作，但是在本系统（Ubuntu22.04）中没有发现有“remote-access”，故该方法也没有成功；</li>
-<li>本地端与远程端无法共存：这个比较简单，本人试着将Ubuntu本地端账户log out，或者使用不同账户进行远程控制，发现仍然失败；但<strong>需要注意的是</strong>，在本人解决远程黑屏问题之后，发现该问题确实是存在的，若本地端或远程端没有log out，那么另一端就无法正常登陆显示界面，这边记录一下；</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 修改startwm.sh文件，添加下面几行，仍旧没有解决问题</span></span><br><span class="line"><span class="built_in">unset</span> DBUS_SESSION_BUS_ADDRESS</span><br><span class="line"><span class="built_in">unset</span> XDG_RUNTIME_DIR</span><br><span class="line">. <span class="variable">$HOME</span>/.profile</span><br></pre></td></tr></table></figure>
-<p>最后，不知道怎么想起来，尝试把startwm.sh文件中注释掉的两行取消注释，峰回路转、柳暗花明，竟然成了！！！于是，本人最终的startwm.sh文件内容如下所示：</p>
-<p><img src="/2024/01/26/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
-<h2 id="3-后记"><a href="#3-后记" class="headerlink" title="3 后记"></a>3 后记</h2><p>虽然不知道原因是什么，只知道目前这样子是可行的，但同时也发现无法像安装显卡驱动前那样本地端和远程端同时登陆了，必须要有一端log out，另一端才可正常工作，现做以下记录：</p>
-<ul>
-<li>使用远程连接桌面后，不能简单地关掉远程桌面：若只是简单地关掉远程桌面后，在本地端可以正常进入账号选择、密码输入界面，输完密码后会显示黑屏；此时，只有重新进入远程桌面，选择log out，本地端方可正常登录。</li>
-<li>对于本地端Todesk等远程控制软件：经过本人测试，Todesk 软件若想正常工作需要本地端正常登录，即要求远程端log out，然后本地端log in；那么也就意味着本地端电脑需要连接显示器。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>开发环境搭建</category>
-      </categories>
-      <tags>
-        <tag>Ubuntu</tag>
-        <tag>remote access</tag>
+        <tag>SSH</tag>
       </tags>
   </entry>
   <entry>
@@ -837,194 +1124,43 @@
       </tags>
   </entry>
   <entry>
-    <title>论文记录 X-View_Graph-Based Semantic Multi-View Localization</title>
-    <url>/2024/01/30/x-view/</url>
-    <content><![CDATA[<p>Gawel, Abel, Carlo Del Don, Roland Siegwart, Juan Nieto, and Cesar Cadena. “X-View: Graph-Based Semantic Multi-View Localization.” <em>IEEE Robotics and Automation Letters (RA-L)</em> 3, no. 3 (2018): 1687–94.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
-<ol>
-<li>提出一个新颖的<strong>语义拓扑图表示</strong>方法；</li>
-<li>引进了一个<strong>基于随机游走的图描述子</strong>，可以有效地使用既定的匹配方法进行高效匹配；</li>
-<li>用于全局定位的语义分割完整pipeline；</li>
-<li>开源<em>X-View</em> 算法；</li>
-<li>公开数据集的测试结果。</li>
-</ol>
+    <title>Windows远程桌面控制ubuntu</title>
+    <url>/2024/01/26/win-remote-ubuntu/</url>
+    <content><![CDATA[<h2 id="1-Ubuntu设置与软件安装"><a href="#1-Ubuntu设置与软件安装" class="headerlink" title="1 Ubuntu设置与软件安装"></a>1 Ubuntu设置与软件安装</h2><p>首先打开Ubuntu设置，将Sharing-Remote Desktop打开，如下图所示：</p>
 <span id="more"></span>
-<p><img src="/2024/01/30/x-view/fig1.png" alt="fig1" title="figure 1"></p>
-<h1 id="3-X-View"><a href="#3-X-View" class="headerlink" title="3 X-View"></a>3 X-View</h1><p>X-View 利用从输入语义数据提取得到的图，并使用图描述子进行图匹配，本文提出的全局定位算法架构如Fig. 2所示，本系统被设计为可以用于任何给定的语义信息作为输入的里程估计系统，为了简化表示，Fig. 2中只列举了语义分割图片作为输入。</p>
-<p><img src="/2024/01/30/x-view/fig2.png" alt="fig2" title="figure 2"></p>
-<h2 id="3-1-System-input"><a href="#3-1-System-input" class="headerlink" title="3.1 System input"></a>3.1 System input</h2><p>将语义分割或实例分割图片作为系统输入，且假定外部里程系统的估计，以及一个参考语义图 $G_{db}$ 。</p>
-<h2 id="3-2-Graph-extraction-and-assembly"><a href="#3-2-Graph-extraction-and-assembly" class="headerlink" title="3.2 Graph extraction and assembly"></a>3.2 Graph extraction and assembly</h2><p>将一系列语义分割图片 $I_q$ 转化为一个质询图 $G_q$ ，从连接区域中提取斑点 blobs，例如每幅图中具有相同语义标签 $l_j$ 的区域。为了应对语义分割的噪声（如标签中的洞、断连的边、边缘错误的标签等），作者使用 dilating 和 eroding 对每个班点的边界进行柔化，且设定最小像素数阈值为4以排除过小及次要物体的影响。斑点的中心位置 $p_j$ 被提取出来，与标签一起存储为顶点 $v_j = \{l_j, p_j\}$ 。</p>
-<p>顶点之间的无向边可以是图像空间或3D 空间的，当考虑图像空间中的边时，认为图片在时间序列中根据几幅连续的输入图片流来生成图（利用连续图片获取3D距离信息），在3D 空间中不需要考虑这方面。</p>
-<p>利用深度通道数据或者深度估计来组成3D空间结构，使用图片斑点的3D位置来计算欧氏距离，图提取与组合的过程如Fig. 3所示，当对多幅连续图片的图进行组合时，将距离较近且拥有相同语义标签的重复顶点融合为一个顶点，该顶点位置选择为初次观测到的位置。</p>
-<p><img src="/2024/01/30/x-view/fig3.png" alt="fig3" title="figure 3"></p>
-<h2 id="3-3-Descriptors"><a href="#3-3-Descriptors" class="headerlink" title="3.3 Descriptors"></a>3.3 Descriptors</h2><p>子图匹配是一个 NP-complete 难题，且为了实现机器人的实时定位问题，作者提出了为图中每个节点建立随机游走描述子并进行匹配，这样做的优势是根据给定的静态或者增长的参考图，匹配时间分别是常数或者线性变化的。每个顶点的描述子是一个 $n \times m$ 的矩阵，包含 <em>n</em> 个深度为 <em>m</em> 的随机游走，每个随机游走开始于源顶点 $v_j$ ，并存储访问过顶点的分类标签，随机游走描述子提取过程如Fig. 4所示。</p>
-<p><img src="/2024/01/30/x-view/fig4.png" alt="fig4" title="figure 4"></p>
-<h2 id="3-4-Descriptor-Matching"><a href="#3-4-Descriptor-Matching" class="headerlink" title="3.4 Descriptor Matching"></a>3.4 Descriptor Matching</h2><p>在质询图 $G_q$ 与 参考图 $G_{db}$ 完成之后，通过计算相应的图描述子之间的similarity score来建立两图顶点之间的联系：</p>
+<p><img src="/2024/01/26/win-remote-ubuntu/ubuntu-setting.png" alt="ubuntu-setting" title="Ubuntu远程桌面设置"></p>
+<p>然后安装xrdp：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install xrdp</span><br></pre></td></tr></table></figure>
+<p>接下来的步骤网上有很多不同的做法，其中<a href="https://zhuanlan.zhihu.com/p/145614559">这篇文章</a>提到需要修改startwm.sh文件:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/xrdp/startwm.sh</span><br></pre></td></tr></table></figure>
+<p><img src="/2024/01/26/win-remote-ubuntu/startwm.png" alt="startwm.sh" title="修改startwm.sh文件"></p>
+<p>将最后两行注释掉，即：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 注释掉这两行</span></span><br><span class="line"><span class="comment"># test -x /etc/X11/Xsession &amp;&amp; exec /etc/X11/Xsession</span></span><br><span class="line"><span class="comment"># exec /bin/sh /etc/X11/Xsession</span></span><br></pre></td></tr></table></figure>
+<p>然后即可通过win10自带的远程桌面（或在Microsoft Store安装的远程桌面）进行连接：</p>
+<p><img src="/2024/01/26/win-remote-ubuntu/remote-access.png" alt="remote" title="win10远程桌面"></p>
+<p><img src="/2024/01/26/win-remote-ubuntu/image-20240129103319493.png" alt="远程桌面" title="远程桌面"></p>
+<p>到目前为止，本人可以在Windows中正常远程控制Ubuntu，且可实现Ubuntu显示和远程控制<strong>同时在线</strong>，即通过远程控制操作Ubuntu，同时另一个屏幕可正常显示Ubuntu界面，且实时显示远程控制的操作。</p>
+<h2 id="2-黑屏问题"><a href="#2-黑屏问题" class="headerlink" title="2 黑屏问题"></a>2 黑屏问题</h2><p>但是，在这之后我重新安装了NVIDIA显卡驱动、CUDA、cuDNN，然后就发现远程控制无法进入Ubuntu系统了，点击“连接”后出现一段时间的黑屏后会自动退出。在网上查询了很多案例，有各种五花八门的解决方案，如换一个桌面程序、使用dconf-editor更改配置文件、远程控制与Ubuntu本地无法同时登陆（必须有一方log out）等等，以下是个人尝试的结果：</p>
 <ul>
-<li>相似性是通过对质询图与参考图中顶点的语义描述子的每一行进行匹配计算获取的；</li>
-<li>两个描述子拥有的相同随机游走数量决定了similarity score（分布在0与1之间）；</li>
-<li>然后选取得分最高的前 k 个匹配顶点对来计算质询图在参考图中的定位信息。</li>
+<li>换桌面程序：由于本人安装的是桌面版Ubuntu，故系统自带桌面程序gnome，之前配置远程控制时就受到网上各种五花八门意见的影响，使用了xfce4桌面程序，后来发现完全没必要，而且就在不久前还可以正常远程连接，说明应该不是桌面程序的原因，因此就没有尝试更换桌面程序；</li>
+<li>使用dconf-editor更改配置文件：在<a href="https://zhuanlan.zhihu.com/p/345738274">文章</a>中提到，进入dconf-editor后，依次进入“org-&gt;gnome-&gt;desktop-&gt;remote-access”，将 requre-encryption 设为 False，这也是本人在上个系统（Ubuntu20.04）中的操作，但是在本系统（Ubuntu22.04）中没有发现有“remote-access”，故该方法也没有成功；</li>
+<li>本地端与远程端无法共存：这个比较简单，本人试着将Ubuntu本地端账户log out，或者使用不同账户进行远程控制，发现仍然失败；但<strong>需要注意的是</strong>，在本人解决远程黑屏问题之后，发现该问题确实是存在的，若本地端或远程端没有log out，那么另一端就无法正常登陆显示界面，这边记录一下；</li>
 </ul>
-<h2 id="3-5-Localization-Back-End"><a href="#3-5-Localization-Back-End" class="headerlink" title="3.5 Localization Back-End"></a>3.5 Localization Back-End</h2><p>一共有三种类型的约束：</p>
-<ol>
-<li>来自语义描述子匹配的约束；</li>
-<li>联系定位图中连续位姿的机器人估计位姿约束；</li>
-<li>每一个robot-vertex观测的转换信息编码得到的robot-vertex约束。</li>
-</ol>
-<p>作者根据以上三个约束参数计算最大后验估计 (MAP)来获取定位信息。</p>
-<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1><p>在两个不同的合成户外数据集进行评估，包括<strong>前视——后视</strong>视角变化、<strong>前视——空视</strong>视角变化，以及一个真实世界户外数据集，包含<strong>前视——后视</strong>视角变化。</p>
-<h2 id="4-1-Datasets"><a href="#4-1-Datasets" class="headerlink" title="4.1 Datasets"></a>4.1 Datasets</h2><p>SYNTHIA 数据集是在城市环境模拟生成的，采集汽车有8个摄像头，四个方向各有两个，相邻图片间的距离在0~1m。作者使用photo-realistic Arisim 生成了空对地观测的数据集，包含空中向地面观测与地面前向观测两种数据，两种数据之间只有在 z 轴存在偏差，其余均相同，相邻图片间的距离总是1m。真实户外场景的数据集是通过Google StreetView 获取的，类似于SYNTHIA 数据集，只使用前视与后视摄像头，相邻图片间的距离接近10m。</p>
-<p><img src="/2024/01/30/x-view/fig5.png" alt="fig5" title="figure 5"></p>
-<h2 id="4-3-Localization-performance"><a href="#4-3-Localization-performance" class="headerlink" title="4.3 Localization performance"></a>4.3 Localization performance</h2><p>设置两组实验：</p>
-<ol>
-<li>在SYNTHIA 数据集上测试不同的参数设置，如随机游走参数、质询图片数量、动态分类物体、图边缘构建技术等；</li>
-<li>在SYNTHIA、Airsim 以及 StreetView 上进行对比分析实验。</li>
-</ol>
-<p>与基于外观匹配的算法进行对比，使用了BoW、NetVLAD 算法。</p>
-<h2 id="4-4-Results"><a href="#4-4-Results" class="headerlink" title="4.4 Results"></a>4.4 Results</h2><p>Fig. 6是对SYNTHIA 数据集进行的参数对比试验结果。6(a) 中 n 代表随机游走的个数， m 代表随机游走的深度。</p>
-<p><img src="/2024/01/30/x-view/fig6.png" alt="fig6" title="figure 6"></p>
-<p>PR评估曲线以及不同定位误差下的成功率结果如Fig. 7所示。</p>
-<p><img src="/2024/01/30/x-view/fig7.png" alt="fig7" title="figure 7"></p>
-<p>系统组件的时间消耗如Table 1所示。</p>
-<p><img src="/2024/01/30/x-view/t1.png" alt="t1" title="table 1"></p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>Topology</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>Topology</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>论文记录 Semantic SLAM Based on Object Detection and Improved Octomap</title>
-    <url>/2024/01/30/zhang2018/</url>
-    <content><![CDATA[<p>Zhang, Liang, Leqi Wei, Peiyi Shen, Wei Wei, Guangming Zhu, and Juan Song. “Semantic SLAM Based on Object Detection and Improved Octomap.” <em>IEEE Access</em> 6 (2018): 75545–59. <a href="https://doi.org/10.1109/ACCESS.2018.2873617">https://doi.org/10.1109/ACCESS.2018.2873617</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>基于ORB-SLAM2，利用YOLO 实现<strong>物体检测</strong>，剔除掉<strong>先验动态物体</strong>上的特征点，提高精度；并建立<strong>物体级语义八叉树地图</strong>，且优化了制图的速度。</p>
-<p>本文的贡献：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 修改startwm.sh文件，添加下面几行，仍旧没有解决问题</span></span><br><span class="line"><span class="built_in">unset</span> DBUS_SESSION_BUS_ADDRESS</span><br><span class="line"><span class="built_in">unset</span> XDG_RUNTIME_DIR</span><br><span class="line">. <span class="variable">$HOME</span>/.profile</span><br></pre></td></tr></table></figure>
+<p>最后，不知道怎么想起来，尝试把startwm.sh文件中注释掉的两行取消注释，峰回路转、柳暗花明，竟然成了！！！于是，本人最终的startwm.sh文件内容如下所示：</p>
+<p><img src="/2024/01/26/win-remote-ubuntu/startwm-1.png" alt="startwm" title="startwm.sh文件最终版"></p>
+<h2 id="3-后记"><a href="#3-后记" class="headerlink" title="3 后记"></a>3 后记</h2><p>虽然不知道原因是什么，只知道目前这样子是可行的，但同时也发现无法像安装显卡驱动前那样本地端和远程端同时登陆了，必须要有一端log out，另一端才可正常工作，现做以下记录：</p>
 <ul>
-<li>本系统可以检测80-200 种物体种类，而现有的语义制图系统只能检测不超过20个种类；</li>
-<li>本系统不需要先验3D 模型就可以实现对环境中物体的3D 建模；</li>
-<li>本系统利用的是物体级模型信息，而不是像素级的。</li>
+<li>使用远程连接桌面后，不能简单地关掉远程桌面：若只是简单地关掉远程桌面后，在本地端可以正常进入账号选择、密码输入界面，输完密码后会显示黑屏；此时，只有重新进入远程桌面，选择log out，本地端方可正常登录。</li>
+<li>对于本地端Todesk等远程控制软件：经过本人测试，Todesk 软件若想正常工作需要本地端正常登录，即要求远程端log out，然后本地端log in；那么也就意味着本地端电脑需要连接显示器。</li>
 </ul>
-<span id="more"></span>
-<h1 id="3-System-Overview"><a href="#3-System-Overview" class="headerlink" title="3 System Overview"></a>3 System Overview</h1><h2 id="3-1-SLAM-Analysis"><a href="#3-1-SLAM-Analysis" class="headerlink" title="3.1 SLAM Analysis"></a>3.1 SLAM Analysis</h2><p>大多数基于特征的SLAM 系统基于一个<strong>强假设</strong>：移动物体上的特征点数量要远小于静态物体特征点数量。</p>
-<p><strong>八叉树地图Octomap</strong> 不仅可以存储RGB 和位置信息，还可以保存<strong>语义信息</strong>，且利用<strong>概率模型</strong>来构建更为精准的地图。</p>
-<h2 id="3-2-ORB-SLAM-Analysis"><a href="#3-2-ORB-SLAM-Analysis" class="headerlink" title="3.2 ORB-SLAM Analysis"></a>3.2 ORB-SLAM Analysis</h2><p>ORB-SLAM2 的架构如Fig. 1所示，包含三个并行处理的线程：</p>
-<ul>
-<li>Tracking：负责实时定位每一帧图片对应的<strong>位姿</strong>，并决定哪些图片作为<strong>关键帧</strong>。与前一帧进行特征匹配并利用BA 进行位姿优化，如果跟踪失败，利用Bag of Word 进行全局<strong>重定位</strong>，将地图中的特征点进行<strong>重投影</strong>并进行位姿优化。</li>
-<li>Local Mapping：在获取一个新的关键帧之后，该线程对新地图点进行<strong>三角化</strong>，利用BA 对关键帧和地图点进行<strong>位姿优化</strong>，并对冗余的关键帧和低质量的地图点进行剔除。</li>
-<li>Loop Closing：对关键帧进行<strong>回环检测</strong>，若检测成功，计算相似度转换作为环路<strong>累积漂移</strong>，然后进行对齐、融合与位姿优化。</li>
-</ul>
-<p><img src="/2024/01/30/zhang2018/fig1.png" alt="fig1" title="figure 1"></p>
-<h2 id="3-3-Overview-of-Semantic-SLAM-system"><a href="#3-3-Overview-of-Semantic-SLAM-system" class="headerlink" title="3.3 Overview of Semantic SLAM system"></a>3.3 Overview of Semantic SLAM system</h2><p>本文提出的语义SLAM 系统架构如Fig. 2所示，本系统是基于ORB-SLAM2 构建的，ORB-SLAM2 负责相机定位，并利用每一个RGB-D 图片帧进行制图。</p>
-<p>tracking 线程使用<strong>关键帧进行跟踪</strong>，来减小移动物体的影响；local mapping 线程添加<strong>少量</strong>的关键帧来创造语义信息，因为语义信息的提取满足实时的要求。</p>
-<p>本系统使用YOLO 网络对关键帧进行物体检测，并使用<strong>CRF</strong> (Conditional Random Field) 进行<strong>物体正则化</strong>来对YOLO 检测出的物体置信度进行<strong>矫正优化</strong>，该过程使用MS-COCO 数据集的统计数据计算得到的物体间<strong>约束</strong>。</p>
-<p><img src="/2024/01/30/zhang2018/fig2.png" alt="fig2" title="figure 2"></p>
-<p>当获取了每个物体的<strong>准确标签</strong>后，利用滤波器对特征进行筛选，并利用投影的点云来创建<strong>临时的物体模型</strong>；在此基础上，利用<strong>数据关联</strong>决定创建新的模型或是与地图中现有的模型进行融合。</p>
-<p>最后，Map Generation 利用存储在物体中的点云生成八叉树地图，并使用多线程和Fast Line Rasterization 算法进行加速。</p>
-<h2 id="3-4-Relationship-between-Keyframes-and-Objects"><a href="#3-4-Relationship-between-Keyframes-and-Objects" class="headerlink" title="3.4 Relationship between Keyframes and Objects"></a>3.4 Relationship between Keyframes and Objects</h2><p>借鉴ORB-SLAM2 系统中<strong>关键帧和地图点</strong>之间的关系来创建本系统<strong>关键帧和物体</strong>之间的联系。</p>
-<p>本系统中，每个<strong>物体 $O_i$</strong> 需包含：</p>
-<ul>
-<li>物体中点云的坐标；</li>
-<li>固定数量的类别标签，以及通过递归贝叶斯更新recursive Bayesian update 计算的置信度；</li>
-<li>观测到该物体的关键帧；</li>
-<li>物体中点云的Kd-tree 结构（用于快速查找）；</li>
-<li>物体所属的类别标签；</li>
-<li>物体被观测的数量。</li>
-</ul>
-<p>每个<strong>关键帧 $K_i$</strong> 需包含：</p>
-<ul>
-<li>用于物体检测的相应RGB 图片；</li>
-<li>用于产生点云的相应深度图片；</li>
-<li>本关键帧中观测到的物体。</li>
-</ul>
-<h1 id="4-Semantic-Mapping"><a href="#4-Semantic-Mapping" class="headerlink" title="4 Semantic Mapping"></a>4 Semantic Mapping</h1><h2 id="4-1-Improved-SLAM"><a href="#4-1-Improved-SLAM" class="headerlink" title="4.1 Improved SLAM"></a>4.1 Improved SLAM</h2><p>ORB-SLAM2 中，tracking 线程的步骤：</p>
-<ol>
-<li>提取<strong>ORB 特征</strong>；</li>
-<li>ORB 特征与<strong>reference 帧</strong>进行<strong>特征匹配</strong>，初步计算相机位姿并返回匹配地图点（通过搜索<strong>相关的关键帧</strong>来获取）的数量；</li>
-<li>利用匹配地图点进行<strong>位姿优化</strong>；</li>
-<li>决定哪些帧作为<strong>关键帧</strong>。</li>
-</ol>
-<p>为了减小动态物体的影响，对跟踪线程的第二步进行更改：由之前的reference 帧改为与<strong>关键帧进行特征匹配</strong>，这是因为<strong>旧的关键帧不包含动态物体的特征点</strong>。</p>
-<p>跟踪线程的第三步改为：与第二步的结果比较<strong>匹配内点数量</strong>，来判断当前帧是否跟踪失败。</p>
-<h2 id="4-2-Object-Detection"><a href="#4-2-Object-Detection" class="headerlink" title="4.2 Object Detection"></a>4.2 Object Detection</h2><p>利用在COCO 数据集上训练的Tiny YOLO 网络进行物体检测。</p>
-<h2 id="4-3-Object-Regularization"><a href="#4-3-Object-Regularization" class="headerlink" title="4.3 Object Regularization"></a>4.3 Object Regularization</h2><p>常规的物体检测等网络没有考虑<strong>上下文信息（场景信息）</strong>，使用CRF 可为语义提取过程添加上下文信息约束，CRF 擅长对分类器的<strong>类别得分</strong>与图片的<strong>局部信息</strong>进行建模，可以视为一个<strong>最大后验概率问题</strong>。定义<strong>unary potentials</strong> 来对像素或图像块的所属类别进行概率建模，定义<strong>pairwise potentials</strong> 来对像素间或图像块间的关系进行建模。</p>
-<p>作者构建了一个<strong>基于物体的概率稠密CRF 算法</strong>，较基于像素的方法大大减少了计算复杂度，相应的Gibbs 能量方程如下所示：</p>
-<p><img src="/2024/01/30/zhang2018/f1-2.png" alt="f1" title="f1-2"></p>
-<p>与文章(Runz 和 Agapito, 2017)相似，$x$ 表示类别标签；$i, j$ 取值1 到 $k$ ，其中 $k$ 表示地图中物体的数量；$Z$ 是归一化参数。本物体级 CRF 的目标是最小化 $E(x)$ ，相应的unary potentials 和 pairwise potentials 表示为：</p>
-<p><img src="/2024/01/30/zhang2018/f3-4.png" alt="f3" title="f3-4"></p>
-<p>其中，$\mu$ 函数被称为<strong>标签兼容性函数</strong>，用来描述相邻位置两个不同标签同时出现的可能性；$f_{i, j}$ 是第 i 个物体和第 j 个物体的约束。</p>
-<p><img src="/2024/01/30/zhang2018/f6.png" alt="f6" title="formula 6"></p>
-<p>其中，$p_{i, j}$ 表示两个物体出现在同一视野中的概率，通过对COCO 数据集进行统计分析获取，如Fig. 4所示，对角线数字表示该物体在数据集中出现的次数。</p>
-<p><img src="/2024/01/30/zhang2018/fig4.png" alt="fig4" title="figure 4"></p>
-<p>由此，本系统实现了同时利用YOLO 和 CRF 实现对物体分类的<strong>置信度</strong>确定。</p>
-<h2 id="4-4-Temporary-Objects-Generation"><a href="#4-4-Temporary-Objects-Generation" class="headerlink" title="4.4 Temporary Objects Generation"></a>4.4 Temporary Objects Generation</h2><p>在确定物体的类别标签后，使用feature filter 根据物体类别实现对特征点和地图点的筛选。作者将属于<strong>先验动态物体</strong>的ORB 特征、地图点、DBoW 特征进行剔除，只保留先验静态物体的特征。</p>
-<p><img src="/2024/01/30/zhang2018/fig5.png" alt="fig5" title="figure 5"></p>
-<p>在动态物体特征剔除之后，生成包含物体尺寸、类别、置信度的得分以及点云的<strong>临时物体模型</strong>，并对噪声点进行剔除。</p>
-<p><img src="/2024/01/30/zhang2018/fig6.png" alt="fig6" title="figure 6"></p>
-<h2 id="4-5-Data-Association"><a href="#4-5-Data-Association" class="headerlink" title="4.5 Data Association"></a>4.5 Data Association</h2><p>本系统中的DA 是用来判定检测物体是新观测到的还是地图中已存在的。</p>
-<p>首先，为每个临时物体模型寻找<strong>候选匹配模型</strong>。可轻易找出与当前关键帧相关联的历史关键帧，以此确定候选匹配模型，该过程如Fig. 7所示。</p>
-<p><img src="/2024/01/30/zhang2018/fig7.png" alt="fig7" title="figure 7"></p>
-<p>然后，在候选匹配模型中选取<strong>最相似的模型</strong>。本过程在临时模型和候选模型的点云间进行nearest neighbor search ，计算匹配点对之间的<strong>欧氏距离</strong>；该过程利用<strong>k-d 树</strong>来加速匹配过程；选取匹配数量最多且超过一定阈值的候选匹配模型作为成功匹配的模型，若没有成功匹配，则视为<strong>新模型</strong>添加进地图中。</p>
-<h2 id="4-6-Object-Model-Update"><a href="#4-6-Object-Model-Update" class="headerlink" title="4.6 Object Model Update"></a>4.6 Object Model Update</h2><p>若模型成功匹配，则<strong>点云</strong>与<strong>类别置信度</strong>需要进行融合。利用recursive Bayesian update 来更新相应的概率分布：</p>
-<p><img src="/2024/01/30/zhang2018/f9.png" alt="f9" title="formula 9"></p>
-<h2 id="4-7-Map-Generation"><a href="#4-7-Map-Generation" class="headerlink" title="4.7 Map Generation"></a>4.7 Map Generation</h2><p><img src="/2024/01/30/zhang2018/fig9.png" alt="fig9" title="figure 9"></p>
-<p>在制图中，移动物体以及测距误差会造成很多误差，八叉树地图使用概率模型来解决该问题。八叉树地图的每个叶子节点存储被占用或空闲的概率，当新的3D 点被插入时会更新概率：</p>
-<p><img src="/2024/01/30/zhang2018/f10-11.png" alt="f10-11" title="f10-11"></p>
-<p>其中，$n$ 表示叶子节点；$z_t$ 表示观测；$P(n|z_t)$ 表示在给定观测 $z_t$ 时体素 $n$ 被占用的概率。</p>
-<p>此外，除了占用概率，体素中还会存储<strong>固定数量的类别标签</strong>以及<strong>置信度得分</strong>。</p>
-<p>八叉树地图绘制过程中会消耗大量的时间来计算空的体素，作者利用优化来加速该过程，如Fig. 10所示。</p>
-<p><img src="/2024/01/30/zhang2018/fig10.png" alt="fig10" title="figure 10"></p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>Dynamic SLAM</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>Dynamic SLAM</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>zsh、Oh-My-Zsh及相关设置</title>
-    <url>/2024/01/26/zsh-setup/</url>
-    <content><![CDATA[<p>注：<strong>本文主要参考</strong><a href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">该文章</a>。</p>
-<h1 id="1-安装并设置zsh"><a href="#1-安装并设置zsh" class="headerlink" title="1 安装并设置zsh"></a>1 安装并设置zsh</h1><p>安装命令：</p>
-<span id="more"></span>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install zsh</span><br></pre></td></tr></table></figure>
-<p>设置zsh为默认shell：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s $(<span class="built_in">which</span> zsh)</span><br></pre></td></tr></table></figure>
-<h1 id="2-安装Oh-My-Zsh"><a href="#2-安装Oh-My-Zsh" class="headerlink" title="2 安装Oh My Zsh"></a>2 安装Oh My Zsh</h1><p>安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
-<h1 id="3-安装主题PowerLevel10k"><a href="#3-安装主题PowerLevel10k" class="headerlink" title="3 安装主题PowerLevel10k"></a>3 安装主题PowerLevel10k</h1><p>安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/romkatv/powerlevel10k.git <span class="variable">$ZSH_CUSTOM</span>/themes/powerlevel10k</span><br></pre></td></tr></table></figure>
-<p>进入.zshrc设置主题：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ZSH_THEME=<span class="string">&quot;powerlevel10k/powerlevel10k&quot;</span></span><br></pre></td></tr></table></figure>
-<h1 id="4-安装插件"><a href="#4-安装插件" class="headerlink" title="4 安装插件"></a>4 安装插件</h1><h2 id="4-1-日常插件"><a href="#4-1-日常插件" class="headerlink" title="4.1 日常插件"></a>4.1 日常插件</h2><p>zsh-autosuggestions:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-autosuggestions <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
-<p>zsh-syntax-highlighting:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
-<p>设置要启动的插件（Plugins）：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">plugins=(</span><br><span class="line">         git</span><br><span class="line">         zsh-autosuggestions </span><br><span class="line">         zsh-syntax-highlighting</span><br><span class="line">         extract</span><br><span class="line">         sudo</span><br><span class="line">         tmux</span><br><span class="line"></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>值得注意的是，除了zsh-autosuggestions 与zsh-syntax-highlighting 需要单独安装外，上述的其他插件均是内嵌的，可直接添加至配置文件中直接使用。</p>
-<h2 id="4-2-Tmux设置"><a href="#4-2-Tmux设置" class="headerlink" title="4.2 Tmux设置"></a>4.2 Tmux设置</h2><p><strong>该部分主要参考</strong><a href="https://louiszhai.github.io/2017/09/30/tmux/#导读">文章</a>。</p>
-<p>安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install tmux</span><br></pre></td></tr></table></figure>
-<p>tmux 的个性化设置需在主目录编辑.tmux.conf 文件，本人的文件设置如下：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> -g prefix C-z</span><br><span class="line">unbind C-b</span><br><span class="line"><span class="built_in">bind</span> C-a send-prefix</span><br><span class="line"></span><br><span class="line"><span class="built_in">bind</span> r source-file ~/.tmux.conf \; display-message <span class="string">&quot;Config reloaded..&quot;</span></span><br><span class="line"></span><br><span class="line">unbind <span class="string">&#x27;&quot;&#x27;</span></span><br><span class="line"><span class="built_in">bind</span> - splitw -v -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line">unbind %</span><br><span class="line"><span class="built_in">bind</span> | splitw -h -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">set-option -g mouse on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g base-index 0</span><br><span class="line"><span class="built_in">set</span> -g pane-base-index 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># setw -g utf8 on</span></span><br><span class="line"><span class="built_in">set</span> -g status-interval 1</span><br><span class="line"><span class="built_in">set</span> -g status-justify left</span><br><span class="line">setw -g monitor-activity on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g status-bg black</span><br><span class="line"><span class="built_in">set</span> -g status-fg yellow</span><br><span class="line"><span class="built_in">set</span> -g status-left <span class="string">&quot;#[bg=#FF661D] ❐ #S &quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-right <span class="string">&quot;%H:%M:%S %d-%b&quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-left-length 300</span><br><span class="line"><span class="built_in">set</span> -g status-right-length 500</span><br><span class="line"><span class="built_in">set</span> -wg window-status-current-format <span class="string">&quot; #I:#W#F &quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g message-style <span class="string">&quot;bg=#202529, fg=#91A8BA&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g default-terminal <span class="string">&quot;screen-256color&quot;</span></span><br></pre></td></tr></table></figure>
-<p>其他使用说明可参考上述链接。在oh my zsh 插件中添加了 tmux 后，可以使用如下快捷键：</p>
-<p><img src="/2024/01/26/zsh-setup/hotkey.png" alt="hotkey" title="快捷键设置"></p>
 ]]></content>
       <categories>
         <category>开发环境搭建</category>
       </categories>
       <tags>
         <tag>Ubuntu</tag>
-        <tag>zsh</tag>
+        <tag>remote access</tag>
       </tags>
   </entry>
   <entry>
@@ -1182,193 +1318,56 @@
       </tags>
   </entry>
   <entry>
-    <title>论文记录 CubeSLAM_Monocular 3-D Object SLAM</title>
-    <url>/2024/01/31/cubeslam/</url>
-    <content><![CDATA[<p>Yang, Shichao, and Sebastian Scherer. “CubeSLAM: Monocular 3-D Object SLAM.” <em>IEEE Transactions on Robotics</em> 35, no. 4 (August 2019): 925–38. <a href="https://doi.org/10.1109/TRO.2019.2909168">https://doi.org/10.1109/TRO.2019.2909168</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于静态与动态场景中，将2D、3D 物体探测与SLAM 位姿估计相结合的系统，如Fig. 1所示。当给定检测到的2D 物体时，利用vanishing point (VP) 产生3D 立方体，然后通过多视角BA ，利用点和相机对立方体进行进一步的优化。</p>
-<span id="more"></span>
-<p><img src="/2024/01/31/cubeslam/fig1.png" alt="fig1" title="figure 1"></p>
-<p>3D 物体在本系统中的作用有两个方面：</p>
+    <title>论文记录 X-View_Graph-Based Semantic Multi-View Localization</title>
+    <url>/2024/01/30/x-view/</url>
+    <content><![CDATA[<p>Gawel, Abel, Carlo Del Don, Roland Siegwart, Juan Nieto, and Cesar Cadena. “X-View: Graph-Based Semantic Multi-View Localization.” <em>IEEE Robotics and Automation Letters (RA-L)</em> 3, no. 3 (2018): 1687–94.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
 <ol>
-<li>在BA 过程中提供几何和尺寸约束；</li>
-<li>为难以进行三角测量的点提供深度信息初始化。</li>
+<li>提出一个新颖的<strong>语义拓扑图表示</strong>方法；</li>
+<li>引进了一个<strong>基于随机游走的图描述子</strong>，可以有效地使用既定的匹配方法进行高效匹配；</li>
+<li>用于全局定位的语义分割完整pipeline；</li>
+<li>开源<em>X-View</em> 算法；</li>
+<li>公开数据集的测试结果。</li>
 </ol>
-<p>在动态场景中，本系统不是简单地将动态观测物体视为外点，而是基于动态点观察与动作模型约束，联合优化相机与物体的轨迹。</p>
-<p>本文做出的贡献总结如下：</p>
-<ul>
-<li>不使用先验物体模型的高效、准确以及鲁棒的<strong>单张图片3D 立方体探测方法</strong>；</li>
-<li>在相机、物体与点之间使用新颖测量手段的<strong>物体SLAM 方法</strong>，在许多数据集上实现了更好的位姿估计；</li>
-<li>实验结果证明<strong>物体探测</strong>与<strong>SLAM</strong> 两者相得益彰；</li>
-<li>一个在动态场景中<strong>利用移动物体来提高位姿估计</strong>的方法。</li>
-</ul>
-<h1 id="3-Single-Image-3-D-Object-Detection"><a href="#3-Single-Image-3-D-Object-Detection" class="headerlink" title="3 Single Image 3-D Object Detection"></a>3 Single Image 3-D Object Detection</h1><p><img src="/2024/01/31/cubeslam/fig2.png" alt="fig2" title="figure 2"></p>
-<p><img src="/2024/01/31/cubeslam/fig3.png" alt="fig3" title="figure 3"></p>
-<p><img src="/2024/01/31/cubeslam/fig4.png" alt="fig4" title="figure 4"></p>
-<h1 id="4-Object-SLAM"><a href="#4-Object-SLAM" class="headerlink" title="4 Object SLAM"></a>4 Object SLAM</h1><h2 id="4-3-Data-Association"><a href="#4-3-Data-Association" class="headerlink" title="4.3 Data Association"></a>4.3 Data Association</h2><p>作者进行数据关联的步骤如下：</p>
-<ol>
-<li>首先，如果特征点在至少两帧图片中被观测到位于2D 物体检测框中，且它们距离3D 的立方体中心小于1m 时，将这些特征点与对应的物体关联起来；</li>
-<li>如果两个物体在不同帧中拥有最多数量的共同特征点，且点的数量超过一定阈值（本文设定为10）时，判定两个物体为同一物体并进行数据关联。</li>
-<li>需要注意的是，当物体几乎没有与其他帧相关联的特征点时，将该物体判定为动态物体，如Fig. 5中的青色框汽车。</li>
-</ol>
-<p><img src="/2024/01/31/cubeslam/fig5.png" alt="fig5" title="figure 5"></p>
-<h1 id="5-Dynamic-SLAM"><a href="#5-Dynamic-SLAM" class="headerlink" title="5 Dynamic SLAM"></a>5 Dynamic SLAM</h1><p>为了减少未知参量让问题可解，作者使用了两个假设：<strong>刚体假设</strong>与<strong>物理运动模型假设</strong>。</p>
-<ul>
-<li>刚体假设是为了保证特征点在关联物体上的位置保持不变，这使得作者可以使用标准的3D 地图点重投影误差来优化位置参数；</li>
-<li>最简单的运动模型就是有着统一速度的常数运动模型，至于一些特定物体，如自行车，会额外受限于nonholonomic wheel model。</li>
-</ul>
-<h2 id="5-2-SLAM-Optimization"><a href="#5-2-SLAM-Optimization" class="headerlink" title="5.2 SLAM Optimization"></a>5.2 SLAM Optimization</h2><p>动态物体估计的因子图如Fig. 6所示，其中绿色方框是测量因子，包含：camera-object 因子，object-velocity 因子，以及point-camera-object 因子。</p>
-<p><img src="/2024/01/31/cubeslam/fig6.png" alt="fig6" title="figure 6"></p>
-<h2 id="5-3-Dynamic-Data-Association"><a href="#5-3-Dynamic-Data-Association" class="headerlink" title="5.3 Dynamic Data Association"></a>5.3 Dynamic Data Association</h2><p>4.3节使用的静态物体数据关联不适用于动态物体，因为单眼相机动态场景中，很难准确预测物体与特征点的运动，且当物体运动不准确时难以应用对极几何进行计算。因此，作者使用2D KLT 稀疏光流算法进行动态物体特征点的跟踪，该算法并不需要3D 点位置信息。在使用像素追踪之后，考虑物体的运动利用三角测量计算动态特征的3D 位置。</p>
-<h1 id="8-Experiments-Object-SLAM"><a href="#8-Experiments-Object-SLAM" class="headerlink" title="8 Experiments-Object SLAM"></a>8 Experiments-Object SLAM</h1><h2 id="8-1-TUM-RGBD-and-ICL-NUIM-Dataset"><a href="#8-1-TUM-RGBD-and-ICL-NUIM-Dataset" class="headerlink" title="8.1 TUM RGBD and ICL-NUIM Dataset"></a>8.1 TUM RGBD and ICL-NUIM Dataset</h2><p>为了更好地评估单目位姿偏移，作者在使用及结果对比时关掉了ORB SLAM 的回环检测模块。</p>
-<p>Fig. 9所示的是在TUM fr3_cabinet 数据集上的实验结果，由于该场景特征点太少，导致现有的单目SLAM 算法均无法完成实验。而本文提出的算法仅使用物体进行定位，实现了较好的定位效果。Fig. 9左边下图中估计的立方体存在较大的误差，但经过多视角优化后，可以与真实点云实现良好的契合。实验结果如Table 2所示。</p>
-<p><img src="/2024/01/31/cubeslam/fig9.png" alt="fig9" title="figure 9"></p>
-<p><img src="/2024/01/31/cubeslam/t2.png" alt="t2" title="table 2"></p>
-<h2 id="8-2-Collected-Chair-Dataset"><a href="#8-2-Collected-Chair-Dataset" class="headerlink" title="8.2 Collected Chair Dataset"></a>8.2 Collected Chair Dataset</h2><p><img src="/2024/01/31/cubeslam/fig10.png" alt="fig10" title="figure 10"></p>
-<h2 id="8-4-Dynamic-Object"><a href="#8-4-Dynamic-Object" class="headerlink" title="8.4 Dynamic Object"></a>8.4 Dynamic Object</h2><p><img src="/2024/01/31/cubeslam/fig12.png" alt="fig12" title="figure 12"></p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>Pose Optimization</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>Object SLAM</tag>
-        <tag>Pose Optimization</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>论文记录 LaneLoc_Lane marking based localization using highly accurate maps</title>
-    <url>/2024/01/31/laneloc/</url>
-    <content><![CDATA[<p>Schreiber, Markus, Carsten Knoppel, and Uwe Franke. “LaneLoc: Lane Marking Based Localization Using Highly Accurate Maps.” In <em>2013 IEEE Intelligent Vehicles Symposium (IV)</em>, 449–54. Gold Coast City, Australia: IEEE, 2013. <a href="https://doi.org/10.1109/IVS.2013.6629509">https://doi.org/10.1109/IVS.2013.6629509</a>.</p>
-<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>作者利用双目立体相机系统和包含路沿与道路标志的先验高精度地图实现车辆定位。定位过程中，GNSS 位置只是用来进行初始化，后续的定位解算不需要GNSS。作者在长约50 km的郊区道路进行测试，最终的定位精度在分米级。</p>
 <span id="more"></span>
-<h1 id="2-Mapping"><a href="#2-Mapping" class="headerlink" title="2 Mapping"></a>2 Mapping</h1><p>制图过程如下所示：</p>
-<p><img src="/2024/01/31/laneloc/fig2.png" alt="fig2" title="figure 2"></p>
-<p>利用各个传感器采集到的数据制作鸟瞰视角地图，如下图所示：</p>
-<p><img src="/2024/01/31/laneloc/fig4.png" alt="fig4" title="figure 4"></p>
-<h1 id="3-Online-Localization"><a href="#3-Online-Localization" class="headerlink" title="3 Online Localization"></a>3 Online Localization</h1><p>作者的定位系统选择一个前向的立体相机系统以及一个IMU，如下图所示，其中GNSS 模块进行初始化。</p>
-<p><img src="/2024/01/31/laneloc/fig6.png" alt="fig6" title="figure 6"></p>
-<p>作者使用基于Kalman 滤波器的定位模型。</p>
-<h2 id="3-1-Localization-Model"><a href="#3-1-Localization-Model" class="headerlink" title="3.1 Localization Model"></a>3.1 Localization Model</h2><p><strong>观测模型</strong>表示：所有测量点 $\vec{P}_{e,i}’$ 的<strong>预期位置</strong>（依赖于状态向量的方程${h}(\vec{x}_{veh})$ ）和所有<strong>观测值</strong> $\vec{P}_{m,i}$ （表示为 $\vec{y}$ ）在汽车坐标系下的<strong>残差</strong>：</p>
-<p><img src="/2024/01/31/laneloc/fig7.png" alt="fig7" title="figure 7"></p>
-<p><img src="/2024/01/31/laneloc/f6.png" alt="f6" title="formula 6"></p>
-<p><strong>观测噪声</strong>的方差包含：</p>
+<p><img src="/2024/01/30/x-view/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-X-View"><a href="#3-X-View" class="headerlink" title="3 X-View"></a>3 X-View</h1><p>X-View 利用从输入语义数据提取得到的图，并使用图描述子进行图匹配，本文提出的全局定位算法架构如Fig. 2所示，本系统被设计为可以用于任何给定的语义信息作为输入的里程估计系统，为了简化表示，Fig. 2中只列举了语义分割图片作为输入。</p>
+<p><img src="/2024/01/30/x-view/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-System-input"><a href="#3-1-System-input" class="headerlink" title="3.1 System input"></a>3.1 System input</h2><p>将语义分割或实例分割图片作为系统输入，且假定外部里程系统的估计，以及一个参考语义图 $G_{db}$ 。</p>
+<h2 id="3-2-Graph-extraction-and-assembly"><a href="#3-2-Graph-extraction-and-assembly" class="headerlink" title="3.2 Graph extraction and assembly"></a>3.2 Graph extraction and assembly</h2><p>将一系列语义分割图片 $I_q$ 转化为一个质询图 $G_q$ ，从连接区域中提取斑点 blobs，例如每幅图中具有相同语义标签 $l_j$ 的区域。为了应对语义分割的噪声（如标签中的洞、断连的边、边缘错误的标签等），作者使用 dilating 和 eroding 对每个班点的边界进行柔化，且设定最小像素数阈值为4以排除过小及次要物体的影响。斑点的中心位置 $p_j$ 被提取出来，与标签一起存储为顶点 $v_j = \{l_j, p_j\}$ 。</p>
+<p>顶点之间的无向边可以是图像空间或3D 空间的，当考虑图像空间中的边时，认为图片在时间序列中根据几幅连续的输入图片流来生成图（利用连续图片获取3D距离信息），在3D 空间中不需要考虑这方面。</p>
+<p>利用深度通道数据或者深度估计来组成3D空间结构，使用图片斑点的3D位置来计算欧氏距离，图提取与组合的过程如Fig. 3所示，当对多幅连续图片的图进行组合时，将距离较近且拥有相同语义标签的重复顶点融合为一个顶点，该顶点位置选择为初次观测到的位置。</p>
+<p><img src="/2024/01/30/x-view/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-3-Descriptors"><a href="#3-3-Descriptors" class="headerlink" title="3.3 Descriptors"></a>3.3 Descriptors</h2><p>子图匹配是一个 NP-complete 难题，且为了实现机器人的实时定位问题，作者提出了为图中每个节点建立随机游走描述子并进行匹配，这样做的优势是根据给定的静态或者增长的参考图，匹配时间分别是常数或者线性变化的。每个顶点的描述子是一个 $n \times m$ 的矩阵，包含 <em>n</em> 个深度为 <em>m</em> 的随机游走，每个随机游走开始于源顶点 $v_j$ ，并存储访问过顶点的分类标签，随机游走描述子提取过程如Fig. 4所示。</p>
+<p><img src="/2024/01/30/x-view/fig4.png" alt="fig4" title="figure 4"></p>
+<h2 id="3-4-Descriptor-Matching"><a href="#3-4-Descriptor-Matching" class="headerlink" title="3.4 Descriptor Matching"></a>3.4 Descriptor Matching</h2><p>在质询图 $G_q$ 与 参考图 $G_{db}$ 完成之后，通过计算相应的图描述子之间的similarity score来建立两图顶点之间的联系：</p>
 <ul>
-<li>地图数据噪声 $\sigma_{map}^2$ ;</li>
-<li>back-projection 噪声 $\sigma_{cam}^2$ ，取决于相机高度和路的朝向。</li>
+<li>相似性是通过对质询图与参考图中顶点的语义描述子的每一行进行匹配计算获取的；</li>
+<li>两个描述子拥有的相同随机游走数量决定了similarity score（分布在0与1之间）；</li>
+<li>然后选取得分最高的前 k 个匹配顶点对来计算质询图在参考图中的定位信息。</li>
 </ul>
-<p><img src="/2024/01/31/laneloc/f7.png" alt="f7" title="formula 7"></p>
-<p>作者在实验过程中分别假设：$\sigma_{map}^2 = 10 cm$ ，$\sigma_{cam}^2 = 3 px$ 。观测噪声表示为一个<strong>取决于残差的概率函数</strong>。</p>
-<h2 id="3-2-Map-Matching"><a href="#3-2-Map-Matching" class="headerlink" title="3.2 Map Matching"></a>3.2 Map Matching</h2><p>用来定位的高精度地图包含表示<strong>路标和路沿的线段</strong>，而观测数据包含<strong>点</strong>；地图匹配的目标是实现<strong>测量点与线段之间的最佳可能匹配</strong>，必须满足横向和纵向匹配残差的最小化方可实现最佳匹配，因此，作者选择对地图上的线段<strong>采样为地图点进行匹配</strong>，如Fig. 8所示。</p>
-<p><img src="/2024/01/31/laneloc/fig8.png" alt="fig8" title="figure 8"></p>
-<h2 id="3-3-Measurement-Extraction"><a href="#3-3-Measurement-Extraction" class="headerlink" title="3.3 Measurement Extraction"></a>3.3 Measurement Extraction</h2><h3 id="3-3-1-Lane-Marking-Measurement"><a href="#3-3-1-Lane-Marking-Measurement" class="headerlink" title="3.3.1 Lane Marking Measurement"></a>3.3.1 Lane Marking Measurement</h3><p>作者使用一个<strong>定向匹配滤波器 oriented matched filter</strong>（在<strong>普通车道线检测系统</strong>中得到了成功应用）来检测车道线。</p>
-<p>为了检测车道线，利用当前位姿估计将地图投影到图片中，并将<strong>搜索线</strong>置于预期的车道线周围，定向匹配滤波器会在这些搜索线中根据图片中测量的路标识别出一个<strong>low-high-low灰度值模式</strong>，利用立体相机提供的深度信息，这些被探测到的位置会投影至道路平面上来决定在汽车坐标系中所需的观测值（即残差 $\vec{r}’$ ）。</p>
-<p>由于该投影过程对于汽车的俯仰角非常敏感，所以作者使用一个基于V-Diaparity 方法的<strong>俯仰角估计器</strong>来解决该问题。</p>
-<p><img src="/2024/01/31/laneloc/fig10.png" alt="fig10" title="figure 10"></p>
-<h3 id="3-3-2-Curb-Measurement"><a href="#3-3-2-Curb-Measurement" class="headerlink" title="3.3.2 Curb Measurement"></a>3.3.2 Curb Measurement</h3><p>作者使用一个基于强度图片 intensity image 和高度信息的<strong>基于分类器的识别</strong>来进行路沿探测，得到路沿在图片中的位置以及存在的概率参数。</p>
-<p><img src="/2024/01/31/laneloc/fig11.png" alt="fig11" title="figure 11"></p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>Map Match</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>Map Match</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>论文记录 Semantic Monocular SLAM for Highly Dynamic Environments</title>
-    <url>/2024/02/02/brasch2018/</url>
-    <content><![CDATA[<p>Brasch, Nikolas, Aljaz Bozic, Joe Lallemand, and Federico Tombari. “Semantic Monocular SLAM for Highly Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 393–400. Madrid: IEEE, 2018. <a href="https://doi.org/10.1109/IROS.2018.8593828">https://doi.org/10.1109/IROS.2018.8593828</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者通过结合<strong>基于特征法</strong>与<strong>直接法</strong>，来实现动态环境中的鲁棒性。</p>
-<p>本文的贡献：</p>
-<ul>
-<li>利用语义分割获取场景的语义信息，可检测<strong>潜在动态物体</strong>，并在后续跟踪中避免使用潜在动态物体上的特征点；</li>
-<li>提出一个<strong>概率模型</strong>，考虑观测到某个地图点的<strong>所有帧的语义信息</strong>来更新该地图点的语义类别；</li>
-<li>除了使用语义信息，还是用<strong>临时动作信息temporal dynamic information</strong> 来判断地图点是否是静态的；</li>
-<li>为了实现实时性能，作者设计了一个<strong>高效的在线概率更新方法</strong>；</li>
-<li>作者在合成和实际场景中测试了本算法，证明了本算法在高动态场景中可以获取更稳定的结果。</li>
-</ul>
-<span id="more"></span>
-<p><img src="/2024/02/02/brasch2018/fig1.png" alt="fig1" title="figure 1"></p>
-<h1 id="3-Probabilistic-Semantic-SLAM"><a href="#3-Probabilistic-Semantic-SLAM" class="headerlink" title="3 Probabilistic Semantic SLAM"></a>3 Probabilistic Semantic SLAM</h1><p>本系统是基于ORB-SLAM 开发的，整体架构如Fig. 2所示，</p>
-<p><img src="/2024/02/02/brasch2018/fig2.png" alt="fig2" title="figure 2"></p>
-<h2 id="3-1-Pose-estimation-and-mapping"><a href="#3-1-Pose-estimation-and-mapping" class="headerlink" title="3.1 Pose estimation and mapping"></a>3.1 Pose estimation and mapping</h2><p>鉴于ORB 特征点法和直接法的特点，作者会<strong>优先选择使用ORB 特征点法</strong>；而在特征点不充足的情况下（低纹理特征场景），使用直接法。包含重投影误差 $E_R$ 和光度误差 $E_P$ 的<strong>综合误差项</strong>如下所示：</p>
-<p><img src="/2024/02/02/brasch2018/f1.png" alt="f1" title="formula 1"></p>
-<p>作者使用带有鲁棒Huber 核的高斯牛顿法来求解非线性最小二乘问题，并使用逆协方差来代表<strong>观测的不确定度</strong>；对于每个新的观测，使用下式进行<strong>协方差传递更新</strong>：</p>
-<p><img src="/2024/02/02/brasch2018/f5.png" alt="f5" title="formula 5"></p>
-<h2 id="3-2-Probabilistic-outlier-rejection"><a href="#3-2-Probabilistic-outlier-rejection" class="headerlink" title="3.2 Probabilistic outlier rejection"></a>3.2 Probabilistic outlier rejection</h2><p>在更新地图点的位置参数时，由于一些观测较其他观测更为可靠，因此，使用一个概率模型将<strong>观测的方差</strong>作为权重的方法要比所有观测使用相同权重的方法表现更好。作者使用参数 $\phi$ 表示地图点的<strong>内点概率</strong>（静态点的可能），这样，地图点除了位置参数外，还包含深度 d，内点概率 $\phi$ ，以及语义类别 c。</p>
-<p>当地图点被观测到时，利用三角化计算深度估计值 $d_i$ ，以及估计的方差 $\tau_i^2$ 。作者用 $CNN(c_k | I_i) \in [0, 1]$ 表示CNN 网络输出结果，表示当前图片 $I_i$ 中该特征点属于类别 $c_k$ 的概率。特征点的<strong>深度观测似然概率</strong>如下所示：</p>
-<p><img src="/2024/02/02/brasch2018/f6.png" alt="f6" title="formula 6"></p>
-<p>其中，$\alpha_i$ 表示<strong>匹配准确度</strong>；$\bar{x} = (1 - x)$ 。上式的内在机理为：若当前特征点正确匹配，且地图点是静态的，那么 $\alpha_i, \phi$ 接近于1，则深度估计 $d_i$ 近似服从<strong>高斯分布</strong> $\mathcal{N}(\mu, \sigma^2)$ ；若当前匹配错误，或者特征点是动态的，则当前观测被认为服从均匀分布 $\mathcal{U}(a, b)$ ，在平均深度的估计中不提供任何有用的信息。与深度估计类似，作者将<strong>地图点的语义信息</strong>建模为网络输出 $CNN(c_k | I_i)$ 和错误匹配的均匀分布的混合：</p>
-<p><img src="/2024/02/02/brasch2018/f7.png" alt="f7" title="formula 7"></p>
-<p>这使得地图点可以高效地在线更新，以及在动态和静态之间进行<strong>平滑转换</strong>。</p>
-<p>对于特征点的<strong>内点概率与语义类别的关系</strong>，可用Beta 分布来建模：</p>
-<p><img src="/2024/02/02/brasch2018/f8.png" alt="f8" title="formula 8"></p>
-<p>其中，$A_k, B_k$ 是针对每种类别 k 的固定常数，表示种类 k 属于静态或动态的概率，如，对于汽车，$A_k$ 较低、$B_k$ 较高，意味着汽车具有较高的动态概率；此外，$A_k, B_k$ 还可以作为调整语义观测与深度观测之间的权重参数：较高的$A_k, B_k$ 会给予语义先验较运动先验在内点概率估计中更高的权重。</p>
-<p>Fig. 3给出了深度信息、内点概率和语义类别联合概率模型的依赖图：</p>
-<p><img src="/2024/02/02/brasch2018/fig3.png" alt="fig3" title="figure 3"></p>
-<p>近似推导可得到一个<strong>结合三项的后验概率</strong>：</p>
-<p><img src="/2024/02/02/brasch2018/f9.png" alt="f9" title="formula 9"></p>
-<p>其中，第一项将深度视为高斯分布；第二项为内点概率服从关于深度观测信息的Beta 分布；第三项为内点概率服从关于语义类别的Beta 分布；$D = \{d_1, …, d_N\}$ 表示深度观测信息；$S = \{s_1, …, s_N\}$ 表示语义观测信息，其中，$s_i = (CNN(c_1|I_i), …, CNN(c_K|I_i))$ 为CNN 网络在K 个类别上的<strong>概率密度</strong>。</p>
-<p>当前<strong>内点概率</strong>可通过下式计算得到：</p>
-<p><img src="/2024/02/02/brasch2018/f15.png" alt="f15" title="formula 15"></p>
-<h2 id="3-3-Real-time-semantic-segmentation"><a href="#3-3-Real-time-semantic-segmentation" class="headerlink" title="3.3 Real-time semantic segmentation"></a>3.3 Real-time semantic segmentation</h2><p>高动态场景中，图片内容会快速发生变化，因此需要在每一帧中提取新的关键点来保持足够多的数量进行跟踪，为了让每个新的地图点得到一致的语义观测，作者对<strong>所有帧</strong>进行语义分割。作者使用<strong>ICNet</strong> 进行语义分割。</p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>Dynamic SLAM</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>Dynamic SLAM</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>论文记录 Semantic Mapping for View-Invariant Relocalization</title>
-    <url>/2024/02/02/li2019/</url>
-    <content><![CDATA[<p>Li, Jimmy, David Meger, and Gregory Dudek. “Semantic Mapping for View-Invariant Relocalization.” In <em>2019 International Conference on Robotics and Automation (ICRA)</em>, 7108–15. Montreal, QC, Canada: IEEE, 2019. <a href="https://doi.org/10.1109/ICRA.2019.8793624">https://doi.org/10.1109/ICRA.2019.8793624</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文使用了<strong>基于外观的几何特征</strong>与<strong>物体级语义特征</strong>的混合策略，主要贡献就是将传统视觉SLAM 和语义地标进行<strong>协同集成</strong>。</p>
-<span id="more"></span>
-<h1 id="3-Method"><a href="#3-Method" class="headerlink" title="3 Method"></a>3 Method</h1><h2 id="3-1-Problem-Statement"><a href="#3-1-Problem-Statement" class="headerlink" title="3.1 Problem Statement"></a>3.1 Problem Statement</h2><p>本文方法包含两个组件：</p>
+<h2 id="3-5-Localization-Back-End"><a href="#3-5-Localization-Back-End" class="headerlink" title="3.5 Localization Back-End"></a>3.5 Localization Back-End</h2><p>一共有三种类型的约束：</p>
 <ol>
-<li><strong>语义制图算法</strong>：跟踪物体帧间的3D 位姿变换，并产生包含物体的度量地图；</li>
-<li><strong>重定位算法</strong>：给定同一场景的两个语义地图，进行对齐并产生位姿变换。</li>
+<li>来自语义描述子匹配的约束；</li>
+<li>联系定位图中连续位姿的机器人估计位姿约束；</li>
+<li>每一个robot-vertex观测的转换信息编码得到的robot-vertex约束。</li>
 </ol>
-<h2 id="3-2-Semantic-Mapping"><a href="#3-2-Semantic-Mapping" class="headerlink" title="3.2 Semantic Mapping"></a>3.2 Semantic Mapping</h2><p>使用<strong>立方体</strong>来表示物体，包含9自由度：位置、朝向以及尺寸。</p>
-<p>利用ORB-SLAM2 获取相机位姿，对物体检测算法处理过的图片中的物体进行三角化，通过<strong>基于采样的推理程序</strong>得到<strong>3D 立体框</strong>。为了简化3D 物体的几何推理，作者假定物体与场景布局是<strong>对齐的</strong>，场景布局包含三个正交轴。</p>
-<p><img src="/2024/02/02/li2019/a1.png" alt="a1" title="algorithm 1"></p>
-<h3 id="3-2-2-Data-Association"><a href="#3-2-2-Data-Association" class="headerlink" title="3.2.2 Data Association"></a>3.2.2 Data Association</h3><p>利用ORB-SLAM 获取关键帧的位姿后，将3D 物体地标<strong>投影至关键帧</strong>中得到相应 p 的bbox，关键帧中检测到的物体的bbox 记为 d，则定义p 与 d 之间的<strong>损失函数</strong>：</p>
-<p><img src="/2024/02/02/li2019/f1.png" alt="f1" title="formula 1"></p>
-<p>下标 $l, t, r, b$ 分别表示bbox 在像素坐标系中的左边、上边、右边、下边四条边。分母作用是<strong>归一化</strong>，防止较大物体的bbox 主导损失函数。</p>
-<h3 id="3-2-3-Object-Pose-Update"><a href="#3-2-3-Object-Pose-Update" class="headerlink" title="3.2.3 Object Pose Update"></a>3.2.3 Object Pose Update</h3><p>物体3D 框的<strong>复杂几何性质</strong>以及<strong>模糊的投影过程</strong>，会造成强烈的<strong>非凸性搜索空间</strong>；作者提出一种高效的搜索策略：</p>
-<ul>
-<li>首先，在一个<strong>缩小的</strong>搜索空间中高效产生多个物体假设；</li>
-<li>然后，利用它们在<strong>完整的</strong>搜索空间中快速探索多个局部最小值。</li>
-</ul>
-<p>将位于物体<strong>上表面的中心点</strong>X 投影至图像平面，构建服从高斯分布的概率模型：</p>
-<p><img src="/2024/02/02/li2019/f2.png" alt="f2" title="formula 2"></p>
-<p>其中，$f_k$ 表示将3D 点X 投影至图片关键帧k 中。计算后验分布：</p>
-<p><img src="/2024/02/02/li2019/f3.png" alt="f3" title="formula 3"></p>
-<p>得到一组3D 采样点，然后将其视为<strong>上表面的中心点</strong>来形成相应的3D bbox，将方向与场景布局进行<strong>对齐</strong>，尺寸选择该物体的<strong>平均尺寸</strong>，由此形成完整的3D bbox 估计集合 L，假设 $o\in L$ 对应的假设为 $H_o$ ，路标 $o$ 对应的物体假设 $h$ 的<strong>得分</strong>为：</p>
-<p><img src="/2024/02/02/li2019/f4.png" alt="f4" title="formula 4"></p>
-<p>其中，$K_o$ 表示有 o 关联检测的所有关键帧集合；$\delta_k$ 表示在关键帧 $k$ 中的关联检测；$f_k$ 将物体假设 h 投影至关键帧 $k$ 中；损失函数 $c$ 由式1描述；$\Gamma$ 表示两个物体 $h, h’$ <strong>在上下文环境中的相关性</strong>（如键盘和鼠标更有可能同时出现在一表面上）。</p>
-<p>得到所有假设的得分之后，利用最高得分的假设（且必须比现有假设的得分更高）来更新每个路标。</p>
-<h3 id="3-2-4-Contextual-Coherence"><a href="#3-2-4-Contextual-Coherence" class="headerlink" title="3.2.4 Contextual Coherence"></a>3.2.4 Contextual Coherence</h3><p>作者使用上下文约束来对物体的位姿估计进行<strong>正则化</strong>，以鼓励物体地标更符合典型的空间关系，作者之前的研究也证明了物体的<strong>共面性coplanarity</strong> 可视为对物体位姿估计的可靠约束。作者定义相关性函数 $\Gamma$ ：</p>
-<p><img src="/2024/02/02/li2019/f5.png" alt="f5" title="formula 5"></p>
-<p>其中，$BOTTOMDIST(h, h’)$ 给定两个3D bbox 的底面距离，$COPLANAR$ 指的是位于相同的表面上的两个物体。</p>
-<h2 id="3-3-Relocalization"><a href="#3-3-Relocalization" class="headerlink" title="3.3 Relocalization"></a>3.3 Relocalization</h2><p>给定两个包含一组物体地标的语义地图 $L_1, L_2$ ，重定位过程可通过下述公式解决：</p>
-<p><img src="/2024/02/02/li2019/f6.png" alt="f6" title="formula 6"></p>
-<p>其中，$\theta(o, L)$ 返回一组地标，地标位姿在坐标系 $o$ 中来表示；$\psi(s, L)$ 返回一组尺寸放大 $s$ 倍的地标；函数 $\Omega(L_1, L_2)$ 包含两个操作：</p>
+<p>作者根据以上三个约束参数计算最大后验估计 (MAP)来获取定位信息。</p>
+<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1><p>在两个不同的合成户外数据集进行评估，包括<strong>前视——后视</strong>视角变化、<strong>前视——空视</strong>视角变化，以及一个真实世界户外数据集，包含<strong>前视——后视</strong>视角变化。</p>
+<h2 id="4-1-Datasets"><a href="#4-1-Datasets" class="headerlink" title="4.1 Datasets"></a>4.1 Datasets</h2><p>SYNTHIA 数据集是在城市环境模拟生成的，采集汽车有8个摄像头，四个方向各有两个，相邻图片间的距离在0~1m。作者使用photo-realistic Arisim 生成了空对地观测的数据集，包含空中向地面观测与地面前向观测两种数据，两种数据之间只有在 z 轴存在偏差，其余均相同，相邻图片间的距离总是1m。真实户外场景的数据集是通过Google StreetView 获取的，类似于SYNTHIA 数据集，只使用前视与后视摄像头，相邻图片间的距离接近10m。</p>
+<p><img src="/2024/01/30/x-view/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="4-3-Localization-performance"><a href="#4-3-Localization-performance" class="headerlink" title="4.3 Localization performance"></a>4.3 Localization performance</h2><p>设置两组实验：</p>
 <ol>
-<li>利用Hungarian 算法计算两组地标的<strong>最佳匹配</strong>；</li>
-<li>对匹配结果进行内点识别，最终返回<strong>内点数量</strong>。</li>
+<li>在SYNTHIA 数据集上测试不同的参数设置，如随机游走参数、质询图片数量、动态分类物体、图边缘构建技术等；</li>
+<li>在SYNTHIA、Airsim 以及 StreetView 上进行对比分析实验。</li>
 </ol>
-<p>完成地图匹配之后即可得到两个相机轨迹之间的相对转换关系。</p>
+<p>与基于外观匹配的算法进行对比，使用了BoW、NetVLAD 算法。</p>
+<h2 id="4-4-Results"><a href="#4-4-Results" class="headerlink" title="4.4 Results"></a>4.4 Results</h2><p>Fig. 6是对SYNTHIA 数据集进行的参数对比试验结果。6(a) 中 n 代表随机游走的个数， m 代表随机游走的深度。</p>
+<p><img src="/2024/01/30/x-view/fig6.png" alt="fig6" title="figure 6"></p>
+<p>PR评估曲线以及不同定位误差下的成功率结果如Fig. 7所示。</p>
+<p><img src="/2024/01/30/x-view/fig7.png" alt="fig7" title="figure 7"></p>
+<p>系统组件的时间消耗如Table 1所示。</p>
+<p><img src="/2024/01/30/x-view/t1.png" alt="t1" title="table 1"></p>
 ]]></content>
       <categories>
         <category>SLAM</category>
@@ -1381,131 +1380,132 @@
       </tags>
   </entry>
   <entry>
-    <title>论文记录 DS-SLAM_A Semantic Visual SLAM towards Dynamic Environments</title>
-    <url>/2024/02/04/ds-slam/</url>
-    <content><![CDATA[<p>Yu, Chao, Zuxin Liu, Xin-Jun Liu, Fugui Xie, Yi Yang, Qi Wei, and Qiao Fei. “DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 1168–74. Madrid: IEEE, 2018. <a href="https://doi.org/10.1109/IROS.2018.8593691">https://doi.org/10.1109/IROS.2018.8593691</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
-<ol>
-<li>提出一个基于ORB-SLAM2 应用于动态环境中的语义SLAM 系统——DS-SLAM，在公开数据集上进行测试，证明了本系统在动态环境中的<strong>精度与鲁棒性</strong>；</li>
-<li>添加一个<strong>实时语义分割网络线程</strong>，结合<strong>语义分割和运动一致性检验</strong>来滤除场景中的动态区域；</li>
-<li>创建了一个构建稠密3D 语义八叉树地图的线程。</li>
-</ol>
+    <title>论文记录 Semantic SLAM Based on Object Detection and Improved Octomap</title>
+    <url>/2024/01/30/zhang2018/</url>
+    <content><![CDATA[<p>Zhang, Liang, Leqi Wei, Peiyi Shen, Wei Wei, Guangming Zhu, and Juan Song. “Semantic SLAM Based on Object Detection and Improved Octomap.” <em>IEEE Access</em> 6 (2018): 75545–59. <a href="https://doi.org/10.1109/ACCESS.2018.2873617">https://doi.org/10.1109/ACCESS.2018.2873617</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>基于ORB-SLAM2，利用YOLO 实现<strong>物体检测</strong>，剔除掉<strong>先验动态物体</strong>上的特征点，提高精度；并建立<strong>物体级语义八叉树地图</strong>，且优化了制图的速度。</p>
+<p>本文的贡献：</p>
+<ul>
+<li>本系统可以检测80-200 种物体种类，而现有的语义制图系统只能检测不超过20个种类；</li>
+<li>本系统不需要先验3D 模型就可以实现对环境中物体的3D 建模；</li>
+<li>本系统利用的是物体级模型信息，而不是像素级的。</li>
+</ul>
 <span id="more"></span>
-<h1 id="3-System-Introduction"><a href="#3-System-Introduction" class="headerlink" title="3 System Introduction"></a>3 System Introduction</h1><h2 id="3-1-Framework-of-DS-SLAM"><a href="#3-1-Framework-of-DS-SLAM" class="headerlink" title="3.1 Framework of DS-SLAM"></a>3.1 Framework of DS-SLAM</h2><p>系统架构如Fig. 1所示，DS-SLAM 运行5个线程：tracking, semantic segmentation, local mapping, loop closing and dense map creation。</p>
-<p><img src="/2024/02/04/ds-slam/fig1.png" alt="fig1" title="figure 1"></p>
-<p>系统框架如Fig. 2所示，RGB 图片同时被跟踪线程和语义分割线程处理，跟踪线程提取ORB 特征点，<strong>粗略检验特征点的运动一致性，并保存潜在的外点；</strong>待像素级语义分割结果生成后，位于<strong>移动物体中的ORB 外点</strong>会被舍弃，然后利用剩余匹配的稳定特征点来计算转换矩阵。</p>
-<p><img src="/2024/02/04/ds-slam/fig2.png" alt="fig2" title="figure 2"></p>
-<h2 id="3-3-Moving-Consistency-Check"><a href="#3-3-Moving-Consistency-Check" class="headerlink" title="3.3 Moving Consistency Check"></a>3.3 Moving Consistency Check</h2><p>本系统认为，<strong>如果一个分割物体内的一些点被识别为动态的，那么就判定该物体是动态物体</strong>。</p>
-<p><strong>运动一致性检验</strong>步骤如下：</p>
+<h1 id="3-System-Overview"><a href="#3-System-Overview" class="headerlink" title="3 System Overview"></a>3 System Overview</h1><h2 id="3-1-SLAM-Analysis"><a href="#3-1-SLAM-Analysis" class="headerlink" title="3.1 SLAM Analysis"></a>3.1 SLAM Analysis</h2><p>大多数基于特征的SLAM 系统基于一个<strong>强假设</strong>：移动物体上的特征点数量要远小于静态物体特征点数量。</p>
+<p><strong>八叉树地图Octomap</strong> 不仅可以存储RGB 和位置信息，还可以保存<strong>语义信息</strong>，且利用<strong>概率模型</strong>来构建更为精准的地图。</p>
+<h2 id="3-2-ORB-SLAM-Analysis"><a href="#3-2-ORB-SLAM-Analysis" class="headerlink" title="3.2 ORB-SLAM Analysis"></a>3.2 ORB-SLAM Analysis</h2><p>ORB-SLAM2 的架构如Fig. 1所示，包含三个并行处理的线程：</p>
+<ul>
+<li>Tracking：负责实时定位每一帧图片对应的<strong>位姿</strong>，并决定哪些图片作为<strong>关键帧</strong>。与前一帧进行特征匹配并利用BA 进行位姿优化，如果跟踪失败，利用Bag of Word 进行全局<strong>重定位</strong>，将地图中的特征点进行<strong>重投影</strong>并进行位姿优化。</li>
+<li>Local Mapping：在获取一个新的关键帧之后，该线程对新地图点进行<strong>三角化</strong>，利用BA 对关键帧和地图点进行<strong>位姿优化</strong>，并对冗余的关键帧和低质量的地图点进行剔除。</li>
+<li>Loop Closing：对关键帧进行<strong>回环检测</strong>，若检测成功，计算相似度转换作为环路<strong>累积漂移</strong>，然后进行对齐、融合与位姿优化。</li>
+</ul>
+<p><img src="/2024/01/30/zhang2018/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-3-Overview-of-Semantic-SLAM-system"><a href="#3-3-Overview-of-Semantic-SLAM-system" class="headerlink" title="3.3 Overview of Semantic SLAM system"></a>3.3 Overview of Semantic SLAM system</h2><p>本文提出的语义SLAM 系统架构如Fig. 2所示，本系统是基于ORB-SLAM2 构建的，ORB-SLAM2 负责相机定位，并利用每一个RGB-D 图片帧进行制图。</p>
+<p>tracking 线程使用<strong>关键帧进行跟踪</strong>，来减小移动物体的影响；local mapping 线程添加<strong>少量</strong>的关键帧来创造语义信息，因为语义信息的提取满足实时的要求。</p>
+<p>本系统使用YOLO 网络对关键帧进行物体检测，并使用<strong>CRF</strong> (Conditional Random Field) 进行<strong>物体正则化</strong>来对YOLO 检测出的物体置信度进行<strong>矫正优化</strong>，该过程使用MS-COCO 数据集的统计数据计算得到的物体间<strong>约束</strong>。</p>
+<p><img src="/2024/01/30/zhang2018/fig2.png" alt="fig2" title="figure 2"></p>
+<p>当获取了每个物体的<strong>准确标签</strong>后，利用滤波器对特征进行筛选，并利用投影的点云来创建<strong>临时的物体模型</strong>；在此基础上，利用<strong>数据关联</strong>决定创建新的模型或是与地图中现有的模型进行融合。</p>
+<p>最后，Map Generation 利用存储在物体中的点云生成八叉树地图，并使用多线程和Fast Line Rasterization 算法进行加速。</p>
+<h2 id="3-4-Relationship-between-Keyframes-and-Objects"><a href="#3-4-Relationship-between-Keyframes-and-Objects" class="headerlink" title="3.4 Relationship between Keyframes and Objects"></a>3.4 Relationship between Keyframes and Objects</h2><p>借鉴ORB-SLAM2 系统中<strong>关键帧和地图点</strong>之间的关系来创建本系统<strong>关键帧和物体</strong>之间的联系。</p>
+<p>本系统中，每个<strong>物体 $O_i$</strong> 需包含：</p>
+<ul>
+<li>物体中点云的坐标；</li>
+<li>固定数量的类别标签，以及通过递归贝叶斯更新recursive Bayesian update 计算的置信度；</li>
+<li>观测到该物体的关键帧；</li>
+<li>物体中点云的Kd-tree 结构（用于快速查找）；</li>
+<li>物体所属的类别标签；</li>
+<li>物体被观测的数量。</li>
+</ul>
+<p>每个<strong>关键帧 $K_i$</strong> 需包含：</p>
+<ul>
+<li>用于物体检测的相应RGB 图片；</li>
+<li>用于产生点云的相应深度图片；</li>
+<li>本关键帧中观测到的物体。</li>
+</ul>
+<h1 id="4-Semantic-Mapping"><a href="#4-Semantic-Mapping" class="headerlink" title="4 Semantic Mapping"></a>4 Semantic Mapping</h1><h2 id="4-1-Improved-SLAM"><a href="#4-1-Improved-SLAM" class="headerlink" title="4.1 Improved SLAM"></a>4.1 Improved SLAM</h2><p>ORB-SLAM2 中，tracking 线程的步骤：</p>
 <ol>
-<li>首先，计算<strong>光流金字塔</strong>来获取当前帧中的匹配特征点；</li>
-<li>然后，如果特征点匹配对太靠近图片边缘，或者特征点匹配对中心的3*3 图像块的像素差异过大，那么该匹配对会被舍弃；</li>
-<li>接着，利用<strong>RANSAC</strong> 策略计算<strong>基础矩阵</strong>，在此基础上在当前帧中计算<strong>极线</strong>；</li>
-<li>最后，根据匹配点对与极线之间的距离来判断该匹配点对是否是动态的。</li>
+<li>提取<strong>ORB 特征</strong>；</li>
+<li>ORB 特征与<strong>reference 帧</strong>进行<strong>特征匹配</strong>，初步计算相机位姿并返回匹配地图点（通过搜索<strong>相关的关键帧</strong>来获取）的数量；</li>
+<li>利用匹配地图点进行<strong>位姿优化</strong>；</li>
+<li>决定哪些帧作为<strong>关键帧</strong>。</li>
 </ol>
-<p><img src="/2024/02/04/ds-slam/a1.png" alt="a1" title="algorithm1"></p>
-<h2 id="3-4-Outliers-Rejection"><a href="#3-4-Outliers-Rejection" class="headerlink" title="3.4 Outliers Rejection"></a>3.4 Outliers Rejection</h2><p>利用几何方法确定物体的轮廓太难，因此DS-SLAM 结合语义分割结果得到的物体轮廓，利用几何模块的运动一致性检验得到的<strong>动态特征点</strong>，判断物体轮廓内动态特征点的数量<strong>是否超过阈值</strong>，若超过阈值，则判定该物体属于<strong>动态物体</strong>，然后剔除掉属于该物体的<strong>所有特征点</strong>。</p>
-<p>作者的实验证明，本系统ORB 特征提取时间+移动一致性检验的时间，与语义分割线程所需的时间基本一致。</p>
-<p><img src="/2024/02/04/ds-slam/t1.png" alt="t1" title="table 4"></p>
-<p>由于人类活动会在大部分真实场景中影响机器人的定位，所以作者以人类作为一个典型示例，展示DS-SLAM 的效果，<strong>但理论上DS-SLAM 可以应用于多种不同的动态物体检测。</strong>如果语义分割结果中没有人类被检测到，则使用所有的ORB 特征点进行匹配与位姿解算；如果有人类被检测到，则结合运动一致性来判断是否属于动态物体。</p>
+<p>为了减小动态物体的影响，对跟踪线程的第二步进行更改：由之前的reference 帧改为与<strong>关键帧进行特征匹配</strong>，这是因为<strong>旧的关键帧不包含动态物体的特征点</strong>。</p>
+<p>跟踪线程的第三步改为：与第二步的结果比较<strong>匹配内点数量</strong>，来判断当前帧是否跟踪失败。</p>
+<h2 id="4-2-Object-Detection"><a href="#4-2-Object-Detection" class="headerlink" title="4.2 Object Detection"></a>4.2 Object Detection</h2><p>利用在COCO 数据集上训练的Tiny YOLO 网络进行物体检测。</p>
+<h2 id="4-3-Object-Regularization"><a href="#4-3-Object-Regularization" class="headerlink" title="4.3 Object Regularization"></a>4.3 Object Regularization</h2><p>常规的物体检测等网络没有考虑<strong>上下文信息（场景信息）</strong>，使用CRF 可为语义提取过程添加上下文信息约束，CRF 擅长对分类器的<strong>类别得分</strong>与图片的<strong>局部信息</strong>进行建模，可以视为一个<strong>最大后验概率问题</strong>。定义<strong>unary potentials</strong> 来对像素或图像块的所属类别进行概率建模，定义<strong>pairwise potentials</strong> 来对像素间或图像块间的关系进行建模。</p>
+<p>作者构建了一个<strong>基于物体的概率稠密CRF 算法</strong>，较基于像素的方法大大减少了计算复杂度，相应的Gibbs 能量方程如下所示：</p>
+<p><img src="/2024/01/30/zhang2018/f1-2.png" alt="f1" title="f1-2"></p>
+<p>与文章(Runz 和 Agapito, 2017)相似，$x$ 表示类别标签；$i, j$ 取值1 到 $k$ ，其中 $k$ 表示地图中物体的数量；$Z$ 是归一化参数。本物体级 CRF 的目标是最小化 $E(x)$ ，相应的unary potentials 和 pairwise potentials 表示为：</p>
+<p><img src="/2024/01/30/zhang2018/f3-4.png" alt="f3" title="f3-4"></p>
+<p>其中，$\mu$ 函数被称为<strong>标签兼容性函数</strong>，用来描述相邻位置两个不同标签同时出现的可能性；$f_{i, j}$ 是第 i 个物体和第 j 个物体的约束。</p>
+<p><img src="/2024/01/30/zhang2018/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$p_{i, j}$ 表示两个物体出现在同一视野中的概率，通过对COCO 数据集进行统计分析获取，如Fig. 4所示，对角线数字表示该物体在数据集中出现的次数。</p>
+<p><img src="/2024/01/30/zhang2018/fig4.png" alt="fig4" title="figure 4"></p>
+<p>由此，本系统实现了同时利用YOLO 和 CRF 实现对物体分类的<strong>置信度</strong>确定。</p>
+<h2 id="4-4-Temporary-Objects-Generation"><a href="#4-4-Temporary-Objects-Generation" class="headerlink" title="4.4 Temporary Objects Generation"></a>4.4 Temporary Objects Generation</h2><p>在确定物体的类别标签后，使用feature filter 根据物体类别实现对特征点和地图点的筛选。作者将属于<strong>先验动态物体</strong>的ORB 特征、地图点、DBoW 特征进行剔除，只保留先验静态物体的特征。</p>
+<p><img src="/2024/01/30/zhang2018/fig5.png" alt="fig5" title="figure 5"></p>
+<p>在动态物体特征剔除之后，生成包含物体尺寸、类别、置信度的得分以及点云的<strong>临时物体模型</strong>，并对噪声点进行剔除。</p>
+<p><img src="/2024/01/30/zhang2018/fig6.png" alt="fig6" title="figure 6"></p>
+<h2 id="4-5-Data-Association"><a href="#4-5-Data-Association" class="headerlink" title="4.5 Data Association"></a>4.5 Data Association</h2><p>本系统中的DA 是用来判定检测物体是新观测到的还是地图中已存在的。</p>
+<p>首先，为每个临时物体模型寻找<strong>候选匹配模型</strong>。可轻易找出与当前关键帧相关联的历史关键帧，以此确定候选匹配模型，该过程如Fig. 7所示。</p>
+<p><img src="/2024/01/30/zhang2018/fig7.png" alt="fig7" title="figure 7"></p>
+<p>然后，在候选匹配模型中选取<strong>最相似的模型</strong>。本过程在临时模型和候选模型的点云间进行nearest neighbor search ，计算匹配点对之间的<strong>欧氏距离</strong>；该过程利用<strong>k-d 树</strong>来加速匹配过程；选取匹配数量最多且超过一定阈值的候选匹配模型作为成功匹配的模型，若没有成功匹配，则视为<strong>新模型</strong>添加进地图中。</p>
+<h2 id="4-6-Object-Model-Update"><a href="#4-6-Object-Model-Update" class="headerlink" title="4.6 Object Model Update"></a>4.6 Object Model Update</h2><p>若模型成功匹配，则<strong>点云</strong>与<strong>类别置信度</strong>需要进行融合。利用recursive Bayesian update 来更新相应的概率分布：</p>
+<p><img src="/2024/01/30/zhang2018/f9.png" alt="f9" title="formula 9"></p>
+<h2 id="4-7-Map-Generation"><a href="#4-7-Map-Generation" class="headerlink" title="4.7 Map Generation"></a>4.7 Map Generation</h2><p><img src="/2024/01/30/zhang2018/fig9.png" alt="fig9" title="figure 9"></p>
+<p>在制图中，移动物体以及测距误差会造成很多误差，八叉树地图使用概率模型来解决该问题。八叉树地图的每个叶子节点存储被占用或空闲的概率，当新的3D 点被插入时会更新概率：</p>
+<p><img src="/2024/01/30/zhang2018/f10-11.png" alt="f10-11" title="f10-11"></p>
+<p>其中，$n$ 表示叶子节点；$z_t$ 表示观测；$P(n|z_t)$ 表示在给定观测 $z_t$ 时体素 $n$ 被占用的概率。</p>
+<p>此外，除了占用概率，体素中还会存储<strong>固定数量的类别标签</strong>以及<strong>置信度得分</strong>。</p>
+<p>八叉树地图绘制过程中会消耗大量的时间来计算空的体素，作者利用优化来加速该过程，如Fig. 10所示。</p>
+<p><img src="/2024/01/30/zhang2018/fig10.png" alt="fig10" title="figure 10"></p>
 ]]></content>
       <categories>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
       <tags>
+        <tag>Dynamic SLAM</tag>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>Dynamic SLAM</tag>
       </tags>
   </entry>
   <entry>
-    <title>论文记录 Probabilistic data association for semantic SLAM</title>
-    <url>/2024/02/18/bowman2017/</url>
-    <content><![CDATA[<p>Bowman, Sean L., Nikolay Atanasov, Kostas Daniilidis, and George J. Pappas. “Probabilistic Data Association for Semantic SLAM.” In <em>2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, 1722–29. Singapore, Singapore: IEEE, 2017. <a href="https://doi.org/10.1109/ICRA.2017.7989203">https://doi.org/10.1109/ICRA.2017.7989203</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
-<ul>
-<li>第一个将惯性、几何以及语义观测信息<strong>紧耦合至一个优化框架</strong>的定位算法；</li>
-<li>将联合metric-semantic SLAM 问题分解为<strong>连续（位姿）</strong>和<strong>离散（数据关联DA和语义标签）</strong>优化子问题；</li>
-<li>在包含<strong>光照变化的杂乱场景中</strong>利用里程计和视觉测量信息进行<strong>室内外真实场景</strong>的长轨迹测试实验。</li>
-</ul>
+    <title>zsh、Oh-My-Zsh及相关设置</title>
+    <url>/2024/01/26/zsh-setup/</url>
+    <content><![CDATA[<p>注：<strong>本文主要参考</strong><a href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">该文章</a>。</p>
+<h1 id="1-安装并设置zsh"><a href="#1-安装并设置zsh" class="headerlink" title="1 安装并设置zsh"></a>1 安装并设置zsh</h1><p>安装命令：</p>
 <span id="more"></span>
-<h1 id="2-Probabilistic-Data-Association-in-SLAM"><a href="#2-Probabilistic-Data-Association-in-SLAM" class="headerlink" title="2 Probabilistic Data Association in SLAM"></a>2 Probabilistic Data Association in SLAM</h1><p>经典的SLAM问题可表述如下：移动传感器穿越一个未知环境，环境中包含M 个静态路标集合 $\mathcal{L} = \{l_m\}^M_{m=1}$ ，给定一组传感器测量数据 $\mathcal{Z} = \{z_k\}^K_{k=1}$ ，任务是估计地标位置 $\mathcal{L}$ 以及传感器的位姿序列 $\mathcal{X} = \{x_t\}^T_{t=1}$ 。</p>
-<p>大部分现有的工作都聚焦于估计  $\mathcal{L}$ 和  $\mathcal{X}$ ，很少强调数据关联 $\mathcal{D}$ <strong>实际上是未知的</strong>。这里的数据关联 $\mathcal{D} = \{(\alpha_k, \beta_k)\}^K_{k=1}$ 指的是在传感器位姿 $x_{\alpha_k}$ 情况下对路标 $l_{\beta_k}$ 的观测数据为 $z_k$ ，即在相机位姿 $x_{\alpha_k}$ 下，观测数据 $z_k$ 和路标 $l_{\beta_k}$ 之间的关联。</p>
-<p>SLAM问题的求解可表述为：在给定观测数据 $\mathcal{Z}$ 时，求解  $\mathcal{L}$ ，$\mathcal{X}$ 和 $\mathcal{D}$ 的最大似然估计：</p>
-<p><img src="/2024/02/18/bowman2017/f1.png" alt="f1" title="f1"></p>
-<p><strong>求解方法一：</strong></p>
-<p>给定先验估计 $\mathcal{X}^0,\mathcal{L}^0$ ，求得数据关联的最大似然估计 $\hat{\mathcal{D}}$ ，然后利用 $\hat{\mathcal{D}}$ 计算路标与传感器状态  $\mathcal{L}$ ，$\mathcal{X}$ 的最大似然估计。</p>
-<p><img src="/2024/02/18/bowman2017/f2.png" alt="f2" title="f2"></p>
-<p>上述方法的缺点在于，错误的数据匹配会严重影响估计结果；而如果为了避免错误匹配而舍弃模糊测量，在后续位姿优化后也无法利用这些模糊测量。</p>
-<p><strong>求解方法二：坐标下降法coordinate descent</strong></p>
-<p>为了避免方法一简单的一步处理，本方法使用迭代计算：</p>
-<p><img src="/2024/02/18/bowman2017/f3.png" alt="f3" title="f3"></p>
-<p>本方法可以在状态估计得到优化后返回来重新估计数据关联；然而，本方法不能解决模糊测量的问题，因为仍然需要一个<strong>硬数据关联</strong>。</p>
-<p>为解决模糊测量导致的数据关联问题，当估计数据关联时，作者不是简单地选取物体属于某个特定的类别 $\hat{\mathcal{D}}=p(\mathcal{D}|\mathcal{X}, \mathcal{L}, \mathcal{Z})$ ，而是<strong>考虑观测数据与路标之间所有可能的数据关联</strong> $D$ 。给定一个初始估计 $\mathcal{X}^i, \mathcal{L}^i$ ,使用 $\mathcal{D}$ 中的全部可能可得到一个更优的估计值，作者采用了expectation maximization (EM) 方法来最大化 expected measurement likelihood 进行计算：</p>
-<p><img src="/2024/02/18/bowman2017/f4.png" alt="f4" title="f4"></p>
-<p>其中， $\mathbb{D}$ 是 $\mathcal{D}$ 的所有取值空间。本EM 方程优势在于不需要硬数据关联 hard decisions on data association，而是平均所有可能的数据关联情况。</p>
-<p>为了与坐标下降法进行比较，上式可重写为：</p>
-<p><img src="/2024/02/18/bowman2017/f5.png" alt="f5" title="f5"></p>
-<p>其中，$w_{kj}^i$ 是一个量化了<strong>软数据关联</strong>的权重参数，表示K 个观测和M 个路标之间所有关联对应的权重参数，$w_{kj}^i = \sum_{\mathcal{D}\in\mathbb{D}(k,j)}p(\mathcal{D}|\mathcal{X}^i, \mathcal{L}^i, \mathcal{Z})$ ，其中，$\mathbb{D}(k,j) = \{\mathcal{D}\in\mathbb{D} | \beta_k = j\}\subseteq \mathbb{D}$ 是观测 $k$ 分配给地标 $j$ 的所有数据关联组合。</p>
-<p>上式的求解同样采用<strong>EM 方法</strong>：</p>
-<ul>
-<li>E 步骤：以权重参数 $w_{kj}^i$ 的形式来估计<strong>数据关联分布</strong> $p(\mathcal{D}|\mathcal{X}^i, \mathcal{L}^i, \mathcal{Z})$ ；</li>
-<li>M 步骤：根据E 步骤计算得到的分布来最大化 expected measurement log likelihood。</li>
-</ul>
-<h1 id="3-Semantic-SLAM"><a href="#3-Semantic-SLAM" class="headerlink" title="3 Semantic SLAM"></a>3 Semantic SLAM</h1><p>作者设定地标的状态 $l$ 包含位置信息 $l^p \in \mathbb{R}^3$ 和类别标签 $l^c$ 。为了估计<strong>地标状态</strong> $\mathcal{L}$ <strong>（位姿与种类）和传感器运动轨迹</strong> $\mathcal{X}$ ，作者使用三种信息源：惯性、几何点特征和物体语义观测。</p>
-<p><img src="/2024/02/18/bowman2017/fig1.png" alt="fig1" title="figure 1"></p>
-<h2 id="3-1-Inertial-information"><a href="#3-1-Inertial-information" class="headerlink" title="3.1 Inertial information"></a>3.1 Inertial information</h2><p>作者每隔n 帧选取一张单目相机采集到的图像作为关键帧，第t 帧对应的传感器状态表示为 $x_t$  ，包含6自由度的位姿、速度以及IMU 偏差值。在相邻两个关键帧之间还有一组IMU 测量数据 $\mathcal{I}$ ，包含线性加速度和旋转角速度。</p>
-<h2 id="3-2-Geometric-information"><a href="#3-2-Geometric-information" class="headerlink" title="3.2 Geometric information"></a>3.2 Geometric information</h2><p>作者从每一个关键帧中提取ORB 特征点，并与后续的关键帧进行匹配。</p>
-<h2 id="3-3-Semantic-information"><a href="#3-3-Semantic-information" class="headerlink" title="3.3 Semantic information"></a>3.3 Semantic information</h2><p>从第t 个关键帧中检测到一组物体 $\mathcal{S}_t$ ，其中每个物体表示为 $\mathbf{s}_k = (s_k^c, s_k^s, s_k^b) \in \mathcal{S}_t$ ，三个参数分别表示所属的物体种类、量化的检测置信度得分，以及bounding box。本文的物体检测使用deformable parts model (DPM) 算法完成，该算法可以在CPU上实时运行。</p>
-<p>如果语义观测 $\mathbf{s}_k$ 的数据关联 $\mathcal{D} = \{(\alpha_k, \beta_k)\}$ 已知，<strong>语义观测似然</strong>可以分解为：</p>
-<script type="math/tex; mode=display">p(\mathbf{s}_k|x_{\alpha_k},l_{\beta_k})=p(s_k^c|l_{\beta_k}^c)p(s_k^s|l_{\beta_k}^c,s_k^c)p(s_k^b|x_{\alpha_k},l_{\beta_k}^p)</script><p>其中，类别估计概率分布 $p(s_k^c|l_{\beta_k}^c)$ 对应于物体检测的<strong>混淆矩阵</strong>，其与得分分布（置信度）$p(s_k^s|l_{\beta_k}^c,s_k^c)$ 可以经过离线学习获取。而bounding-box 似然 $p(s_k^b|x_{\alpha_k},l_{\beta_k}^p)$ 被假设服从正态分布，其均值为物体中心在成像平面上的透视投影 (???)，协方差与探测的bounding-box 尺寸成比例关系。</p>
-<blockquote>
-<p>作者将<strong>语义SLAM 问题</strong>表述如下：</p>
-<p>给定惯性测量 $\mathcal{I} = \{\mathcal{I}_t\}^T_{t=1}$ ，几何测量 $\mathcal{Y} = \{\mathcal{Y}_t\}^T_{t=1}$ 和语义测量 $\mathcal{S} = \{\mathcal{S}_t\}^T_{t=1}$ ，估计传感器的状态轨迹 $\mathcal{X}$ 以及环境中物体的位置和类别 $\mathcal{L}$ 。</p>
-</blockquote>
-<p>作者使用惯性和视觉几何测量信息来跟踪<strong>传感器的局部运动轨迹</strong>，不恢复几何结构。而语义测量信息用来构建包含物体信息的地图用以<strong>回环检测</strong>，不仅鲁棒性更好、精确度更高，而且相较于保留全部几何结构信息的SLAM 方法更为高效。</p>
-<h1 id="4-Semantic-SLAM-using-EM"><a href="#4-Semantic-SLAM-using-EM" class="headerlink" title="4 Semantic SLAM using EM"></a>4 Semantic SLAM using EM</h1><blockquote>
-<p>在优化过程中，作者除了将<strong>数据关联</strong>视为一个隐变量外，也将离散的<strong>路标类别</strong>视为一个隐变量，从而对离散变量和连续变量完成干净且高效的区分。</p>
-</blockquote>
-<p>几何特征点的数据关联由现有的特征跟踪算法提供，因此，本文提到的隐变量为语义观测信息的数据关联 $\mathcal{D}$  和地标所属类别 $l_{1:M}^c$  。</p>
-<p>利用EM 求解语义SLAM 过程如下：</p>
-<p><img src="/2024/02/18/bowman2017/f6.png" alt="f6" title="f6"></p>
-<p>其中，$\mathbb{D}_t$ 是在时间戳 t 时刻观测数据中所有可能数据关联的组合，$\mathbb{D}_t(i,j)\subseteq \mathbb{D}_t$ 是所有可能的数据关联中观测 $i$ 分配给地标 $j$ 的组合。</p>
-<h2 id="Object-classes-and-data-association-E-step"><a href="#Object-classes-and-data-association-E-step" class="headerlink" title="Object classes and data association (E step)"></a>Object classes and data association (E step)</h2><p>一旦每一个<strong>测量-地标匹配对</strong>的权重参数 $w_{kj}^{t,(i)}$ 得到之后，即可用于传感器状态和地标位置的连续优化中。此外，物体类别的最大似然 $l^c$ 也可以通过计算得到的 k 值进行恢复：</p>
-<p><img src="/2024/02/18/bowman2017/f7.png" alt="f7" title="f7"></p>
-<h2 id="Pose-graph-optimization-M-step"><a href="#Pose-graph-optimization-M-step" class="headerlink" title="Pose graph optimization (M step)"></a>Pose graph optimization (M step)</h2><p>作者使用位姿图进行优化。图包含一组顶点 $\mathcal{V}$ ，每个顶点对应一个优化变量；顶点之间还包含一组因子 $\mathcal{F}$ ，对应损失函数。优化方程如下所示：</p>
-<p><img src="/2024/02/18/bowman2017/f8.png" alt="f8" title="f8"></p>
-<p>前人的工作使用硬数据关联 a hard data association，在传感器位姿节点和地标节点之间定义一个单独的因子factor；而本文考虑使用soft semantic data association multiple factors，在节点间使用多个因子进行关联：Semantic Factors, Geometric Factors and Inertial Factors。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install zsh</span><br></pre></td></tr></table></figure>
+<p>设置zsh为默认shell：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chsh -s $(<span class="built_in">which</span> zsh)</span><br></pre></td></tr></table></figure>
+<h1 id="2-安装Oh-My-Zsh"><a href="#2-安装Oh-My-Zsh" class="headerlink" title="2 安装Oh My Zsh"></a>2 安装Oh My Zsh</h1><p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sh -c <span class="string">&quot;<span class="subst">$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+<h1 id="3-安装主题PowerLevel10k"><a href="#3-安装主题PowerLevel10k" class="headerlink" title="3 安装主题PowerLevel10k"></a>3 安装主题PowerLevel10k</h1><p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/romkatv/powerlevel10k.git <span class="variable">$ZSH_CUSTOM</span>/themes/powerlevel10k</span><br></pre></td></tr></table></figure>
+<p>进入.zshrc设置主题：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ZSH_THEME=<span class="string">&quot;powerlevel10k/powerlevel10k&quot;</span></span><br></pre></td></tr></table></figure>
+<h1 id="4-安装插件"><a href="#4-安装插件" class="headerlink" title="4 安装插件"></a>4 安装插件</h1><h2 id="4-1-日常插件"><a href="#4-1-日常插件" class="headerlink" title="4.1 日常插件"></a>4.1 日常插件</h2><p>zsh-autosuggestions:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-autosuggestions <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-autosuggestions</span><br></pre></td></tr></table></figure>
+<p>zsh-syntax-highlighting:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="variable">$&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;</span>/plugins/zsh-syntax-highlighting</span><br></pre></td></tr></table></figure>
+<p>设置要启动的插件（Plugins）：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">plugins=(</span><br><span class="line">         git</span><br><span class="line">         zsh-autosuggestions </span><br><span class="line">         zsh-syntax-highlighting</span><br><span class="line">         extract</span><br><span class="line">         sudo</span><br><span class="line">         tmux</span><br><span class="line"></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>值得注意的是，除了zsh-autosuggestions 与zsh-syntax-highlighting 需要单独安装外，上述的其他插件均是内嵌的，可直接添加至配置文件中直接使用。</p>
+<h2 id="4-2-Tmux设置"><a href="#4-2-Tmux设置" class="headerlink" title="4.2 Tmux设置"></a>4.2 Tmux设置</h2><p><strong>该部分主要参考</strong><a href="https://louiszhai.github.io/2017/09/30/tmux/#导读">文章</a>。</p>
+<p>安装命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install tmux</span><br></pre></td></tr></table></figure>
+<p>tmux 的个性化设置需在主目录编辑.tmux.conf 文件，本人的文件设置如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set</span> -g prefix C-z</span><br><span class="line">unbind C-b</span><br><span class="line"><span class="built_in">bind</span> C-a send-prefix</span><br><span class="line"></span><br><span class="line"><span class="built_in">bind</span> r source-file ~/.tmux.conf \; display-message <span class="string">&quot;Config reloaded..&quot;</span></span><br><span class="line"></span><br><span class="line">unbind <span class="string">&#x27;&quot;&#x27;</span></span><br><span class="line"><span class="built_in">bind</span> - splitw -v -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line">unbind %</span><br><span class="line"><span class="built_in">bind</span> | splitw -h -c <span class="string">&#x27;#&#123;pane_current_path&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">set-option -g mouse on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g base-index 0</span><br><span class="line"><span class="built_in">set</span> -g pane-base-index 0</span><br><span class="line"></span><br><span class="line"><span class="comment"># setw -g utf8 on</span></span><br><span class="line"><span class="built_in">set</span> -g status-interval 1</span><br><span class="line"><span class="built_in">set</span> -g status-justify left</span><br><span class="line">setw -g monitor-activity on</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g status-bg black</span><br><span class="line"><span class="built_in">set</span> -g status-fg yellow</span><br><span class="line"><span class="built_in">set</span> -g status-left <span class="string">&quot;#[bg=#FF661D] ❐ #S &quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-right <span class="string">&quot;%H:%M:%S %d-%b&quot;</span></span><br><span class="line"><span class="built_in">set</span> -g status-left-length 300</span><br><span class="line"><span class="built_in">set</span> -g status-right-length 500</span><br><span class="line"><span class="built_in">set</span> -wg window-status-current-format <span class="string">&quot; #I:#W#F &quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g message-style <span class="string">&quot;bg=#202529, fg=#91A8BA&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -g default-terminal <span class="string">&quot;screen-256color&quot;</span></span><br></pre></td></tr></table></figure>
+<p>其他使用说明可参考上述链接。在oh my zsh 插件中添加了 tmux 后，可以使用如下快捷键：</p>
+<p><img src="/2024/01/26/zsh-setup/hotkey.png" alt="hotkey" title="快捷键设置"></p>
 ]]></content>
       <categories>
-        <category>SLAM</category>
-        <category>Map Match</category>
+        <category>开发环境搭建</category>
       </categories>
       <tags>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>Map Match</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>论文记录 SOF-SLAM_A Semantic Visual SLAM for Dynamic Environments</title>
-    <url>/2024/02/18/sof-slam/</url>
-    <content><![CDATA[<p>Cui, Linyan, and Chaowei Ma. “SOF-SLAM: A Semantic Visual SLAM for Dynamic Environments.” <em>IEEE Access</em> 7 (2019): 166528–39. <a href="https://doi.org/10.1109/ACCESS.2019.2952161">https://doi.org/10.1109/ACCESS.2019.2952161</a>.</p>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>无论是DynaSLAM还是DS-SLAM，它们都是简单地将先验语义信息和几何一致性信息进行<strong>“松组合”</strong>，即利用语义信息和几何信息分别确定出各自认定的动态特征点，然后采用<strong>投票机制</strong>对最终的动态特征点进行确认；其中，DynaSLAM 认为只要有一种方法判定一个点属于动态点就认为该点是动态点（<strong>OR操作</strong>），而DS-SLAM 认为只有两种方法同时认定该点属于动态点才将该点视为动态点（<strong>AND操作</strong>）。由于动态语义先验信息的不确定性，如人或汽车存在静止的情况，而DynaSLAM所代表的方法会剔除掉大量静态特征点，导致位姿估计精度下降，甚至在部分场景中由于特征点的缺少导致解算失败；同时，语义分割存在准确度不够的情况，如物体边缘部分的分割效果较差，DS-SLAM 代表的方法可能会保留实际的动态特征点，从而导致位姿估计精度下降。</p>
-<p>针对以上存在的问题，Cui 等人提出了 SOF-SLAM——Semantic Optical Flow SLAM，一种将语义信息和几何信息进行<strong>“紧组合”</strong>来实现动态目标检测和剔除的鲁棒SLAM方法；所谓的紧组合指的是<strong>利用语义信息来辅助几何信息进行动态物体的探测</strong>：作者首先利用语义分割结果去除掉场景中动态物体和潜在动态物体上的特征点，仅利用<strong>高可能性静态物体</strong>上的特征点进行基础矩阵的求解，进而利用该可靠性更高的基础矩阵应用<strong>对极几何理论</strong>实现对动态特征点的剔除，从而实现更为鲁棒可靠的动态特征点剔除方法；最终，作者在公开数据集和真实场景中进行了测试，证明了本方法较ORB-SLAM2以及其他语义SLAM算法的优势。</p>
-<span id="more"></span>
-<p><img src="/2024/02/18/sof-slam/image-20240218103807414.png" alt="image-20240218103807414" title="figure 2"></p>
-<p><img src="/2024/02/18/sof-slam/image-20240218104037049.png" alt="image-20240218104037049" title="figure 3"></p>
-]]></content>
-      <categories>
-        <category>SLAM</category>
-        <category>Dynamic SLAM</category>
-      </categories>
-      <tags>
-        <tag>SLAM</tag>
-        <tag>Semantic</tag>
-        <tag>Dynamic SLAM</tag>
+        <tag>Ubuntu</tag>
+        <tag>zsh</tag>
       </tags>
   </entry>
 </search>
