@@ -1494,6 +1494,9 @@
     <content><![CDATA[<p>Cui, Linyan, and Chaowei Ma. “SOF-SLAM: A Semantic Visual SLAM for Dynamic Environments.” <em>IEEE Access</em> 7 (2019): 166528–39. <a href="https://doi.org/10.1109/ACCESS.2019.2952161">https://doi.org/10.1109/ACCESS.2019.2952161</a>.</p>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>无论是DynaSLAM还是DS-SLAM，它们都是简单地将先验语义信息和几何一致性信息进行<strong>“松组合”</strong>，即利用语义信息和几何信息分别确定出各自认定的动态特征点，然后采用<strong>投票机制</strong>对最终的动态特征点进行确认；其中，DynaSLAM 认为只要有一种方法判定一个点属于动态点就认为该点是动态点（<strong>OR操作</strong>），而DS-SLAM 认为只有两种方法同时认定该点属于动态点才将该点视为动态点（<strong>AND操作</strong>）。由于动态语义先验信息的不确定性，如人或汽车存在静止的情况，而DynaSLAM所代表的方法会剔除掉大量静态特征点，导致位姿估计精度下降，甚至在部分场景中由于特征点的缺少导致解算失败；同时，语义分割存在准确度不够的情况，如物体边缘部分的分割效果较差，DS-SLAM 代表的方法可能会保留实际的动态特征点，从而导致位姿估计精度下降。</p>
 <p>针对以上存在的问题，Cui 等人提出了 SOF-SLAM——Semantic Optical Flow SLAM，一种将语义信息和几何信息进行<strong>“紧组合”</strong>来实现动态目标检测和剔除的鲁棒SLAM方法；所谓的紧组合指的是<strong>利用语义信息来辅助几何信息进行动态物体的探测</strong>：作者首先利用语义分割结果去除掉场景中动态物体和潜在动态物体上的特征点，仅利用<strong>高可能性静态物体</strong>上的特征点进行基础矩阵的求解，进而利用该可靠性更高的基础矩阵应用<strong>对极几何理论</strong>实现对动态特征点的剔除，从而实现更为鲁棒可靠的动态特征点剔除方法；最终，作者在公开数据集和真实场景中进行了测试，证明了本方法较ORB-SLAM2以及其他语义SLAM算法的优势。</p>
+<span id="more"></span>
+<p><img src="/2024/02/18/sof-slam/image-20240218103807414.png" alt="image-20240218103807414" title="figure 2"></p>
+<p><img src="/2024/02/18/sof-slam/image-20240218104037049.png" alt="image-20240218104037049" title="figure 3"></p>
 ]]></content>
       <categories>
         <category>SLAM</category>
