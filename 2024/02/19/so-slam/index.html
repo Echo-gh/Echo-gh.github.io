@@ -51,7 +51,7 @@
 <meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f20.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f21.png">
 <meta property="article:published_time" content="2024-02-19T01:17:40.000Z">
-<meta property="article:modified_time" content="2024-02-19T01:29:13.512Z">
+<meta property="article:modified_time" content="2024-02-19T01:54:51.750Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="SLAM">
 <meta property="article:tag" content="Semantic">
@@ -241,7 +241,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-02-19 09:17:40 / 修改时间：09:29:13" itemprop="dateCreated datePublished" datetime="2024-02-19T09:17:40+08:00">2024-02-19</time>
+              <time title="创建时间：2024-02-19 09:17:40 / 修改时间：09:54:51" itemprop="dateCreated datePublished" datetime="2024-02-19T09:17:40+08:00">2024-02-19</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -293,7 +293,7 @@
 <p>其中，$\sum_{det}$ 表示物体检测协方差矩阵，本文中令其为10。</p>
 <h2 id="4-2-Plane-Supporting-Constraints"><a href="#4-2-Plane-Supporting-Constraints" class="headerlink" title="4.2 Plane Supporting Constraints"></a>4.2 Plane Supporting Constraints</h2><p>根据物体与其支撑平面的关系，可以构建<strong>三个约束</strong>，如Fig. 2所示，物体的X、Y轴与平面 $\pi_s$ 的法向量正交，椭球体与平面 $\pi_s$ 相切。由此构建如下函数模型：</p>
 <p><img src="/2024/02/19/so-slam/f8.png" alt="f8" title="formula 8"></p>
-<p>其中，$Rot_x(Q^<em>), Rot_y(Q^</em>)$ 分别为椭球体的 X、Y 轴；支撑平面为 $\pi_s=(n_s, d)$，  $n_s$ 为支撑平面的法向量。</p>
+<p>其中，$Rot_x(Q^{<em>}), Rot_y(Q^{</em>})$ 分别为椭球体的 X、Y 轴；支撑平面为 $\pi_s=(n_s, d)$，  $n_s$ 为支撑平面的法向量。</p>
 <h2 id="4-3-Semantic-Scale-Proportional-Constraint"><a href="#4-3-Semantic-Scale-Proportional-Constraint" class="headerlink" title="4.3 Semantic Scale Proportional Constraint"></a>4.3 Semantic Scale Proportional Constraint</h2><p>作者提出了一种灵活的物体尺度先验约束——Scale Proportional Constraint (SPC)，用来约束物体的<strong>尺寸比例</strong>而不是其精确的尺寸。假设物体的尺寸为 $s = [a, b, c]^T$ ，分别为X、Y、Z轴的尺寸，作者由此定义尺寸比例 $r = [\sigma, \beta]^T$ ：</p>
 <p><img src="/2024/02/19/so-slam/f9.png" alt="f9" title="formula 9"></p>
 <p>根据常见的物体尺寸可制作一个<strong>尺寸比例表</strong>。</p>
