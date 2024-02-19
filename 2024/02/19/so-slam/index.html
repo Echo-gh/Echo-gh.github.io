@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Liao, Ziwei, Yutong Hu, Jiadong Zhang, Xianyu Qi, Xiaoyu Zhang, and Wei Wang. “SO-SLAM: Semantic Object SLAM With Scale Proportional and Symmetrical Texture Constraints.” IEEE Robotics and Automation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 SO-SLAM_Semantic Object SLAM With Scale Proportional and Symmetrical Texture Constraints">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/19/so-slam/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Liao, Ziwei, Yutong Hu, Jiadong Zhang, Xianyu Qi, Xiaoyu Zhang, and Wei Wang. “SO-SLAM: Semantic Object SLAM With Scale Proportional and Symmetrical Texture Constraints.” IEEE Robotics and Automation">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f8.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f9.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f11.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f12.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f13.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f14.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f15.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f16.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f17.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f19.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f20.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/19/so-slam/f21.png">
+<meta property="article:published_time" content="2024-02-19T01:17:40.000Z">
+<meta property="article:modified_time" content="2024-02-19T01:29:13.512Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Pose Optimization">
+<meta property="article:tag" content="Object SLAM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/19/so-slam/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/19/so-slam/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 SO-SLAM_Semantic Object SLAM With Scale Proportional and Symmetrical Texture Constraints | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/19/so-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 SO-SLAM_Semantic Object SLAM With Scale Proportional and Symmetrical Texture Constraints
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-19 09:17:40 / 修改时间：09:29:13" itemprop="dateCreated datePublished" datetime="2024-02-19T09:17:40+08:00">2024-02-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Pose-Optimization/" itemprop="url" rel="index"><span itemprop="name">Pose Optimization</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Liao, Ziwei, Yutong Hu, Jiadong Zhang, Xianyu Qi, Xiaoyu Zhang, and Wei Wang. “SO-SLAM: Semantic Object SLAM With Scale Proportional and Symmetrical Texture Constraints.” <em>IEEE Robotics and Automation Letters</em> 7, no. 2 (April 2022): 4008–15. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/LRA.2022.3148465">https://doi.org/10.1109/LRA.2022.3148465</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文主要解决单目 Object SLAM 的<strong>两个挑战</strong>：</p>
+<ol>
+<li>单目相机包含<strong>较少的物体约束信息</strong>，特别是在部分观测、遮挡等情况下更为严重，使得单目 Object SLAM 较为<strong>脆弱</strong>；</li>
+<li>当前的 Object SLAM 主要用于约束<strong>物体的占用空间</strong>，没有充分利用物体的<strong>朝向信息</strong>。</li>
+</ol>
+<p>针对以上两个挑战，作者提出了<strong>单目 Semantic Object SLAM (SO-SLAM) 系统</strong>，如Fig. 1 所示，除了物体的语义信息，作者还引入了三种代表性的<strong>物体空间约束</strong>：<strong>尺寸比例约束、对称纹理约束</strong>以及<strong>平面支撑约束</strong>，作者推导约束模型并同时应用于前端初始化与后端优化中。</p>
+<p>本文的贡献如下：</p>
+<ol>
+<li>提出一个面向室内环境的完全耦合三种空间约束的<strong>单目 Object SLAM</strong>；</li>
+<li>基于空间约束提出两个新方法：<strong>单帧物体初始化</strong>方法和<strong>物体朝向优化</strong>方法；</li>
+<li>在两个公开数据集与自采数据集上验证了本算法的有效性。</li>
+</ol>
+<span id="more"></span>
+<p><img src="/2024/02/19/so-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-Monocular-Object-SLAM-Framework"><a href="#3-Monocular-Object-SLAM-Framework" class="headerlink" title="3 Monocular Object SLAM Framework"></a>3 Monocular Object SLAM Framework</h1><p>表示物体的椭球体包含<strong>9自由度</strong>，可利用SVD 方法来获取，该方法至少3帧具有足够视差的观测才可以获取(Nicholson 等, 2019)。作者利用位姿图对相机和物体位姿进行优化：</p>
+<p><img src="/2024/02/19/so-slam/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，X 表示相机位姿，Q 表示物体位姿；$F_Z$ 表示相机-物体观测约束，$F_O$ 表示里程计约束，这两个约束项在文章(Nicholson 等, 2019)中有详细介绍；本文着重介绍新增加的空间约束 $F_S$ ，包含平面支撑约束 $f_{sup}$ ，尺度比例约束 $f_{ssc}$ ，以及对称纹理约束 $f_{sym}$ ；H() 是鲁棒核用以提高系统对外点的鲁棒性，本文使用 Huber Kernel。</p>
+<h1 id="4-Single-Frame-Initialization-with-Semantic-Priors"><a href="#4-Single-Frame-Initialization-with-Semantic-Priors" class="headerlink" title="4 Single-Frame Initialization with Semantic Priors"></a>4 Single-Frame Initialization with Semantic Priors</h1><p>作者根据人类认知习惯来设定物体坐标系：人造物体的上表面一般与物体的支撑面相反，前向一般是对称的方向，由此构建物体的 Z 轴和 X 轴，由此构建了物体坐标系。然后，就可以应用更多的约束，如Fig. 2所示，实现单帧图片对9自由度物体进行初始化的方法，克服了传统SVD 方法难以满足的要求。</p>
+<p><img src="/2024/02/19/so-slam/fig2.png" alt="figure2" title="figure 2"></p>
+<h2 id="4-1-Object-Detection-Constraints"><a href="#4-1-Object-Detection-Constraints" class="headerlink" title="4.1 Object Detection Constraints"></a>4.1 Object Detection Constraints</h2><p>物体检测框的四条边线经相机投影矩阵进行逆投影，可得到<strong>四个切面约束</strong>，如Fig. 2中的对 $l_i$ 逆投影得到切平面 $\pi_i$ ，由此形成对椭球体 $Q^*$ 的四自由度约束，如下所示：</p>
+<p><img src="/2024/02/19/so-slam/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$\sum_{det}$ 表示物体检测协方差矩阵，本文中令其为10。</p>
+<h2 id="4-2-Plane-Supporting-Constraints"><a href="#4-2-Plane-Supporting-Constraints" class="headerlink" title="4.2 Plane Supporting Constraints"></a>4.2 Plane Supporting Constraints</h2><p>根据物体与其支撑平面的关系，可以构建<strong>三个约束</strong>，如Fig. 2所示，物体的X、Y轴与平面 $\pi_s$ 的法向量正交，椭球体与平面 $\pi_s$ 相切。由此构建如下函数模型：</p>
+<p><img src="/2024/02/19/so-slam/f8.png" alt="f8" title="formula 8"></p>
+<p>其中，$Rot_x(Q^<em>), Rot_y(Q^</em>)$ 分别为椭球体的 X、Y 轴；支撑平面为 $\pi_s=(n_s, d)$，  $n_s$ 为支撑平面的法向量。</p>
+<h2 id="4-3-Semantic-Scale-Proportional-Constraint"><a href="#4-3-Semantic-Scale-Proportional-Constraint" class="headerlink" title="4.3 Semantic Scale Proportional Constraint"></a>4.3 Semantic Scale Proportional Constraint</h2><p>作者提出了一种灵活的物体尺度先验约束——Scale Proportional Constraint (SPC)，用来约束物体的<strong>尺寸比例</strong>而不是其精确的尺寸。假设物体的尺寸为 $s = [a, b, c]^T$ ，分别为X、Y、Z轴的尺寸，作者由此定义尺寸比例 $r = [\sigma, \beta]^T$ ：</p>
+<p><img src="/2024/02/19/so-slam/f9.png" alt="f9" title="formula 9"></p>
+<p>根据常见的物体尺寸可制作一个<strong>尺寸比例表</strong>。</p>
+<p>给定一个物体 $Q_O^<em>$ ，可根据定义计算其尺寸比例 $r_O = r(Q^</em>_O)$ ，根据其语义类别标签 $l_O$ 经查表可得其对应的尺寸比例 $r_s = SemTable(l_O)$ 。由此构建物体的尺寸比例约束：</p>
+<p><img src="/2024/02/19/so-slam/f11.png" alt="f11" title="formula 11"></p>
+<h2 id="4-4-Solving-the-Single-Frame-Initialization"><a href="#4-4-Solving-the-Single-Frame-Initialization" class="headerlink" title="4.4 Solving the Single Frame Initialization"></a>4.4 Solving the Single Frame Initialization</h2><p>利用Levenberg-Marquardt 算法对目标方程进行迭代求解：</p>
+<p><img src="/2024/02/19/so-slam/f12.png" alt="f12" title="formula 12"></p>
+<h1 id="5-Orientation-Optimization-with-Texture-Symmetry"><a href="#5-Orientation-Optimization-with-Texture-Symmetry" class="headerlink" title="5 Orientation Optimization with Texture Symmetry"></a>5 Orientation Optimization with Texture Symmetry</h1><h2 id="5-1-Mathematical-Description-of-Object-Symmetry"><a href="#5-1-Mathematical-Description-of-Object-Symmetry" class="headerlink" title="5.1 Mathematical Description of Object Symmetry"></a>5.1 Mathematical Description of Object Symmetry</h2><p>人造物体一般是对称的，作者将其<strong>对称平面的方向</strong>定义为前向，也就是物体坐标系的 X 轴，如Fig. 3所示。物体对称性可<strong>数学表示</strong>为：物体上的任意一点 $v_0 \in V$ 都可经由其<strong>对称面</strong> $\pi_{xz}$ 找到物体上与其对称的点 $v_0^S \in V$ 。</p>
+<p><img src="/2024/02/19/so-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<p>物体在图像中的一点 u 经逆投影得到其在3D 空间中的点 v，满足以下方程：</p>
+<p><img src="/2024/02/19/so-slam/f13.png" alt="f13" title="formula 13"></p>
+<p>将式（a）代入式（b），在（c）的约束下最多只有一个解，由此可以得到 u 的对称像素点：</p>
+<p><img src="/2024/02/19/so-slam/f14.png" alt="f14" title="formula 14"></p>
+<p>其中，$\mathcal{P}$ 表示相机的投影矩阵；$v_0^S = \mathcal{S}(v_0, Q)$ 表示3D 点 $v_0$  的对称点。该过程如Fig. 3（b）所示，根据找到的<strong>对称点对</strong>，作者构建一个<strong>描述子映射关系</strong> $\beta(<em>)$ ，作者称其为<em>*对称投影不变</em></em> symmetric projection invariant，其满足以下性质：</p>
+<p><img src="/2024/02/19/so-slam/f15.png" alt="f15" title="formula 15"></p>
+<p>由此，当观测噪声较严重时，可以构建如下的代价方程来优化椭球体 Q：</p>
+<p><img src="/2024/02/19/so-slam/f16.png" alt="f16" title="formula 16"></p>
+<h2 id="5-2-The-Construction-of-Symmetry-Descriptor"><a href="#5-2-The-Construction-of-Symmetry-Descriptor" class="headerlink" title="5.2 The Construction of Symmetry Descriptor"></a>5.2 The Construction of Symmetry Descriptor</h2><p>对于 $\beta(*)$ 的确定，作者先后考虑了灰度值（广泛用于直接法）、BRIEF 描述子等，之后，作者考虑像素的 Distance Transform：</p>
+<p><img src="/2024/02/19/so-slam/f17.png" alt="f17" title="formula 17"></p>
+<p>上式的含义为：<strong>从一个像素点到图像中任意边上像素的最近距离</strong>，部分反应了物体的<strong>纹理</strong>。但是这个描述子不一定可以满足对称投影不变的性质，如Fig. 4（a）所示。进而，作者发现了the nearest edge distance of point $v_0$ ，记为 $B_{3DT}(v_0)$ 可满足要求（但<strong>计算量太大</strong>）：</p>
+<p><img src="/2024/02/19/so-slam/f19.png" alt="f19" title="formula 19"></p>
+<p><img src="/2024/02/19/so-slam/fig4.png" alt="fig4" title="figure 4"></p>
+<p>作者结合以上两种方法的优势，提出了 Improved-DT descriptor：</p>
+<p><img src="/2024/02/19/so-slam/f20.png" alt="f20" title="formula 20"></p>
+<p><img src="/2024/02/19/so-slam/f21.png" alt="f21" title="formula 21"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Pose-Optimization/" rel="tag"><i class="fa fa-tag"></i> Pose Optimization</a>
+              <a href="/tags/Object-SLAM/" rel="tag"><i class="fa fa-tag"></i> Object SLAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/18/bowman2017/" rel="prev" title="论文记录 Probabilistic data association for semantic SLAM">
+      <i class="fa fa-chevron-left"></i> 论文记录 Probabilistic data association for semantic SLAM
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Monocular-Object-SLAM-Framework"><span class="nav-text">3 Monocular Object SLAM Framework</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Single-Frame-Initialization-with-Semantic-Priors"><span class="nav-text">4 Single-Frame Initialization with Semantic Priors</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Object-Detection-Constraints"><span class="nav-text">4.1 Object Detection Constraints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Plane-Supporting-Constraints"><span class="nav-text">4.2 Plane Supporting Constraints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Semantic-Scale-Proportional-Constraint"><span class="nav-text">4.3 Semantic Scale Proportional Constraint</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-Solving-the-Single-Frame-Initialization"><span class="nav-text">4.4 Solving the Single Frame Initialization</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Orientation-Optimization-with-Texture-Symmetry"><span class="nav-text">5 Orientation Optimization with Texture Symmetry</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Mathematical-Description-of-Object-Symmetry"><span class="nav-text">5.1 Mathematical Description of Object Symmetry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-The-Construction-of-Symmetry-Descriptor"><span class="nav-text">5.2 The Construction of Symmetry Descriptor</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
