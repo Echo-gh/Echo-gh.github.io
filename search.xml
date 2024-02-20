@@ -1574,4 +1574,62 @@
         <tag>Object SLAM</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 Global Localization with Object-Level Semantics and Topology</title>
+    <url>/2024/02/20/liu2019/</url>
+    <content><![CDATA[<p>Liu, Yu, Yvan Petillot, David Lane, and Sen Wang. “Global Localization with Object-Level Semantics and Topology.” In <em>2019 International Conference on Robotics and Automation (ICRA)</em>, 4909–15. Montreal, QC, Canada: IEEE, 2019. <a href="https://doi.org/10.1109/ICRA.2019.8794475">https://doi.org/10.1109/ICRA.2019.8794475</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者研究了使用3D 物体级语义信息来实现基于视觉的全局定位技术，主要贡献如下：</p>
+<ol>
+<li>综合利用现有的<strong>稠密语义</strong>、<strong>3D 拓扑</strong>、<strong>图匹配</strong>以及<strong>3D 对齐技术</strong>，实现一个新颖的物体级全局定位算法；</li>
+<li>展现了物体级语义信息对于鲁棒地点识别与全局定位的作用，对于光强变化、场景改变等具有较强的鲁棒性；</li>
+<li>证明了物体级对齐技术可以处理具有挑战性的3D 点对齐，并在没有完整观察数据的情况下实现精确定位。</li>
+</ol>
+<span id="more"></span>
+<h1 id="2-Related-Work"><a href="#2-Related-Work" class="headerlink" title="2 Related Work"></a>2 Related Work</h1><h2 id="2-3-Graph-Matching"><a href="#2-3-Graph-Matching" class="headerlink" title="2.3 Graph Matching"></a>2.3 Graph Matching</h2><p>图匹配可以被视为一种<strong>匹配问题</strong>，解决两个图之间节点与边的确切对应关系。不幸的是，用这种方式解决该问题是典型的NP-hard 问题。选择另一种非确切图匹配方式来解决对应问题，如:</p>
+<p>一些作者将一个图利用其邻接矩阵来表示重要的拓扑属性，在此基础上使用矩阵相似度来简化图匹配问题。</p>
+<p>一些作者尝试使用 graph kernels based on walks 来解决图匹配：</p>
+<blockquote>
+<p>the authors compute <strong>pair-wise similarity between walks’ composing nodes and edges</strong>, and calculate a final matching score for the scene modeling problem.</p>
+</blockquote>
+<p>一些作者比较每个节点的random walk descriptors，其中每个描述子对相应节点的局部连接进行编码each descriptor encodes the local connectivity of the corresponding node.</p>
+<h1 id="3-Global-Localization-With-Object-Level-Semantic-and-Topology"><a href="#3-Global-Localization-With-Object-Level-Semantic-and-Topology" class="headerlink" title="3 Global Localization With Object-Level Semantic and Topology"></a>3 Global Localization With Object-Level Semantic and Topology</h1><p><img src="/2024/02/20/liu2019/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-Semantic-Segmentation-and-Fusion"><a href="#3-1-Semantic-Segmentation-and-Fusion" class="headerlink" title="3.1 Semantic Segmentation and Fusion"></a>3.1 Semantic Segmentation and Fusion</h2><p>本文中，全局地图是在制图阶段利用稠密SLAM 算法构建的，后续增加语义特征，使用简单的投票方案voting scheme进行融合操作，地图中的点若从多个角度观测均被划分为某类则表明有较高的置信度。在最终的语义地图中，只保留那些一直具有高度一致语义标签的点云。query的局部语义地图以同样的方式来获取。</p>
+<h2 id="3-2-Graph-Extraction"><a href="#3-2-Graph-Extraction" class="headerlink" title="3.2 Graph Extraction"></a>3.2 Graph Extraction</h2><p>从语义地图到语义图的转换过程：</p>
+<ol>
+<li>首先，使用Euclidean clustering来提取具有相同语义标签的近点，忽略墙壁、地板、天花板等不能提供有用拓扑关系的语义点云集合；</li>
+<li>在图中，使用bounding sphere来表示每一个物体，因为球体具有旋转不变性，球形的尺寸表示物体的尺寸，由最远点到中心点的距离决定；</li>
+<li>节点与边表示地图中的3D语义拓扑，当两个物体节点处于邻接距离内时使用无向边进行连接，此外，若两个物体的球体有相交，那么也用无向边进行连接，表明模型包含了<strong>空间与尺寸</strong>关系。</li>
+</ol>
+<p><img src="/2024/02/20/liu2019/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-3-Random-Walk-Descriptor"><a href="#3-3-Random-Walk-Descriptor" class="headerlink" title="3.3 Random Walk Descriptor"></a>3.3 Random Walk Descriptor</h2><p>本文使用随机游走描述子来对图中的节点进行描述：从根节点开始，探索邻接节点并记录访问过的标签序列，每次探索的深度被定义为该游走的长度，探索的数量被定义为该节点的特定描述子尺寸，过程如Fig. 4所示。在描述子中，除了访问过的标签，还需要跟踪每个标签在图中所对应的节点，来确保在association步骤中的空间一致性。</p>
+<p><img src="/2024/02/20/liu2019/fig4.png" alt="fig4" title="figure 4"></p>
+<h2 id="3-4-Object-Association"><a href="#3-4-Object-Association" class="headerlink" title="3.4 Object Association"></a>3.4 Object Association</h2><p>一旦全局与query图的随机游走描述子被建立之后，就开始基于它们<strong>共有的相同描述子数量</strong>来建立节点间的联系。由于环境中可能存在同一类的多个物体，两个匹配的描述子只表明是<strong>一个潜在的候选对</strong>，对该候选对节点的游走路径进行追溯，对空间一致性进行确认，如果两个路径拥有相同的标签，但是任意两个节点之间的距离超出一个阈值就判定为匹配失败。对于每个质询节点都与全局图中的所有节点进行描述子匹配，最终选取k个具有最多匹配描述子的节点作为匹配节点，由此可以得到质询图与全局图中物体的对应关系。</p>
+<p>注意，本文允许非精确匹配inexact association，因为某些场景中的物体可能会出现过度分割的现象，导致一个物体被分割为多块，需要解决多对一的对应问题。</p>
+<h2 id="3-5-Localization-based-on-Object-Level-Alignment"><a href="#3-5-Localization-based-on-Object-Level-Alignment" class="headerlink" title="3.5 Localization based on Object-Level Alignment"></a>3.5 Localization based on Object-Level Alignment</h2><p>实现质询图与全局图中物体的关联之后，使用物体的几何信息进行位姿估计：对两图中关联物体的点云进行稠密对齐。</p>
+<p>使用Fast Point Feature Histograms (FPFH), Sample Consensus initial alignment method (SAC-IA) 算法来对关联点云进行对齐，由此得到的位姿转换关系提供了质询物体在地图中的初始定位信息，然后使用 Iterative Closest Point (ICP) 算法进行优化，最终得到6自由度的相机位姿。</p>
+<h1 id="4-Experimental-Results"><a href="#4-Experimental-Results" class="headerlink" title="4 Experimental Results"></a>4 Experimental Results</h1><h2 id="4-1-Dataset"><a href="#4-1-Dataset" class="headerlink" title="4.1 Dataset"></a>4.1 Dataset</h2><p>作者选取了两个数据库：公开数据集SceneNN ，以及作者在living room，kitchen以及dining room自采的数据集——LKD，在LKD 数据集中作者采集了不同光线变化下的场景数据。</p>
+<p><img src="/2024/02/20/liu2019/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="4-4-Localization-Performance"><a href="#4-4-Localization-Performance" class="headerlink" title="4.4 Localization Performance"></a>4.4 Localization Performance</h2><p>Fig. 7与Table 1是在两个数据集上的实验结果，可以发现在数据集SceneNN 上效果更好，作者给出的原因是：</p>
+<blockquote>
+<p>most errors are skewed toward the lower range.</p>
+</blockquote>
+<p><img src="/2024/02/20/liu2019/fig7.png" alt="fig7" title="figure 7"></p>
+<p><img src="/2024/02/20/liu2019/t1.png" alt="t1" title="table 1"></p>
+<p>Fig. 6展示了在SceneNN 数据集中质询范例成功在全局地图中进行匹配的例子。</p>
+<p><img src="/2024/02/20/liu2019/fig6.png" alt="fig6" title="figure 6"></p>
+<p>进一步地，作者使用FAB-MAP，NetVLAD 算法进行对比验证，其中FAB-MAP 是基于BoW词袋算法的，NetVLAD 利用CNN 网络在不同视角与光线条件下的同一场景数据进行训练来获取深度特征。实验结果如Fig. 8所示。</p>
+<p><img src="/2024/02/20/liu2019/fig8.png" alt="fig8" title="figure 8"></p>
+<h2 id="4-5-Discussion-on-Challenging-Scenarios"><a href="#4-5-Discussion-on-Challenging-Scenarios" class="headerlink" title="4.5 Discussion on Challenging Scenarios"></a>4.5 Discussion on Challenging Scenarios</h2><p>作者讨论了当观测数据不完整（可能原因包括遮挡、过度分割导致物体碎片等）、存在动态物体的场景（移除物体或新增物体）情况下本文算法的鲁棒性。</p>
+<p><img src="/2024/02/20/liu2019/fig9.png" alt="fig9" title="figure 9"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Topology</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Topology</tag>
+      </tags>
+  </entry>
 </search>
