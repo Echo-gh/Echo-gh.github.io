@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/02/21/quadricslam/
 http://echo-gh.github.io/2024/02/21/vdo-slam/
 http://echo-gh.github.io/2024/02/21/wang2019/
 http://echo-gh.github.io/2024/02/20/liu2019/
