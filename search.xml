@@ -1773,7 +1773,7 @@
 <h2 id="5-4-Variable-Initialization"><a href="#5-4-Variable-Initialization" class="headerlink" title="5.4 Variable Initialization"></a>5.4 Variable Initialization</h2><p>载体位姿 $\mathbf{x}_i$ 可通过里程计观测值 $\mathbf{u}_i$ 进行初始化，接下来讨论对偶二次曲面地标 $\mathbf{q}_j$ 的初始化。可通过最小二乘满足以下定义式来进行初始化：</p>
 <p><img src="/2024/02/21/quadricslam/image-20240221155058842.png" alt="image-20240221155058842" title="formula 8"></p>
 <p>其中，$\hat{\mathbf{q}_j}$ 为3.1节的通用对偶二次曲面：$\hat{\mathbf{q}} = (\hat{q}_1, …, \hat{q}_{10})$ 。</p>
-<p>可使用地标bbox 观测 $\mathbf{b}_{ij}$ 和对应的线 $\mathbf{l}_{ijk}$ 来定义平面 $\mathbf{\pi}_{ijk}$ : $\mathbf{\pi}_{ijk} = \mathbf{P}^T_i \mathbf{l}_{ijk}$，其中，相机位姿 $\mathbf{P}_i$ 可通过初始位姿估计获取，最终，式8可转换为：</p>
+<p>可使用地标bbox 观测 $\mathbf{b}_{ij}$ 和对应的线 $\mathbf{l}_{ijk}$ （bbox的4条线）来定义平面 $\mathbf{\pi}_{ijk}$ : $\mathbf{\pi}_{ijk} = \mathbf{P}^T_i \mathbf{l}_{ijk}$，其中，相机位姿 $\mathbf{P}_i$ 可通过初始位姿估计获取，最终，式8可转换为：</p>
 <p><img src="/2024/02/21/quadricslam/image-20240221160103483.png" alt="image-20240221160103483" title="formula 9"></p>
 <p>使用不同视角 $i$ 和平面 $k$ ，基于式9构建线性方程组，通过SVD 分解获取最小二乘解 $\hat{\mathbf{q}}_j$ 。该解是一个通用的二次曲面，并没有被约束为一个椭球体，这里会进一步使用3.2节的方式将其进一步参数化表示，参数求取过程如下所述：</p>
 <p><img src="/2024/02/21/quadricslam/image-20240221162842265.png" alt="image-20240221162842265" title="formula 10"></p>
