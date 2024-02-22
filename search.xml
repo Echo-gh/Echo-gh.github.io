@@ -1798,4 +1798,99 @@
         <tag>Object SLAM</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 SaD-SLAM_A Visual SLAM Based on Semantic and Depth Information</title>
+    <url>/2024/02/22/sad-slam/</url>
+    <content><![CDATA[<p>Yuan, Xun, and Song Chen. “SaD-SLAM: A Visual SLAM Based on Semantic and Depth Information.” In <em>2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 4930–35. Las Vegas, NV, USA: IEEE, 2020. <a href="https://doi.org/10.1109/IROS45743.2020.9341180">https://doi.org/10.1109/IROS45743.2020.9341180</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献如下：</p>
+<ol>
+<li>在 ORB-SLAM2 的基础上提出了一种基于特征的RGB-D SLAM 算法——SaD-SLAM，该算法结合<strong>语义信息</strong>、<strong>几何信息</strong>和<strong>深度信息</strong>，可在<strong>动态环境</strong>中运行良好；</li>
+<li>在当前帧和历史帧的特征点之间进行<strong>对极几何约束</strong>，从动态物体及静态但可移动的物体（如椅子等）上提取<strong>静态特征点</strong>，来提高相机位姿估计的准确度与鲁棒性。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-System-Description"><a href="#3-System-Description" class="headerlink" title="3 System Description"></a>3 System Description</h1><p>本系统利用语义掩码和深度信息实行三步走算法：<strong>位姿初始化</strong>、<strong>移动一致性测试</strong>，以及<strong>位姿细调</strong>。</p>
+<p>如Fig. 1所示，作者将室内场景中的特征点分为三类：<strong>动态点</strong>（人）、<strong>静态但可移动点</strong>（椅子），以及<strong>静态点</strong>。</p>
+<p><img src="/2024/02/22/sad-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-1-Framework-of-SaD-SLAM"><a href="#3-1-Framework-of-SaD-SLAM" class="headerlink" title="3.1 Framework of SaD-SLAM"></a>3.1 Framework of SaD-SLAM</h2><p>SaD-SLAM 是在ORB-SLAM2 基础上进一步开发的，其系统架构如Fig. 2所示：</p>
+<p><img src="/2024/02/22/sad-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-2-Semantic-Segmentation"><a href="#3-2-Semantic-Segmentation" class="headerlink" title="3.2 Semantic Segmentation"></a>3.2 Semantic Segmentation</h2><p>本文使用Mask R-CNN 网络获取输入图片的像素级语义信息，并挑选出<strong>潜在动态物体</strong>及<strong>相对较大的但是可移动的物体</strong>的掩码，对于TUM 数据集而言，这里指的是人与椅子，位于人身上的特征点被标记为<strong>动态特征点</strong>，位于椅子上的特征点被标记为<strong>静态但可移动特征点</strong>，其他物体上的特征点被标记为<strong>静态特征点</strong>。</p>
+<h2 id="3-3-Pose-Initialization"><a href="#3-3-Pose-Initialization" class="headerlink" title="3.3 Pose Initialization"></a>3.3 Pose Initialization</h2><p>一些<strong>小物件</strong>（如笔、书等）对于CNN 而言较难识别出来，或者精度较差。作者采取以下策略进行<strong>辅助检测</strong>：对于不属于人或椅子的特征点，检测以自身为中心、半径分别为5像素和10像素的区域内是否有像素属于人和椅子，若存在，且该像素的<strong>深度信息</strong>与本特征点相似，则将本特征点分别标记为动态点和静态但可移动点，其中，动态点（人）的<strong>优先级更高</strong>；以此可在不需要CNN 的情况下方便识别出人类手上的物体等。此外，作者还提到CNN 在<strong>物体边缘</strong>附近的识别精度较差，该方法也可以<strong>弥补</strong>这些错误识别。最终，可让CNN 识别更少的物体种类，实现CNN 的<strong>快速与小型化</strong>。</p>
+<p>在实现对物体类别信息获取的基础上，系统利用<strong>静态点</strong>和<strong>静态但可移动点</strong>构建<strong>重投影误差</strong>，实现对位姿的<strong>初始估计</strong>。值得注意的是，这里也使用了静态但可移动特征点进行位姿求解，这是因为这些点更有可能是保持静止的，或者移动速度较慢。</p>
+<h2 id="3-4-Moving-Consistency-Testing"><a href="#3-4-Moving-Consistency-Testing" class="headerlink" title="3.4 Moving Consistency Testing"></a>3.4 Moving Consistency Testing</h2><p>作者在<strong>连续5帧</strong>中跟踪<strong>可能移动的特征点</strong>及<strong>静态特征点</strong>，如果当前帧与之前第4帧（即连续5帧中的最前面一帧）中的对应特征点满足<strong>对极几何约束</strong>，则判定连续5帧中的这些点<strong>均为静态点</strong>。这里的对极几何约束与其他文章中的方法类似，判定<strong>匹配点</strong>与<strong>极线</strong>之间的距离是否超过阈值。</p>
+<h2 id="3-5-Pose-Fine-tuning"><a href="#3-5-Pose-Fine-tuning" class="headerlink" title="3.5 Pose Fine-tuning"></a>3.5 Pose Fine-tuning</h2><p>作者将特征点的<strong>动态属性</strong>分为以下四种：1. 静态点，2. 动态点， 3. 静态但可移动点， 4. 从动态点或静态但可移动点转换过来的静态点。</p>
+<p>当前阶段，已有的输入数据包括：相机初始位姿估计，静态特征点，动态特征点，静态但可移动物体上的特征点，以及利用移动一致性测试检测到的从移动特征点转换的静态特征点。位姿细调过程包含两步：</p>
+<ol>
+<li>第一步：利用静态特征点、静态但可移动物体上的特征点、利用移动一致性测试检测到的从移动特征点转换的静态特征点进行<strong>最小化重投影误差</strong>来优化相机位姿；</li>
+<li>第二步：利用上步得到的相机位姿，将<strong>局部地图</strong>上的更多特征点重投影至当前帧，并保留地图点的动态属性，只选取属于<strong>静态的地图点</strong>与上步中使用的特征点，结合起来进行再一次的相机位姿优化。</li>
+</ol>
+<h1 id="4-Experimental-Results"><a href="#4-Experimental-Results" class="headerlink" title="4 Experimental Results"></a>4 Experimental Results</h1><p>为了证明移动一致性检验的作用，作者将该模块去掉，只使用先验静态物体上的特征点进行位姿求解，将该方法记为SaD-SLAM—，结果对比如表2所示：</p>
+<p><img src="/2024/02/22/sad-slam/t2.png" alt="t2" title="table 2"></p>
+<p>同时，作者与DynaSLAM、DS-SLAM 进行对比，结果如下所示：</p>
+<p><img src="/2024/02/22/sad-slam/t1.png" alt="t1" title="table 1"></p>
+<p><img src="/2024/02/22/sad-slam/t3.png" alt="t3" title="table 3"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 DM-SLAM_A Feature-Based SLAM System for Rigid Dynamic Scenes</title>
+    <url>/2024/02/22/dm-slam/</url>
+    <content><![CDATA[<p>Cheng, Junhao, Zhi Wang, Hongyan Zhou, Li Li, and Jian Yao. “DM-SLAM: A Feature-Based SLAM System for Rigid Dynamic Scenes.” <em>ISPRS International Journal of Geo-Information</em> 9, no. 4 (April 2020): 202. <a href="https://doi.org/10.3390/ijgi9040202">https://doi.org/10.3390/ijgi9040202</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
+<ul>
+<li>提出一个完整的视觉SLAM 系统——DM-SLAM，该系统结合<strong>实例分割网络</strong>和<strong>光流信息</strong>，可在高动态环境中消除动态物体对位姿估计的影响，且本系统适用于<strong>单目、双目和RGB-D 相机</strong>；</li>
+<li>针对RGB-D/双目和单目相机，分别提出<strong>两种高效提取动态点</strong>的策略；</li>
+<li>在公开数据集上进行测试，证明了本算法的有效性。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-System-Introduction"><a href="#3-System-Introduction" class="headerlink" title="3 System Introduction"></a>3 System Introduction</h1><h2 id="3-2-Proposed-Method"><a href="#3-2-Proposed-Method" class="headerlink" title="3.2 Proposed Method"></a>3.2 Proposed Method</h2><p>DM-SLAM 包含四个模块：语义分割、自运动估计、动态点检测，以及基于特征的SLAM 架构。</p>
+<h3 id="3-2-1-Overview-of-the-Proposed-Approach"><a href="#3-2-1-Overview-of-the-Proposed-Approach" class="headerlink" title="3.2.1 Overview of the Proposed Approach"></a>3.2.1 Overview of the Proposed Approach</h3><p>本方法的整体架构如Fig. 2所示：</p>
+<p><img src="/2024/02/22/dm-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<p>Fig. 3展示了本方法的细节，Mask R-CNN 处理过的图片包含像素级的语义信息，本系统<strong>暂时舍弃</strong>属于<strong>先验动态物体</strong>的特征点，利用剩余的特征点进行<strong>粗略的自运动估计</strong>；因为更少的特征点参与位姿解算，而且没有使用局部BA ，所以当前模块获取的初始位姿是<strong>不准确</strong>的。</p>
+<p>然后，针对双目/RGB-D 和单目相机采用<strong>不同的</strong>动态点检测策略：</p>
+<ul>
+<li>针对单目相机，使用<strong>对极几何约束</strong>实现对动态点的检测：计算匹配点距离极线的距离，然后进行判断；</li>
+<li>对于双目/RGB-D 相机，可利用三角化或深度图获取特征点的深度信息，将前一帧上的特征点重投影到当前帧，计算<strong>重投影偏差</strong>。</li>
+</ul>
+<p>之后，利用检测到的动态特征点判断所属物体是否属于动态物体。</p>
+<p><img src="/2024/02/22/dm-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<h3 id="3-2-3-Ego-Motion-Estimation"><a href="#3-2-3-Ego-Motion-Estimation" class="headerlink" title="3.2.3 Ego-Motion Estimation"></a>3.2.3 Ego-Motion Estimation</h3><p>在暂时剔除掉先验动态特征点之后，本系统采用一个<strong>轻量级的跟踪算法</strong>进行位姿估计，该算法与ORB-SLAM2 不同，不进行局部BA 和新关键帧筛选，只与历史帧的特征点进行匹配，并将关联的地图点投影到当前帧，利用<strong>最小化重投影误差</strong>来获取粗略的初始位姿。</p>
+<h3 id="3-2-4-Dynamic-Feature-Points-Extraction"><a href="#3-2-4-Dynamic-Feature-Points-Extraction" class="headerlink" title="3.2.4 Dynamic Feature Points Extraction"></a>3.2.4 Dynamic Feature Points Extraction</h3><p>针对RGB-D/双目相机，作者首先利用<strong>LK 光流</strong>算法获取两帧之间的匹配特征点，然后利用初始位姿估计将前一帧的特征点投影至当前帧，由于初始位姿估计的精度问题，必然会存在一定的<strong>重投影偏差向量</strong>，如Fig. 5、Fig. 6所示。</p>
+<p><img src="/2024/02/22/dm-slam/fig5.png" alt="fig5" title="figure 5"></p>
+<p><img src="/2024/02/22/dm-slam/fig6.png" alt="fig6" title="figure 6"></p>
+<p>可以看到，即便初始位姿估计精度较差，但仍然可以从重投影偏差向量识别出静态点与动态点。基于此，作者使用静态区域（去除掉先验动态物体区域）的特征点，经加权平均求得<strong>阈值</strong>：</p>
+<p><img src="/2024/02/22/dm-slam/f6.png" alt="f6" title="formula 6"></p>
+<p><img src="/2024/02/22/dm-slam/f7.png" alt="f7" title="formula 7"></p>
+<p>其中，$\epsilon$ 表示偏差向量的模值；$\theta$ 表示角度。</p>
+<p>根据计算出的阈值，判断先验动态物体区域内的特征点是否属于动态点：</p>
+<p><img src="/2024/02/22/dm-slam/f8.png" alt="f8" title="formula 8"></p>
+<p>对于单目相机，简单地使用<strong>对极约束</strong>来提取动态点：</p>
+<p><img src="/2024/02/22/dm-slam/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，$q_i, p_i$ 分别是当前帧和历史帧的匹配特征点；F 是基础矩阵。对当前帧的每一点计算其<strong>与极线之间的距离</strong>：</p>
+<p><img src="/2024/02/22/dm-slam/f10.png" alt="f10" title="formula 10"></p>
+<p>利用该距离判断是否属于动态点。</p>
+<p>在得到动态点之后，根据物体掩码内的动态点数量判断该物体是否是动态的。</p>
+<p>作者比较了本方法与DS-SLAM、DynaSLAM 的优势：</p>
+<ul>
+<li>DS-SLAM 只将人类作为典型的动态物体代表，而本方法将20种物体作为潜在动态物体；且DS-SLAM 不能处理立体相机数据；</li>
+<li>DynaSLAM 直接将潜在动态物体判定为动态的，与现实不符；且该方法只适用于RGB-D 数据采用多视角几何进行动态点检测。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
 </search>

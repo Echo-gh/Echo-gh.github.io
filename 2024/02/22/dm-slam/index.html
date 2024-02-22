@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Cheng, Junhao, Zhi Wang, Hongyan Zhou, Li Li, and Jian Yao. “DM-SLAM: A Feature-Based SLAM System for Rigid Dynamic Scenes.” ISPRS International Journal of Geo-Information 9, no. 4 (April 2020): 202.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 DM-SLAM_A Feature-Based SLAM System for Rigid Dynamic Scenes">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/22/dm-slam/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Cheng, Junhao, Zhi Wang, Hongyan Zhou, Li Li, and Jian Yao. “DM-SLAM: A Feature-Based SLAM System for Rigid Dynamic Scenes.” ISPRS International Journal of Geo-Information 9, no. 4 (April 2020): 202.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/fig6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/f6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/f7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/f8.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/f9.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/f10.png">
+<meta property="article:published_time" content="2024-02-22T00:37:44.000Z">
+<meta property="article:modified_time" content="2024-02-22T00:44:43.497Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="Dynamic SLAM">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/22/dm-slam/fig2.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/22/dm-slam/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 DM-SLAM_A Feature-Based SLAM System for Rigid Dynamic Scenes | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/22/dm-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 DM-SLAM_A Feature-Based SLAM System for Rigid Dynamic Scenes
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-22 08:37:44 / 修改时间：08:44:43" itemprop="dateCreated datePublished" datetime="2024-02-22T08:37:44+08:00">2024-02-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Cheng, Junhao, Zhi Wang, Hongyan Zhou, Li Li, and Jian Yao. “DM-SLAM: A Feature-Based SLAM System for Rigid Dynamic Scenes.” <em>ISPRS International Journal of Geo-Information</em> 9, no. 4 (April 2020): 202. <a target="_blank" rel="noopener" href="https://doi.org/10.3390/ijgi9040202">https://doi.org/10.3390/ijgi9040202</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
+<ul>
+<li>提出一个完整的视觉SLAM 系统——DM-SLAM，该系统结合<strong>实例分割网络</strong>和<strong>光流信息</strong>，可在高动态环境中消除动态物体对位姿估计的影响，且本系统适用于<strong>单目、双目和RGB-D 相机</strong>；</li>
+<li>针对RGB-D/双目和单目相机，分别提出<strong>两种高效提取动态点</strong>的策略；</li>
+<li>在公开数据集上进行测试，证明了本算法的有效性。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-System-Introduction"><a href="#3-System-Introduction" class="headerlink" title="3 System Introduction"></a>3 System Introduction</h1><h2 id="3-2-Proposed-Method"><a href="#3-2-Proposed-Method" class="headerlink" title="3.2 Proposed Method"></a>3.2 Proposed Method</h2><p>DM-SLAM 包含四个模块：语义分割、自运动估计、动态点检测，以及基于特征的SLAM 架构。</p>
+<h3 id="3-2-1-Overview-of-the-Proposed-Approach"><a href="#3-2-1-Overview-of-the-Proposed-Approach" class="headerlink" title="3.2.1 Overview of the Proposed Approach"></a>3.2.1 Overview of the Proposed Approach</h3><p>本方法的整体架构如Fig. 2所示：</p>
+<p><img src="/2024/02/22/dm-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<p>Fig. 3展示了本方法的细节，Mask R-CNN 处理过的图片包含像素级的语义信息，本系统<strong>暂时舍弃</strong>属于<strong>先验动态物体</strong>的特征点，利用剩余的特征点进行<strong>粗略的自运动估计</strong>；因为更少的特征点参与位姿解算，而且没有使用局部BA ，所以当前模块获取的初始位姿是<strong>不准确</strong>的。</p>
+<p>然后，针对双目/RGB-D 和单目相机采用<strong>不同的</strong>动态点检测策略：</p>
+<ul>
+<li>针对单目相机，使用<strong>对极几何约束</strong>实现对动态点的检测：计算匹配点距离极线的距离，然后进行判断；</li>
+<li>对于双目/RGB-D 相机，可利用三角化或深度图获取特征点的深度信息，将前一帧上的特征点重投影到当前帧，计算<strong>重投影偏差</strong>。</li>
+</ul>
+<p>之后，利用检测到的动态特征点判断所属物体是否属于动态物体。</p>
+<p><img src="/2024/02/22/dm-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<h3 id="3-2-3-Ego-Motion-Estimation"><a href="#3-2-3-Ego-Motion-Estimation" class="headerlink" title="3.2.3 Ego-Motion Estimation"></a>3.2.3 Ego-Motion Estimation</h3><p>在暂时剔除掉先验动态特征点之后，本系统采用一个<strong>轻量级的跟踪算法</strong>进行位姿估计，该算法与ORB-SLAM2 不同，不进行局部BA 和新关键帧筛选，只与历史帧的特征点进行匹配，并将关联的地图点投影到当前帧，利用<strong>最小化重投影误差</strong>来获取粗略的初始位姿。</p>
+<h3 id="3-2-4-Dynamic-Feature-Points-Extraction"><a href="#3-2-4-Dynamic-Feature-Points-Extraction" class="headerlink" title="3.2.4 Dynamic Feature Points Extraction"></a>3.2.4 Dynamic Feature Points Extraction</h3><p>针对RGB-D/双目相机，作者首先利用<strong>LK 光流</strong>算法获取两帧之间的匹配特征点，然后利用初始位姿估计将前一帧的特征点投影至当前帧，由于初始位姿估计的精度问题，必然会存在一定的<strong>重投影偏差向量</strong>，如Fig. 5、Fig. 6所示。</p>
+<p><img src="/2024/02/22/dm-slam/fig5.png" alt="fig5" title="figure 5"></p>
+<p><img src="/2024/02/22/dm-slam/fig6.png" alt="fig6" title="figure 6"></p>
+<p>可以看到，即便初始位姿估计精度较差，但仍然可以从重投影偏差向量识别出静态点与动态点。基于此，作者使用静态区域（去除掉先验动态物体区域）的特征点，经加权平均求得<strong>阈值</strong>：</p>
+<p><img src="/2024/02/22/dm-slam/f6.png" alt="f6" title="formula 6"></p>
+<p><img src="/2024/02/22/dm-slam/f7.png" alt="f7" title="formula 7"></p>
+<p>其中，$\epsilon$ 表示偏差向量的模值；$\theta$ 表示角度。</p>
+<p>根据计算出的阈值，判断先验动态物体区域内的特征点是否属于动态点：</p>
+<p><img src="/2024/02/22/dm-slam/f8.png" alt="f8" title="formula 8"></p>
+<p>对于单目相机，简单地使用<strong>对极约束</strong>来提取动态点：</p>
+<p><img src="/2024/02/22/dm-slam/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，$q_i, p_i$ 分别是当前帧和历史帧的匹配特征点；F 是基础矩阵。对当前帧的每一点计算其<strong>与极线之间的距离</strong>：</p>
+<p><img src="/2024/02/22/dm-slam/f10.png" alt="f10" title="formula 10"></p>
+<p>利用该距离判断是否属于动态点。</p>
+<p>在得到动态点之后，根据物体掩码内的动态点数量判断该物体是否是动态的。</p>
+<p>作者比较了本方法与DS-SLAM、DynaSLAM 的优势：</p>
+<ul>
+<li>DS-SLAM 只将人类作为典型的动态物体代表，而本方法将20种物体作为潜在动态物体；且DS-SLAM 不能处理立体相机数据；</li>
+<li>DynaSLAM 直接将潜在动态物体判定为动态的，与现实不符；且该方法只适用于RGB-D 数据采用多视角几何进行动态点检测。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Dynamic-SLAM/" rel="tag"><i class="fa fa-tag"></i> Dynamic SLAM</a>
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/21/quadricslam/" rel="prev" title="论文记录 QuadricSLAM_Dual Quadrics From Object Detections as Landmarks in Object-Oriented SLAM">
+      <i class="fa fa-chevron-left"></i> 论文记录 QuadricSLAM_Dual Quadrics From Object Detections as Landmarks in Object-Oriented SLAM
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/02/22/sad-slam/" rel="next" title="论文记录 SaD-SLAM_A Visual SLAM Based on Semantic and Depth Information">
+      论文记录 SaD-SLAM_A Visual SLAM Based on Semantic and Depth Information <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-System-Introduction"><span class="nav-text">3 System Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Proposed-Method"><span class="nav-text">3.2 Proposed Method</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-Overview-of-the-Proposed-Approach"><span class="nav-text">3.2.1 Overview of the Proposed Approach</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3-Ego-Motion-Estimation"><span class="nav-text">3.2.3 Ego-Motion Estimation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-4-Dynamic-Feature-Points-Extraction"><span class="nav-text">3.2.4 Dynamic Feature Points Extraction</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
