@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Schonberger, Johannes L., Marc Pollefeys, Andreas Geiger, and Torsten Sattler. “Semantic Visual Localization.” In 2018 IEEE&#x2F;CVF Conference on Computer Vision and Pattern Recognition, 6896–6906. Salt L">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Semantic Visual Localization">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/24/schonberger2018/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Schonberger, Johannes L., Marc Pollefeys, Andreas Geiger, and Torsten Sattler. “Semantic Visual Localization.” In 2018 IEEE&#x2F;CVF Conference on Computer Vision and Pattern Recognition, 6896–6906. Salt L">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/24/schonberger2018/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/24/schonberger2018/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/24/schonberger2018/fig3.png">
+<meta property="article:published_time" content="2024-02-24T00:52:30.000Z">
+<meta property="article:modified_time" content="2024-02-24T00:55:56.405Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Map Match">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/24/schonberger2018/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/24/schonberger2018/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Semantic Visual Localization | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/24/schonberger2018/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Semantic Visual Localization
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-24 08:52:30 / 修改时间：08:55:56" itemprop="dateCreated datePublished" datetime="2024-02-24T08:52:30+08:00">2024-02-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Map-Match/" itemprop="url" rel="index"><span itemprop="name">Map Match</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Schonberger, Johannes L., Marc Pollefeys, Andreas Geiger, and Torsten Sattler. “Semantic Visual Localization.” In <em>2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition</em>, 6896–6906. Salt Lake City, UT: IEEE, 2018. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/CVPR.2018.00721">https://doi.org/10.1109/CVPR.2018.00721</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文遵循基于结构的视觉定位方法，并使用一个三维语义图作为数据库场景database scene 的表示；给定一个带有语义分割和深度图的查询图片，作者<strong>建立一个三维的语义查询图，并从中提取到的局部描述子</strong>，然后在查询描述子和数据库描述子之间使用3D-3D 匹配，来对齐图并获取所要查询的位姿估计。</p>
+<p>所有的视觉定位方法（包括本文提出的方法）都直接或间接地测量一个查询图片与数据库场景表示之间的相似度（视觉或结构），因此，这些方法都默认一个<strong>先验假设：查询图与数据库图是在充分相似的条件（视角、光照以及场景外观等）下描述一个场景的</strong>。如Fig. 1所示，这种先验假设在实际应用场景中会被轻易地打破。</p>
+<span id="more"></span>
+<p><img src="/2024/02/24/schonberger2018/fig1.png" alt="fig1" title="figure 1"></p>
+<p>主要挑战在于如何建立查询图与数据库图之间的data association。现有的基于图片或基于结构的方法都使用具有区别性的局部特征：同样物理点的描述子是相似的，不相关点的描述子差距很大。然而，视觉观测条件的巨变（外观或几何）却对同一物理点在不同外观下要求具有不变的embedding 表示，这与上述方法的区别性描述子相矛盾。</p>
+<p>为解决该问题，作者提出了一种<strong>基于生成式的描述子学习方法</strong>。该方法的核心在于学习一个欧氏空间中的embedding，该embedding 包含有恢复不同视角条件下场景外观所需的所有信息。作者提出的该embedding 包含高等级的3D 几何信息和语义信息，使得我们可以处理强烈的视角改变以及轻微的场景几何改变（如由季节变化引起的）。此外，作者还提出一个基于3D 语义场景补全辅助任务的声称是描述子模型，该描述子可通过自监督学习进行获取，且泛化能力较好。</p>
+<p>本文贡献如下：</p>
+<ol>
+<li>提出一个基于3D 几何信息和语义信息的视觉定位方法；</li>
+<li>利用面向3D 语义场景补全的生成式模型进行描述子学习；</li>
+<li>证明了本方法在两个挑战性问题中的有效性：在强烈视角变化以及光照/季节改变情况下相机位姿的精确估计。</li>
+</ol>
+<p>即使不用语义信息，本方法也远远超过现有的SOTA 方法，这证明了生成式描述子在定位应用中的强大，而包含语义信息后会取得更大的性能提升。</p>
+<h1 id="3-Semantic-Visual-Localization"><a href="#3-Semantic-Visual-Localization" class="headerlink" title="3 Semantic Visual Localization"></a>3 Semantic Visual Localization</h1><p>本文提出的语义视觉定位方法包含以下三个步骤：</p>
+<ol>
+<li>离线操作：利用语义场景补全辅助任务来学习鲁棒的局部描述子；</li>
+<li>在线操作：使用该局部描述子建立查询图与数据库图之间的3D-3D匹配；</li>
+<li>在线操作：利用匹配来估计两个图之间的对齐关系，进而获取查询图对应的位姿。</li>
+</ol>
+<h2 id="3-1-Semantic-Segmentation-and-Fusion"><a href="#3-1-Semantic-Segmentation-and-Fusion" class="headerlink" title="3.1 Semantic Segmentation and Fusion"></a>3.1 Semantic Segmentation and Fusion</h2><p>将语义分割后的图片融合为语义3D体素地图，该地图在体素分辨率上具有强烈照明改变以及几何改变的不变性。尽管语义信息包含高层次的场景信息，但是为实现对场景的明确、实例级的理解就需要较大的空间上下文信息，这就会导致由于遮挡造成的观测缺失，比如不同视角（甚至是相反视角）下查询图与数据库图之间的结构重叠会非常小。因此，本文方法的一个主要挑战就在于<strong>在共同观测缺失的情况下如何实现查询图与数据库图之间的鲁棒匹配。</strong></p>
+<h2 id="3-2-Generative-Descriptor-Learning"><a href="#3-2-Generative-Descriptor-Learning" class="headerlink" title="3.2 Generative Descriptor Learning"></a>3.2 Generative Descriptor Learning</h2><p>因为查询图和数据库图在尺寸和覆盖范围上的不同，作者选择建立两图中具有相同尺寸的子块 $ v_D \in M_D, v_Q \in M_Q$ 之间的联系，利用一个function来识别相似的子块，其中，语义场景理解是该function的关键。</p>
+<p>针对该function的两种传统解决方法是：匹配function $f(v_D, v_Q)$ 和embedding $f(v)$ 。embedding $f(v)$ 是将相同的子块映射到欧氏空间内的相似点处；而匹配function $f(v_D, v_Q)$ 理论上具有更强大区分能力，但是其使用穷举配对比较方法具有太大的计算复杂度，在大规模数据上难以高效运行。因此，本文选用embedding $f(v)$ 方法，每个子块只需要评估一次即可。 $f(v)$ 将一个子块映射为一个低维空间描述子，同时编码场景语义和几何信息。</p>
+<p>为了从不同视角甚至是相反视角下识别出同一物体，需要<strong>对子块的未观测部分进行补全</strong>，作者引入了语义场景补全辅助任务：使用function $h(v)$ 来补全输入未观测部分的语义和几何信息。作者使用一个3D 编码器-解码器结构 $h(v) = g(f(v))$ , 其中 $f$ 是对不完整子块进行编码的神经网络，$g$ 是对子块进行补全的神经网络。$h$ 的架构和示分别如Fig.2 和 Fig. 3所示。值得注意的是，网络训练完成后，本文的<strong>语义定位pipeline只使用 $h$ 的编码器部分 $f$ 来产生描述子</strong> $\mu$ 。</p>
+<p><img src="/2024/02/24/schonberger2018/fig2.png" alt="fig2" title="figure 2"></p>
+<p><img src="/2024/02/24/schonberger2018/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-3-Bag-of-Semantic-Words"><a href="#3-3-Bag-of-Semantic-Words" class="headerlink" title="3.3 Bag of Semantic Words"></a>3.3 Bag of Semantic Words</h2><p>利用编码器部分 $f$ 产生描述子 $\mu$ 来创建一个 Bag of Semantic Words。</p>
+<h2 id="3-4-Semantic-Vocabulary-for-Indexing-and-Search"><a href="#3-4-Semantic-Vocabulary-for-Indexing-and-Search" class="headerlink" title="3.4 Semantic Vocabulary for Indexing and Search"></a>3.4 Semantic Vocabulary for Indexing and Search</h2><p>作者在离线步骤中使用训练数据集的bag of semantic words 建立一个语义词库 semantic vocabulary，使用层级k-means 和 一个 Hamming embedding 来量化描述子空间，将数据库图的所有语义词 semantic words 建立词库树索引，作为实现高效匹配的数据结构。在匹配过程中遍历词库树索引并找到汉明距离最近的匹配结果。</p>
+<h2 id="3-5-Semantic-Alignment-and-Verification"><a href="#3-5-Semantic-Alignment-and-Verification" class="headerlink" title="3.5 Semantic Alignment and Verification"></a>3.5 Semantic Alignment and Verification</h2><p>根据3.4节得到的匹配结果，寻找将query与数据库地图实现最佳对齐的转换关系 $P \in SE(3)$ ，一个好的对齐定义为同时满足几何及语义对齐。本描述子<strong>不具有</strong>旋转不变性，因此，转换关系P 包含了旋转与平移参数。</p>
+<p>作者穷尽匹配对所有的转换假设，对于每一个转换假设P，将query经P转换后与数据库地图进行对齐，计算正确对齐的体素个数，体素的正确对齐包含几何（占用）与语义的一致性。作者使用ICP (Iterative Closest Point) 算法进一步细调对齐关系。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Map-Match/" rel="tag"><i class="fa fa-tag"></i> Map Match</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/24/stenborg2018/" rel="prev" title="论文记录 Long-Term Visual Localization Using Semantically Segmented Images">
+      <i class="fa fa-chevron-left"></i> 论文记录 Long-Term Visual Localization Using Semantically Segmented Images
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Semantic-Visual-Localization"><span class="nav-text">3 Semantic Visual Localization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Semantic-Segmentation-and-Fusion"><span class="nav-text">3.1 Semantic Segmentation and Fusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Generative-Descriptor-Learning"><span class="nav-text">3.2 Generative Descriptor Learning</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Bag-of-Semantic-Words"><span class="nav-text">3.3 Bag of Semantic Words</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Semantic-Vocabulary-for-Indexing-and-Search"><span class="nav-text">3.4 Semantic Vocabulary for Indexing and Search</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-Semantic-Alignment-and-Verification"><span class="nav-text">3.5 Semantic Alignment and Verification</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

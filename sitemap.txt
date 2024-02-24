@@ -1,3 +1,6 @@
+http://echo-gh.github.io/2024/02/24/schonberger2018/
+http://echo-gh.github.io/2024/02/24/stenborg2018/
+http://echo-gh.github.io/2024/02/24/dp-slam/
 http://echo-gh.github.io/2024/02/23/rds-slam/
 http://echo-gh.github.io/2024/02/23/rdmo-slam/
 http://echo-gh.github.io/2024/02/22/sad-slam/

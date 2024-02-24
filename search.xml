@@ -2005,4 +2005,173 @@
         <tag>Semantic</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 DP-SLAM_A visual SLAM with moving probability towards dynamic environments</title>
+    <url>/2024/02/24/dp-slam/</url>
+    <content><![CDATA[<p>Li, Ao, Jikai Wang, Meng Xu, and Zonghai Chen. “DP-SLAM: A Visual SLAM with Moving Probability towards Dynamic Environments.” <em>Information Sciences</em> 556 (May 1, 2021): 128–42. <a href="https://doi.org/10.1016/j.ins.2020.12.019">https://doi.org/10.1016/j.ins.2020.12.019</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>作者提出了一种通过实时传递每个关键点<strong>移动概率</strong>的动态物体检测方法，该移动概率传递方法克服了<strong>几何约束和语义信息的偏差</strong>，可提高vSLAM 的准确性与鲁棒性；</li>
+<li>利用静态信息<strong>补全</strong>遮挡的背景区域，获取没有动态物体的合成RGB 图片以及相应的深度图片，有益于虚拟现实等应用；</li>
+<li>作者将该移动物体检测方法集成至ORB-SLAM2 系统中，利用公开数据集进行测试，证明了本方法对SLAM <strong>精度与鲁棒性</strong>的提高。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-DP-SLAM"><a href="#3-DP-SLAM" class="headerlink" title="3 DP-SLAM"></a>3 DP-SLAM</h1><h2 id="3-1-The-approach-overview"><a href="#3-1-The-approach-overview" class="headerlink" title="3.1 The approach overview"></a>3.1 The approach overview</h2><p>本文提出的移动物体检测算法流程图如Fig. 1所示：</p>
+<p><img src="/2024/02/24/dp-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>本方法结合几何模型和语义分割进行动态物体检测，几何模型和语义分割的结果转化为<strong>观测概率</strong>，前一帧中关键点的移动概率被视为<strong>先验概率</strong>，基于<strong>贝叶斯理论</strong>，每个关键点的移动概率可通过观测概率和先验概率进行更新。</p>
+<p><img src="/2024/02/24/dp-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-2-Semantic-segmentation"><a href="#3-2-Semantic-segmentation" class="headerlink" title="3.2 Semantic segmentation"></a>3.2 Semantic segmentation</h2><p>本方法使用Mask R-CNN 网络获取<strong>像素级语义信息</strong>，将场景中的<strong>先验动态物体</strong>（人、自行车、汽车等）掩码生成到一张图片中；由于CNN 网络的精度限制，导致部分关键点分类错误的情况，特别是在物体<strong>轮廓边界</strong>附近，为了实现更精确的分类结果，作者使用<strong>二项式逻辑回归binomial logistic regression 模型</strong>来计算每个关键点的<strong>语义分割动态概率</strong>，如Fig. 3所示，掩码内具有低得不正常的移动概率（0.75）的关键点更有可能是识别错误的，应该是位于静态背景中的关键点。</p>
+<p><img src="/2024/02/24/dp-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<p>用来估计关键点 $p_i$ <strong>语义分割动态概率</strong>的二项式逻辑回归模型如下所示：</p>
+<p><img src="/2024/02/24/dp-slam/f0.png" alt="f0" title="formula 0"></p>
+<p>其中，$\alpha$ 为影响因子来平滑即时检测结果，本文中被设定为0.1；$dist(p_i, z_t)$ 为关键点 $p_i$ 与语义分割掩码边界之间的距离。上式的含义在于，位于先验动态物体掩码内的关键点<strong>距离边界越近</strong>，那么该关键点的<strong>语义分割动态概率越小</strong>，即该点被错误分类的可能性越高。</p>
+<h2 id="3-3-Epipolar-geometry-constraint"><a href="#3-3-Epipolar-geometry-constraint" class="headerlink" title="3.3 Epipolar geometry constraint"></a>3.3 Epipolar geometry constraint</h2><p>Mask R-CNN 网络是由COCO 数据集训练的，只能对<strong>预定义的种类</strong>进行识别，不能对其他物体进行检测，因此，作者额外使用<strong>对极几何约束</strong>来检测关键点的移动概率。如Fig. 4所示，计算当前帧<strong>匹配点与极线</strong>之间的距离判断该点的移动概率。</p>
+<p><img src="/2024/02/24/dp-slam/fig4.png" alt="fig4" title="figure 4"></p>
+<p>利用对极几何约束计算特征点的移动概率过程如算法1所示，具体步骤如下所示：</p>
+<ol>
+<li>首先，通过计算当前帧的<strong>光流金字塔</strong>来获取匹配的关键点，剔除掉那些距离图片边缘过近或匹配点对之间像素差异过大的点；</li>
+<li>然后，利用RANSAC 算法获取<strong>基础矩阵</strong>，在此基础上计算关键点距离极线的距离，若大于一定阈值（0.75）则判定为外点。</li>
+</ol>
+<p><img src="/2024/02/24/dp-slam/a1.png" alt="a1" title="algorithm 1"></p>
+<p>由于动态物体的存在，图片中每个关键点不会严格位于对应的极线上，距离越大，移动概率就越大；因此，作者假设关键点与其极线的距离满足<strong>高斯分布</strong>：</p>
+<p><img src="/2024/02/24/dp-slam/f1.png" alt="f1" title="formula 1"></p>
+<h2 id="3-4-Iteratively-moving-probability-update"><a href="#3-4-Iteratively-moving-probability-update" class="headerlink" title="3.4 Iteratively moving probability update"></a>3.4 Iteratively moving probability update</h2><p>持续跟踪动态物体会<strong>极大提高</strong>定位表现，因此，作者提出一种<strong>移动概率传递算法</strong>，从多帧图片中结合几何模型和语义分割信息进行动态物体检测。</p>
+<p>定义关键点 $p_i$ 在时间 t 的<strong>运动状态</strong>为 $D_t(p_i)$ ，若该关键点被判定为动态点，则 $D_t(p_i)=1$ ，否则为0。结合来自<strong>语义模型和语义分割的移动概率</strong> $P(D_t(p_i) | c_{p_i}^t), P(D_t(p_i) | s_{p_i}^t)$ ：</p>
+<p><img src="/2024/02/24/dp-slam/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，</p>
+<p><img src="/2024/02/24/dp-slam/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$N_c, N_s$ 分别表示几何模型、语义分割识别出当前帧中<strong>动态点的数量</strong>。</p>
+<p>在这个过程中，作者假设动态概率传递模型拥有<strong>马尔可夫特性</strong>，则基于贝叶斯理论的关键点<strong>移动概率传递模型</strong>表示为：</p>
+<p><img src="/2024/02/24/dp-slam/f4.png" alt="f4" title="formula 4"></p>
+<p>观测概率表示为：</p>
+<p><img src="/2024/02/24/dp-slam/f5.png" alt="f5" title="formula 5"></p>
+<p>其中，</p>
+<p><img src="/2024/02/24/dp-slam/f6.png" alt="f6" title="formula 6"></p>
+<p>最后，将关键点移动概率 $P(D_t(p_i)|c_{p_i}^t, s_{p_i}^t) &gt; 0.5$ 的关键点视为<strong>外点</strong>，在后续的跟踪制图进程中不再使用。</p>
+<p><img src="/2024/02/24/dp-slam/a2.png" alt="a2" title="algorithm 2"></p>
+<h2 id="3-5-Background-inpainting"><a href="#3-5-Background-inpainting" class="headerlink" title="3.5 Background inpainting"></a>3.5 Background inpainting</h2><p>在移除掉动态物体后，根据之前的<strong>静态观测</strong>来补全遮挡的背景区域，生成一个不包含动态物体的静态图片，该静态图片包含环境中的静态结构，有益于后续的<strong>回环检测和制图</strong>。</p>
+<p>作者将本算法与其他类似的方法进行比较，结果如Fig. 10所示，证明了本算法的优势。</p>
+<p><img src="/2024/02/24/dp-slam/fig10.png" alt="fig10" title="figure 10"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Long-Term Visual Localization Using Semantically Segmented Images</title>
+    <url>/2024/02/24/stenborg2018/</url>
+    <content><![CDATA[<p>Stenborg, Erik, Carl Toft, and Lars Hammarstrand. “Long-Term Visual Localization Using Semantically Segmented Images.” In <em>2018 IEEE International Conference on Robotics and Automation (ICRA)</em>, 6484–90. Brisbane, QLD: IEEE, 2018. <a href="https://doi.org/10.1109/ICRA.2018.8463150">https://doi.org/10.1109/ICRA.2018.8463150</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文利用近期在语义分割中的发展，设计了一个基于<strong>语义分割图片</strong>和<strong>语义点特征地图</strong>的定位算法，不再使用传统的描述子来描述特征，而是使用<strong>3D 位置坐标</strong>和<strong>语义标签</strong>来描述。</p>
+<span id="more"></span>
+<h1 id="2-Problem-Statement"><a href="#2-Problem-Statement" class="headerlink" title="2 Problem Statement"></a>2 Problem Statement</h1><h2 id="2-1-Observations"><a href="#2-1-Observations" class="headerlink" title="2.1 Observations"></a>2.1 Observations</h2><p>坐标系与传感器安装位置如Fig 2所示：</p>
+<p><img src="/2024/02/24/stenborg2018/fig2.png" alt="fig2" title="figure 2"></p>
+<p>相机采集到的图片经过预处理，得到一组包含 $n_t$ 个特征点（坐标）与描述子对（即<strong>观测量</strong>），$\mathbf{f}_t=\{<u_t^i,d_t^i>\}_{i=1}^{n_t}$  ，在本文中，依据我们使用的方法不同，$\mathbf{f}_t$ 会有不同的形式：如果使用<strong>语义点云地图方法</strong>，$\mathbf{f}_t$ 是稠密的，包含图片中每一个像素，且描述子为像素对应的语义标签；若使用<strong>SIFT 算法</strong>，则特征点是稀疏的，且描述子为128x1 的向量。</u_t^i,d_t^i></p>
+<h2 id="2-2-Maps"><a href="#2-2-Maps" class="headerlink" title="2.2 Maps"></a>2.2 Maps</h2><p>假设预构建的特征地图包含M 个特征点，则地图可表示为 $\mathcal{M} = \{&lt;\mathbf{U}_i, \mathbf{D}_i, \mathcal{V}_i&gt;\}_{i=1}^M$ ，每个特征点包含<strong>位置信息</strong> $\mathbf{U}_i$ ，<strong>特征描述子</strong> $\mathbf{D}_i$ ，以及<strong>可视参数</strong> $\mathcal{V}_i = [\rho_i, \gamma_i^a,\gamma_i^b,r_i]^T$  （参考Fig. 2），其中 $\rho_i$ 表示特征被探测到的概率。</p>
+<h2 id="2-3-Problem-Definition"><a href="#2-3-Problem-Definition" class="headerlink" title="2.3 Problem Definition"></a>2.3 Problem Definition</h2><p>问题被描述为：给定观测和地图 $\mathcal{M}$ ，通过迭代计算出汽车相对于地图的<strong>位姿后验概率估计</strong>。</p>
+<p>假设 $t$ 时刻的汽车位姿为 $\mathbf{x}_t$ ，则我们的目标为计算 $p(\mathcal{x}_t|\mathcal{f}_{1:t}, \mathcal{M})$ 。</p>
+<h1 id="3-Models"><a href="#3-Models" class="headerlink" title="3 Models"></a>3 Models</h1><h2 id="3-1-Process-model"><a href="#3-1-Process-model" class="headerlink" title="3.1 Process model"></a>3.1 Process model</h2><p><strong>状态方程</strong></p>
+<p>作者使用一个简单的<strong>点质量模型 point mass model</strong> 来对汽车进行建模。本状态方程由两部分组成，<strong>部分一</strong>使用速度测量作为输入来<strong>对运动进行建模</strong>：</p>
+<p><img src="/2024/02/24/stenborg2018/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$M(.) \in SE(3)$ ，是表示位姿的4x4 矩阵。</p>
+<p><strong>部分二</strong>是一项来确保总有一小部分density 被留在路上，这保证了即便一个lost filter 丢失了，也可以重新获取其横向位置。</p>
+<p>综合以上两部分，状态模型表示为：</p>
+<p><img src="/2024/02/24/stenborg2018/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$p_m(.)$ 是由部分一给定的，$p_r(.)$ 是 $p_m(.)$ 到路上的投影。</p>
+<h2 id="3-2-Measurement-model"><a href="#3-2-Measurement-model" class="headerlink" title="3.2 Measurement model"></a>3.2 Measurement model</h2><p>假定数据关联步骤已经解决，得到一个DA 向量 $\mathbf{\lambda}_t = [\lambda_t^1, …, \lambda_t^{n_t}]^T$ ，其中，$\lambda_t^i = j$ 表示，如果 $j&gt;0$ ，则图片特征 i 与地图特征 j 相关联；否则该特征在地图中不存在。</p>
+<p>利用已有的DA，并假定特征位置坐标和描述子 $u_t^i,d_t^i$ 满足<strong>条件独立</strong>，则有：</p>
+<p><img src="/2024/02/24/stenborg2018/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$\mathcal{M}_{\lambda_t^i}$ 表示地图中带有描述子和可见参数的<strong>3D 点与图片中的特征点 i</strong> 根据DA $\mathbf{\lambda}_t$ 关联起来。</p>
+<h3 id="3-2-1-SIFT-map"><a href="#3-2-1-SIFT-map" class="headerlink" title="3.2.1 SIFT map"></a>3.2.1 SIFT map</h3><p>当给定数据关联时，特征中的<strong>描述子对似然函数没有帮助</strong>，可以忽略掉。同时，假定图片中SIFT 特征点的探测误差服从零均值高斯分布，则有：</p>
+<p><img src="/2024/02/24/stenborg2018/f5.png" alt="f5" title="formula 5"></p>
+<p>其中，$\pi(.)$ 表示带有镜头畸变的标准针孔相机投影模型；$\sigma_{\pi}^2$ 表示探测器误差的方差。</p>
+<h3 id="3-2-2-Semantic-map"><a href="#3-2-2-Semantic-map" class="headerlink" title="3.2.2 Semantic map"></a>3.2.2 Semantic map</h3><p>在该方法中，地图中的特征点描述子 $D_j$ ，以及图片特征的描述子 $d_t^i$ 都是来自CityScapes 数据集中的<strong>语义标签</strong>。</p>
+<p>即便图片中相邻像素的语义分割结果是相关的，但是作者让做出了<strong>简化假设</strong>：假设像素坐标与语义类别是独立的，则有：</p>
+<p><img src="/2024/02/24/stenborg2018/f6.png" alt="f6" title="formula 6"></p>
+<p>这个因式分解会在观测中导致<strong>overconfidence</strong>，而且观测越多影响越严重，这使得作者在第四章中加入了尺度参数 s，以及测量截断值 $N_c$ 。</p>
+<p>上式的第一个因子 $p(u_t^i|x_t, U_{\lambda_t^i})$ 表示在像素 i 处检测到特征的概率，然而本方法是对整幅图片进行语义分割，即每一个像素都被视为一个特征，则该因子对于任意的 i 是一个<strong>常数值</strong>。因此，上式可进一步化简为：</p>
+<p><img src="/2024/02/24/stenborg2018/f7.png" alt="f7" title="formula 7"></p>
+<p>对于上式的右半部分，分两种情况讨论：</p>
+<p><strong>情况一：</strong>没有地图点投影到该像素，即 $\lambda_t^i = 0$ ：此时，我们无法从地图中获取该像素类别的信息，作者为所有这种像素（没有地图特征点投影的像素）假设一种分布，即在所有种类上的<strong>边缘分布</strong>：</p>
+<p><img src="/2024/02/24/stenborg2018/f8.png" alt="f8" title="formula 8"></p>
+<p>根据后文描述，该边缘分布是通过汇总制图所用到的所有图片的语义分割结果，统计各个种类所占的比例即为该边缘分布。</p>
+<p><strong>情况二：</strong>有地图点投影到该像素，即 $\lambda_t^i &gt; 0$ ：虽然地图上的一个特征点投影到了该像素上，但是<strong>仍然不能确定</strong>是探测到了这个地图特征点，还是该处被别的物体遮挡住了，如汽车或行人。为解决该<strong>不确定度</strong>，作者引入了一个<strong>探测变量</strong> $\delta$ ：当该值为1时表示该地图特征点确实被探测到了，否则为0。利用该探测变量，将像素与对应的地图特征点似然函数表示为：</p>
+<p><img src="/2024/02/24/stenborg2018/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，$Pr\{d_t^i|\delta=0, D_{\lambda^i_k}\}, Pr\{d_t^i|\delta=1, D_{\lambda^i_k}\}$ 分别表示给定特定地图点特征<strong>被遮挡</strong>或者<strong>可视状态</strong>下像素类别的概率；根据后文描述， $Pr\{d_t^i|\delta=0, D_{\lambda^i_k}\}$ 是通过手动调整设定的，动态物体的概率设定高一点，如汽车、行人等，静态物体设置低一点； $Pr\{d_t^i|\delta=1, D_{\lambda^i_k}\}$ 的确定是通过汇总确定该地图特征点的所有图片中，该点周围7x7 邻域像素的语义分类，并归一化为一个直方图作为各个种类的PMF；剩下的部分表示给定的地图点是可视的概率：</p>
+<p><img src="/2024/02/24/stenborg2018/f10.png" alt="f10" title="formula 10"></p>
+<p>其中，$v(.)$ 是一个函数，当位姿 $\mathbf{x}_t$ 在地图特征点的可视区域内时该函数为1；$P_0$ 表示一个可视地图特征点被遮挡的概率。</p>
+<p>综上所述，语义地图法的似然计算需要考虑地图特征点是否映射到像素上的两种情况：</p>
+<p><img src="/2024/02/24/stenborg2018/f11.png" alt="f11" title="formula 11"></p>
+<h1 id="4-Algorithmic-Details"><a href="#4-Algorithmic-Details" class="headerlink" title="4 Algorithmic Details"></a>4 Algorithmic Details</h1><h2 id="4-1-SIFT-filter"><a href="#4-1-SIFT-filter" class="headerlink" title="4.1 SIFT filter"></a>4.1 SIFT filter</h2><p>针对该方法，作者使用了无迹卡尔曼滤波器UKF 进行优化，伪代码如下所示：</p>
+<p><img src="/2024/02/24/stenborg2018/a1.png" alt="a1" title="algorithm 1"></p>
+<p>其中，数据关联DA 步骤如下所示：作者基于当前的位姿估计以及地图特征点的可视参数 $\mathcal{V}$ 来选取一个<strong>子地图</strong> $\mathcal{M}_t$ ，将图片中提取到的SIFT 特征点与子地图 $\mathcal{M}_t$ 中的特征点进行<strong>匹配</strong>，并使用<strong>RANSAC 算法</strong>进行外点剔除，最终得到DA 。</p>
+<h2 id="4-2-Semantic-filter"><a href="#4-2-Semantic-filter" class="headerlink" title="4.2 Semantic filter"></a>4.2 Semantic filter</h2><p>针对该方法，作者使用了bootstrap particle filter 进行递归优化，该算法的伪代码如下所示：</p>
+<p><img src="/2024/02/24/stenborg2018/a2.png" alt="a2" title="algorithm 2"></p>
+<p>为了可以评估一个粒子的似然，需要确认地图中的哪些特征点是<strong>潜在可视</strong>的，这与SIFT 方法类似，但是只需要做到近似即可，因此可以<strong>同时计算</strong>附近的几个粒子，例如使用这些粒子的<strong>平均位置</strong>和地图特征点的<strong>可视参数</strong>进行计算。然后，将这些潜在可视的地图特征点映射到图片中，从而<strong>为每个粒子</strong>构建了<strong>独有的数据关联</strong> $\lambda_t$ 。</p>
+<p><img src="/2024/02/24/stenborg2018/fig3.png" alt="fig3" title="figure 3"></p>
+<p>将式（11）除以常数 $\prod_iPr\{d_t^i\}$ 可以简化权重更新过程，因为只需要考虑那些有地图特征点投影到的像素，</p>
+<p><img src="/2024/02/24/stenborg2018/f12.png" alt="f12" title="formula 12"></p>
+<p>在3.2.2节我们做了像素位置与语义分类<strong>条件独立的假设</strong>，但实际情况是该假设不满足，所以会导致对观测的<strong>overly confident</strong>，为减小该假设的影响，作者增加测量似然到一个小于1的正数，因此，对于粒子 j 的<strong>权重更新</strong>变为了：</p>
+<p><img src="/2024/02/24/stenborg2018/f13.png" alt="f13" title="formula 13"></p>
+<p>其中，$w_t^{(j)}$ 是在状态 $\mathbf{x}_t^{(j)}$ 下粒子 j 的<strong>权重</strong>；s 是<strong>尺度参数</strong>，本文设定为3；$n_{\lambda_t}$ 是映射到图像中的地图特征点个数；$N_c = 400$ 是<strong>截断值</strong>，作者认为更多的映射特征点不会提供更多的信息，因为更多的特征点意味着它们之间的间距越小，那么它们之间的相关性越强。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Semantic Visual Localization</title>
+    <url>/2024/02/24/schonberger2018/</url>
+    <content><![CDATA[<p>Schonberger, Johannes L., Marc Pollefeys, Andreas Geiger, and Torsten Sattler. “Semantic Visual Localization.” In <em>2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition</em>, 6896–6906. Salt Lake City, UT: IEEE, 2018. <a href="https://doi.org/10.1109/CVPR.2018.00721">https://doi.org/10.1109/CVPR.2018.00721</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文遵循基于结构的视觉定位方法，并使用一个三维语义图作为数据库场景database scene 的表示；给定一个带有语义分割和深度图的查询图片，作者<strong>建立一个三维的语义查询图，并从中提取到的局部描述子</strong>，然后在查询描述子和数据库描述子之间使用3D-3D 匹配，来对齐图并获取所要查询的位姿估计。</p>
+<p>所有的视觉定位方法（包括本文提出的方法）都直接或间接地测量一个查询图片与数据库场景表示之间的相似度（视觉或结构），因此，这些方法都默认一个<strong>先验假设：查询图与数据库图是在充分相似的条件（视角、光照以及场景外观等）下描述一个场景的</strong>。如Fig. 1所示，这种先验假设在实际应用场景中会被轻易地打破。</p>
+<span id="more"></span>
+<p><img src="/2024/02/24/schonberger2018/fig1.png" alt="fig1" title="figure 1"></p>
+<p>主要挑战在于如何建立查询图与数据库图之间的data association。现有的基于图片或基于结构的方法都使用具有区别性的局部特征：同样物理点的描述子是相似的，不相关点的描述子差距很大。然而，视觉观测条件的巨变（外观或几何）却对同一物理点在不同外观下要求具有不变的embedding 表示，这与上述方法的区别性描述子相矛盾。</p>
+<p>为解决该问题，作者提出了一种<strong>基于生成式的描述子学习方法</strong>。该方法的核心在于学习一个欧氏空间中的embedding，该embedding 包含有恢复不同视角条件下场景外观所需的所有信息。作者提出的该embedding 包含高等级的3D 几何信息和语义信息，使得我们可以处理强烈的视角改变以及轻微的场景几何改变（如由季节变化引起的）。此外，作者还提出一个基于3D 语义场景补全辅助任务的声称是描述子模型，该描述子可通过自监督学习进行获取，且泛化能力较好。</p>
+<p>本文贡献如下：</p>
+<ol>
+<li>提出一个基于3D 几何信息和语义信息的视觉定位方法；</li>
+<li>利用面向3D 语义场景补全的生成式模型进行描述子学习；</li>
+<li>证明了本方法在两个挑战性问题中的有效性：在强烈视角变化以及光照/季节改变情况下相机位姿的精确估计。</li>
+</ol>
+<p>即使不用语义信息，本方法也远远超过现有的SOTA 方法，这证明了生成式描述子在定位应用中的强大，而包含语义信息后会取得更大的性能提升。</p>
+<h1 id="3-Semantic-Visual-Localization"><a href="#3-Semantic-Visual-Localization" class="headerlink" title="3 Semantic Visual Localization"></a>3 Semantic Visual Localization</h1><p>本文提出的语义视觉定位方法包含以下三个步骤：</p>
+<ol>
+<li>离线操作：利用语义场景补全辅助任务来学习鲁棒的局部描述子；</li>
+<li>在线操作：使用该局部描述子建立查询图与数据库图之间的3D-3D匹配；</li>
+<li>在线操作：利用匹配来估计两个图之间的对齐关系，进而获取查询图对应的位姿。</li>
+</ol>
+<h2 id="3-1-Semantic-Segmentation-and-Fusion"><a href="#3-1-Semantic-Segmentation-and-Fusion" class="headerlink" title="3.1 Semantic Segmentation and Fusion"></a>3.1 Semantic Segmentation and Fusion</h2><p>将语义分割后的图片融合为语义3D体素地图，该地图在体素分辨率上具有强烈照明改变以及几何改变的不变性。尽管语义信息包含高层次的场景信息，但是为实现对场景的明确、实例级的理解就需要较大的空间上下文信息，这就会导致由于遮挡造成的观测缺失，比如不同视角（甚至是相反视角）下查询图与数据库图之间的结构重叠会非常小。因此，本文方法的一个主要挑战就在于<strong>在共同观测缺失的情况下如何实现查询图与数据库图之间的鲁棒匹配。</strong></p>
+<h2 id="3-2-Generative-Descriptor-Learning"><a href="#3-2-Generative-Descriptor-Learning" class="headerlink" title="3.2 Generative Descriptor Learning"></a>3.2 Generative Descriptor Learning</h2><p>因为查询图和数据库图在尺寸和覆盖范围上的不同，作者选择建立两图中具有相同尺寸的子块 $ v_D \in M_D, v_Q \in M_Q$ 之间的联系，利用一个function来识别相似的子块，其中，语义场景理解是该function的关键。</p>
+<p>针对该function的两种传统解决方法是：匹配function $f(v_D, v_Q)$ 和embedding $f(v)$ 。embedding $f(v)$ 是将相同的子块映射到欧氏空间内的相似点处；而匹配function $f(v_D, v_Q)$ 理论上具有更强大区分能力，但是其使用穷举配对比较方法具有太大的计算复杂度，在大规模数据上难以高效运行。因此，本文选用embedding $f(v)$ 方法，每个子块只需要评估一次即可。 $f(v)$ 将一个子块映射为一个低维空间描述子，同时编码场景语义和几何信息。</p>
+<p>为了从不同视角甚至是相反视角下识别出同一物体，需要<strong>对子块的未观测部分进行补全</strong>，作者引入了语义场景补全辅助任务：使用function $h(v)$ 来补全输入未观测部分的语义和几何信息。作者使用一个3D 编码器-解码器结构 $h(v) = g(f(v))$ , 其中 $f$ 是对不完整子块进行编码的神经网络，$g$ 是对子块进行补全的神经网络。$h$ 的架构和示分别如Fig.2 和 Fig. 3所示。值得注意的是，网络训练完成后，本文的<strong>语义定位pipeline只使用 $h$ 的编码器部分 $f$ 来产生描述子</strong> $\mu$ 。</p>
+<p><img src="/2024/02/24/schonberger2018/fig2.png" alt="fig2" title="figure 2"></p>
+<p><img src="/2024/02/24/schonberger2018/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-3-Bag-of-Semantic-Words"><a href="#3-3-Bag-of-Semantic-Words" class="headerlink" title="3.3 Bag of Semantic Words"></a>3.3 Bag of Semantic Words</h2><p>利用编码器部分 $f$ 产生描述子 $\mu$ 来创建一个 Bag of Semantic Words。</p>
+<h2 id="3-4-Semantic-Vocabulary-for-Indexing-and-Search"><a href="#3-4-Semantic-Vocabulary-for-Indexing-and-Search" class="headerlink" title="3.4 Semantic Vocabulary for Indexing and Search"></a>3.4 Semantic Vocabulary for Indexing and Search</h2><p>作者在离线步骤中使用训练数据集的bag of semantic words 建立一个语义词库 semantic vocabulary，使用层级k-means 和 一个 Hamming embedding 来量化描述子空间，将数据库图的所有语义词 semantic words 建立词库树索引，作为实现高效匹配的数据结构。在匹配过程中遍历词库树索引并找到汉明距离最近的匹配结果。</p>
+<h2 id="3-5-Semantic-Alignment-and-Verification"><a href="#3-5-Semantic-Alignment-and-Verification" class="headerlink" title="3.5 Semantic Alignment and Verification"></a>3.5 Semantic Alignment and Verification</h2><p>根据3.4节得到的匹配结果，寻找将query与数据库地图实现最佳对齐的转换关系 $P \in SE(3)$ ，一个好的对齐定义为同时满足几何及语义对齐。本描述子<strong>不具有</strong>旋转不变性，因此，转换关系P 包含了旋转与平移参数。</p>
+<p>作者穷尽匹配对所有的转换假设，对于每一个转换假设P，将query经P转换后与数据库地图进行对齐，计算正确对齐的体素个数，体素的正确对齐包含几何（占用）与语义的一致性。作者使用ICP (Iterative Closest Point) 算法进一步细调对齐关系。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
 </search>
