@@ -49,7 +49,7 @@
 <meta property="og:image" content="http://echo-gh.github.io/2024/02/24/stenborg2018/f12.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/02/24/stenborg2018/f13.png">
 <meta property="article:published_time" content="2024-02-24T00:42:18.000Z">
-<meta property="article:modified_time" content="2024-02-24T01:30:31.171Z">
+<meta property="article:modified_time" content="2024-02-24T01:35:52.188Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="SLAM">
 <meta property="article:tag" content="Semantic">
@@ -238,7 +238,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-02-24 08:42:18 / 修改时间：09:30:31" itemprop="dateCreated datePublished" datetime="2024-02-24T08:42:18+08:00">2024-02-24</time>
+              <time title="创建时间：2024-02-24 08:42:18 / 修改时间：09:35:52" itemprop="dateCreated datePublished" datetime="2024-02-24T08:42:18+08:00">2024-02-24</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -270,7 +270,7 @@
 <span id="more"></span>
 <h1 id="2-Problem-Statement"><a href="#2-Problem-Statement" class="headerlink" title="2 Problem Statement"></a>2 Problem Statement</h1><h2 id="2-1-Observations"><a href="#2-1-Observations" class="headerlink" title="2.1 Observations"></a>2.1 Observations</h2><p>坐标系与传感器安装位置如Fig 2所示：</p>
 <p><img src="/2024/02/24/stenborg2018/fig2.png" alt="fig2" title="figure 2"></p>
-<p>相机采集到的图片经过预处理，得到一组包含 $n_t$ 个特征点（坐标）与描述子对（即<strong>观测量</strong>），$\mathbf{f}_t=\{<u_t^i,d_t^i>\}_{i=1}^{n_t}$  ，在本文中，依据我们使用的方法不同，$\mathbf{f}_t$ 会有不同的形式：如果使用<strong>语义点云地图方法</strong>，$\mathbf{f}_t$ 是稠密的，包含图片中每一个像素，且描述子为像素对应的语义标签；若使用<strong>SIFT 算法</strong>，则特征点是稀疏的，且描述子为128x1 的向量。</u_t^i,d_t^i></p>
+<p>相机采集到的图片经过预处理，得到一组包含 $n_t$ 个特征点（坐标）与描述子对（即<strong>观测量</strong>），$\mathbf{f}_t=\{(u_t^i,d_t^i)\}_{i=1}^{n_t}$ ，在本文中，依据我们使用的方法不同，$\mathbf{f}_t$ 会有不同的形式：如果使用<strong>语义点云地图方法</strong>，$\mathbf{f}_t$ 是稠密的，包含图片中每一个像素，且描述子为像素对应的语义标签；若使用<strong>SIFT 算法</strong>，则特征点是稀疏的，且描述子为128x1 的向量。</p>
 <h2 id="2-2-Maps"><a href="#2-2-Maps" class="headerlink" title="2.2 Maps"></a>2.2 Maps</h2><p>假设预构建的特征地图包含M 个特征点，则地图可表示为 $\mathcal{M} = \{&lt;\mathbf{U}_i, \mathbf{D}_i, \mathcal{V}_i&gt;\}_{i=1}^M$ ，每个特征点包含<strong>位置信息</strong> $\mathbf{U}_i$ ，<strong>特征描述子</strong> $\mathbf{D}_i$ ，以及<strong>可视参数</strong> $\mathcal{V}_i = [\rho_i, \gamma_i^a,\gamma_i^b,r_i]^T$  （参考Fig. 2），其中 $\rho_i$ 表示特征被探测到的概率。</p>
 <h2 id="2-3-Problem-Definition"><a href="#2-3-Problem-Definition" class="headerlink" title="2.3 Problem Definition"></a>2.3 Problem Definition</h2><p>问题被描述为：给定观测和地图 $\mathcal{M}$ ，通过迭代计算出汽车相对于地图的<strong>位姿后验概率估计</strong>。</p>
 <p>假设 $t$ 时刻的汽车位姿为 $\mathbf{x}_t$ ，则我们的目标为计算 $p(\mathcal{x}_t|\mathcal{f}_{1:t}, \mathcal{M})$ 。</p>
