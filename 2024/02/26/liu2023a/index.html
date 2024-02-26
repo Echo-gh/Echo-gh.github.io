@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Liu, Yang, Chi Guo, and Yingli Wang. “Object-Aware Data Association for the Semantically Constrained Visual SLAM.” Intelligent Service Robotics 16, no. 2 (April 1, 2023): 155–76. https:&#x2F;&#x2F;doi.org&#x2F;10.10">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Object-aware data association for the semantically constrained visual SLAM">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/26/liu2023a/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Liu, Yang, Chi Guo, and Yingli Wang. “Object-Aware Data Association for the Semantically Constrained Visual SLAM.” Intelligent Service Robotics 16, no. 2 (April 1, 2023): 155–76. https:&#x2F;&#x2F;doi.org&#x2F;10.10">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/a1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f8.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f10.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f11.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/f14.png">
+<meta property="article:published_time" content="2024-02-26T02:08:20.000Z">
+<meta property="article:modified_time" content="2024-02-26T02:16:48.950Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Pose Optimization">
+<meta property="article:tag" content="Object SLAM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/26/liu2023a/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/26/liu2023a/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Object-aware data association for the semantically constrained visual SLAM | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/26/liu2023a/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Object-aware data association for the semantically constrained visual SLAM
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-26 10:08:20 / 修改时间：10:16:48" itemprop="dateCreated datePublished" datetime="2024-02-26T10:08:20+08:00">2024-02-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Pose-Optimization/" itemprop="url" rel="index"><span itemprop="name">Pose Optimization</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Liu, Yang, Chi Guo, and Yingli Wang. “Object-Aware Data Association for the Semantically Constrained Visual SLAM.” <em>Intelligent Service Robotics</em> 16, no. 2 (April 1, 2023): 155–76. <a target="_blank" rel="noopener" href="https://doi.org/10.1007/s11370-023-00455-9">https://doi.org/10.1007/s11370-023-00455-9</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者认为，将物体级语义信息和传统vSLAM 融合需要考虑两个关键问题：</p>
+<ol>
+<li>第一个问题是构建连续帧之间的<strong>数据关联</strong>问题。作者认为物体级vSLAM 需要充分利用相机运动以及3D 几何信息，最终产生一个带有全局一致性物体信息的3D 地图。现有的物体级vSLAM 大多依赖于点云的低级几何特征匹配(Yang 和 Scherer, 2019)、聚类或者统计分析进行数据关联，而忽略了物体整个的<strong>外观信息</strong>；</li>
+<li>第二个问题是怎么利用物体级信息进行<strong>位姿估计</strong>。CubeSLAM(Yang 和 Scherer, 2019)、QuadricSLAM (Nicholson 等, 2019) 都是将物体建模为可观测的几何参数在位姿估计中建立约束；但是作者认为，根据物体级约束来提高传统数据关联的<strong>准确性和鲁棒性</strong>也可以提高位姿估计精度。</li>
+</ol>
+<p>总结来看，本文的贡献如下：</p>
+<ol>
+<li>提出一个基于<strong>物体外观和特征点路标</strong>的物体级数据关联框架，产生一个带有物体信息的语义地图；</li>
+<li>提出一个<strong>语义重投影误差项</strong>并将其整合至位姿优化中，该重投影误差项<strong>结合了语义与特征点观测</strong>作为相机位姿的联合约束；</li>
+<li>在公开数据集上进行了测试，证明了本方法在物体级数据关联中实现了较高的准确性，并超越了位姿估计基线方法。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-Methods"><a href="#3-Methods" class="headerlink" title="3 Methods"></a>3 Methods</h1><h2 id="3-1-System-overview"><a href="#3-1-System-overview" class="headerlink" title="3.1 System overview"></a>3.1 System overview</h2><p>系统框架如Fig. 1所示，本系统基于ORB-SLAM2 并使用<strong>双目/RGB-D 图片</strong>作为输入。</p>
+<p><img src="/2024/02/26/liu2023a/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-2-Build-object-level-features-and-landmarks"><a href="#3-2-Build-object-level-features-and-landmarks" class="headerlink" title="3.2 Build object-level features and landmarks"></a>3.2 Build object-level features and landmarks</h2><h3 id="3-2-1-Build-2D-objects"><a href="#3-2-1-Build-2D-objects" class="headerlink" title="3.2.1 Build 2D-objects"></a>3.2.1 Build 2D-objects</h3><p>2D 物体语义信息用来构建新的3D 物体、更新已有的3D 物体并为位姿优化提供约束。作者使用YOLACT 实例分割网络来获取2D 物体语义信息，实例级语义信息包含物体掩码、类别标签以及置信度，2D 物体集合表示为 $S = \{s_j\}$ ，其中，每个<strong>2D 物体</strong> $s_j = \{l_j, q_j, m_j, b_j, f_j, Z_j\}$ ：</p>
+<ul>
+<li>$l_j$  表示物体类别标签</li>
+<li>$q_j$  表示分类置信度</li>
+<li>$m_j$  表示物体二值掩码图像</li>
+<li>$b_j$  表示物体的2D bbox</li>
+<li>$f_j$  表示物体掩码区域的HSV (Hue-Saturation-Value) 直方图向量，从RGB 转换为HSV，向量维度为94，来描述物体外观</li>
+<li>$Z_j$  <strong>物体掩码区域内的ORB 特征点集合</strong></li>
+</ul>
+<h2 id="3-2-2-Build-and-update-3D-objects"><a href="#3-2-2-Build-and-update-3D-objects" class="headerlink" title="3.2.2 Build and update 3D-objects"></a>3.2.2 Build and update 3D-objects</h2><p>3D 物体作为<strong>物体级地标</strong>存储了物体的外观和几何信息，$o = \{l, P, B, F, C\}$ :</p>
+<ul>
+<li>$l$  表示类别标签</li>
+<li>$P$  表示物体的稀疏路标点云</li>
+<li>$B$  表示3D bbox</li>
+<li>$F$  表示之前所有帧中该2D 物体的HSV 特征向量集合</li>
+<li>$C$  表示存储当前与之前物体点云中心点的集合</li>
+</ul>
+<h3 id="3-2-3-Outliers-elimination"><a href="#3-2-3-Outliers-elimination" class="headerlink" title="3.2.3 Outliers elimination"></a>3.2.3 Outliers elimination</h3><p>外点指的是那些位于本物体的特征点云中，但是不属于本物体的特征点。造成外点的原因包括：</p>
+<ol>
+<li>双目相机估计的<strong>深度误差</strong>或者RGB-D 相机的<strong>深度测量误差</strong>；</li>
+<li><strong>错误的实例分割结果</strong>导致包含背景区域或其他物体；</li>
+<li>在<strong>物体边界处的特征点</strong>难以区分类别。</li>
+</ol>
+<p><img src="/2024/02/26/liu2023a/fig2.png" alt="fig2" title="figure 2"></p>
+<p>作者综合利用三种手段进行外点剔除：<strong>统计检验</strong>、<strong>聚类</strong>以及<strong>概率分析</strong>。</p>
+<ul>
+<li><strong>统计检验</strong>：作者假设一个物体的点云分布较为紧凑且近似符合高斯分布，点云中心作为其均值，统计所有点云计算标准差；</li>
+<li><strong>聚类</strong>：作者假设物体点云应该是相连的，一小部分外点会被主体点云所孤立。作者使用DBSCAN 对物体点云进行聚类，将点云分为几个独立的聚类点云，计算各个聚类中点云所占的比例。如果某个点所属的聚类占总体点云比例较小且该点距离点云中心的距离超过3倍标准差，则将该点视为外点。值得注意的是，DBSCAN 算法消耗很大的计算资源，若某个物体的点云数量超过一定阈值则不使用聚类检测手段，只使用剩余两个方法；</li>
+<li><strong>概率分析</strong>：利用<strong>语义一致性</strong>进行检测，考虑到由于模糊分割造成的外点其分类一般具有随机性，很难长期保持一个稳定的类别标签，因此，作者统计每个特征点的分类概率，若该点属于对应物体的概率值较低，则可判定该点为外点。</li>
+</ul>
+<h2 id="3-3-Object-level-data-association"><a href="#3-3-Object-level-data-association" class="headerlink" title="3.3 Object-level data association"></a>3.3 Object-level data association</h2><p>作者考虑多种度量方式来检查物体的<strong>外观和几何一致性</strong>，以此进行<strong>短期与长期的</strong>物体级数据关联。</p>
+<h3 id="3-3-1-Data-association-metrics"><a href="#3-3-1-Data-association-metrics" class="headerlink" title="3.3.1 Data association metrics"></a>3.3.1 Data association metrics</h3><h4 id="Appearance-metric"><a href="#Appearance-metric" class="headerlink" title="Appearance metric"></a>Appearance metric</h4><p>本文的物体级数据关联核心度量手段是物体的<strong>外观相似度检查</strong>。基于从物体掩码区域提取的<strong>HSV 特征向量</strong>进行外观检测，考虑了物体的整体外观特征，且不需要物体具有突出的几何特征。外观相似度的计算过程如下所示，表征两个归一化HSV 向量 $f_1, f_2$ 的cosine 相似度：</p>
+<p><img src="/2024/02/26/liu2023a/f2.png" alt="f2" title="formula 2"></p>
+<h4 id="2D-IoU-metric"><a href="#2D-IoU-metric" class="headerlink" title="2D IoU metric"></a>2D IoU metric</h4><p>计算两个2D 物体的bbox IoU，被广泛应用于<strong>短期物体跟踪</strong>。</p>
+<p><img src="/2024/02/26/liu2023a/f3.png" alt="f3" title="formula 3"></p>
+<p><img src="/2024/02/26/liu2023a/fig3.png" alt="fig3" title="figure 3"></p>
+<h4 id="3D-overlap-ratio-metric"><a href="#3D-overlap-ratio-metric" class="headerlink" title="3D overlap ratio metric"></a>3D overlap ratio metric</h4><p>由于相机在单一视角下只能观测到物体的一部分，因此，作者不直接计算3D IoU，而是使用重叠部分占两个视角3D 区域的最大比例：</p>
+<p><img src="/2024/02/26/liu2023a/f4.png" alt="f4" title="formula 4"></p>
+<h4 id="Object-center-metric"><a href="#Object-center-metric" class="headerlink" title="Object center metric"></a>Object center metric</h4><p>3D 物体的点云是随着观测数据的加入而<strong>增量式更新</strong>的，相应的点云中心坐标也会随着新的观测数据加入而改变；针对新观测的物体点云，作者计算该点云中心坐标与物体之前所有点云中心坐标的最近距离作为一个度量参数：</p>
+<p><img src="/2024/02/26/liu2023a/f5.png" alt="f5" title="formula 5"></p>
+<h3 id="3-3-2-Data-association-scheme"><a href="#3-3-2-Data-association-scheme" class="headerlink" title="3.3.2 Data association scheme"></a>3.3.2 Data association scheme</h3><p>本数据关联框架包含两种物体数据关联以及冗余的物体检查。</p>
+<h4 id="Short-term-data-association"><a href="#Short-term-data-association" class="headerlink" title="Short-term data association"></a>Short-term data association</h4><p>作者在连续两帧中利用<strong>2D IoU</strong> 和<strong>外观检测</strong>来进行物体级的短期数据关联。</p>
+<p>查看作者源代码发现，作者利用两帧的2D物体匹配更新当前帧的3D物体，判断2D 物体匹配成功的准则为：两者外观相似度大于0.8，且2D IoU不小于0.5。</p>
+<h4 id="Long-term-data-association"><a href="#Long-term-data-association" class="headerlink" title="Long-term data association"></a>Long-term data association</h4><p>当物体无法利用该短期数据关联完成时，作者利用前端的<strong>特征点匹配</strong>得到相机的<strong>初始位姿估计</strong>，基于此将物体的特征点映射至空间中以产生临时的3D 点云，结合<strong>外观检测、3D 重叠</strong>以及<strong>物体中心度量</strong>来实现图片中2D 物体与地图中3D 物体的关联。</p>
+<p>完整的数据关联如下所示：</p>
+<p><img src="/2024/02/26/liu2023a/a1.png" alt="a1" title="algorithm 1"></p>
+<h2 id="3-4-Pose-optimization-constrained-by-semantic-information"><a href="#3-4-Pose-optimization-constrained-by-semantic-information" class="headerlink" title="3.4 Pose optimization constrained by semantic information"></a>3.4 Pose optimization constrained by semantic information</h2><p>本文的语义重投影误差采用与文章(Lianos 等, 2018) VSO 相似的方法，主要不同之处在于本文建立<strong>物体对应关系的语义约束</strong>，此外还建立了一个新的损失函数以及优化策略。</p>
+<p>理论上来讲，只要一个物体出现在视角中，那么该物体点云的投影像素应该位于相应的掩码区域内，如Fig. 4所示，物体级语义信息对于<strong>视角变换和尺度变换</strong>具有鲁棒性。</p>
+<p><img src="/2024/02/26/liu2023a/fig4.png" alt="fig4" title="figure 4"></p>
+<p>对于一个新观测帧，获取到一组<strong>匹配点对</strong> $\mathcal{M}_p = \{(z_i^g,p_i)\}$ ，其中，$z_i^g$  为图片中的ORB 点，$p_i$ 为地图中的特征点地标；进行物体级数据关联之后，得到一组<strong>物体匹配对</strong> $\mathcal{M}_o = \{(s_j, o_j)\}$ ，其中，$s_j$ 表示图片中的2D 物体，$o_j$ 表示地图中的3D 物体。利用物体匹配 $\mathcal{M}_o$ 来检查匹配点对 $\mathcal{M}_p$ 的语义一致性：</p>
+<p><img src="/2024/02/26/liu2023a/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$\emptyset$ 表示背景类，示例如Fig. 5所示。其中，$\mathcal{M}_p^{base}$ 中的点对表示低等级几何一致性和物体级语义一致性；特别地，式（6）中 $\mathcal{M}_p^{base}$ 中属于不同语义类别的两种情况：</p>
+<ul>
+<li>一个平面语义特征点与一个背景点地标匹配时（上式第二行），该背景点地标可视为该物体的备选元素；</li>
+<li>一个背景特征点与一个语义点地标匹配时（上式第三行），该3D 物体没能与2D 物体匹配上，可能是由于数据关联失败或者实例分割误差的存在。</li>
+</ul>
+<p>$\mathcal{M}_p^{joint}$ 中的匹配点对不满足语义一致性。</p>
+<p><img src="/2024/02/26/liu2023a/fig5.png" alt="fig5" title="figure 5"></p>
+<p>整个优化过程分为两步：<strong>初始位姿优化</strong>和<strong>语义约束优化</strong>。</p>
+<p>在<strong>初始位姿优化</strong>中，利用 $\mathcal{M}_p^{base}$ 中匹配点对计算传统的重投影误差：</p>
+<p><img src="/2024/02/26/liu2023a/f7.png" alt="f7" title="formula 7"></p>
+<p>而对于 $\mathcal{M}_p^{joint}$ 中的匹配点对不具有语义一致性，因此<strong>需要更多的约束</strong>来进行位姿优化，此处，作者添加一个<strong>语义重投影误差项</strong>来作为额外约束，定义重投影像素与所属2D 物体最近的距离作为语义残差项，如Fig. 5（a）所示。</p>
+<p><img src="/2024/02/26/liu2023a/f8.png" alt="f8" title="formula 8"></p>
+<p>式（9）中的 $h(z, m)$ 表示在 m 中搜寻距离 z 最近的255数值点（即2D 物体的掩码区域）；$\hat{T}$ 表示相机的初始位姿。</p>
+<p><strong>疑问：</strong>式8中是否还需要第一项，是否只有第二项时会有更优的结果？？？</p>
+<p>作者将上述两个误差项在初始优化中进行结合：</p>
+<p><img src="/2024/02/26/liu2023a/f10.png" alt="f10" title="formula 10"></p>
+<p>在初始位姿优化后，作者为优化<strong>增加额外的语义约束</strong>。基于初始位姿优化得到的位姿，作者将3D 物体中<strong>没有被匹配的地图点</strong>投影至图像中，并搜寻2D 图像中对应最近的像素作为语义观测项，剔除掉那些距离过远的点，如Fig. 5（b）所示，由此构建新的误差项：</p>
+<p><img src="/2024/02/26/liu2023a/f11.png" alt="f11" title="formula 11"></p>
+<p>从而构建整个位姿优化的误差函数：</p>
+<p><img src="/2024/02/26/liu2023a/f14.png" alt="f14" title="formula 14"></p>
+<p>上述优化策略可应用于对相机位姿和特征点地标的同时优化中，但是会大幅增加计算复杂度。在作者的实验中，仅利用其对相机位姿进行优化（match local map）来限制约束数量以及计算负载。作者还利用Kd-tree 来加速最邻近点的搜寻。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Pose-Optimization/" rel="tag"><i class="fa fa-tag"></i> Pose Optimization</a>
+              <a href="/tags/Object-SLAM/" rel="tag"><i class="fa fa-tag"></i> Object SLAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/24/schonberger2018/" rel="prev" title="论文记录 Semantic Visual Localization">
+      <i class="fa fa-chevron-left"></i> 论文记录 Semantic Visual Localization
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Methods"><span class="nav-text">3 Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-System-overview"><span class="nav-text">3.1 System overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Build-object-level-features-and-landmarks"><span class="nav-text">3.2 Build object-level features and landmarks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-Build-2D-objects"><span class="nav-text">3.2.1 Build 2D-objects</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-2-Build-and-update-3D-objects"><span class="nav-text">3.2.2 Build and update 3D-objects</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3-Outliers-elimination"><span class="nav-text">3.2.3 Outliers elimination</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Object-level-data-association"><span class="nav-text">3.3 Object-level data association</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-Data-association-metrics"><span class="nav-text">3.3.1 Data association metrics</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Appearance-metric"><span class="nav-text">Appearance metric</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2D-IoU-metric"><span class="nav-text">2D IoU metric</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3D-overlap-ratio-metric"><span class="nav-text">3D overlap ratio metric</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Object-center-metric"><span class="nav-text">Object center metric</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-Data-association-scheme"><span class="nav-text">3.3.2 Data association scheme</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Short-term-data-association"><span class="nav-text">Short-term data association</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Long-term-data-association"><span class="nav-text">Long-term data association</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Pose-optimization-constrained-by-semantic-information"><span class="nav-text">3.4 Pose optimization constrained by semantic information</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
