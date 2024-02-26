@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Li, Jimmy, Karim Koreitem, David Meger, and Gregory Dudek. “View-Invariant Loop Closure with Oriented Semantic Landmarks.” In 2020 IEEE International Conference on Robotics and Automation (ICRA), 7943">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 View-Invariant Loop Closure with Oriented Semantic Landmarks">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/26/li2020/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Li, Jimmy, Karim Koreitem, David Meger, and Gregory Dudek. “View-Invariant Loop Closure with Oriented Semantic Landmarks.” In 2020 IEEE International Conference on Robotics and Automation (ICRA), 7943">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/f1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/f2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/fig6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/f4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/26/li2020/t1.png">
+<meta property="article:published_time" content="2024-02-26T02:17:39.000Z">
+<meta property="article:modified_time" content="2024-02-26T02:23:23.077Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Topology">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/26/li2020/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/26/li2020/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 View-Invariant Loop Closure with Oriented Semantic Landmarks | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/26/li2020/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 View-Invariant Loop Closure with Oriented Semantic Landmarks
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-26 10:17:39 / 修改时间：10:23:23" itemprop="dateCreated datePublished" datetime="2024-02-26T10:17:39+08:00">2024-02-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Topology/" itemprop="url" rel="index"><span itemprop="name">Topology</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Li, Jimmy, Karim Koreitem, David Meger, and Gregory Dudek. “View-Invariant Loop Closure with Oriented Semantic Landmarks.” In <em>2020 IEEE International Conference on Robotics and Automation (ICRA)</em>, 7943–49. Paris, France: IEEE, 2020. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ICRA40945.2020.9196886">https://doi.org/10.1109/ICRA40945.2020.9196886</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>作者使用物体标识与物体间几何关系来实现具有视角不变性的回环检测与偏移矫正。</p>
+<blockquote>
+<p>use <strong>object identity and inter-object geometry</strong> for view-invariant loop detection and drift correction</p>
+</blockquote>
+<p>此外，作者还提出了一个对物体方向进行估计的方法，来克服由于物体对称性造成的模糊度；最终，作者构建了可绘制带有几何细节语义地图（包含物体方向、距离与尺寸信息）的SLAM系统。</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者在前作(Li 等, 2019)（使用物体地标进行视角不变性的重定位）的基础上，使用物体作为高等级的语义地标进行回环检测。</p>
+<p><img src="/2024/02/26/li2020/fig1.png" alt="fig1" title="figure 1"></p>
+<p>本文利用移动相机捕捉的多视角图像来估计物体的方向，进而解决物体对称性模糊度，这使得本系统可以匹配一个更大的环境来确定位姿。</p>
+<h1 id="2-Related-Work"><a href="#2-Related-Work" class="headerlink" title="2 Related Work"></a>2 Related Work</h1><p>作者使用bounding cuboids这种可以很好容纳目标物体的表示方式来代表物体；且没有选择RGB-D 相机，而是使用更为常见的RGB 相机，有利于本系统的广泛应用。</p>
+<p>作者利用SLAM 进行多视角物体方向推断；相较于已有的实例级别方法，作者是在种类级别category level进行方向估计的，允许系统在陌生环境中正常运行。</p>
+<h1 id="3-SLAM-System"><a href="#3-SLAM-System" class="headerlink" title="3 SLAM System"></a>3 SLAM System</h1><h2 id="3-1-Overview"><a href="#3-1-Overview" class="headerlink" title="3.1 Overview"></a>3.1 Overview</h2><p>作者认为，基于基于外观的局部特征对于精确跟踪相机的局部位姿是有意义的，但对于大视角变化等明显改变场景外观的情况下不具有鲁棒性；而环境中的物体信息（如常见的家居用品）对于视角变化等情况具有较强的鲁棒性，但在缺少其他信息（如基于外观的局部特征）时难以得到利用，因为在图片平面中计算物体的精确位置是很困难的。因此，作者采取如下的混合策略：</p>
+<ol>
+<li>使用基于外观的局部特征来跟踪相机局部位姿；</li>
+<li>使用已知的相机位姿来简化物体在3D 空间中位姿的推断；</li>
+<li>当相机在跨越长基线情况下需要进行回环检测或者重定位时，使用物体地标进行视角不变性的匹配。</li>
+</ol>
+<p>作者在前作(Li 等, 2019)进行了重定位，本文针对回环检测进行研究。回环识别是通过对由于相机位姿漂移造成的重复物体进行匹配（包括物体标识与几何布局）而实现的。</p>
+<p><img src="/2024/02/26/li2020/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-2-Semantic-Mapping"><a href="#3-2-Semantic-Mapping" class="headerlink" title="3.2 Semantic Mapping"></a>3.2 Semantic Mapping</h2><p>制图系统输入为RGB 图像流，输出为估计的相机轨迹，以及以9自由度bounding cuboids表示的物体地标，文章(Lin 等, 2021)借鉴了本文的9自由度bounding cuboids表示方法，包含位置、旋转以及尺寸信息。</p>
+<p>本系统是以ORB-SLAM 为基础进行构建的，bounding box探测是由Faster-RCNN 完成的，且作者引入了一种<strong>实例级物体方向回归算法</strong>来提升制图系统的性能。</p>
+<p>如Fig. 2所示，作者使用 expectation maximization (EM) 算法来更新物体地标：</p>
+<ol>
+<li>物体地标投影到每个关键帧中，并与object detections 进行匹配；</li>
+<li>将匹配到的detections 与关键帧相机位姿进行结合，进行三角测量并更新物体地标位姿；</li>
+<li>没有与已知物体地标匹配成功的detections 初始化为新的地标。</li>
+</ol>
+<h2 id="3-3-Loop-Detection"><a href="#3-3-Loop-Detection" class="headerlink" title="3.3 Loop Detection"></a>3.3 Loop Detection</h2><p>在长轨迹上进行语义地图绘制时，由于相机位姿漂移会造成重复物体地标被添加进语义地图中。本文系统是建立在ORB-SLAM基础上的，因此保留了其基于外观特征的回环检测，为了应对大视角变化场景下的回环检测，增加了额外的物体级回环检测机制：<strong>在制图环节的每一次EM迭代后，将最近添加的物体地标视为一组近期地标，并与早期的地标进行匹配。</strong>假设地标 <em>l</em> 与 <em>m</em> 分别属于关键帧组合 $K_l, K_m$ （因为同一地标可能会出现在多个关键帧中），定义<em>keyframe separation</em> ：</p>
+<p><img src="/2024/02/26/li2020/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$u - w$ 表示两个关键帧索引值（表示两个关键帧被加入地图中的次序）相减，定义一个阈值，若式 (1) 小于某个阈值则判定地标 <em>l</em> 与 <em>m</em> 相近。定义一个集合 <em>L</em>，包含最新的地标 <em>l</em> 以及根据上式得到的与其距离相近的地标集合，目标是找到轨迹中之前遇到过的一组地标与 <em>L</em> 的子集拥有相似的空间分布，这样就可能找到了回环。由于物体地标的稀疏性，可以穷尽迭代所有可能的匹配。</p>
+<h2 id="3-4-Geometric-Loop-Verification"><a href="#3-4-Geometric-Loop-Verification" class="headerlink" title="3.4 Geometric Loop Verification"></a>3.4 Geometric Loop Verification</h2><p>假设两组物体地标 $(l_1, l_2, l_3), (m_1, m_2, m_3)$ 实现了上节的初步匹配，进行如下的匹配测试：</p>
+<h3 id="3）-Object-layout"><a href="#3）-Object-layout" class="headerlink" title="3） Object layout"></a>3） Object layout</h3><p>若要比较匹配物体的几何布局，需要使用一个共同的参考框架来描述物体，本文使用点来表示各个物体的坐标，基于两组物体地标 $(l_1, l_2, l_3), (m_1, m_2, m_3)$ 分别构建局部坐标系统 A 与 B ，然后计算包括旋转 R、平移 t 以及尺寸 s 的相似度转换，将A中的任意点 $p_l$  映射到 B 中的相应位置 $p_m$ ：</p>
+<p><img src="/2024/02/26/li2020/f2.png" alt="f2" title="formula 2"></p>
+<p>将 $(l_1, l_2, l_3)$ 从 A 投影到 B 中，然后进行如下测试：</p>
+<ul>
+<li>Scale consistency：尺度变化不能过大</li>
+<li>Translational consistency：位置尺寸不能过大，由于单目RGB相机无法提供绝对距离，作者选取一个尺度归一化的距离进行判断；</li>
+<li>Rotational consistency：物体方向不能差异过大。</li>
+</ul>
+<h2 id="3-5-Loop-Correction"><a href="#3-5-Loop-Correction" class="headerlink" title="3.5 Loop Correction"></a>3.5 Loop Correction</h2><p>对于给定的回环检测，利用相似转换来将物体匹配与观测到这些物体地标的关键帧相机位姿进行对齐，并使用ORB-SLAM 的 essential graph optimizer 将矫正参数通过非线性最小二乘优化散发到所有关键帧，在此基础上更新语义地图。</p>
+<p>对于每一个物体地标，选取一个观测到该地标的关键帧，计算该关键帧更新前后的相对位姿变换，并将该变换参数更新到地标位姿上去，使用EM算法细调所有的地标位姿。</p>
+<h1 id="4-Orientation-Regression"><a href="#4-Orientation-Regression" class="headerlink" title="4 Orientation Regression"></a>4 Orientation Regression</h1><h2 id="4-1-Overview"><a href="#4-1-Overview" class="headerlink" title="4.1 Overview"></a>4.1 Overview</h2><p>Fig. 3展现了物体的对称性造成的物体方向回归算法不收敛的难题，作者在本文主要针对的是镜面对称问题，并简单讨论了圆柱对称问题。</p>
+<p><img src="/2024/02/26/li2020/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="4-2-Multi-view-Orientation-Inference"><a href="#4-2-Multi-view-Orientation-Inference" class="headerlink" title="4.2 Multi-view Orientation Inference"></a>4.2 Multi-view Orientation Inference</h2><p>作者将视角球形分为几部分，其中任意部分的不同视角展现不同的外观，如Fig. 4所示，作者将视角分为4个象限，并对每一部分训练一个方向回归函数。</p>
+<p><img src="/2024/02/26/li2020/fig4.png" alt="fig4" title="figure 4"></p>
+<h1 id="5-Experiments"><a href="#5-Experiments" class="headerlink" title="5 Experiments"></a>5 Experiments</h1><h2 id="5-1-Loop-Closure"><a href="#5-1-Loop-Closure" class="headerlink" title="5.1 Loop Closure"></a>5.1 Loop Closure</h2><p>现有的SLAM数据集在回环检测方面基本上使用视角变化不大的同一场景照片，本方法的优势无法展现，故作者采用自采的数据集进行实验，回环检测图片使用的是具有较大视角变化的图片，结果如Fig. 6所示，实验使用5种立方物体（屏幕、键盘、手机、遥控器以及微波炉）、4种圆柱物体（水杯、瓶子、碗以及花盆绿植）作为地标物体并进行回环检测。</p>
+<p><img src="/2024/02/26/li2020/fig6.png" alt="fig6" title="figure 6"></p>
+<p>实验中漂移减少百分比定义如下：</p>
+<p><img src="/2024/02/26/li2020/f4.png" alt="f4" title="formula 4"></p>
+<p>S是共同的起始位置坐标，E是本文方法估计的结束位置坐标，e是ORB-SLAM 估计的位置坐标。Table 1 展示了所有序列的偏移减少量。</p>
+<p><img src="/2024/02/26/li2020/t1.png" alt="t1" title="table 1"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Topology/" rel="tag"><i class="fa fa-tag"></i> Topology</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/26/liu2023a/" rel="prev" title="论文记录 Object-aware data association for the semantically constrained visual SLAM">
+      <i class="fa fa-chevron-left"></i> 论文记录 Object-aware data association for the semantically constrained visual SLAM
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Related-Work"><span class="nav-text">2 Related Work</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-SLAM-System"><span class="nav-text">3 SLAM System</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Overview"><span class="nav-text">3.1 Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Semantic-Mapping"><span class="nav-text">3.2 Semantic Mapping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Loop-Detection"><span class="nav-text">3.3 Loop Detection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Geometric-Loop-Verification"><span class="nav-text">3.4 Geometric Loop Verification</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3%EF%BC%89-Object-layout"><span class="nav-text">3） Object layout</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-Loop-Correction"><span class="nav-text">3.5 Loop Correction</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Orientation-Regression"><span class="nav-text">4 Orientation Regression</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Overview"><span class="nav-text">4.1 Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Multi-view-Orientation-Inference"><span class="nav-text">4.2 Multi-view Orientation Inference</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Experiments"><span class="nav-text">5 Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Loop-Closure"><span class="nav-text">5.1 Loop Closure</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
