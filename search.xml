@@ -2342,4 +2342,88 @@
         <tag>Topology</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 Towards Real-time Semantic RGB-D SLAM in Dynamic Environments</title>
+    <url>/2024/02/27/ji2021/</url>
+    <content><![CDATA[<p>Ji, Tete, Chen Wang, and Lihua Xie. “Towards Real-Time Semantic RGB-D SLAM in Dynamic Environments.” In <em>2021 IEEE International Conference on Robotics and Automation (ICRA)</em>, 11175–81. Xi’an, China: IEEE, 2021. <a href="https://doi.org/10.1109/ICRA48506.2021.9561743">https://doi.org/10.1109/ICRA48506.2021.9561743</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
+<ul>
+<li>提出一个<strong>基于关键帧</strong>的语义RGB-D SLAM 系统，可以减少动态环境中移动物体的影响；</li>
+<li>提出一个高效的<strong>几何模块</strong>，与语义SLAM 框架相结合来处理<strong>未知的移动物体</strong>；</li>
+<li>通过实验证明本算法可在<strong>嵌入式系统中实时运行</strong>，同时可实现与SOTA 方法相当的精度。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-Proposed-Method"><a href="#3-Proposed-Method" class="headerlink" title="3 Proposed Method"></a>3 Proposed Method</h1><p>本系统是基于ORB-SLAM2 算法的，系统框架如下图所示：</p>
+<p><img src="/2024/02/27/ji2021/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-Semantic-Module"><a href="#3-1-Semantic-Module" class="headerlink" title="3.1 Semantic Module"></a>3.1 Semantic Module</h2><p>考虑到精度与速度的平衡，作者选用<strong>SegNet</strong> 作为语义分割的网络；为了进一步实现实时处理性能，作者<strong>只对关键帧</strong>进行语义分割，将潜在动态物体（如人、汽车、自行车等）上的特征点进行<strong>剔除</strong>；值得注意的是，作者<strong>并不进一步使用几何模块</strong>对潜在动态物体的<strong>真实运动情况</strong>进行确认，而是认为，对于长期一致的制图目的而言，即便这些潜在动态物体在某些时刻是静态的，但是长远考虑的话它们<strong>并不可靠</strong>，所以作者直接将这些潜在动态物体进行剔除。</p>
+<h2 id="3-2-Geometry-Module"><a href="#3-2-Geometry-Module" class="headerlink" title="3.2 Geometry Module"></a>3.2 Geometry Module</h2><p>语义分割只能对训练时的标记种类进行识别，<strong>无法对未知类别</strong>的物体进行识别，因此，作者引入<strong>几何模块</strong>来对<strong>未知动态物体</strong>进行检测。</p>
+<p>作者首先利用<strong>K-Means 算法</strong>将深度图中的点分割为N 个集群，3D 空间中<strong>距离较近的点</strong>被分为一组集群；作者假设每个集群属于一个物体表面，且同一集群内的点的<strong>运动状态一致</strong>。因为同一个物体可能被分为几个不同的集群，所以本算法中的物体<strong>可以不满足刚体假设</strong>。</p>
+<p>对于每个集群 $c_j$ ，作者计算该集群内所有特征点 $\mathbf{u}_i’$ 与其在3D 空间中的关联点 $\mathbf{P}_i$ 之间的重投影误差，求得集群内的重投影误差均值 $r_j$ ：</p>
+<p><img src="/2024/02/27/ji2021/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$\rho$ 是正则化方程（惩罚方程）。如果某个集群的平均重投影误差相较于其他集群更大，则<strong>标记该集群是动态的</strong>，并移除掉属于该集群的所有特征点。部分实验结果如Fig. 3所示，观察可得，在部分情况下语义分割会出现识别失败或错误的现象，而此时几何模块可以正常识别出动态物体。</p>
+<p><img src="/2024/02/27/ji2021/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-3-Keyframe-and-Local-Map-Update"><a href="#3-3-Keyframe-and-Local-Map-Update" class="headerlink" title="3.3 Keyframe and Local Map Update"></a>3.3 Keyframe and Local Map Update</h2><p>由于一帧图片是使用<strong>关键帧</strong>和<strong>局部地图</strong>进行<strong>跟踪</strong>的，所以只需要确保关键帧和局部地图中只有静态特征点即可。当一个新的关键帧被选取后，利用语义分割识别出动态特征点，局部地图中也会<strong>同步移除</strong>相应的动态地图点，由此，可以保持一个只包含静态特征与地图点的数据库。</p>
+<h2 id="3-4-Tracking"><a href="#3-4-Tracking" class="headerlink" title="3.4 Tracking"></a>3.4 Tracking</h2><p>本系统对每一帧新图片的跟踪采用类似于ORB-SLAM2 的<strong>两步法</strong>：</p>
+<ol>
+<li>首先，利用当前帧和与当前帧有最大重合区域的关键帧进行初始位姿估计，因为关键帧<strong>已经移除了潜在动态物体</strong>，所以初始位姿估计<strong>更可靠</strong>；</li>
+<li>然后，几何模块利用初始位姿估计进行<strong>动态物体检测</strong>，并从当前帧中移除所有的动态特征点，在此基础上跟踪当前帧中所有观测到的地图点进行<strong>局部BA 优化</strong>，获取最终的位姿估计。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes</title>
+    <url>/2024/02/27/yu2021/</url>
+    <content><![CDATA[<p>Yu, Peilin, Chi Guo, yang Liu, and Huyin Zhang. “Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes.” In <em>Proceedings of the 27th ACM Symposium on Virtual Reality Software and Technology</em>, 1–7. VRST ’21. New York, NY, USA: Association for Computing Machinery, 2021. <a href="https://doi.org/10.1145/3489849.3489882">https://doi.org/10.1145/3489849.3489882</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文针对SLAM 算法环境中存在的动态物体，结合<strong>物体检测</strong>和<strong>语义分割</strong>来获取<strong>潜在动态物体</strong>的先验轮廓，在此基础上应用<strong>几何约束</strong>实现对动态特征点的剔除。</p>
+<p>本文做出的贡献：</p>
+<ol>
+<li>提出一种<strong>自适应机制</strong>，使得系统可根据不同的环境选择使用语义分割还是物体检测；</li>
+<li>提出一种<strong>静态点恢复技术</strong>，以减少可用静态点的损失，并使用光流和对极约束来检查物体的状态；</li>
+<li>在公开数据集TUM 上进行评估，在<strong>高动态环境</strong>下实现了良好的表现。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-Our-Method"><a href="#3-Our-Method" class="headerlink" title="3 Our Method"></a>3 Our Method</h1><p>本文方法的架构如Fig. 1所示，利用<strong>自适应机制</strong>来切换物体检测分支和语义分割分支，然后结合<strong>几何约束</strong>技术实现对动态特征点的剔除。</p>
+<p><img src="/2024/02/27/yu2021/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-1-Extract-Semantic-Information"><a href="#3-1-Extract-Semantic-Information" class="headerlink" title="3.1 Extract Semantic Information"></a>3.1 Extract Semantic Information</h2><p>在<strong>自适应机制模块</strong>中，作者通过多次实验得到一个<strong>阈值</strong>，来决定是否有必要使用语义分割进行处理：</p>
+<ul>
+<li>如果得分超过这个阈值，说明动态物体占据了当前视野的较大部分。此时，需要进一步使用语义分割来<strong>尽可能地保留静态特征点</strong>（Fig. 2）；</li>
+<li>如果得分低于这个阈值，说明动态物体占据了当前视野地较小部分。此时，仅利用物体检测技术即可（Fig. 3）。</li>
+</ul>
+<p><img src="/2024/02/27/yu2021/fig2.png" alt="fig2" title="figure 2"></p>
+<p><img src="/2024/02/27/yu2021/fig3.png" alt="fig3" title="figure 3"></p>
+<p>得分的计算方程：</p>
+<p><img src="/2024/02/27/yu2021/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$f(u,v)$ 表示若像素被判定属于潜在动态物体则为1，否则为0；$P_I$ 表示所有像素数量。即，上式表示判定为动态物体像素占总体像素的比例。</p>
+<h2 id="3-2-Remove-Dynamic-Features"><a href="#3-2-Remove-Dynamic-Features" class="headerlink" title="3.2 Remove Dynamic Features"></a>3.2 Remove Dynamic Features</h2><p>使用以下策略对动态特征点进行准确剔除：</p>
+<h3 id="3-2-1-Dynamic-check"><a href="#3-2-1-Dynamic-check" class="headerlink" title="3.2.1 Dynamic check"></a><strong>3.2.1 Dynamic check</strong></h3><p>使用DS-SLAM 中的<strong>移动一致性检测</strong>来判断是否属于动态特征点：潜在动态物体内部的动态特征点超过一定阈值，则判定该物体是动态物体，并移除属于该物体的所有特征点。该策略同时应用于两个分支中。</p>
+<h3 id="3-2-2-Static-point-recovery"><a href="#3-2-2-Static-point-recovery" class="headerlink" title="3.2.2 Static point recovery"></a><strong>3.2.2 Static point recovery</strong></h3><p>作者提出一个静态点恢复技术 static point recovery (SPR) 恢复bbox 内的部分静态点来增强系统的鲁棒性。对于物体检测网络处理过的图片，作者将潜在动态物体bbox 外部的点视为静态点，记为第一部分；bbox 内部的点视为潜在动态点，记为第二部分。SPR 技术是针对第二部分的特征点进行恢复操作的，具体操作步骤如下所示：</p>
+<p>首先，利用第一部分（即静态特征点）中的所有特征点计算两两之间线段的距离，在相邻帧之间构建 line segment constraint，如Fig. 4所示，</p>
+<p><img src="/2024/02/27/yu2021/fig4.png" alt="fig4" title="figure 4"></p>
+<p><img src="/2024/02/27/yu2021/f2.png" alt="f2" title="formula 2"></p>
+<p>所谓的 line segment constraint，作者认为<strong>静态特征点对</strong>之间的距离在相邻帧之间变化不大，则统计第一部分所有点对在相邻帧之间的距离变化值，用其平均值作为阈值 $\phi_t$ 。</p>
+<p><img src="/2024/02/27/yu2021/f5.png" alt="f5" title="formula 5"></p>
+<p>然后，利用所有静态点和bbox 内的潜在动态点 $k$ 进行组合，计算潜在动态点 $k$ 的得分：</p>
+<p><img src="/2024/02/27/yu2021/f6.png" alt="f6" title="formula 6"></p>
+<p>作者判定，若得分 $s_{k, t}$ 超过组合数量的一半，则判定潜在动态点 $k$ 为真实动态点并剔除，否则保留为静态特征点。SPR 效果如Fig. 5所示。</p>
+<p><img src="/2024/02/27/yu2021/fig5.png" alt="fig5" title="figure 5"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
 </search>

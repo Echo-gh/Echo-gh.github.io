@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Yu, Peilin, Chi Guo, yang Liu, and Huyin Zhang. “Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes.” In Proceedings of the 27th ACM Symposium on Virtual Reality Softw">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/27/yu2021/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Yu, Peilin, Chi Guo, yang Liu, and Huyin Zhang. “Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes.” In Proceedings of the 27th ACM Symposium on Virtual Reality Softw">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/f1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/f2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/f5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/f6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/27/yu2021/fig5.png">
+<meta property="article:published_time" content="2024-02-27T02:26:54.000Z">
+<meta property="article:modified_time" content="2024-02-27T02:32:32.998Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="Dynamic SLAM">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/27/yu2021/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/27/yu2021/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/27/yu2021/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-27 10:26:54 / 修改时间：10:32:32" itemprop="dateCreated datePublished" datetime="2024-02-27T10:26:54+08:00">2024-02-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Yu, Peilin, Chi Guo, yang Liu, and Huyin Zhang. “Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes.” In <em>Proceedings of the 27th ACM Symposium on Virtual Reality Software and Technology</em>, 1–7. VRST ’21. New York, NY, USA: Association for Computing Machinery, 2021. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3489849.3489882">https://doi.org/10.1145/3489849.3489882</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文针对SLAM 算法环境中存在的动态物体，结合<strong>物体检测</strong>和<strong>语义分割</strong>来获取<strong>潜在动态物体</strong>的先验轮廓，在此基础上应用<strong>几何约束</strong>实现对动态特征点的剔除。</p>
+<p>本文做出的贡献：</p>
+<ol>
+<li>提出一种<strong>自适应机制</strong>，使得系统可根据不同的环境选择使用语义分割还是物体检测；</li>
+<li>提出一种<strong>静态点恢复技术</strong>，以减少可用静态点的损失，并使用光流和对极约束来检查物体的状态；</li>
+<li>在公开数据集TUM 上进行评估，在<strong>高动态环境</strong>下实现了良好的表现。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-Our-Method"><a href="#3-Our-Method" class="headerlink" title="3 Our Method"></a>3 Our Method</h1><p>本文方法的架构如Fig. 1所示，利用<strong>自适应机制</strong>来切换物体检测分支和语义分割分支，然后结合<strong>几何约束</strong>技术实现对动态特征点的剔除。</p>
+<p><img src="/2024/02/27/yu2021/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-1-Extract-Semantic-Information"><a href="#3-1-Extract-Semantic-Information" class="headerlink" title="3.1 Extract Semantic Information"></a>3.1 Extract Semantic Information</h2><p>在<strong>自适应机制模块</strong>中，作者通过多次实验得到一个<strong>阈值</strong>，来决定是否有必要使用语义分割进行处理：</p>
+<ul>
+<li>如果得分超过这个阈值，说明动态物体占据了当前视野的较大部分。此时，需要进一步使用语义分割来<strong>尽可能地保留静态特征点</strong>（Fig. 2）；</li>
+<li>如果得分低于这个阈值，说明动态物体占据了当前视野地较小部分。此时，仅利用物体检测技术即可（Fig. 3）。</li>
+</ul>
+<p><img src="/2024/02/27/yu2021/fig2.png" alt="fig2" title="figure 2"></p>
+<p><img src="/2024/02/27/yu2021/fig3.png" alt="fig3" title="figure 3"></p>
+<p>得分的计算方程：</p>
+<p><img src="/2024/02/27/yu2021/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$f(u,v)$ 表示若像素被判定属于潜在动态物体则为1，否则为0；$P_I$ 表示所有像素数量。即，上式表示判定为动态物体像素占总体像素的比例。</p>
+<h2 id="3-2-Remove-Dynamic-Features"><a href="#3-2-Remove-Dynamic-Features" class="headerlink" title="3.2 Remove Dynamic Features"></a>3.2 Remove Dynamic Features</h2><p>使用以下策略对动态特征点进行准确剔除：</p>
+<h3 id="3-2-1-Dynamic-check"><a href="#3-2-1-Dynamic-check" class="headerlink" title="3.2.1 Dynamic check"></a><strong>3.2.1 Dynamic check</strong></h3><p>使用DS-SLAM 中的<strong>移动一致性检测</strong>来判断是否属于动态特征点：潜在动态物体内部的动态特征点超过一定阈值，则判定该物体是动态物体，并移除属于该物体的所有特征点。该策略同时应用于两个分支中。</p>
+<h3 id="3-2-2-Static-point-recovery"><a href="#3-2-2-Static-point-recovery" class="headerlink" title="3.2.2 Static point recovery"></a><strong>3.2.2 Static point recovery</strong></h3><p>作者提出一个静态点恢复技术 static point recovery (SPR) 恢复bbox 内的部分静态点来增强系统的鲁棒性。对于物体检测网络处理过的图片，作者将潜在动态物体bbox 外部的点视为静态点，记为第一部分；bbox 内部的点视为潜在动态点，记为第二部分。SPR 技术是针对第二部分的特征点进行恢复操作的，具体操作步骤如下所示：</p>
+<p>首先，利用第一部分（即静态特征点）中的所有特征点计算两两之间线段的距离，在相邻帧之间构建 line segment constraint，如Fig. 4所示，</p>
+<p><img src="/2024/02/27/yu2021/fig4.png" alt="fig4" title="figure 4"></p>
+<p><img src="/2024/02/27/yu2021/f2.png" alt="f2" title="formula 2"></p>
+<p>所谓的 line segment constraint，作者认为<strong>静态特征点对</strong>之间的距离在相邻帧之间变化不大，则统计第一部分所有点对在相邻帧之间的距离变化值，用其平均值作为阈值 $\phi_t$ 。</p>
+<p><img src="/2024/02/27/yu2021/f5.png" alt="f5" title="formula 5"></p>
+<p>然后，利用所有静态点和bbox 内的潜在动态点 $k$ 进行组合，计算潜在动态点 $k$ 的得分：</p>
+<p><img src="/2024/02/27/yu2021/f6.png" alt="f6" title="formula 6"></p>
+<p>作者判定，若得分 $s_{k, t}$ 超过组合数量的一半，则判定潜在动态点 $k$ 为真实动态点并剔除，否则保留为静态特征点。SPR 效果如Fig. 5所示。</p>
+<p><img src="/2024/02/27/yu2021/fig5.png" alt="fig5" title="figure 5"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Dynamic-SLAM/" rel="tag"><i class="fa fa-tag"></i> Dynamic SLAM</a>
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/27/ji2021/" rel="prev" title="论文记录 Towards Real-time Semantic RGB-D SLAM in Dynamic Environments">
+      <i class="fa fa-chevron-left"></i> 论文记录 Towards Real-time Semantic RGB-D SLAM in Dynamic Environments
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Our-Method"><span class="nav-text">3 Our Method</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Extract-Semantic-Information"><span class="nav-text">3.1 Extract Semantic Information</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Remove-Dynamic-Features"><span class="nav-text">3.2 Remove Dynamic Features</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-Dynamic-check"><span class="nav-text">3.2.1 Dynamic check</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-Static-point-recovery"><span class="nav-text">3.2.2 Static point recovery</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
