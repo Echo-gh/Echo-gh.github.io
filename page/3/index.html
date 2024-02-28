@@ -302,7 +302,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-02-02 10:46:48" itemprop="dateModified" datetime="2024-02-02T10:46:48+08:00">2024-02-02</time>
+                <time title="修改时间：2024-02-28 16:01:31" itemprop="dateModified" datetime="2024-02-28T16:01:31+08:00">2024-02-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -330,7 +330,7 @@
 
       
           <p>Yang, Shichao, and Sebastian Scherer. “CubeSLAM: Monocular 3-D Object SLAM.” <em>IEEE Transactions on Robotics</em> 35, no. 4 (August 2019): 925–38. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/TRO.2019.2909168">https://doi.org/10.1109/TRO.2019.2909168</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于静态与动态场景中，将2D、3D 物体探测与SLAM 位姿估计相结合的系统，如Fig. 1所示。当给定检测到的2D 物体时，利用vanishing point (VP) 产生3D 立方体，然后通过多视角BA ，利用点和相机对立方体进行进一步的优化。</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于<strong>静态与动态场景</strong>中，将2D、3D 物体探测与SLAM 位姿估计相结合的系统，如Fig. 1所示。前提假设：物体立方体经投影后会与2D bbox 相吻合；在此假设下，当给定检测到的2D 物体时，作者利用vanishing point (VP) 产生3D 立方体 proposals，然后通过<strong>多视角BA</strong> ，利用点和相机对立方体进行进一步的优化。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/01/31/cubeslam/#more" rel="contents">

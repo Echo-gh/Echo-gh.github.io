@@ -33,17 +33,33 @@
 <meta property="og:description" content="Yang, Shichao, and Sebastian Scherer. “CubeSLAM: Monocular 3-D Object SLAM.” IEEE Transactions on Robotics 35, no. 4 (August 2019): 925–38. https:&#x2F;&#x2F;doi.org&#x2F;10.1109&#x2F;TRO.2019.2909168. 1 Introduction本文作者">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f1.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f3.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f8.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f9.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f10.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f11.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f12.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig4.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig5.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f13.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f14.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f15.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/f16.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig9.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/t2.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig10.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/01/31/cubeslam/fig12.png">
 <meta property="article:published_time" content="2024-01-31T14:31:15.000Z">
-<meta property="article:modified_time" content="2024-02-02T02:46:48.416Z">
+<meta property="article:modified_time" content="2024-02-28T08:01:31.885Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="SLAM">
 <meta property="article:tag" content="Semantic">
@@ -239,7 +255,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-02-02 10:46:48" itemprop="dateModified" datetime="2024-02-02T10:46:48+08:00">2024-02-02</time>
+                <time title="修改时间：2024-02-28 16:01:31" itemprop="dateModified" datetime="2024-02-28T16:01:31+08:00">2024-02-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -267,42 +283,104 @@
 
       
         <p>Yang, Shichao, and Sebastian Scherer. “CubeSLAM: Monocular 3-D Object SLAM.” <em>IEEE Transactions on Robotics</em> 35, no. 4 (August 2019): 925–38. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/TRO.2019.2909168">https://doi.org/10.1109/TRO.2019.2909168</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于静态与动态场景中，将2D、3D 物体探测与SLAM 位姿估计相结合的系统，如Fig. 1所示。当给定检测到的2D 物体时，利用vanishing point (VP) 产生3D 立方体，然后通过多视角BA ，利用点和相机对立方体进行进一步的优化。</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于<strong>静态与动态场景</strong>中，将2D、3D 物体探测与SLAM 位姿估计相结合的系统，如Fig. 1所示。前提假设：物体立方体经投影后会与2D bbox 相吻合；在此假设下，当给定检测到的2D 物体时，作者利用vanishing point (VP) 产生3D 立方体 proposals，然后通过<strong>多视角BA</strong> ，利用点和相机对立方体进行进一步的优化。</p>
 <span id="more"></span>
 <p><img src="/2024/01/31/cubeslam/fig1.png" alt="fig1" title="figure 1"></p>
-<p>3D 物体在本系统中的作用有两个方面：</p>
+<p>物体在本系统中的作用有两个方面：</p>
 <ol>
-<li>在BA 过程中提供几何和尺寸约束；</li>
-<li>为难以进行三角测量的点提供深度信息初始化。</li>
+<li>在BA 过程中提供<strong>几何和尺度约束</strong>；</li>
+<li>为难以进行三角测量的点提供<strong>深度初始化信息</strong>。</li>
 </ol>
-<p>在动态场景中，本系统不是简单地将动态观测物体视为外点，而是基于动态点观察与动作模型约束，联合优化相机与物体的轨迹。</p>
+<p>在动态场景中，本系统不是简单地将动态观测物体视为外点，而是基于<strong>动态点观测</strong>与<strong>运动模型约束</strong>，联合优化相机与物体的轨迹。</p>
 <p>本文做出的贡献总结如下：</p>
 <ul>
-<li>不使用先验物体模型的高效、准确以及鲁棒的<strong>单张图片3D 立方体探测方法</strong>；</li>
-<li>在相机、物体与点之间使用新颖测量手段的<strong>物体SLAM 方法</strong>，在许多数据集上实现了更好的位姿估计；</li>
-<li>实验结果证明<strong>物体探测</strong>与<strong>SLAM</strong> 两者相得益彰；</li>
+<li>不使用先验物体模型的高效、准确以及鲁棒的<strong>单张图片3D 物体检测方法</strong>；</li>
+<li>提出了一种在相机、物体与点之间使用新颖的观测手段的<strong>object SLAM 方法</strong>，在许多数据集上实现了更好的位姿估计；</li>
+<li>实验结果证明<strong>物体检测</strong>与<strong>SLAM</strong> 两者相互促进；</li>
 <li>一个在动态场景中<strong>利用移动物体来提高位姿估计</strong>的方法。</li>
 </ul>
-<h1 id="3-Single-Image-3-D-Object-Detection"><a href="#3-Single-Image-3-D-Object-Detection" class="headerlink" title="3 Single Image 3-D Object Detection"></a>3 Single Image 3-D Object Detection</h1><p><img src="/2024/01/31/cubeslam/fig2.png" alt="fig2" title="figure 2"></p>
+<h1 id="3-Single-Image-3-D-Object-Detection"><a href="#3-Single-Image-3-D-Object-Detection" class="headerlink" title="3 Single Image 3-D Object Detection"></a>3 Single Image 3-D Object Detection</h1><h2 id="3-1-3D-Box-Proposal-Generation"><a href="#3-1-3D-Box-Proposal-Generation" class="headerlink" title="3.1 3D Box Proposal Generation"></a>3.1 3D Box Proposal Generation</h2><h3 id="3D-Box-Proposal-Generation"><a href="#3D-Box-Proposal-Generation" class="headerlink" title="3D Box Proposal Generation"></a>3D Box Proposal Generation</h3><p>一个通用的3D 立方体有9自由度：位置 $\mathbf{t} = [t_x, t_y, t_z]$ ，旋转矩阵 R，以及三维尺度 $\mathbf{d} = [d_x, d_y, d_z]$ 。前提假设：立方体的角在图像上的投影与2D bbox 紧密重合。在该假设下，2D bbox只能提供<strong>4个约束</strong>（4条边），无法构建9自由度的立方体。已有文献利用预先提供或预测的尺度信息和物体朝向信息作为额外的约束，作者选择使用<strong>消失点 VP</strong> 来减少回归参数，以适用于通用物体。</p>
+<p>消失点 VP 是平行线在<strong>透视图像</strong>上的交点，3D 立方体有3个正交轴，因此经过投影可形成3个VP，投影过程依赖于相对于相机坐标系的<strong>旋转矩阵 R</strong> 和<strong>相机内参 K</strong>：</p>
+<p><img src="/2024/01/31/cubeslam/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$R_{col(i)}$ 表示R 的第 i 列。</p>
+<h3 id="Get-2D-Corners-From-the-VP"><a href="#Get-2D-Corners-From-the-VP" class="headerlink" title="Get 2D Corners From the VP"></a>Get 2D Corners From the VP</h3><p>对于一个立方体，单一视角下最多可同时观测到其3个面，基于观测到的面数量，作者分为三组情况，如Fig. 2所示。</p>
+<p><img src="/2024/01/31/cubeslam/fig2.png" alt="fig2" title="figure 2"></p>
+<p>作者以Fig. 2（a）的情况说明，如何基于VP 获取立方体的8个2D 角点：假设VP 和角点 $p_1$ 已知或已被估计，则有 $p_2 = (VP_1, p_1) \times (B, C)$ ， $p_4 = (VP_2, p_1) \times (A, D)$ ， $p_3 = (VP_1, p_4) \times (VP_2, p_2)$ ，其余2D 角点均可通过类似方法获取，其中 $\times$ 表示两直线的交点。</p>
+<h3 id="Get-3D-Box-Pose-From-2D-Corners"><a href="#Get-3D-Box-Pose-From-2D-Corners" class="headerlink" title="Get 3D Box Pose From 2D Corners"></a>Get 3D Box Pose From 2D Corners</h3><p>在获取了2D 角点之后，需要进一步获取立方体的3D 角点，作者分两种情况进行讨论：</p>
+<p><strong>情况一 任意位姿的物体：</strong>作者使用PnP solver 来求解通用立方体的3D 位置和维度（缺少尺度参数，因为是单目相机）。在物体坐标系（原点设在物体中心）中，3D 立方体的8个顶点坐标可表示为 $[\pm d_x, \pm d_y, \pm d_z]/2$ ，则2D 角点 $p_1$ 可由相应的3D 角点通过下式获取：</p>
+<p><img src="/2024/01/31/cubeslam/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$\pi$ 表示相机投影方程。则式2可提供两个约束（2D 坐标分别代表两个约束方程），那么，选取4个邻接角点（如1，2，4，7）即可得到全约束方程（除了尺度参数）。</p>
+<p><strong>情况二 位于地面上的物体：</strong>对于位于地面上的物体，可以大幅简化情况一的求解过程并获取<strong>尺度参数</strong>。在地平面上构建世界坐标系，则物体的roll/pitch 角均为0，这里不再使用复杂的PnP solver，而是直接将8个2D 角点逆投影至3D 地平面，然后计算其他垂直角，从而组成一个3D 立方体；该方法<strong>高效且有解析表达式</strong>，如位于3D 地平面上的角点5，使用 $[\mathbf{n}, m]$ 来表示（相机坐标系的法向量和距离），则3D 角点 $P_5$ 可通过求<strong>逆投影线</strong> $K^{-1}p_5$ 与地平面的交点获取：</p>
+<p><img src="/2024/01/31/cubeslam/f3.png" alt="f3" title="formula 3"></p>
+<p>尺度参数由投影过程中<strong>相机的高度</strong>来决定。</p>
+<h3 id="Sample-VP-and-Summary"><a href="#Sample-VP-and-Summary" class="headerlink" title="Sample VP and Summary"></a>Sample VP and Summary</h3><p>经过上述分析，3D 立方体的估计问题变为了如何获取三个VPs 以及一个 2D 角点。从式1可得，VPs 通过物体旋转矩阵获取，尽管可通过深度学习来预测物体的旋转矩阵，但是为了<strong>更好的泛化性</strong>，作者选择<strong>手动采样旋转矩阵</strong>，并对它们进行<strong>评分</strong>。本文只考虑位于地面上的物体，因此只需要相机的roll/pitch 角和物体的yaw 角，对于多视角视频数据，作者使用SLAM 来估计相机位姿，因此使得采样空间大幅减小且更为准确。</p>
+<h2 id="3-2-Proposal-Scoring"><a href="#3-2-Proposal-Scoring" class="headerlink" title="3.2 Proposal Scoring"></a>3.2 Proposal Scoring</h2><p>在获取了许多立方体proposals 后，作者定义损失函数来进行评分，如Fig. 3所示。</p>
 <p><img src="/2024/01/31/cubeslam/fig3.png" alt="fig3" title="figure 3"></p>
+<p>作者提出了不同的损失函数，如语义分割、edge distance、HOG 特征等，最终，作者使用了将立方体和图片边特征进行对齐的快速有效的损失函数，该方法对于具有清晰边缘的物体效果较好，但是由于VP 和鲁棒边滤波的约束，使得其对于自行车、马桶等效果也不差。</p>
+<p>将图片记为 $I$ ，立方体表示为 $O = \{R, \mathbf{t}, \mathbf{d}\}$ ，损失函数表示为：</p>
+<p><img src="/2024/01/31/cubeslam/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$\phi_{dist},\phi_{angle},\phi_{shape}$ 代表三个损失项，$w_1=0.8, w_2=1.5$ 表示权重参数。</p>
+<p><strong>3.2.1 Distance Error</strong> $\phi_{dist} = (O, I)$</p>
+<p>作者认为，立方体的2D 边应该与实际图片中的边相吻合；首先检测Canny 边，并基于此构建一个distance transform map；然后对立方体的每个可见边（Fig. 2（a）中的蓝色实线边）均匀采样10个点，归纳所有的距离地图值并除以2D bbox 的对角线。</p>
+<p><strong>3.2.2 Angle Alignment Error</strong> $\phi_{angle}(O, I)$</p>
+<p>distance error 容易受到噪声影响，如物体表面的纹理会被识别成边，因此，作者也检测长线段（Fig. 3 中的绿线），并测量它们的角度是否与VP 对齐；首先基于点线关系将这些线与三个VPs 中的一个相关联，对于每个VP，可以找到最外侧的两个线段（分别具有最大、最小的坡度slope），分别记为 $<l_{i-ms}, l_{i-mt}>,<l_{i-ns}, l_{i-nt}>$。其中，$<a, b>$ 表示两顶点 a，b 组成的线段的坡度角。最终，角度对齐误差表示为：</a,></l_{i-ns},></l_{i-ms},></p>
+<p><img src="/2024/01/31/cubeslam/f5.png" alt="f5" title="formula 5"></p>
+<p><strong>3.2.3 Shape Error</strong> $\phi_{shape}(O)$</p>
+<p>同一组2D 角点也许会生成相当不同的3D 立方体，因此，作者对具有较大长宽比的立方体增加了一个惩罚项：</p>
+<p><img src="/2024/01/31/cubeslam/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$s = max(d_x/d_y, d_y/d_x)$ 表示物体长宽比；阈值 $\sigma$ 设为1；上式表示若物体长宽比为1，则该惩罚项为0。</p>
+<h1 id="4-Object-SLAM"><a href="#4-Object-SLAM" class="headerlink" title="4 Object SLAM"></a>4 Object SLAM</h1><p>作者将单图片3D 物体检测扩展至object SLAM中对物体和相机位姿进行联合优化，系统基于ORB-SLAM2 搭建的，包括前端相机跟踪和后端BA，作者主要对BA 部分进行修改以包含物体、特征点和相机位姿；值得注意的是，本节内容只使用静态物体。</p>
+<h2 id="4-1-BA-Formulation"><a href="#4-1-BA-Formulation" class="headerlink" title="4.1 BA Formulation"></a>4.1 BA Formulation</h2><p>作者提到，除了使用物体进行约束外，还是用了特征点，这是因为<strong>仅靠物体难以完整约束相机位姿</strong>。相机位姿、3D 立方体和特征点集合分别表示为：$C = \{C_i\}, O = \{O_j\}, P = \{P_k\}$ ，则BA 可表示为以下的非线性最小二乘优化问题：</p>
+<p><img src="/2024/01/31/cubeslam/f7.png" alt="f7" title="formula 7"></p>
+<h2 id="4-2-Measurement-Errors"><a href="#4-2-Measurement-Errors" class="headerlink" title="4.2 Measurement Errors"></a>4.2 Measurement Errors</h2><h3 id="4-2-1-Camera-Object-Measurement"><a href="#4-2-1-Camera-Object-Measurement" class="headerlink" title="4.2.1 Camera-Object Measurement"></a>4.2.1 Camera-Object Measurement</h3><p>作者提供两种观测误差：</p>
+<p><strong>3D Measurements</strong></p>
+<p>当3D 物体检测较准确时（如使用RGB-D 相机时）使用3D 观测误差。从单张图片检测到的<strong>物体位姿</strong> $O_m = (T_{om}, \mathbf{d}_m)$ 作为<strong>相机坐标系下</strong>的物体观测信息，然后将物体地标转换至相机坐标系以计算观测误差：</p>
+<p><img src="/2024/01/31/cubeslam/f8.png" alt="f8" title="formula 8"></p>
+<p>其中，log 将SE3 误差映射至 6 自由度的切向量空间，因此 $e_{co-3D} \in \mathbb{R}^9$ 。</p>
+<p>值得注意的是，由于没有先验物体模型，本文使用的基于图片的立方体检测不能区分物体的前后方向，因此，对于式8，需要沿着物体z 轴旋转 $0, \pm90^o, 180^o$ 寻找最小的误差值。</p>
+<p><strong>2D Measurements</strong></p>
+<p>对于2D 观测，作者将物体地标投影至图片坐标系中以获取2D bbox，如Fig. 4（b）中的红色长方形表示，然后与2D 物体检测bbox （蓝色长方形）进行比较。具体来讲，将3D 立方体的8个角点投影至图像坐标系中，寻找xy 坐标轴的极值点组成一个长方形。</p>
+<p><img src="/2024/01/31/cubeslam/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，$c, s$ 分别表示2D bbox 的中心坐标和长宽尺寸；因此，4维矩形误差表示为：</p>
+<p><img src="/2024/01/31/cubeslam/f10.png" alt="f10" title="formula 10"></p>
+<p>该观测误差较式8表示的3D 观测误差有着小得多的不确定性，因为2D 物体检测相较于3D 检测<strong>通常更准确</strong>；但同时也丢失了不少信息，因为许多不同的3D 立方体可以投影为相同的2D 矩形，因此需要更多观测信息来约束相机位姿和立方体。</p>
+<p>作者表示，由于<strong>复杂的检测过程</strong>，对误差协方差矩阵 $\sum$ 或者Hessian 矩阵 W 的建模和估计相较于特征点来说要更难，因此，作者对高语义置信度和几何相似物体赋予<strong>更高的权重</strong>，假设立方体与相机之间距离为 d，物体检测概率为 p，则对于KITTI 数据集设定以下权重参数：$w = p \times max(70-d, 0)/50$ ，其中，70</p>
+<p>m是截断距离，该参数对不同的数据集会有不同的取值。</p>
+<h3 id="4-2-2-Object-Point-Measurement"><a href="#4-2-2-Object-Point-Measurement" class="headerlink" title="4.2.2 Object-Point Measurement"></a>4.2.2 Object-Point Measurement</h3><p>特征点与物体可以相互提供约束，如果点 P 属于某个物体，如Fig. 4（b）所示，则其应该位于3D 立方体内部。作者首先将特征点转换至立方体坐标系中，然后与立方体尺寸进行比较来获取3D 误差：</p>
+<p><img src="/2024/01/31/cubeslam/f11.png" alt="f11" title="formula 11"></p>
+<h3 id="4-2-3-Camera-Point-Measurement"><a href="#4-2-3-Camera-Point-Measurement" class="headerlink" title="4.2.3 Camera-Point Measurement"></a>4.2.3 Camera-Point Measurement</h3><p>使用标准的3D 点重投影误差作为相机-特征点观测误差：</p>
+<p><img src="/2024/01/31/cubeslam/f12.png" alt="f12" title="formula 12"></p>
+<p>其中，$z_m$ 是3D 点P 的观测像素坐标。</p>
 <p><img src="/2024/01/31/cubeslam/fig4.png" alt="fig4" title="figure 4"></p>
-<h1 id="4-Object-SLAM"><a href="#4-Object-SLAM" class="headerlink" title="4 Object SLAM"></a>4 Object SLAM</h1><h2 id="4-3-Data-Association"><a href="#4-3-Data-Association" class="headerlink" title="4.3 Data Association"></a>4.3 Data Association</h2><p>作者进行数据关联的步骤如下：</p>
+<h2 id="4-3-Data-Association"><a href="#4-3-Data-Association" class="headerlink" title="4.3 Data Association"></a>4.3 Data Association</h2><p>作者提出了一种<strong>基于特征点匹配的物体关联</strong>，数据关联的步骤如下：</p>
 <ol>
-<li>首先，如果特征点在至少两帧图片中被观测到位于2D 物体检测框中，且它们距离3D 的立方体中心小于1m 时，将这些特征点与对应的物体关联起来；</li>
+<li>首先，如果特征点在至少两帧图片中被观测到位于2D 物体检测框中，且它们距离3D 的立方体中心小于1m 时，将这些<strong>特征点与对应的物体关联起来</strong>；</li>
 <li>如果两个物体在不同帧中拥有最多数量的共同特征点，且点的数量超过一定阈值（本文设定为10）时，判定两个物体为同一物体并进行数据关联。</li>
-<li>需要注意的是，当物体几乎没有与其他帧相关联的特征点时，将该物体判定为动态物体，如Fig. 5中的青色框汽车。</li>
+<li>需要注意的是，当物体几乎没有与其他帧相关联的特征点时，将该物体<strong>判定为动态物体</strong>，如Fig. 5中的青色框汽车。</li>
 </ol>
 <p><img src="/2024/01/31/cubeslam/fig5.png" alt="fig5" title="figure 5"></p>
 <h1 id="5-Dynamic-SLAM"><a href="#5-Dynamic-SLAM" class="headerlink" title="5 Dynamic SLAM"></a>5 Dynamic SLAM</h1><p>为了减少未知参量让问题可解，作者使用了两个假设：<strong>刚体假设</strong>与<strong>物理运动模型假设</strong>。</p>
 <ul>
-<li>刚体假设是为了保证特征点在关联物体上的位置保持不变，这使得作者可以使用标准的3D 地图点重投影误差来优化位置参数；</li>
-<li>最简单的运动模型就是有着统一速度的常数运动模型，至于一些特定物体，如自行车，会额外受限于nonholonomic wheel model。</li>
+<li>刚体假设是为了保证特征点在关联物体上的位置保持不变，这使得作者可以使用标准的3D <strong>地图点重投影误差</strong>来优化位置参数；</li>
+<li>最简单的运动模型就是<strong>匀速运动模型</strong>，至于一些特定物体，如自行车，会额外受限于nonholonomic wheel model。</li>
 </ul>
-<h2 id="5-2-SLAM-Optimization"><a href="#5-2-SLAM-Optimization" class="headerlink" title="5.2 SLAM Optimization"></a>5.2 SLAM Optimization</h2><p>动态物体估计的因子图如Fig. 6所示，其中绿色方框是测量因子，包含：camera-object 因子，object-velocity 因子，以及point-camera-object 因子。</p>
+<h2 id="5-1-Notations"><a href="#5-1-Notations" class="headerlink" title="5.1 Notations"></a>5.1 Notations</h2><p>作者使用 $^jO^i$ 表示动态物体 $O^i$ 在观测帧 j 中的位姿；对于动态物体 $O^i$ 上的动态特征点 $P^k$ 表示为 $^iP^k$ （物体坐标系），基于刚体假设，其在物体上的位置是固定的。</p>
+<h2 id="5-2-SLAM-Optimization"><a href="#5-2-SLAM-Optimization" class="headerlink" title="5.2 SLAM Optimization"></a>5.2 SLAM Optimization</h2><p>动态物体估计的因子图如Fig. 6所示，其中绿色方框是观测量，包含：camera-object 因子（式10），object-velocity 因子（式14），以及point-camera-object 因子（式15）。</p>
 <p><img src="/2024/01/31/cubeslam/fig6.png" alt="fig6" title="figure 6"></p>
-<h2 id="5-3-Dynamic-Data-Association"><a href="#5-3-Dynamic-Data-Association" class="headerlink" title="5.3 Dynamic Data Association"></a>5.3 Dynamic Data Association</h2><p>4.3节使用的静态物体数据关联不适用于动态物体，因为单眼相机动态场景中，很难准确预测物体与特征点的运动，且当物体运动不准确时难以应用对极几何进行计算。因此，作者使用2D KLT 稀疏光流算法进行动态物体特征点的跟踪，该算法并不需要3D 点位置信息。在使用像素追踪之后，考虑物体的运动利用三角测量计算动态特征的3D 位置。</p>
-<h1 id="8-Experiments-Object-SLAM"><a href="#8-Experiments-Object-SLAM" class="headerlink" title="8 Experiments-Object SLAM"></a>8 Experiments-Object SLAM</h1><h2 id="8-1-TUM-RGBD-and-ICL-NUIM-Dataset"><a href="#8-1-TUM-RGBD-and-ICL-NUIM-Dataset" class="headerlink" title="8.1 TUM RGBD and ICL-NUIM Dataset"></a>8.1 TUM RGBD and ICL-NUIM Dataset</h2><p>为了更好地评估单目位姿偏移，作者在使用及结果对比时关掉了ORB SLAM 的回环检测模块。</p>
-<p>Fig. 9所示的是在TUM fr3_cabinet 数据集上的实验结果，由于该场景特征点太少，导致现有的单目SLAM 算法均无法完成实验。而本文提出的算法仅使用物体进行定位，实现了较好的定位效果。Fig. 9左边下图中估计的立方体存在较大的误差，但经过多视角优化后，可以与真实点云实现良好的契合。实验结果如Table 2所示。</p>
+<h3 id="5-2-1-Object-Motion-Model"><a href="#5-2-1-Object-Motion-Model" class="headerlink" title="5.2.1 Object Motion Model"></a>5.2.1 Object Motion Model</h3><p>3D 物体的通用运动方式可表示为位姿转换矩阵 $T \in SE(3)$ ，作者采用一个更严格的非完整轮模型 nonholonomic wheel model，将汽车运动表示为线速度 $v$ 和转向角 $\phi$ 。假设汽车运动在平面上，则三维向量即可表示完整状态 $T_0 = [R(\theta), [t_x, t_y, o]’]$ ，则根据速度预测的状态表示为：</p>
+<p><img src="/2024/01/31/cubeslam/f13.png" alt="f13" title="formula 13"></p>
+<p>其中，L 表示汽车前后轮中心的距离。最终的<strong>运动模型误差</strong>表示为：</p>
+<p><img src="/2024/01/31/cubeslam/f14.png" alt="f14" title="formula 14"></p>
+<h3 id="5-2-2-Dynamic-Point-Observation"><a href="#5-2-2-Dynamic-Point-Observation" class="headerlink" title="5.2.2 Dynamic Point Observation"></a>5.2.2 Dynamic Point Observation</h3><p>对于动态物体上的特征点，首先将其从物体坐标系转换至世界坐标系，再根据相机位姿投影至像素平面，重投影误差表示为：</p>
+<p><img src="/2024/01/31/cubeslam/f15.png" alt="f15" title="formula 15"></p>
+<p>其中，$T^j_c$ 表示相机位姿；$z_{kj}$ 表示观测到的像素坐标。</p>
+<h2 id="5-3-Dynamic-Data-Association"><a href="#5-3-Dynamic-Data-Association" class="headerlink" title="5.3 Dynamic Data Association"></a>5.3 Dynamic Data Association</h2><p>4.3节使用的静态物体数据关联不适用于动态物体，跟踪特征点的<strong>经典方法</strong>是预测投影位置，然后在附近搜索<strong>描述子匹配</strong>的特征点，然后检查<strong>对极几何约束</strong>验证是否匹配正确；但单眼相机动态场景中，很难准确预测物体与特征点的运动，且当物体运动不准确时难以应用对极几何进行计算。因此，作者使用2D <strong>KLT 稀疏光流算法</strong>进行动态物体特征点的跟踪，该算法并不需要3D 点位置信息。在使用像素追踪之后，考虑物体的运动利用三角测量计算动态特征的3D 位置。</p>
+<p>假设两帧图片的投影矩阵为 $M_1, M_2$ ；同一3D 点在两帧对应的位置分别是 $P_1, P_2$ ；对应像素位置分别为 $z_1, z_2$ ；物体在两帧间的运动转换矩阵为 $\Delta T$ 。则有 $P_2 = \Delta T P_1$ ，基于此，有：</p>
+<p><img src="/2024/01/31/cubeslam/f16.png" alt="f16" title="formula 16"></p>
+<p>若将 $M_2 \Delta T$ 视为<strong>补偿物体运动的相机位姿</strong>，则式16可视为<strong>标准的两视角三角化问题</strong>，可使用SVD 方法进行求解。</p>
+<p>值得注意的是，作者提到当<strong>像素位移过大</strong>时KLT 方法会跟踪失败，因此，对于动态物体跟踪作者直接使用<strong>视觉物体跟踪算法</strong>：跟踪物体2D bbox，从前一帧预测其在当前帧的大概位置，然后从当前帧的2D bbox 中选取具有最大重叠比例的bbox 实现跟踪。</p>
+<h1 id="8-Experiments-Object-SLAM"><a href="#8-Experiments-Object-SLAM" class="headerlink" title="8 Experiments-Object SLAM"></a>8 Experiments-Object SLAM</h1><h2 id="8-1-TUM-RGBD-and-ICL-NUIM-Dataset"><a href="#8-1-TUM-RGBD-and-ICL-NUIM-Dataset" class="headerlink" title="8.1 TUM RGBD and ICL-NUIM Dataset"></a>8.1 TUM RGBD and ICL-NUIM Dataset</h2><p>为了更好地评估单目位姿偏移，作者在使用及结果对比时<strong>关掉了ORB SLAM 的回环检测模块</strong>。</p>
+<p>Fig. 9所示的是在TUM fr3_cabinet 数据集上的实验结果，由于该场景特征点太少，导致现有的单目SLAM 算法均无法完成实验。而本文提出的算法使用object-camera 观测作为额外约束，实现了较好的定位效果。Fig. 9左边下图中估计的立方体存在较大的误差，但经过多视角优化后，3D立方体可以与真实点云实现良好的契合。实验结果如Table 2所示。</p>
 <p><img src="/2024/01/31/cubeslam/fig9.png" alt="fig9" title="figure 9"></p>
 <p><img src="/2024/01/31/cubeslam/t2.png" alt="t2" title="table 2"></p>
 <h2 id="8-2-Collected-Chair-Dataset"><a href="#8-2-Collected-Chair-Dataset" class="headerlink" title="8.2 Collected Chair Dataset"></a>8.2 Collected Chair Dataset</h2><p><img src="/2024/01/31/cubeslam/fig10.png" alt="fig10" title="figure 10"></p>
@@ -394,7 +472,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Single-Image-3-D-Object-Detection"><span class="nav-text">3 Single Image 3-D Object Detection</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Object-SLAM"><span class="nav-text">4 Object SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Data-Association"><span class="nav-text">4.3 Data Association</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Dynamic-SLAM"><span class="nav-text">5 Dynamic SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-SLAM-Optimization"><span class="nav-text">5.2 SLAM Optimization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Dynamic-Data-Association"><span class="nav-text">5.3 Dynamic Data Association</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-Experiments-Object-SLAM"><span class="nav-text">8 Experiments-Object SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-TUM-RGBD-and-ICL-NUIM-Dataset"><span class="nav-text">8.1 TUM RGBD and ICL-NUIM Dataset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-2-Collected-Chair-Dataset"><span class="nav-text">8.2 Collected Chair Dataset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-4-Dynamic-Object"><span class="nav-text">8.4 Dynamic Object</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Single-Image-3-D-Object-Detection"><span class="nav-text">3 Single Image 3-D Object Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-3D-Box-Proposal-Generation"><span class="nav-text">3.1 3D Box Proposal Generation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3D-Box-Proposal-Generation"><span class="nav-text">3D Box Proposal Generation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Get-2D-Corners-From-the-VP"><span class="nav-text">Get 2D Corners From the VP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Get-3D-Box-Pose-From-2D-Corners"><span class="nav-text">Get 3D Box Pose From 2D Corners</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sample-VP-and-Summary"><span class="nav-text">Sample VP and Summary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Proposal-Scoring"><span class="nav-text">3.2 Proposal Scoring</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Object-SLAM"><span class="nav-text">4 Object SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-BA-Formulation"><span class="nav-text">4.1 BA Formulation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Measurement-Errors"><span class="nav-text">4.2 Measurement Errors</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-Camera-Object-Measurement"><span class="nav-text">4.2.1 Camera-Object Measurement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-Object-Point-Measurement"><span class="nav-text">4.2.2 Object-Point Measurement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-Camera-Point-Measurement"><span class="nav-text">4.2.3 Camera-Point Measurement</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Data-Association"><span class="nav-text">4.3 Data Association</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Dynamic-SLAM"><span class="nav-text">5 Dynamic SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Notations"><span class="nav-text">5.1 Notations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-SLAM-Optimization"><span class="nav-text">5.2 SLAM Optimization</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-1-Object-Motion-Model"><span class="nav-text">5.2.1 Object Motion Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-2-Dynamic-Point-Observation"><span class="nav-text">5.2.2 Dynamic Point Observation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Dynamic-Data-Association"><span class="nav-text">5.3 Dynamic Data Association</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-Experiments-Object-SLAM"><span class="nav-text">8 Experiments-Object SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-TUM-RGBD-and-ICL-NUIM-Dataset"><span class="nav-text">8.1 TUM RGBD and ICL-NUIM Dataset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-2-Collected-Chair-Dataset"><span class="nav-text">8.2 Collected Chair Dataset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-4-Dynamic-Object"><span class="nav-text">8.4 Dynamic Object</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

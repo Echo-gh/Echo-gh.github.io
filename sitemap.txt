@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/01/31/cubeslam/
 http://echo-gh.github.io/2024/02/27/yu2021/
 http://echo-gh.github.io/2024/02/27/ji2021/
 http://echo-gh.github.io/2024/02/26/li2020/
@@ -19,7 +20,6 @@ http://echo-gh.github.io/2024/02/18/bowman2017/
 http://echo-gh.github.io/2024/02/04/ds-slam/
 http://echo-gh.github.io/2024/02/02/brasch2018/
 http://echo-gh.github.io/2024/02/02/li2019/
-http://echo-gh.github.io/2024/01/31/cubeslam/
 http://echo-gh.github.io/2024/01/26/object-slam/
 http://echo-gh.github.io/2024/01/27/Co-fusion/
 http://echo-gh.github.io/2024/01/30/vso/
