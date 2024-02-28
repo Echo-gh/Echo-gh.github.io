@@ -297,7 +297,7 @@
     <title>论文记录 CubeSLAM_Monocular 3-D Object SLAM</title>
     <url>/2024/01/31/cubeslam/</url>
     <content><![CDATA[<p>Yang, Shichao, and Sebastian Scherer. “CubeSLAM: Monocular 3-D Object SLAM.” <em>IEEE Transactions on Robotics</em> 35, no. 4 (August 2019): 925–38. <a href="https://doi.org/10.1109/TRO.2019.2909168">https://doi.org/10.1109/TRO.2019.2909168</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于<strong>静态与动态场景</strong>中，将2D、3D 物体探测与SLAM 位姿估计相结合的系统，如Fig. 1所示。前提假设：物体立方体经投影后会与2D bbox 相吻合；在此假设下，当给定检测到的2D 物体时，作者利用vanishing point (VP) 产生3D 立方体 proposals，然后通过<strong>多视角BA</strong> ，利用点和相机对立方体进行进一步的优化。</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文作者提出了一个可以同时应用于<strong>静态与动态场景</strong>中，将2D、3D 物体检测与SLAM 位姿估计相结合的系统，如Fig. 1所示。前提假设：物体立方体经投影后会与2D bbox 相吻合；在此假设下，当给定检测到的2D 物体时，作者利用vanishing point (VP) 产生3D 立方体 proposals，然后通过<strong>多视角BA</strong> ，利用点和相机对立方体进行进一步的优化。</p>
 <span id="more"></span>
 <p><img src="/2024/01/31/cubeslam/fig1.png" alt="fig1" title="figure 1"></p>
 <p>物体在本系统中的作用有两个方面：</p>
@@ -313,21 +313,21 @@
 <li>实验结果证明<strong>物体检测</strong>与<strong>SLAM</strong> 两者相互促进；</li>
 <li>一个在动态场景中<strong>利用移动物体来提高位姿估计</strong>的方法。</li>
 </ul>
-<h1 id="3-Single-Image-3-D-Object-Detection"><a href="#3-Single-Image-3-D-Object-Detection" class="headerlink" title="3 Single Image 3-D Object Detection"></a>3 Single Image 3-D Object Detection</h1><h2 id="3-1-3D-Box-Proposal-Generation"><a href="#3-1-3D-Box-Proposal-Generation" class="headerlink" title="3.1 3D Box Proposal Generation"></a>3.1 3D Box Proposal Generation</h2><h3 id="3D-Box-Proposal-Generation"><a href="#3D-Box-Proposal-Generation" class="headerlink" title="3D Box Proposal Generation"></a>3D Box Proposal Generation</h3><p>一个通用的3D 立方体有9自由度：位置 $\mathbf{t} = [t_x, t_y, t_z]$ ，旋转矩阵 R，以及三维尺度 $\mathbf{d} = [d_x, d_y, d_z]$ 。前提假设：立方体的角在图像上的投影与2D bbox 紧密重合。在该假设下，2D bbox只能提供<strong>4个约束</strong>（4条边），无法构建9自由度的立方体。已有文献利用预先提供或预测的尺度信息和物体朝向信息作为额外的约束，作者选择使用<strong>消失点 VP</strong> 来减少回归参数，以适用于通用物体。</p>
+<h1 id="3-Single-Image-3-D-Object-Detection"><a href="#3-Single-Image-3-D-Object-Detection" class="headerlink" title="3 Single Image 3-D Object Detection"></a>3 Single Image 3-D Object Detection</h1><h2 id="3-1-3D-Box-Proposal-Generation"><a href="#3-1-3D-Box-Proposal-Generation" class="headerlink" title="3.1 3D Box Proposal Generation"></a>3.1 3D Box Proposal Generation</h2><h3 id="3-1-1-3D-Box-Proposal-Generation"><a href="#3-1-1-3D-Box-Proposal-Generation" class="headerlink" title="3.1.1 3D Box Proposal Generation"></a>3.1.1 3D Box Proposal Generation</h3><p>一个通用的3D 立方体有9自由度：位置 $\mathbf{t} = [t_x, t_y, t_z]$ ，旋转矩阵 R，以及三维尺度 $\mathbf{d} = [d_x, d_y, d_z]$ 。前提假设：立方体的角在图像上的投影与2D bbox 紧密重合。在该假设下，2D bbox只能提供<strong>4个约束</strong>（4条边），无法构建9自由度的立方体。已有文献利用预先提供或预测的尺度信息和物体朝向信息作为额外的约束，作者选择使用<strong>消失点 VP</strong> 来减少回归参数，以适用于通用物体。</p>
 <p>消失点 VP 是平行线在<strong>透视图像</strong>上的交点，3D 立方体有3个正交轴，因此经过投影可形成3个VP，投影过程依赖于相对于相机坐标系的<strong>旋转矩阵 R</strong> 和<strong>相机内参 K</strong>：</p>
 <p><img src="/2024/01/31/cubeslam/f1.png" alt="f1" title="formula 1"></p>
 <p>其中，$R_{col(i)}$ 表示R 的第 i 列。</p>
-<h3 id="Get-2D-Corners-From-the-VP"><a href="#Get-2D-Corners-From-the-VP" class="headerlink" title="Get 2D Corners From the VP"></a>Get 2D Corners From the VP</h3><p>对于一个立方体，单一视角下最多可同时观测到其3个面，基于观测到的面数量，作者分为三组情况，如Fig. 2所示。</p>
+<h3 id="3-1-2-Get-2D-Corners-From-the-VP"><a href="#3-1-2-Get-2D-Corners-From-the-VP" class="headerlink" title="3.1.2 Get 2D Corners From the VP"></a>3.1.2 Get 2D Corners From the VP</h3><p>对于一个立方体，单一视角下最多可同时观测到其3个面，基于观测到的面数量，作者分为三组情况，如Fig. 2所示。</p>
 <p><img src="/2024/01/31/cubeslam/fig2.png" alt="fig2" title="figure 2"></p>
 <p>作者以Fig. 2（a）的情况说明，如何基于VP 获取立方体的8个2D 角点：假设VP 和角点 $p_1$ 已知或已被估计，则有 $p_2 = (VP_1, p_1) \times (B, C)$ ， $p_4 = (VP_2, p_1) \times (A, D)$ ， $p_3 = (VP_1, p_4) \times (VP_2, p_2)$ ，其余2D 角点均可通过类似方法获取，其中 $\times$ 表示两直线的交点。</p>
-<h3 id="Get-3D-Box-Pose-From-2D-Corners"><a href="#Get-3D-Box-Pose-From-2D-Corners" class="headerlink" title="Get 3D Box Pose From 2D Corners"></a>Get 3D Box Pose From 2D Corners</h3><p>在获取了2D 角点之后，需要进一步获取立方体的3D 角点，作者分两种情况进行讨论：</p>
+<h3 id="3-1-3-Get-3D-Box-Pose-From-2D-Corners"><a href="#3-1-3-Get-3D-Box-Pose-From-2D-Corners" class="headerlink" title="3.1.3 Get 3D Box Pose From 2D Corners"></a>3.1.3 Get 3D Box Pose From 2D Corners</h3><p>在获取了2D 角点之后，需要进一步获取立方体的3D 角点，作者分两种情况进行讨论：</p>
 <p><strong>情况一 任意位姿的物体：</strong>作者使用PnP solver 来求解通用立方体的3D 位置和维度（缺少尺度参数，因为是单目相机）。在物体坐标系（原点设在物体中心）中，3D 立方体的8个顶点坐标可表示为 $[\pm d_x, \pm d_y, \pm d_z]/2$ ，则2D 角点 $p_1$ 可由相应的3D 角点通过下式获取：</p>
 <p><img src="/2024/01/31/cubeslam/f2.png" alt="f2" title="formula 2"></p>
 <p>其中，$\pi$ 表示相机投影方程。则式2可提供两个约束（2D 坐标分别代表两个约束方程），那么，选取4个邻接角点（如1，2，4，7）即可得到全约束方程（除了尺度参数）。</p>
 <p><strong>情况二 位于地面上的物体：</strong>对于位于地面上的物体，可以大幅简化情况一的求解过程并获取<strong>尺度参数</strong>。在地平面上构建世界坐标系，则物体的roll/pitch 角均为0，这里不再使用复杂的PnP solver，而是直接将8个2D 角点逆投影至3D 地平面，然后计算其他垂直角，从而组成一个3D 立方体；该方法<strong>高效且有解析表达式</strong>，如位于3D 地平面上的角点5，使用 $[\mathbf{n}, m]$ 来表示（相机坐标系的法向量和距离），则3D 角点 $P_5$ 可通过求<strong>逆投影线</strong> $K^{-1}p_5$ 与地平面的交点获取：</p>
 <p><img src="/2024/01/31/cubeslam/f3.png" alt="f3" title="formula 3"></p>
 <p>尺度参数由投影过程中<strong>相机的高度</strong>来决定。</p>
-<h3 id="Sample-VP-and-Summary"><a href="#Sample-VP-and-Summary" class="headerlink" title="Sample VP and Summary"></a>Sample VP and Summary</h3><p>经过上述分析，3D 立方体的估计问题变为了如何获取三个VPs 以及一个 2D 角点。从式1可得，VPs 通过物体旋转矩阵获取，尽管可通过深度学习来预测物体的旋转矩阵，但是为了<strong>更好的泛化性</strong>，作者选择<strong>手动采样旋转矩阵</strong>，并对它们进行<strong>评分</strong>。本文只考虑位于地面上的物体，因此只需要相机的roll/pitch 角和物体的yaw 角，对于多视角视频数据，作者使用SLAM 来估计相机位姿，因此使得采样空间大幅减小且更为准确。</p>
+<h3 id="3-1-4-Sample-VP-and-Summary"><a href="#3-1-4-Sample-VP-and-Summary" class="headerlink" title="3.1.4 Sample VP and Summary"></a>3.1.4 Sample VP and Summary</h3><p>经过上述分析，3D 立方体的估计问题变为了如何获取三个VPs 以及一个 2D 角点。从式1可得，VPs 通过物体旋转矩阵获取，尽管可通过深度学习来预测物体的旋转矩阵，但是为了<strong>更好的泛化性</strong>，作者选择<strong>手动采样旋转矩阵</strong>，并对它们进行<strong>评分</strong>。本文只考虑位于地面上的物体，因此只需要相机的roll/pitch 角和物体的yaw 角，对于多视角视频数据，作者使用SLAM 来估计相机位姿，因此使得采样空间大幅减小且更为准确。</p>
 <h2 id="3-2-Proposal-Scoring"><a href="#3-2-Proposal-Scoring" class="headerlink" title="3.2 Proposal Scoring"></a>3.2 Proposal Scoring</h2><p>在获取了许多立方体proposals 后，作者定义损失函数来进行评分，如Fig. 3所示。</p>
 <p><img src="/2024/01/31/cubeslam/fig3.png" alt="fig3" title="figure 3"></p>
 <p>作者提出了不同的损失函数，如语义分割、edge distance、HOG 特征等，最终，作者使用了将立方体和图片边特征进行对齐的快速有效的损失函数，该方法对于具有清晰边缘的物体效果较好，但是由于VP 和鲁棒边滤波的约束，使得其对于自行车、马桶等效果也不差。</p>
@@ -358,8 +358,7 @@
 <p>其中，$c, s$ 分别表示2D bbox 的中心坐标和长宽尺寸；因此，4维矩形误差表示为：</p>
 <p><img src="/2024/01/31/cubeslam/f10.png" alt="f10" title="formula 10"></p>
 <p>该观测误差较式8表示的3D 观测误差有着小得多的不确定性，因为2D 物体检测相较于3D 检测<strong>通常更准确</strong>；但同时也丢失了不少信息，因为许多不同的3D 立方体可以投影为相同的2D 矩形，因此需要更多观测信息来约束相机位姿和立方体。</p>
-<p>作者表示，由于<strong>复杂的检测过程</strong>，对误差协方差矩阵 $\sum$ 或者Hessian 矩阵 W 的建模和估计相较于特征点来说要更难，因此，作者对高语义置信度和几何相似物体赋予<strong>更高的权重</strong>，假设立方体与相机之间距离为 d，物体检测概率为 p，则对于KITTI 数据集设定以下权重参数：$w = p \times max(70-d, 0)/50$ ，其中，70</p>
-<p>m是截断距离，该参数对不同的数据集会有不同的取值。</p>
+<p>作者表示，由于<strong>复杂的检测过程</strong>，对误差协方差矩阵 $\sum$ 或者Hessian 矩阵 W 的建模和估计相较于特征点来说要更难，因此，作者对高语义置信度和几何相似物体赋予<strong>更高的权重</strong>，假设立方体与相机之间距离为 d，物体检测概率为 p，则对于KITTI 数据集设定以下权重参数：$w = p \times max(70-d, 0)/50$ ，其中，70m是截断距离，该参数对不同的数据集会有不同的取值。</p>
 <h3 id="4-2-2-Object-Point-Measurement"><a href="#4-2-2-Object-Point-Measurement" class="headerlink" title="4.2.2 Object-Point Measurement"></a>4.2.2 Object-Point Measurement</h3><p>特征点与物体可以相互提供约束，如果点 P 属于某个物体，如Fig. 4（b）所示，则其应该位于3D 立方体内部。作者首先将特征点转换至立方体坐标系中，然后与立方体尺寸进行比较来获取3D 误差：</p>
 <p><img src="/2024/01/31/cubeslam/f11.png" alt="f11" title="formula 11"></p>
 <h3 id="4-2-3-Camera-Point-Measurement"><a href="#4-2-3-Camera-Point-Measurement" class="headerlink" title="4.2.3 Camera-Point Measurement"></a>4.2.3 Camera-Point Measurement</h3><p>使用标准的3D 点重投影误差作为相机-特征点观测误差：</p>
@@ -2477,6 +2476,43 @@
 <p><img src="/2024/02/27/yu2021/f6.png" alt="f6" title="formula 6"></p>
 <p>作者判定，若得分 $s_{k, t}$ 超过组合数量的一半，则判定潜在动态点 $k$ 为真实动态点并剔除，否则保留为静态特征点。SPR 效果如Fig. 5所示。</p>
 <p><img src="/2024/02/27/yu2021/fig5.png" alt="fig5" title="figure 5"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 The STDyn-SLAM_A Stereo Vision and Semantic Segmentation Approach for VSLAM in Dynamic Outdoor Environments</title>
+    <url>/2024/02/28/stdyn-slam/</url>
+    <content><![CDATA[<p>Esparza, Daniela, and Gerardo Flores. “The STDyn-SLAM: A Stereo Vision and Semantic Segmentation Approach for VSLAM in Dynamic Outdoor Environments.” <em>IEEE Access</em> 10 (2022): 18201–9. <a href="https://doi.org/10.1109/ACCESS.2022.3149885">https://doi.org/10.1109/ACCESS.2022.3149885</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献如下：</p>
+<ul>
+<li>提出一个针对动态环境的立体SLAM 算法——STDyn-SLAM，结合<strong>语义分割</strong>神经网络和<strong>几何约束</strong>对动态物体进行剔除；</li>
+<li>立体相机的深度图用于构建3D 八叉树地图重建，深度图对于本SLAM 不是必要的；</li>
+<li>利用公开数据集进行测试，并于SOTA 方法进行对比；</li>
+<li>开源代码：<a href="https://github.com/DanielaEsparza/STDyn-SLAM">https://github.com/DanielaEsparza/STDyn-SLAM</a></li>
+</ul>
+<span id="more"></span>
+<h1 id="3-Method"><a href="#3-Method" class="headerlink" title="3 Method"></a>3 Method</h1><p>本文提出的STDyn-SLAM 算法框架如Fig. 2所示，本系统基于ORB-SLAM2 算法：</p>
+<p><img src="/2024/02/28/stdyn-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-Stereo-Process"><a href="#3-1-Stereo-Process" class="headerlink" title="3.1 Stereo Process"></a>3.1 Stereo Process</h2><p>对立体图片的处理主要包含三个部分：</p>
+<ul>
+<li>ORB 特征提取</li>
+<li>光流跟踪</li>
+<li>对极几何</li>
+</ul>
+<p>首先对当前左右图像和前一帧左边图像进行ORB 特征提取；为了避免神经网络检测动态物体失败的情况，本系统计算当前与前一帧左图之间的<strong>光流</strong>，值得注意的是，这些光流点（Harris 点）需要与ORB 特征点<strong>保持不同</strong>，舍弃那些在/靠近边缘角点上的光流点；根据<strong>基础矩阵</strong>、<strong>ORB 特征点</strong>以及<strong>光流点</strong>来计算<strong>极线</strong>，然后将当前帧匹配的特征点映射到前一帧，根据极线与投影特征点之间的距离来判断是否属于外点。</p>
+<h2 id="3-2-Artificial-Neural-Network‘s-Architecture"><a href="#3-2-Artificial-Neural-Network‘s-Architecture" class="headerlink" title="3.2 Artificial Neural Network‘s Architecture"></a>3.2 Artificial Neural Network‘s Architecture</h2><p>本算法使用SegNet 作为语义分割网络。</p>
+<h3 id="3-2-1-Outliers-Removal"><a href="#3-2-1-Outliers-Removal" class="headerlink" title="3.2.1 Outliers Removal"></a>3.2.1 Outliers Removal</h3><p>Fig. 3展示了判断投影点的三种情况，设定一个阈值进行外点的筛选。</p>
+<p><img src="/2024/02/28/stdyn-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<p>利用语义分割结果来剔除属于<strong>潜在动态物体</strong>上的ORB 特征点，如汽车。</p>
+<h3 id="3-2-3-3D-Reconstruction"><a href="#3-2-3-3D-Reconstruction" class="headerlink" title="3.2.3 3D Reconstruction"></a>3.2.3 3D Reconstruction</h3><p>利用左图、语义分割图以及利用视觉里程计得到的深度图进行3D 重建，值得注意的是，本算法<strong>只对左图</strong>进行语义分割、光流跟踪以及几何约束，以减少时间消耗。</p>
 ]]></content>
       <categories>
         <category>SLAM</category>
