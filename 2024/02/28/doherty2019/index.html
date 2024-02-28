@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Doherty, Kevin, Dehann Fourie, and John Leonard. “Multimodal Semantic SLAM with Probabilistic Data Association.” In 2019 International Conference on Robotics and Automation (ICRA), 2419–25. Montreal,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Multimodal Semantic SLAM with Probabilistic Data Association">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/28/doherty2019/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Doherty, Kevin, Dehann Fourie, and John Leonard. “Multimodal Semantic SLAM with Probabilistic Data Association.” In 2019 International Conference on Robotics and Automation (ICRA), 2419–25. Montreal,">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/f2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/f7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/f8.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/f10.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/f11.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/f12.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/f13.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/f14.png">
+<meta property="article:published_time" content="2024-02-28T08:50:40.000Z">
+<meta property="article:modified_time" content="2024-02-28T08:56:59.859Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Map Match">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/28/doherty2019/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/28/doherty2019/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Multimodal Semantic SLAM with Probabilistic Data Association | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/28/doherty2019/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Multimodal Semantic SLAM with Probabilistic Data Association
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-28 16:50:40 / 修改时间：16:56:59" itemprop="dateCreated datePublished" datetime="2024-02-28T16:50:40+08:00">2024-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Map-Match/" itemprop="url" rel="index"><span itemprop="name">Map Match</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Doherty, Kevin, Dehann Fourie, and John Leonard. “Multimodal Semantic SLAM with Probabilistic Data Association.” In <em>2019 International Conference on Robotics and Automation (ICRA)</em>, 2419–25. Montreal, QC, Canada: IEEE, 2019. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ICRA.2019.8794244">https://doi.org/10.1109/ICRA.2019.8794244</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p><strong>语义SLAM</strong> 可被分解为：</p>
+<ul>
+<li>一个<strong>离散</strong>的推理问题：决定物体种类与观测地标之间的联系（data association, DA)</li>
+<li>一个<strong>连续</strong>的推理问题：获取机器人的位姿和地标的位置。</li>
+</ul>
+<p>在模糊的DA 情况下，语义SLAM 通常不是一个高斯推理过程，现有的工作多是基于潜在的假设或者使用多重可能假设进行求解的。而作者提出了一种将DA 假设表示为一种<strong>等效非高斯模型的多模态形式</strong>的解算方法。</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>如图1所示，即便那些可以用高斯分布表示的观测模型在<strong>DA 和地标种类模糊</strong>的情况下也可以使用一个<strong>非高斯观测模型</strong>来表示。</p>
+<p><img src="/2024/02/28/doherty2019/fig1.png" alt="fig1" title="figure 1"></p>
+<p>本文做出的贡献：</p>
+<ol>
+<li>提出一个<strong>nonparametric belief propagation</strong> 方法，为带有模糊DA 的语义SLAM 进行<strong>后验推理</strong>；</li>
+<li>描述了<strong>multimodal semantic factors</strong> ，使得我们可以将<strong>不确定性</strong>包含到DA 和语义中，作为因子图中的<strong>非高斯因子</strong>，从而利用mm-iSAM (multimodal incremental smoothing and mapping) 进行位姿与地标的<strong>连续优化</strong>；</li>
+<li>在仿真与真实数据集中进行实验，证明了该方法在DA 和地标种类模糊方面的鲁棒性。</li>
+</ol>
+<h1 id="3-Semantic-SLAM-with-Ambiguous-Data-Association"><a href="#3-Semantic-SLAM-with-Ambiguous-Data-Association" class="headerlink" title="3 Semantic SLAM with Ambiguous Data Association"></a>3 Semantic SLAM with Ambiguous Data Association</h1><h2 id="3-1-Semantic-SLAM-with-Known-Data-Association"><a href="#3-1-Semantic-SLAM-with-Known-Data-Association" class="headerlink" title="3.1 Semantic SLAM with Known Data Association"></a>3.1 Semantic SLAM with Known Data Association</h2><p>本文使用最大后验估计理论进行求解：</p>
+<p><img src="/2024/02/28/doherty2019/f2.png" alt="f2" title="formula 2"></p>
+<h2 id="3-2-Probabilistic-Data-Association"><a href="#3-2-Probabilistic-Data-Association" class="headerlink" title="3.2 Probabilistic Data Association"></a>3.2 Probabilistic Data Association</h2><p>为解决带有模糊DA 的语义SLAM 问题，作者分两步<strong>交替计算</strong>DA 概率与位姿、地标位置：</p>
+<p>第一步，边缘化位姿与地标来计算DA 概率：</p>
+<p><img src="/2024/02/28/doherty2019/f7.png" alt="f7" title="formula 7"></p>
+<p>其中，$\eta_{\mathcal{D}}$ 为归一化常数；$\Theta = \{\mathcal{X}, \mathcal{L}\}$ 分别表示<strong>相机位姿与地标</strong>。</p>
+<p>第二步，边缘化DA 来获取位姿与地标的分布：</p>
+<p><img src="/2024/02/28/doherty2019/f8.png" alt="f8" title="formula 8"></p>
+<p>作者只在接收到观测之后进行一次迭代的DA 概率计算，从而减少了计算负担。</p>
+<h1 id="4-Multimodal-Semantic-SLAM"><a href="#4-Multimodal-Semantic-SLAM" class="headerlink" title="4 Multimodal Semantic SLAM"></a>4 Multimodal Semantic SLAM</h1><h2 id="4-1-Multimodal-iSAM"><a href="#4-1-Multimodal-iSAM" class="headerlink" title="4.1 Multimodal iSAM"></a>4.1 Multimodal iSAM</h2><p>SLAM 中的因子图表示为：</p>
+<p><img src="/2024/02/28/doherty2019/f10.png" alt="f10" title="formula 10"></p>
+<p>其中，$\varphi$ 表示<strong>观测因子</strong>，$\psi$ 表示<strong>先验因子</strong>。这里，因子图是一个间接的图模型，位姿与地标是被观测因子与先验因子连接起来的<strong>隐变量</strong>。每个变量的边缘分布可以使用<strong>belief propagation</strong> 进行解算，该方法在变量服从高斯分布时可以产生方便的分析形式。</p>
+<p>multimodal iSAM 利用<strong>nonparametric belief propagation</strong> 来容纳非高斯变量，该方法在没有高斯假设的情况下，使用Gibbs 采样和kernel density estimation 组合方法来近似所有连续状态变量的<strong>置信度</strong>。对于随机变量X：</p>
+<p><img src="/2024/02/28/doherty2019/f11.png" alt="f11" title="formula 11"></p>
+<p>其中，$\mathcal{N}$ 是多元高斯核 multivariate Gaussian kernel，每个核的中心位于一个采样 $x^{[n]}$ ， $w^{[n]}$ 是相应核的权重（采用均匀分布），而 $\sum^{[n]}$ 是相应高斯核的带宽，通过leave-one-out 交叉验证来获取。</p>
+<p>该方法的一个好处在于，在后验估计中不再需要直接表示多种潜在可能的modes，这种<strong>隐含表示</strong>将推理的复杂度从假设数量中<strong>解耦</strong>了出来，因为在近似边缘化中的计算只依赖于采样的<strong>固定数量</strong>。结果就是，具有非常低概率的modes 在近似边缘分布中不太可能会出现，但是这些modes 也不会直接被舍弃，会继续存在于因子图中，这样那些后面变得更有可能的modes 可以得到<strong>恢复</strong>。</p>
+<h2 id="3-2-Multimodal-Semantic-Factors"><a href="#3-2-Multimodal-Semantic-Factors" class="headerlink" title="3.2 Multimodal Semantic Factors"></a>3.2 Multimodal Semantic Factors</h2><p>设定一个语义观测模型因子为</p>
+<p>$p(y_t^k | x_t, l_j) = p(y_t^{k,c} | l_j^c)p(y_t^{k,r} | x_t, l_j)p(y_t^{k,b} | x_t, l_j)$</p>
+<p>其中，$y_t^{k,c}$ 表示路标<strong>类别</strong>，通过物体检测网络获取；$y_t^{k,r}$  表示到路标的<strong>距离</strong>；$y_t^{k,b}$ 表示物体的<strong>方位</strong>。</p>
+<p>假设 $p(y_t^{k,r} | x_t, l_j), p(y_t^{k,b} | x_t, l_j)$ 服从高斯分布，均值与方差分别为 $y_t^{k,r}$  ，$y_t^{k,b}$  和 $\sigma_t^{2,k,r}, \sigma_t^{2,k,b}$ 。</p>
+<p>假设一个统一的先验DA：</p>
+<p><img src="/2024/02/28/doherty2019/f12.png" alt="f12" title="formula 12"></p>
+<p>其中，$\mathbb{D}\{d_t^k = j\} = \{\mathcal{D}_t \in \mathbb{D}_t | d_t^k = j\}$ 表示在时间t 所有可能的数据关联集合，其中观测 k 与地标 j 相关联。</p>
+<p>在给定数据关联 $d_t^k$  情况下边缘化位姿估计、地标位置和种类，来计算每个观测 $y_t^k$  的似然：</p>
+<p><img src="/2024/02/28/doherty2019/f13.png" alt="f13" title="formula 13"></p>
+<p>上式中，使用<strong>采样</strong>来逼近位姿分布上的积分计算，对于DA 计算，作者采纳了一个最大似然模型来简化地标位置的积分计算，作者发现该方法在高斯分布模型上效果很好，对于非高斯模型可以使用基于采样的逼近策略来近似。</p>
+<p>对于属于集合 $\mathcal{J} \subseteq\mathcal{L}$ 中的所有地标 $l_j$ ，给定 $\hat{p}(d_t^k = j)$ ，一个multimodal 语义因子将位姿 $x_t$ 与 $\mathcal{J}$  中的每一个候选联系起来：</p>
+<p><img src="/2024/02/28/doherty2019/f14.png" alt="f14" title="formula 14"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Map-Match/" rel="tag"><i class="fa fa-tag"></i> Map Match</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/28/stdyn-slam/" rel="prev" title="论文记录 The STDyn-SLAM_A Stereo Vision and Semantic Segmentation Approach for VSLAM in Dynamic Outdoor Environments">
+      <i class="fa fa-chevron-left"></i> 论文记录 The STDyn-SLAM_A Stereo Vision and Semantic Segmentation Approach for VSLAM in Dynamic Outdoor Environments
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/02/28/zhao2019/" rel="next" title="论文记录 Visual-Based Semantic SLAM with Landmarks for Large-Scale Outdoor Environment">
+      论文记录 Visual-Based Semantic SLAM with Landmarks for Large-Scale Outdoor Environment <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Semantic-SLAM-with-Ambiguous-Data-Association"><span class="nav-text">3 Semantic SLAM with Ambiguous Data Association</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Semantic-SLAM-with-Known-Data-Association"><span class="nav-text">3.1 Semantic SLAM with Known Data Association</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Probabilistic-Data-Association"><span class="nav-text">3.2 Probabilistic Data Association</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Multimodal-Semantic-SLAM"><span class="nav-text">4 Multimodal Semantic SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Multimodal-iSAM"><span class="nav-text">4.1 Multimodal iSAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Multimodal-Semantic-Factors"><span class="nav-text">3.2 Multimodal Semantic Factors</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

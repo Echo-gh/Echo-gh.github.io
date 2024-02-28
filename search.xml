@@ -2524,4 +2524,110 @@
         <tag>Semantic</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 Multimodal Semantic SLAM with Probabilistic Data Association</title>
+    <url>/2024/02/28/doherty2019/</url>
+    <content><![CDATA[<p>Doherty, Kevin, Dehann Fourie, and John Leonard. “Multimodal Semantic SLAM with Probabilistic Data Association.” In <em>2019 International Conference on Robotics and Automation (ICRA)</em>, 2419–25. Montreal, QC, Canada: IEEE, 2019. <a href="https://doi.org/10.1109/ICRA.2019.8794244">https://doi.org/10.1109/ICRA.2019.8794244</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p><strong>语义SLAM</strong> 可被分解为：</p>
+<ul>
+<li>一个<strong>离散</strong>的推理问题：决定物体种类与观测地标之间的联系（data association, DA)</li>
+<li>一个<strong>连续</strong>的推理问题：获取机器人的位姿和地标的位置。</li>
+</ul>
+<p>在模糊的DA 情况下，语义SLAM 通常不是一个高斯推理过程，现有的工作多是基于潜在的假设或者使用多重可能假设进行求解的。而作者提出了一种将DA 假设表示为一种<strong>等效非高斯模型的多模态形式</strong>的解算方法。</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>如图1所示，即便那些可以用高斯分布表示的观测模型在<strong>DA 和地标种类模糊</strong>的情况下也可以使用一个<strong>非高斯观测模型</strong>来表示。</p>
+<p><img src="/2024/02/28/doherty2019/fig1.png" alt="fig1" title="figure 1"></p>
+<p>本文做出的贡献：</p>
+<ol>
+<li>提出一个<strong>nonparametric belief propagation</strong> 方法，为带有模糊DA 的语义SLAM 进行<strong>后验推理</strong>；</li>
+<li>描述了<strong>multimodal semantic factors</strong> ，使得我们可以将<strong>不确定性</strong>包含到DA 和语义中，作为因子图中的<strong>非高斯因子</strong>，从而利用mm-iSAM (multimodal incremental smoothing and mapping) 进行位姿与地标的<strong>连续优化</strong>；</li>
+<li>在仿真与真实数据集中进行实验，证明了该方法在DA 和地标种类模糊方面的鲁棒性。</li>
+</ol>
+<h1 id="3-Semantic-SLAM-with-Ambiguous-Data-Association"><a href="#3-Semantic-SLAM-with-Ambiguous-Data-Association" class="headerlink" title="3 Semantic SLAM with Ambiguous Data Association"></a>3 Semantic SLAM with Ambiguous Data Association</h1><h2 id="3-1-Semantic-SLAM-with-Known-Data-Association"><a href="#3-1-Semantic-SLAM-with-Known-Data-Association" class="headerlink" title="3.1 Semantic SLAM with Known Data Association"></a>3.1 Semantic SLAM with Known Data Association</h2><p>本文使用最大后验估计理论进行求解：</p>
+<p><img src="/2024/02/28/doherty2019/f2.png" alt="f2" title="formula 2"></p>
+<h2 id="3-2-Probabilistic-Data-Association"><a href="#3-2-Probabilistic-Data-Association" class="headerlink" title="3.2 Probabilistic Data Association"></a>3.2 Probabilistic Data Association</h2><p>为解决带有模糊DA 的语义SLAM 问题，作者分两步<strong>交替计算</strong>DA 概率与位姿、地标位置：</p>
+<p>第一步，边缘化位姿与地标来计算DA 概率：</p>
+<p><img src="/2024/02/28/doherty2019/f7.png" alt="f7" title="formula 7"></p>
+<p>其中，$\eta_{\mathcal{D}}$ 为归一化常数；$\Theta = \{\mathcal{X}, \mathcal{L}\}$ 分别表示<strong>相机位姿与地标</strong>。</p>
+<p>第二步，边缘化DA 来获取位姿与地标的分布：</p>
+<p><img src="/2024/02/28/doherty2019/f8.png" alt="f8" title="formula 8"></p>
+<p>作者只在接收到观测之后进行一次迭代的DA 概率计算，从而减少了计算负担。</p>
+<h1 id="4-Multimodal-Semantic-SLAM"><a href="#4-Multimodal-Semantic-SLAM" class="headerlink" title="4 Multimodal Semantic SLAM"></a>4 Multimodal Semantic SLAM</h1><h2 id="4-1-Multimodal-iSAM"><a href="#4-1-Multimodal-iSAM" class="headerlink" title="4.1 Multimodal iSAM"></a>4.1 Multimodal iSAM</h2><p>SLAM 中的因子图表示为：</p>
+<p><img src="/2024/02/28/doherty2019/f10.png" alt="f10" title="formula 10"></p>
+<p>其中，$\varphi$ 表示<strong>观测因子</strong>，$\psi$ 表示<strong>先验因子</strong>。这里，因子图是一个间接的图模型，位姿与地标是被观测因子与先验因子连接起来的<strong>隐变量</strong>。每个变量的边缘分布可以使用<strong>belief propagation</strong> 进行解算，该方法在变量服从高斯分布时可以产生方便的分析形式。</p>
+<p>multimodal iSAM 利用<strong>nonparametric belief propagation</strong> 来容纳非高斯变量，该方法在没有高斯假设的情况下，使用Gibbs 采样和kernel density estimation 组合方法来近似所有连续状态变量的<strong>置信度</strong>。对于随机变量X：</p>
+<p><img src="/2024/02/28/doherty2019/f11.png" alt="f11" title="formula 11"></p>
+<p>其中，$\mathcal{N}$ 是多元高斯核 multivariate Gaussian kernel，每个核的中心位于一个采样 $x^{[n]}$ ， $w^{[n]}$ 是相应核的权重（采用均匀分布），而 $\sum^{[n]}$ 是相应高斯核的带宽，通过leave-one-out 交叉验证来获取。</p>
+<p>该方法的一个好处在于，在后验估计中不再需要直接表示多种潜在可能的modes，这种<strong>隐含表示</strong>将推理的复杂度从假设数量中<strong>解耦</strong>了出来，因为在近似边缘化中的计算只依赖于采样的<strong>固定数量</strong>。结果就是，具有非常低概率的modes 在近似边缘分布中不太可能会出现，但是这些modes 也不会直接被舍弃，会继续存在于因子图中，这样那些后面变得更有可能的modes 可以得到<strong>恢复</strong>。</p>
+<h2 id="3-2-Multimodal-Semantic-Factors"><a href="#3-2-Multimodal-Semantic-Factors" class="headerlink" title="3.2 Multimodal Semantic Factors"></a>3.2 Multimodal Semantic Factors</h2><p>设定一个语义观测模型因子为</p>
+<p>$p(y_t^k | x_t, l_j) = p(y_t^{k,c} | l_j^c)p(y_t^{k,r} | x_t, l_j)p(y_t^{k,b} | x_t, l_j)$</p>
+<p>其中，$y_t^{k,c}$ 表示路标<strong>类别</strong>，通过物体检测网络获取；$y_t^{k,r}$  表示到路标的<strong>距离</strong>；$y_t^{k,b}$ 表示物体的<strong>方位</strong>。</p>
+<p>假设 $p(y_t^{k,r} | x_t, l_j), p(y_t^{k,b} | x_t, l_j)$ 服从高斯分布，均值与方差分别为 $y_t^{k,r}$  ，$y_t^{k,b}$  和 $\sigma_t^{2,k,r}, \sigma_t^{2,k,b}$ 。</p>
+<p>假设一个统一的先验DA：</p>
+<p><img src="/2024/02/28/doherty2019/f12.png" alt="f12" title="formula 12"></p>
+<p>其中，$\mathbb{D}\{d_t^k = j\} = \{\mathcal{D}_t \in \mathbb{D}_t | d_t^k = j\}$ 表示在时间t 所有可能的数据关联集合，其中观测 k 与地标 j 相关联。</p>
+<p>在给定数据关联 $d_t^k$  情况下边缘化位姿估计、地标位置和种类，来计算每个观测 $y_t^k$  的似然：</p>
+<p><img src="/2024/02/28/doherty2019/f13.png" alt="f13" title="formula 13"></p>
+<p>上式中，使用<strong>采样</strong>来逼近位姿分布上的积分计算，对于DA 计算，作者采纳了一个最大似然模型来简化地标位置的积分计算，作者发现该方法在高斯分布模型上效果很好，对于非高斯模型可以使用基于采样的逼近策略来近似。</p>
+<p>对于属于集合 $\mathcal{J} \subseteq\mathcal{L}$ 中的所有地标 $l_j$ ，给定 $\hat{p}(d_t^k = j)$ ，一个multimodal 语义因子将位姿 $x_t$ 与 $\mathcal{J}$  中的每一个候选联系起来：</p>
+<p><img src="/2024/02/28/doherty2019/f14.png" alt="f14" title="formula 14"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Visual-Based Semantic SLAM with Landmarks for Large-Scale Outdoor Environment</title>
+    <url>/2024/02/28/zhao2019/</url>
+    <content><![CDATA[<p>Zhao, Zirui, Yijun Mao, Yan Ding, Pengju Ren, and Nanning Zheng. “Visual-Based Semantic SLAM with Landmarks for Large-Scale Outdoor Environment.” In <em>2019 2nd China Symposium on Cognitive Computing and Hybrid Intelligence (CCHI)</em>, 149–54, 2019. <a href="https://doi.org/10.1109/CCHI.2019.8901910">https://doi.org/10.1109/CCHI.2019.8901910</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ul>
+<li>通过将视觉SLAM 地图和语义分割信息进行融合，来构建大型户外环境的<strong>语义3D 地图</strong>；</li>
+<li>扩充KITTI 数据集以包含<strong>GPS 信息</strong>，以及从<strong>Google Map 上获取的相关地标标签</strong>；</li>
+<li>提出一个基于语义地图将真实世界的地标和点云地图联系起来，以构建一个<strong>拓扑地图</strong>的方法。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-Approach"><a href="#3-Approach" class="headerlink" title="3 Approach"></a>3 Approach</h1><h2 id="3-1-System-overview"><a href="#3-1-System-overview" class="headerlink" title="3.1 System overview"></a>3.1 System overview</h2><p>系统框架如Fig. 1所示：</p>
+<p><img src="/2024/02/28/zhao2019/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-2-Semantic-mapping"><a href="#3-2-Semantic-mapping" class="headerlink" title="3.2 Semantic mapping"></a>3.2 Semantic mapping</h2><p>作者使用PSPNet-101 模型对图片进行语义分割，利用TensorRT 进行实施<strong>推理加速</strong>。</p>
+<p>利用ORB-SLAM2 进行<strong>3D 重建</strong>和<strong>轨迹估计</strong>。</p>
+<p>利用<strong>贝叶斯更新准则</strong>来为每个地图点的<strong>语义标签概率分布</strong>进行更新。</p>
+<p>3D 点云坐标与像素坐标的转换关系：</p>
+<p><img src="/2024/02/28/zhao2019/f1.png" alt="f1" title="formula 1"></p>
+<p>在特征点被投影至相机坐标系后，可得到每个特征点在19个类别标签上的<strong>概率分布</strong>：</p>
+<p><img src="/2024/02/28/zhao2019/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$L_m(x_m, y_m, z_m)$ 表示地图点 $(x_m, y_m, z_m)$ 的类别标签；$F_s$ 表示语义分割后当前帧图片像素在每个类别标签上的概率分布。此外，由于同一特征点可在多帧图像中被观测到，因此需要进行<strong>多观测数据融合</strong>操作，此处利用<strong>贝叶斯更新</strong>：</p>
+<p><img src="/2024/02/28/zhao2019/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，Z 是归一化常数；$l_k^m$ 表示地图点 m 在帧 k 上的标签；$p(l_l^m | F_{1:k}, P_{1:k})$ 表示从第一帧到 k 帧的<strong>累积概率分布</strong>。</p>
+<p>最终，每个地图点的标签通过选取最大概率值来确定：</p>
+<p><img src="/2024/02/28/zhao2019/f6.png" alt="f6" title="formula 6"></p>
+<p>在实时融合过程中，每个地图点会包含一个语义标签以及一个语义概率分布。</p>
+<h2 id="3-3-GPS-fusion"><a href="#3-3-GPS-fusion" class="headerlink" title="3.3 GPS fusion"></a>3.3 GPS fusion</h2><p>为了将<strong>建筑地标</strong>和<strong>点云</strong>在像素级别上联系起来以产生<strong>语义点云</strong>，作者将建筑地标的WGS84 坐标转换至点云坐标系下。作者发现从Goole Map API 获取的WGS84 坐标系经纬度不适合直接转换，因此，首先将其转换至<strong>Cartesian 坐标系</strong>下，单位是米；然后利用现有的方法将其与<strong>点云坐标系</strong>进行对齐。设$P_A$ 为Cartesian 坐标下的点云，其中心为 $centroid_A$ ；$P_B$ 为位姿坐标系下的点云，其中心为 $centroid_B$ ，由于两者的尺度不一致，还需进行尺度转换。旋转矩阵与平移矩阵的计算如下所示：</p>
+<p><img src="/2024/02/28/zhao2019/f7.png" alt="f7" title="formula 7"></p>
+<p><img src="/2024/02/28/zhao2019/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，$\lambda$ 为<strong>尺度因子</strong>，计算方式如下：</p>
+<p><img src="/2024/02/28/zhao2019/f11.png" alt="f11" title="formula 11"></p>
+<h2 id="3-4-Post-process"><a href="#3-4-Post-process" class="headerlink" title="3.4 Post process"></a>3.4 Post process</h2><p>利用地标的GPS 信息和语义标签，可以将地标级数据和3D 重建结果融合起来，可方便用于任务导向的导航问题。作者使用<strong>基于模糊数学的方法</strong> fuzzy-mathematics-based method 进行地标数据融合：不关注地标位置的准确性，而是关注<strong>地标位置的归属分布</strong>，这点是模仿人类感知习惯的。作者尝试基于<strong>高斯概率分布</strong>来评估位置归属性，如果一个位置接近某个地标，那么根据高斯分布该位置的归属性会更高；<strong>归属性</strong>定义如下所示：</p>
+<p><img src="/2024/02/28/zhao2019/f13.png" alt="f13" title="formula 13"></p>
+<p>其中，$(x_l, y_l)$ 表示地标位置；$\sigma$ 表示高斯分布的标准差。</p>
+<p>拓扑地图如Fig. 3所示，其只包含地标之间的<strong>可抵达关系</strong>以及它们的<strong>几何关系</strong>，拓扑地图中只有节点和边，适合全局路径规划。</p>
+<p><img src="/2024/02/28/zhao2019/fig3.png" alt="fig3" title="figure 3"></p>
+<h1 id="5-Conclusion"><a href="#5-Conclusion" class="headerlink" title="5 Conclusion"></a>5 Conclusion</h1><p>现有的工作主要聚焦于准确性或者实时性能，但这对于<strong>机器人整体感知层面</strong>的提升较小；作者利用带有GPS 信息的KITTI 数据集进行<strong>地标语义融合</strong>以及<strong>拓扑语义制图</strong>，结合Google Map API，可构建包含<strong>真实名字与位置信息的地标</strong>，使得离线人机语言交互、任务导向的导航或者地标级的定位成为可能。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
 </search>
