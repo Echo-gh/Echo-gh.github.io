@@ -2636,6 +2636,7 @@
     <content><![CDATA[<p>Deng, Liuyuan, Ming Yang, Bing Hu, Tianyi Li, Hao Li, and Chunxiang Wang. “Semantic Segmentation-Based Lane-Level Localization Using Around View Monitoring System.” <em>IEEE Sensors Journal</em> 19, no. 21 (November 1, 2019): 10077–86. <a href="https://doi.org/10.1109/JSEN.2019.2929135">https://doi.org/10.1109/JSEN.2019.2929135</a>.</p>
 <h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>一般来讲，对于使用视觉相机进行定位的方法是：通过从图片中提取特征，并与一个先验地图进行匹配从而得到汽车位置；许多方法是使用前置单目相机或立体相机来采集数据，但是在交通繁忙的场景中，其field of view (FOV) 容易被其他车辆干扰导致效果不佳。本文提出的方法采用<strong>Around View Monitoring (AVM)</strong> 系统来减小环境干扰的影响。</p>
 <p>AVM 系统中鱼眼相机采集到的图片通常会进行去畸变、合成一张顶视图片（鸟瞰视角图片，如下图所示），若要通过检测车道线等标志进行车辆定位，经过处理后的图片覆盖范围有限，仅能获取当前车道线内的路标，难以区分道路上不同车道线之间的区别；故本文使用鱼眼相机采集到的原始图片进行车道线级别的定位。</p>
+<span id="more"></span>
 <p><img src="/2024/02/29/deng2019/fig1.png" alt="fig1" title="figure 1"></p>
 <p>对于鱼眼相机图片的使用存在两个问题：</p>
 <ol>
