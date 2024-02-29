@@ -2630,4 +2630,100 @@
         <tag>Map Match</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 Semantic Segmentation-Based Lane-Level Localization Using Around View Monitoring System</title>
+    <url>/2024/02/29/deng2019/</url>
+    <content><![CDATA[<p>Deng, Liuyuan, Ming Yang, Bing Hu, Tianyi Li, Hao Li, and Chunxiang Wang. “Semantic Segmentation-Based Lane-Level Localization Using Around View Monitoring System.” <em>IEEE Sensors Journal</em> 19, no. 21 (November 1, 2019): 10077–86. <a href="https://doi.org/10.1109/JSEN.2019.2929135">https://doi.org/10.1109/JSEN.2019.2929135</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>一般来讲，对于使用视觉相机进行定位的方法是：通过从图片中提取特征，并与一个先验地图进行匹配从而得到汽车位置；许多方法是使用前置单目相机或立体相机来采集数据，但是在交通繁忙的场景中，其field of view (FOV) 容易被其他车辆干扰导致效果不佳。本文提出的方法采用<strong>Around View Monitoring (AVM)</strong> 系统来减小环境干扰的影响。</p>
+<p>AVM 系统中鱼眼相机采集到的图片通常会进行去畸变、合成一张顶视图片（鸟瞰视角图片，如下图所示），若要通过检测车道线等标志进行车辆定位，经过处理后的图片覆盖范围有限，仅能获取当前车道线内的路标，难以区分道路上不同车道线之间的区别；故本文使用鱼眼相机采集到的原始图片进行车道线级别的定位。</p>
+<p><img src="/2024/02/29/deng2019/fig1.png" alt="fig1" title="figure 1"></p>
+<p>对于鱼眼相机图片的使用存在两个问题：</p>
+<ol>
+<li><strong>车辆周围存在动态物体的干扰</strong>：动态物体的干扰会导致定位的不稳定，为解决此问题，本文采用基于CNN 的语义分割来提取道路特征（如道路边界、标志等），同时利用语义场景理解，将动态物体进行剔除；</li>
+<li><strong>道路边界可以提供横向位置信息，但是当距离车辆比较远时会有比较大的不确定度</strong>：本文提出了<strong>Coarse-Scale Localization (CSL)</strong> 方法与<strong>Fine-Scale Localization (FSL)</strong> 方法相结合来实现精准定位，CSL 利用道路边界来估计一个粗略的位置，将该粗略位置作为FSL的初始值进行高精度定位。由于边界点具有区别度很大的不确定性，CSL 采用weight Iterative Closest Point （ICP) 来提高匹配准确度，并给出置信度。FSL 通过将车辆附近的路标与先验地图进行匹配，将该匹配结果息与运动信息相结合得到最终的车辆位置信息。</li>
+</ol>
+<p>本文做出的主要贡献：</p>
+<ol>
+<li>对AVM 系统的鱼眼相机采集到的图片进行语义分割实现对道路特征的提取：<ul>
+<li>利用语义环境感知来识别出正确的道路边界点，剔除动态物体的干扰；</li>
+<li>检测线形标志（车道线等）与非线形标志（箭头等）来提高横向与纵向的定位精度。</li>
+</ul>
+</li>
+<li>提出了 CSL 与 FSL 方法，充分利用具有不同精确度的道路特征来实现高精度定位；</li>
+<li>仅使用AVM系统、GPS、proprioceptive sensors (IMU 、里程计) 以及先验地图来实现城市环境车辆的分米级定位。</li>
+</ol>
+<h1 id="3-System-Framework"><a href="#3-System-Framework" class="headerlink" title="3 System Framework"></a>3 System Framework</h1><p>系统包括四大模块：detection, map manager, CSL and FSL。</p>
+<p><img src="/2024/02/29/deng2019/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-detection-module"><a href="#3-1-detection-module" class="headerlink" title="3-1 detection module"></a>3-1 detection module</h2><p>该模块检测道路边界与路标，并将检测到的图像像素转换为2D点：使用路标的轮廓点进行表示，使得不同的路标可以用统一的方式进行表示，有着更小的契合误差。</p>
+<h2 id="3-2-map-manager"><a href="#3-2-map-manager" class="headerlink" title="3-2 map manager"></a>3-2 map manager</h2><p>该模块包括先验<strong>道路边界地图与路标地图</strong>，GPS提供一个粗略的位置信息，根据地图中的道路结构进行约束，沿着车辆行驶方向对齐到距离最近的车道线中间线上的点。</p>
+<h2 id="3-3-CSL"><a href="#3-3-CSL" class="headerlink" title="3-3 CSL"></a>3-3 CSL</h2><p>该模块通过匹配道路边界线来提供一个粗略的位置信息，目标是输出一个横向定位精度小于半个车道宽度的位置信息作为FSL 的初始值。<strong>置信度计算与weighted ICP 是同时、独立进行的</strong>，如果置信度值低于设定的阈值，则判定匹配结果无效。</p>
+<h2 id="3-4-FSL"><a href="#3-4-FSL" class="headerlink" title="3-4 FSL"></a>3-4 FSL</h2><p>将检测到的2D道路标志点进行累积形成一个本地道路标志地图，然后将该地图与先验路标地图使用 ICP 进行匹配，得到车辆的位置信息。由于本地地图匹配结果通常包含<strong>未知的时间相关性</strong>，本文使用<strong>Split Covariance Intersection Filter (Split CIF)</strong> ——可被视为Kalman滤波器的泛化，擅长处理具有未知相关性的数据——来融合匹配结果与动作数据。</p>
+<h2 id="4-Semantic-Segmentation-Based-Road-Boundary-and-Road-Marking-Detection"><a href="#4-Semantic-Segmentation-Based-Road-Boundary-and-Road-Marking-Detection" class="headerlink" title="4 Semantic Segmentation-Based Road Boundary and Road Marking Detection"></a>4 Semantic Segmentation-Based Road Boundary and Road Marking Detection</h2><h2 id="4-1-Semantic-Segmentation-on-Raw-Fisheye-Images-From-AVM"><a href="#4-1-Semantic-Segmentation-on-Raw-Fisheye-Images-From-AVM" class="headerlink" title="4-1 Semantic Segmentation on Raw Fisheye Images From AVM"></a>4-1 Semantic Segmentation on Raw Fisheye Images From AVM</h2><p><img src="/2024/02/29/deng2019/f1.png" alt="f1" title="formula 1"></p>
+<p>I是输入图片，$\theta$ 是CNN 模型参数，L是语义分割种类数，本文设置为18，包括free space，静态与动态物体。</p>
+<h2 id="4-2-Road-Boundary-and-Road-Marking-Detection"><a href="#4-2-Road-Boundary-and-Road-Marking-Detection" class="headerlink" title="4-2 Road Boundary and Road Marking Detection"></a>4-2 Road Boundary and Road Marking Detection</h2><p>本文利用像素级语义信息的优势来区分真实与虚假的道路边界。</p>
+<p>将18个类别分为3个大类：free space (F), static objects (S), dynamic objects (D)。<strong>定义F与S的边界作为真正的道路边界，将F与D的边界作为虚假的边界</strong>。</p>
+<p><img src="/2024/02/29/deng2019/fig4.png" alt="fig4" title="figure 4"></p>
+<p>本文采用自下而上、列独立的搜索策略，如上图所示，搜索过程可并行处理，而且可以在GPU上高速运行。针对每一张图片，<strong>边界像素的数量等于图片的宽度（包括真边界与假边界）</strong>。真实边界点通过逆透视变换法 <strong>(Inverse Perspective Mapping, IPM)</strong> 转换至2D VCS (Vehicle Coordinate System) 边界点。</p>
+<p><img src="/2024/02/29/deng2019/fig5.png" alt="fig5" title="figure 5"></p>
+<p>路标的提取过程如上图所示，首先将鱼眼相机的语义分割图片经过IPM变换为顶视图片，然后根据像素级语义分割顶视图片计算路标的边缘：</p>
+<ul>
+<li>首先将语义分割图片转化为灰度图；</li>
+<li>然后利用一系列形态操作子morphological operators (Opening, Closing, Gradient) 对灰度图片去除噪点、获取路标边缘；</li>
+<li>将图像坐标系中的像素转换为2D VCS。</li>
+</ul>
+<h1 id="5-Coarse-Scale-Localization-Method"><a href="#5-Coarse-Scale-Localization-Method" class="headerlink" title="5 Coarse-Scale Localization Method"></a>5 Coarse-Scale Localization Method</h1><h2 id="5-1-Map-Matching-Based-on-Weighted-ICP"><a href="#5-1-Map-Matching-Based-on-Weighted-ICP" class="headerlink" title="5-1 Map Matching Based on Weighted ICP"></a>5-1 Map Matching Based on Weighted ICP</h2><p>通过IPM从鱼眼相机图片中获取的道路边界点有着不同的测量不确定度，该不确定度与相机和道路边界点之间的距离有关。因此，ICP 中的点对需要根据距离来赋予不同的权重。本文采用<strong>weighted ICP 进行地图匹配</strong>。</p>
+<p><img src="/2024/02/29/deng2019/f2.png" alt="f2" title="formula 2"></p>
+<p><img src="/2024/02/29/deng2019/f3.png" alt="f3" title="formula 3"></p>
+<p>权重$w_i$ 只与相机和边界点之间的距离$d_i$ 相关，当$d_i$足够小时权重设为0，即忽略该边界点。</p>
+<h2 id="5-2-Confidence-Computation"><a href="#5-2-Confidence-Computation" class="headerlink" title="5-2 Confidence Computation"></a>5-2 Confidence Computation</h2><p>当出现极端情况时CSL 不会输出位置信息，如当所有边界点都被车辆遮挡，或者边界点距离采样相机太远时。<strong>CSL 计算置信度来预估当前场景是否可靠</strong>。置信度取决于真实边界点的数量以及这些边界点与相机之间的距离。</p>
+<p><img src="/2024/02/29/deng2019/f4.png" alt="f4" title="formula 4"></p>
+<h1 id="6-Fine-Scale-Localization-Method"><a href="#6-Fine-Scale-Localization-Method" class="headerlink" title="6 Fine-Scale Localization Method"></a>6 Fine-Scale Localization Method</h1><h2 id="6-2-Fine-Position-Estimation"><a href="#6-2-Fine-Position-Estimation" class="headerlink" title="6-2 Fine Position Estimation"></a>6-2 Fine Position Estimation</h2><p>利用低成本IMU与里程计，积累短距离内采集到的路标边缘点来生成本地路标地图，比起只使用一帧图片中采集到的路标边缘点会提供更高的稳定性；与此同时，过多的采样点也会导致计算量激增，所以本文采取了一系列的措施来限制本地路标地图中的采样点数量。</p>
+<p>本地地图与先验地图通过ICP 进行匹配，计算ICP 的协方差，然后使用Split CIF 将匹配结果与运动数据相结合得到最终的定位结果。</p>
+<h1 id="7-Experimental-Results"><a href="#7-Experimental-Results" class="headerlink" title="7 Experimental Results"></a>7 Experimental Results</h1><h2 id="7-1-Road-Boundary-and-Road-Marking-Detection-Results"><a href="#7-1-Road-Boundary-and-Road-Marking-Detection-Results" class="headerlink" title="7-1 Road Boundary and Road Marking Detection Results"></a>7-1 Road Boundary and Road Marking Detection Results</h2><p>基于CNN 的鱼眼相机语义分割网络采用作者前作(Deng 等, 2020)中的架构，将真实采集到的鱼眼相机图片与转化得到的鱼眼相机图片共同训练多任务学习架构网络。</p>
+<p><img src="/2024/02/29/deng2019/fig7.png" alt="fig7" title="figure 7"></p>
+<p>根据上图道路边界检测结果，本文提出的方法可以很好地检测到边界点，而且可以区分正确与错误的边界点。</p>
+<p><img src="/2024/02/29/deng2019/fig8.png" alt="fig8" title="figure 8"></p>
+<p>上图是利用语义分割对路标点进行提取，路标点很少受到遮挡，这是因为我们只关注邻近区域内的路标点。</p>
+<h2 id="7-2-The-Results-of-Coarse-Scale-Localization"><a href="#7-2-The-Results-of-Coarse-Scale-Localization" class="headerlink" title="7-2 The Results of Coarse-Scale Localization"></a>7-2 The Results of Coarse-Scale Localization</h2><p><img src="/2024/02/29/deng2019/fig11.png" alt="fig11" title="figure 11"></p>
+<p>上图是标准ICP 与weighted ICP 解算结果对比，表明weighted ICP 的优势。</p>
+<p><img src="/2024/02/29/deng2019/fig12.png" alt="fig12" title="figure 12"></p>
+<p>上图是不同车道线时CSL 的输出结果，可以发现随着车道线数量的增加，<strong>横向误差逐渐增大、置信度逐渐下降，原因是道路边界与相机之间的距离变大，导致检测误差、系统误差增大，以及边界点的权重降低</strong>。</p>
+<p><img src="/2024/02/29/deng2019/fig13.png" alt="fig13" title="figure 13"></p>
+<p>上图是当道路边界被遮挡时的横向误差与置信度，图（a）右侧道路边界被大量遮挡，导致横向误差增大、置信度降低（因为真实边界点数量的减少）；图（b）左右两侧的道路边界几乎被完全遮挡，虽然匹配的横向误差不大，但是置信度过低表明结果不可靠。</p>
+<p><img src="/2024/02/29/deng2019/fig14.png" alt="fig14" title="figure 14"></p>
+<p>上图是在2.5km的测试路段CSL 的实验结果，算法使用单帧图片的数据进行解算，不使用跟踪：</p>
+<ul>
+<li>Root Mean Square Error (RMSE) 是0.26m，Max Absolute Error (MAE) 是1.55m；</li>
+<li>当置信度较低时说明边界线被大量遮挡（不考虑处于交叉路口的情况）；</li>
+<li>第2222帧到2774帧图片采集区域为三车道线区域（其余区域为4车道线）内置信度较高、横向误差较小，与理论分析相契合；</li>
+<li>当置信度低于阈值时，关闭CSL 模块，阈值是通过在大量不同道路场景下的测试来确定的。</li>
+</ul>
+<h2 id="7-3-The-Results-of-Fine-Scale-Localization"><a href="#7-3-The-Results-of-Fine-Scale-Localization" class="headerlink" title="7-3 The Results of Fine-Scale Localization"></a>7-3 The Results of Fine-Scale Localization</h2><p><img src="/2024/02/29/deng2019/fig15.png" alt="fig15" title="figure 15"></p>
+<p>对采集到的原始数据进行下采样，最终选择最小距离分辨率为0.08m，在保留地图细节的同时尺寸更小。</p>
+<p><img src="/2024/02/29/deng2019/fig16.png" alt="fig16" title="figure 16"></p>
+<p>注意上图中绿色点为本地生成的路标点，距离车辆越近点越稠密，这是因为采用了6-2节提到的dropping策略：<strong>越靠近车辆当前位置附近的点会有更小的轨迹推断误差dead reckoning error</strong>。</p>
+<ul>
+<li>图（a）是FSL 的初始化过程，使用CSL 的结果作为初始值，然后使用dead reckoning。<strong>一旦本地路标地图距离达到30m就开始进行地图匹配以矫正位置信息</strong>；</li>
+<li>图（b）、（c）分别是道路段、人行横道段的结果，箭头与斑马线会提供良好的横向与径向距离信息；</li>
+<li>图（d）显示了路口处的结果，在<strong>此处仅使用dead reckoning进行位置推断</strong>。</li>
+</ul>
+<p><img src="/2024/02/29/deng2019/t1.png" alt="t1" title="table 1"></p>
+<p><img src="/2024/02/29/deng2019/fig17.png" alt="fig17" title="figure 17"></p>
+<p>上图为FSL 的实验结果，观察可以发现：</p>
+<ul>
+<li>横向误差大部分情况下都小于0.1m，除了在路口阶段缺少路标的情况；</li>
+<li>径向误差比横向误差大得多，原因之一是径向距离信息（停止线、斑马线等）远少于横向距离信息（车道线等），另一个原因是径向距离更容易受到颠簸或俯仰角改变的影响bumps and pitch changes。</li>
+</ul>
+<p>本文方法是基于平面道路或者有着较小俯仰角变化的假设，利用IPM 来获取路标位置的；所以当出现颠簸，或者汽车刹车时，IPM 的假设基础不再满足，定位误差（特别是径向误差）会增大。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
 </search>
