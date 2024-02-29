@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Hu, Zhangfang, Jiang Zhao, Yuan Luo, and Junxiong Ou. “Semantic SLAM Based on Improved DeepLabv3+ in Dynamic Scenarios.” IEEE Access 10 (2022): 21160–68. https:&#x2F;&#x2F;doi.org&#x2F;10.1109&#x2F;ACCESS.2022.3154086. A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/29/hu2022/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Hu, Zhangfang, Jiang Zhao, Yuan Luo, and Junxiong Ou. “Semantic SLAM Based on Improved DeepLabv3+ in Dynamic Scenarios.” IEEE Access 10 (2022): 21160–68. https:&#x2F;&#x2F;doi.org&#x2F;10.1109&#x2F;ACCESS.2022.3154086. A">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/hu2022/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/hu2022/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/hu2022/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/hu2022/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/hu2022/f4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/hu2022/f5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/hu2022/fig6.png">
+<meta property="article:published_time" content="2024-02-29T14:57:43.000Z">
+<meta property="article:modified_time" content="2024-02-29T15:02:22.031Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="Dynamic SLAM">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/29/hu2022/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/29/hu2022/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/29/hu2022/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-29 22:57:43 / 修改时间：23:02:22" itemprop="dateCreated datePublished" datetime="2024-02-29T22:57:43+08:00">2024-02-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Hu, Zhangfang, Jiang Zhao, Yuan Luo, and Junxiong Ou. “Semantic SLAM Based on Improved DeepLabv3+ in Dynamic Scenarios.” <em>IEEE Access</em> 10 (2022): 21160–68. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ACCESS.2022.3154086">https://doi.org/10.1109/ACCESS.2022.3154086</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>本文提出动态场景中的语义SLAM 系统DeepLabv3+_SLAM 包含三个线程：<strong>ORB-SLAM3</strong>，<strong>语义分割</strong>线程以及<strong>几何</strong>线程。</p>
+<span id="more"></span>
+<h1 id="3-System-Description"><a href="#3-System-Description" class="headerlink" title="3 System Description"></a>3 System Description</h1><p>系统架构如Fig. 1所示，本系统是基于ORB-SLAM3 进一步开发的。DeepLabv3+ 模型会获取像素级的<strong>先验动态物体</strong>，同时，利用<strong>多视角几何线程</strong>区分图片中的动态与静态特征点；然后，将语义分割结果和多视角几何方法得到的信息相结合得到<strong>动态物体的边界线</strong>，从而剔除掉所有的动态物体。</p>
+<p>注：个人认为，多视角几何线程的图示不是很准确，应该将多视角几何与新的蚁群策略合为一个框，或将新蚁群策略提到多视角结合方法之前。因为本算法是利用新蚁群算法来减少多视角几何方法中的候选点数量的，两者应该是处于共同的层级，甚至新蚁群策略应该在多视角几何方法之前。</p>
+<p><img src="/2024/02/29/hu2022/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-1-Semantic-Segmentation-DeepLabv3"><a href="#3-1-Semantic-Segmentation-DeepLabv3" class="headerlink" title="3.1 Semantic Segmentation DeepLabv3+"></a>3.1 Semantic Segmentation DeepLabv3+</h2><p>DeepLabv3+ 的架构如Fig. 2所示，本文使用ResNest 网络作为backbone，可以取得更优秀的分割精度。</p>
+<p><img src="/2024/02/29/hu2022/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-2-ASPP-Module"><a href="#3-2-ASPP-Module" class="headerlink" title="3.2 ASPP Module"></a>3.2 ASPP Module</h2><p>作者对ASPP 模块进行了更改：</p>
+<p><img src="/2024/02/29/hu2022/fig4.png" alt="fig4" title="figure 4"></p>
+<h2 id="3-3-Dynamic-Object-Detection-Based-on-Multi-view-Geometry"><a href="#3-3-Dynamic-Object-Detection-Based-on-Multi-view-Geometry" class="headerlink" title="3.3 Dynamic Object Detection Based on Multi-view Geometry"></a>3.3 Dynamic Object Detection Based on Multi-view Geometry</h2><p>作者使用基于<strong>多视角几何</strong>处理的动态物体分割算法，如Fig. 5所示，该算法考虑历史帧 (hf) 和当前帧 (cf) 对同一特征点的<strong>视角变化</strong>，若视角变化值大于一个给定阈值，则判定该特征点属于动态特征点；此外，还计算关键点在当前帧的<strong>深度值</strong> $d_{cf}$ ，及历史关键帧在当前帧的投影深度值 $d_{proj}$ ，若两者之差大于给定阈值，则判定该特征点为动态特征点。</p>
+<p><img src="/2024/02/29/hu2022/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="3-4-Ant-Colony-Strategy"><a href="#3-4-Ant-Colony-Strategy" class="headerlink" title="3.4 Ant Colony Strategy"></a>3.4 Ant Colony Strategy</h2><p>蚁群算法是一种模拟蚂蚁的觅食行为的优化算法，算法包含两个主要步骤：state transfer，pheromone update。</p>
+<p>状态转换方程：</p>
+<p><img src="/2024/02/29/hu2022/f4.png" alt="f4" title="formula 4"></p>
+<p>信息素更新方程：</p>
+<p><img src="/2024/02/29/hu2022/f5.png" alt="f5" title="formula 5"></p>
+<h2 id="3-5-New-Ant-Colony-Strategy"><a href="#3-5-New-Ant-Colony-Strategy" class="headerlink" title="3.5 New Ant Colony Strategy"></a>3.5 New Ant Colony Strategy</h2><p>利用<strong>多视角几何方法</strong>将历史帧投影至当前帧过程，会得到大量的投影特征点，为了判断是否属于静态特征点需要<strong>遍历</strong>所有的点，运算量过大。作者提出一种<strong>新的蚁群算法</strong>，通过<strong>最优路径</strong>来找到所有的动态特征点群。</p>
+<p>蚁群算法的策略为，从起点到终点过程中，蚁群会绕过它们遇到的障碍物来寻找到达终点的一条<strong>最优路径</strong>。图片中的动态点或静态点都是<strong>成块分布</strong>的，而不是随机散布在整幅图片上；因此，当遇到一个动态特征点时，会在该动态特征点<strong>所在的块内</strong>进行搜索，直到整块特征点都被探索过或到达块的范围，然后继续搜索下一块动态特征点集合。</p>
+<p>根据特征点在图片中的分布，作者设计了一条从 S 到 T 的轨迹 l，如Fig. 6所示，搜索策略是蚁群从特征点 $m_i$ 持续移动到下一个特侦点，直到抵达终点 T。针对每一个特征点 $m_i$ ，以<strong>自身为原点、半径为 R 进行动态点搜索</strong>，每找到一个新的特征点就<strong>拓宽带宽</strong> $\Delta h$ ，直至在该区域内没有新的动态特征点，便移至下一个位置。</p>
+<p><img src="/2024/02/29/hu2022/fig6.png" alt="fig6" title="figure 6"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Dynamic-SLAM/" rel="tag"><i class="fa fa-tag"></i> Dynamic SLAM</a>
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/29/wang2020/" rel="prev" title="论文记录 Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features">
+      <i class="fa fa-chevron-left"></i> 论文记录 Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-System-Description"><span class="nav-text">3 System Description</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Semantic-Segmentation-DeepLabv3"><span class="nav-text">3.1 Semantic Segmentation DeepLabv3+</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-ASPP-Module"><span class="nav-text">3.2 ASPP Module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Dynamic-Object-Detection-Based-on-Multi-view-Geometry"><span class="nav-text">3.3 Dynamic Object Detection Based on Multi-view Geometry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Ant-Colony-Strategy"><span class="nav-text">3.4 Ant Colony Strategy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-New-Ant-Colony-Strategy"><span class="nav-text">3.5 New Ant Colony Strategy</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Wang, Yuwei, Yuanying Qiu, Peitao Cheng, and Xuechao Duan. “Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features.” Remote Sensing 12, n">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features">
+<meta property="og:url" content="http://echo-gh.github.io/2024/02/29/wang2020/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Wang, Yuwei, Yuanying Qiu, Peitao Cheng, and Xuechao Duan. “Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features.” Remote Sensing 12, n">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/wang2020/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/wang2020/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/wang2020/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/wang2020/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/wang2020/fig6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/wang2020/f1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/02/29/wang2020/f6.png">
+<meta property="article:published_time" content="2024-02-29T14:52:24.000Z">
+<meta property="article:modified_time" content="2024-02-29T14:57:05.396Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Topology">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/02/29/wang2020/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/02/29/wang2020/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/29/wang2020/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-29 22:52:24 / 修改时间：22:57:05" itemprop="dateCreated datePublished" datetime="2024-02-29T22:52:24+08:00">2024-02-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Topology/" itemprop="url" rel="index"><span itemprop="name">Topology</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Wang, Yuwei, Yuanying Qiu, Peitao Cheng, and Xuechao Duan. “Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features.” <em>Remote Sensing</em> 12, no. 23 (November 27, 2020): 3890. <a target="_blank" rel="noopener" href="https://doi.org/10.3390/rs12233890">https://doi.org/10.3390/rs12233890</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的主要贡献：</p>
+<ul>
+<li>提出一个包含<strong>视觉、空间以及语义信息</strong>的鲁棒<strong>回环检测</strong>方法，提高大视角变化及动态场景下的鲁棒性；</li>
+<li>使用预训练的语义分割网络和AlexNet 特征提取网络，可不经再训练直接应用于其他场景。</li>
+</ul>
+<span id="more"></span>
+<h1 id="2-Materials-and-Methods"><a href="#2-Materials-and-Methods" class="headerlink" title="2 Materials and Methods"></a>2 Materials and Methods</h1><p>算法架构如Fig. 1所示，包含以下关键模块：</p>
+<ol>
+<li>语义地标提取；</li>
+<li>消除动态地标并选择区分度高的地标；</li>
+<li>地标区域的CNN 特征计算，及特征维度压缩处理；</li>
+<li>语义拓扑图及随机游走描述子的构建；</li>
+<li>使用随机游走描述子计算几何相似度；</li>
+<li>整体相似度计算以进行回环检测。</li>
+</ol>
+<p><img src="/2024/02/29/wang2020/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="2-1-Semantic-Topology-Graph"><a href="#2-1-Semantic-Topology-Graph" class="headerlink" title="2.1 Semantic Topology Graph"></a>2.1 Semantic Topology Graph</h2><p><strong>语义拓扑图</strong>的构建过程如下所示：</p>
+<p><img src="/2024/02/29/wang2020/fig2.png" alt="fig2" title="figure 2"></p>
+<h3 id="2-1-1-Landmark-Extraction"><a href="#2-1-1-Landmark-Extraction" class="headerlink" title="2.1.1 Landmark Extraction"></a>2.1.1 Landmark Extraction</h3><p>作者使用ADE20K 训练的DeepLabV3+ 网络进行<strong>语义分割</strong>来提取地标。</p>
+<h3 id="2-1-2-Landmark-Selection"><a href="#2-1-2-Landmark-Selection" class="headerlink" title="2.1.2 Landmark Selection"></a>2.1.2 Landmark Selection</h3><p>对语义分割图片进行处理，来去除面积小于一定阈值（本文中设定为100）的区域，并滤掉动态物体，最终获取具有清晰边界的地标区域，过程如Fig. 3所示。</p>
+<p><img src="/2024/02/29/wang2020/fig3.png" alt="fig3" title="figure 3"></p>
+<p>为了克服<strong>动态场景</strong>的影响，作者利用语义信息消除<strong>行人动态地标</strong>，将行人与长期停放的车辆区域进行<strong>融合</strong>，以作为后续工作的汽车地标。</p>
+<p>作者结合地标包含的<strong>像素个数</strong>以及<strong>语义信息</strong>来选择区分度高的地标；而动态物体地标是由场景内容和语义信息来决定的，也就是说，根据地标在每个实验场景中的移动状态，来移除数据集中的移动地标，从而阻止其参与后续的算法步骤。</p>
+<h3 id="2-1-3-CNN-Features"><a href="#2-1-3-CNN-Features" class="headerlink" title="2.1.3 CNN Features"></a>2.1.3 CNN Features</h3><p>CNN 特征具有<strong>外观不变性 appearance invariance</strong>。</p>
+<p>根据前人的研究，AlexNet 的<strong>第三卷积层</strong>输出的特征图在<strong>外观变化</strong>下具有优异的表现，作者发现全连接层输出的特征图有丰富的语义信息，对于视角变化具有很强的鲁棒性，但是在外观变化下较弱。因此，作者选取AlexNet Conv3 的输出作为地标区域的<strong>全局特征</strong>。</p>
+<p>为了保持地标的<strong>原始尺寸信息</strong>，作者将地标轮廓的Hu moment 添加进CNN 特征中来描述地标。</p>
+<h3 id="2-1-4-Graph-Representation"><a href="#2-1-4-Graph-Representation" class="headerlink" title="2.1.4 Graph Representation"></a>2.1.4 Graph Representation</h3><p>本文中，每个地标被描述为包含有<strong>类别与像素数量信息</strong>的节点，节点的位置位于地标区域的中心。描述子的构建过程如Fig. 5所示：</p>
+<p><img src="/2024/02/29/wang2020/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="2-2-Loop-Closure-Detection"><a href="#2-2-Loop-Closure-Detection" class="headerlink" title="2.2 Loop Closure Detection"></a>2.2 Loop Closure Detection</h2><p>回环检测的流程如Fig. 6所示，同时检测外观相似度（CNN 与轮廓特征）与几何相似度（随机游走描述子），从而得到总体相似度。</p>
+<p><img src="/2024/02/29/wang2020/fig6.png" alt="fig6" title="figure 6"></p>
+<h3 id="2-2-1-Obtain-Candidate-Images"><a href="#2-2-1-Obtain-Candidate-Images" class="headerlink" title="2.2.1 Obtain Candidate Images"></a>2.2.1 Obtain Candidate Images</h3><p>通过控制query image 与历史图片的<strong>相同标签地标数量</strong>，来获取候选匹配图片；作者设定为1，即当query image 与历史图片有一个相同标签的地标时，就将该历史图片作为候选图片。</p>
+<h3 id="2-2-2-Appearance-Similarity"><a href="#2-2-2-Appearance-Similarity" class="headerlink" title="2.2.2 Appearance Similarity"></a>2.2.2 Appearance Similarity</h3><p>作者使用基于cos 距离（式 1）的最近邻域搜索方法来对具有相同标签的地标进行匹配，</p>
+<p><img src="/2024/02/29/wang2020/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$v_i^q$ 表示query 图片的第 i 个地标的特征向量，$v_j^c$ 表示候选图片的第 j 个地标的特征向量。</p>
+<p>此外，利用地标的<strong>几何形状</strong>作为<strong>惩罚因子</strong>来消除误匹配，使用Hu moments 来描述地标不规则的轮廓特征，具有旋转、平移及尺寸的不变性。</p>
+<h3 id="2-2-3-Geometric-Similarity"><a href="#2-2-3-Geometric-Similarity" class="headerlink" title="2.2.3 Geometric Similarity"></a>2.2.3 Geometric Similarity</h3><p>将随机游走描述子矩阵M 进行级联转化为向量 G，然后计算两个图描述子向量之间的相似度：</p>
+<p><img src="/2024/02/29/wang2020/f6.png" alt="f6" title="formula 6"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Topology/" rel="tag"><i class="fa fa-tag"></i> Topology</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/29/deng2019/" rel="prev" title="论文记录 Semantic Segmentation-Based Lane-Level Localization Using Around View Monitoring System">
+      <i class="fa fa-chevron-left"></i> 论文记录 Semantic Segmentation-Based Lane-Level Localization Using Around View Monitoring System
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/02/29/hu2022/" rel="next" title="论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios">
+      论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Materials-and-Methods"><span class="nav-text">2 Materials and Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Semantic-Topology-Graph"><span class="nav-text">2.1 Semantic Topology Graph</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-Landmark-Extraction"><span class="nav-text">2.1.1 Landmark Extraction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-Landmark-Selection"><span class="nav-text">2.1.2 Landmark Selection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-CNN-Features"><span class="nav-text">2.1.3 CNN Features</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-4-Graph-Representation"><span class="nav-text">2.1.4 Graph Representation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Loop-Closure-Detection"><span class="nav-text">2.2 Loop Closure Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-Obtain-Candidate-Images"><span class="nav-text">2.2.1 Obtain Candidate Images</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-Appearance-Similarity"><span class="nav-text">2.2.2 Appearance Similarity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-Geometric-Similarity"><span class="nav-text">2.2.3 Geometric Similarity</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

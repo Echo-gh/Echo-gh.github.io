@@ -2727,4 +2727,91 @@
         <tag>Map Match</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features</title>
+    <url>/2024/02/29/wang2020/</url>
+    <content><![CDATA[<p>Wang, Yuwei, Yuanying Qiu, Peitao Cheng, and Xuechao Duan. “Robust Loop Closure Detection Integrating Visual–Spatial–Semantic Information via Topological Graphs and CNN Features.” <em>Remote Sensing</em> 12, no. 23 (November 27, 2020): 3890. <a href="https://doi.org/10.3390/rs12233890">https://doi.org/10.3390/rs12233890</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的主要贡献：</p>
+<ul>
+<li>提出一个包含<strong>视觉、空间以及语义信息</strong>的鲁棒<strong>回环检测</strong>方法，提高大视角变化及动态场景下的鲁棒性；</li>
+<li>使用预训练的语义分割网络和AlexNet 特征提取网络，可不经再训练直接应用于其他场景。</li>
+</ul>
+<span id="more"></span>
+<h1 id="2-Materials-and-Methods"><a href="#2-Materials-and-Methods" class="headerlink" title="2 Materials and Methods"></a>2 Materials and Methods</h1><p>算法架构如Fig. 1所示，包含以下关键模块：</p>
+<ol>
+<li>语义地标提取；</li>
+<li>消除动态地标并选择区分度高的地标；</li>
+<li>地标区域的CNN 特征计算，及特征维度压缩处理；</li>
+<li>语义拓扑图及随机游走描述子的构建；</li>
+<li>使用随机游走描述子计算几何相似度；</li>
+<li>整体相似度计算以进行回环检测。</li>
+</ol>
+<p><img src="/2024/02/29/wang2020/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="2-1-Semantic-Topology-Graph"><a href="#2-1-Semantic-Topology-Graph" class="headerlink" title="2.1 Semantic Topology Graph"></a>2.1 Semantic Topology Graph</h2><p><strong>语义拓扑图</strong>的构建过程如下所示：</p>
+<p><img src="/2024/02/29/wang2020/fig2.png" alt="fig2" title="figure 2"></p>
+<h3 id="2-1-1-Landmark-Extraction"><a href="#2-1-1-Landmark-Extraction" class="headerlink" title="2.1.1 Landmark Extraction"></a>2.1.1 Landmark Extraction</h3><p>作者使用ADE20K 训练的DeepLabV3+ 网络进行<strong>语义分割</strong>来提取地标。</p>
+<h3 id="2-1-2-Landmark-Selection"><a href="#2-1-2-Landmark-Selection" class="headerlink" title="2.1.2 Landmark Selection"></a>2.1.2 Landmark Selection</h3><p>对语义分割图片进行处理，来去除面积小于一定阈值（本文中设定为100）的区域，并滤掉动态物体，最终获取具有清晰边界的地标区域，过程如Fig. 3所示。</p>
+<p><img src="/2024/02/29/wang2020/fig3.png" alt="fig3" title="figure 3"></p>
+<p>为了克服<strong>动态场景</strong>的影响，作者利用语义信息消除<strong>行人动态地标</strong>，将行人与长期停放的车辆区域进行<strong>融合</strong>，以作为后续工作的汽车地标。</p>
+<p>作者结合地标包含的<strong>像素个数</strong>以及<strong>语义信息</strong>来选择区分度高的地标；而动态物体地标是由场景内容和语义信息来决定的，也就是说，根据地标在每个实验场景中的移动状态，来移除数据集中的移动地标，从而阻止其参与后续的算法步骤。</p>
+<h3 id="2-1-3-CNN-Features"><a href="#2-1-3-CNN-Features" class="headerlink" title="2.1.3 CNN Features"></a>2.1.3 CNN Features</h3><p>CNN 特征具有<strong>外观不变性 appearance invariance</strong>。</p>
+<p>根据前人的研究，AlexNet 的<strong>第三卷积层</strong>输出的特征图在<strong>外观变化</strong>下具有优异的表现，作者发现全连接层输出的特征图有丰富的语义信息，对于视角变化具有很强的鲁棒性，但是在外观变化下较弱。因此，作者选取AlexNet Conv3 的输出作为地标区域的<strong>全局特征</strong>。</p>
+<p>为了保持地标的<strong>原始尺寸信息</strong>，作者将地标轮廓的Hu moment 添加进CNN 特征中来描述地标。</p>
+<h3 id="2-1-4-Graph-Representation"><a href="#2-1-4-Graph-Representation" class="headerlink" title="2.1.4 Graph Representation"></a>2.1.4 Graph Representation</h3><p>本文中，每个地标被描述为包含有<strong>类别与像素数量信息</strong>的节点，节点的位置位于地标区域的中心。描述子的构建过程如Fig. 5所示：</p>
+<p><img src="/2024/02/29/wang2020/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="2-2-Loop-Closure-Detection"><a href="#2-2-Loop-Closure-Detection" class="headerlink" title="2.2 Loop Closure Detection"></a>2.2 Loop Closure Detection</h2><p>回环检测的流程如Fig. 6所示，同时检测外观相似度（CNN 与轮廓特征）与几何相似度（随机游走描述子），从而得到总体相似度。</p>
+<p><img src="/2024/02/29/wang2020/fig6.png" alt="fig6" title="figure 6"></p>
+<h3 id="2-2-1-Obtain-Candidate-Images"><a href="#2-2-1-Obtain-Candidate-Images" class="headerlink" title="2.2.1 Obtain Candidate Images"></a>2.2.1 Obtain Candidate Images</h3><p>通过控制query image 与历史图片的<strong>相同标签地标数量</strong>，来获取候选匹配图片；作者设定为1，即当query image 与历史图片有一个相同标签的地标时，就将该历史图片作为候选图片。</p>
+<h3 id="2-2-2-Appearance-Similarity"><a href="#2-2-2-Appearance-Similarity" class="headerlink" title="2.2.2 Appearance Similarity"></a>2.2.2 Appearance Similarity</h3><p>作者使用基于cos 距离（式 1）的最近邻域搜索方法来对具有相同标签的地标进行匹配，</p>
+<p><img src="/2024/02/29/wang2020/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$v_i^q$ 表示query 图片的第 i 个地标的特征向量，$v_j^c$ 表示候选图片的第 j 个地标的特征向量。</p>
+<p>此外，利用地标的<strong>几何形状</strong>作为<strong>惩罚因子</strong>来消除误匹配，使用Hu moments 来描述地标不规则的轮廓特征，具有旋转、平移及尺寸的不变性。</p>
+<h3 id="2-2-3-Geometric-Similarity"><a href="#2-2-3-Geometric-Similarity" class="headerlink" title="2.2.3 Geometric Similarity"></a>2.2.3 Geometric Similarity</h3><p>将随机游走描述子矩阵M 进行级联转化为向量 G，然后计算两个图描述子向量之间的相似度：</p>
+<p><img src="/2024/02/29/wang2020/f6.png" alt="f6" title="formula 6"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Topology</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Topology</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios</title>
+    <url>/2024/02/29/hu2022/</url>
+    <content><![CDATA[<p>Hu, Zhangfang, Jiang Zhao, Yuan Luo, and Junxiong Ou. “Semantic SLAM Based on Improved DeepLabv3+ in Dynamic Scenarios.” <em>IEEE Access</em> 10 (2022): 21160–68. <a href="https://doi.org/10.1109/ACCESS.2022.3154086">https://doi.org/10.1109/ACCESS.2022.3154086</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>本文提出动态场景中的语义SLAM 系统DeepLabv3+_SLAM 包含三个线程：<strong>ORB-SLAM3</strong>，<strong>语义分割</strong>线程以及<strong>几何</strong>线程。</p>
+<span id="more"></span>
+<h1 id="3-System-Description"><a href="#3-System-Description" class="headerlink" title="3 System Description"></a>3 System Description</h1><p>系统架构如Fig. 1所示，本系统是基于ORB-SLAM3 进一步开发的。DeepLabv3+ 模型会获取像素级的<strong>先验动态物体</strong>，同时，利用<strong>多视角几何线程</strong>区分图片中的动态与静态特征点；然后，将语义分割结果和多视角几何方法得到的信息相结合得到<strong>动态物体的边界线</strong>，从而剔除掉所有的动态物体。</p>
+<p>注：个人认为，多视角几何线程的图示不是很准确，应该将多视角几何与新的蚁群策略合为一个框，或将新蚁群策略提到多视角结合方法之前。因为本算法是利用新蚁群算法来减少多视角几何方法中的候选点数量的，两者应该是处于共同的层级，甚至新蚁群策略应该在多视角几何方法之前。</p>
+<p><img src="/2024/02/29/hu2022/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-1-Semantic-Segmentation-DeepLabv3"><a href="#3-1-Semantic-Segmentation-DeepLabv3" class="headerlink" title="3.1 Semantic Segmentation DeepLabv3+"></a>3.1 Semantic Segmentation DeepLabv3+</h2><p>DeepLabv3+ 的架构如Fig. 2所示，本文使用ResNest 网络作为backbone，可以取得更优秀的分割精度。</p>
+<p><img src="/2024/02/29/hu2022/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-2-ASPP-Module"><a href="#3-2-ASPP-Module" class="headerlink" title="3.2 ASPP Module"></a>3.2 ASPP Module</h2><p>作者对ASPP 模块进行了更改：</p>
+<p><img src="/2024/02/29/hu2022/fig4.png" alt="fig4" title="figure 4"></p>
+<h2 id="3-3-Dynamic-Object-Detection-Based-on-Multi-view-Geometry"><a href="#3-3-Dynamic-Object-Detection-Based-on-Multi-view-Geometry" class="headerlink" title="3.3 Dynamic Object Detection Based on Multi-view Geometry"></a>3.3 Dynamic Object Detection Based on Multi-view Geometry</h2><p>作者使用基于<strong>多视角几何</strong>处理的动态物体分割算法，如Fig. 5所示，该算法考虑历史帧 (hf) 和当前帧 (cf) 对同一特征点的<strong>视角变化</strong>，若视角变化值大于一个给定阈值，则判定该特征点属于动态特征点；此外，还计算关键点在当前帧的<strong>深度值</strong> $d_{cf}$ ，及历史关键帧在当前帧的投影深度值 $d_{proj}$ ，若两者之差大于给定阈值，则判定该特征点为动态特征点。</p>
+<p><img src="/2024/02/29/hu2022/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="3-4-Ant-Colony-Strategy"><a href="#3-4-Ant-Colony-Strategy" class="headerlink" title="3.4 Ant Colony Strategy"></a>3.4 Ant Colony Strategy</h2><p>蚁群算法是一种模拟蚂蚁的觅食行为的优化算法，算法包含两个主要步骤：state transfer，pheromone update。</p>
+<p>状态转换方程：</p>
+<p><img src="/2024/02/29/hu2022/f4.png" alt="f4" title="formula 4"></p>
+<p>信息素更新方程：</p>
+<p><img src="/2024/02/29/hu2022/f5.png" alt="f5" title="formula 5"></p>
+<h2 id="3-5-New-Ant-Colony-Strategy"><a href="#3-5-New-Ant-Colony-Strategy" class="headerlink" title="3.5 New Ant Colony Strategy"></a>3.5 New Ant Colony Strategy</h2><p>利用<strong>多视角几何方法</strong>将历史帧投影至当前帧过程，会得到大量的投影特征点，为了判断是否属于静态特征点需要<strong>遍历</strong>所有的点，运算量过大。作者提出一种<strong>新的蚁群算法</strong>，通过<strong>最优路径</strong>来找到所有的动态特征点群。</p>
+<p>蚁群算法的策略为，从起点到终点过程中，蚁群会绕过它们遇到的障碍物来寻找到达终点的一条<strong>最优路径</strong>。图片中的动态点或静态点都是<strong>成块分布</strong>的，而不是随机散布在整幅图片上；因此，当遇到一个动态特征点时，会在该动态特征点<strong>所在的块内</strong>进行搜索，直到整块特征点都被探索过或到达块的范围，然后继续搜索下一块动态特征点集合。</p>
+<p>根据特征点在图片中的分布，作者设计了一条从 S 到 T 的轨迹 l，如Fig. 6所示，搜索策略是蚁群从特征点 $m_i$ 持续移动到下一个特侦点，直到抵达终点 T。针对每一个特征点 $m_i$ ，以<strong>自身为原点、半径为 R 进行动态点搜索</strong>，每找到一个新的特征点就<strong>拓宽带宽</strong> $\Delta h$ ，直至在该区域内没有新的动态特征点，便移至下一个位置。</p>
+<p><img src="/2024/02/29/hu2022/fig6.png" alt="fig6" title="figure 6"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
 </search>
