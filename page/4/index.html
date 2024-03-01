@@ -191,6 +191,348 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/19/so-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/02/19/so-slam/" class="post-title-link" itemprop="url">论文记录 SO-SLAM_Semantic Object SLAM With Scale Proportional and Symmetrical Texture Constraints</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-19 09:17:40 / 修改时间：10:02:45" itemprop="dateCreated datePublished" datetime="2024-02-19T09:17:40+08:00">2024-02-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Pose-Optimization/" itemprop="url" rel="index"><span itemprop="name">Pose Optimization</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Liao, Ziwei, Yutong Hu, Jiadong Zhang, Xianyu Qi, Xiaoyu Zhang, and Wei Wang. “SO-SLAM: Semantic Object SLAM With Scale Proportional and Symmetrical Texture Constraints.” <em>IEEE Robotics and Automation Letters</em> 7, no. 2 (April 2022): 4008–15. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/LRA.2022.3148465">https://doi.org/10.1109/LRA.2022.3148465</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文主要解决单目 Object SLAM 的<strong>两个挑战</strong>：</p>
+<ol>
+<li>单目相机包含<strong>较少的物体约束信息</strong>，特别是在部分观测、遮挡等情况下更为严重，使得单目 Object SLAM 较为<strong>脆弱</strong>；</li>
+<li>当前的 Object SLAM 主要用于约束<strong>物体的占用空间</strong>，没有充分利用物体的<strong>朝向信息</strong>。</li>
+</ol>
+<p>针对以上两个挑战，作者提出了<strong>单目 Semantic Object SLAM (SO-SLAM) 系统</strong>，如Fig. 1 所示，除了物体的语义信息，作者还引入了三种代表性的<strong>物体空间约束</strong>：<strong>尺寸比例约束、对称纹理约束</strong>以及<strong>平面支撑约束</strong>，作者推导约束模型并同时应用于前端初始化与后端优化中。</p>
+<p>本文的贡献如下：</p>
+<ol>
+<li>提出一个面向室内环境的完全耦合三种空间约束的<strong>单目 Object SLAM</strong>；</li>
+<li>基于空间约束提出两个新方法：<strong>单帧物体初始化</strong>方法和<strong>物体朝向优化</strong>方法；</li>
+<li>在两个公开数据集与自采数据集上验证了本算法的有效性。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/02/19/so-slam/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/18/bowman2017/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/02/18/bowman2017/" class="post-title-link" itemprop="url">论文记录 Probabilistic data association for semantic SLAM</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-18 10:08:01 / 修改时间：10:21:14" itemprop="dateCreated datePublished" datetime="2024-02-18T10:08:01+08:00">2024-02-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Map-Match/" itemprop="url" rel="index"><span itemprop="name">Map Match</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Bowman, Sean L., Nikolay Atanasov, Kostas Daniilidis, and George J. Pappas. “Probabilistic Data Association for Semantic SLAM.” In <em>2017 IEEE International Conference on Robotics and Automation (ICRA)</em>, 1722–29. Singapore, Singapore: IEEE, 2017. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ICRA.2017.7989203">https://doi.org/10.1109/ICRA.2017.7989203</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
+<ul>
+<li>第一个将惯性、几何以及语义观测信息<strong>紧耦合至一个优化框架</strong>的定位算法；</li>
+<li>将联合metric-semantic SLAM 问题分解为<strong>连续（位姿）</strong>和<strong>离散（数据关联DA和语义标签）</strong>优化子问题；</li>
+<li>在包含<strong>光照变化的杂乱场景中</strong>利用里程计和视觉测量信息进行<strong>室内外真实场景</strong>的长轨迹测试实验。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/02/18/bowman2017/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/18/sof-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/02/18/sof-slam/" class="post-title-link" itemprop="url">论文记录 SOF-SLAM_A Semantic Visual SLAM for Dynamic Environments</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-18 10:06:32 / 修改时间：10:41:48" itemprop="dateCreated datePublished" datetime="2024-02-18T10:06:32+08:00">2024-02-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Cui, Linyan, and Chaowei Ma. “SOF-SLAM: A Semantic Visual SLAM for Dynamic Environments.” <em>IEEE Access</em> 7 (2019): 166528–39. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ACCESS.2019.2952161">https://doi.org/10.1109/ACCESS.2019.2952161</a>.</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>无论是DynaSLAM还是DS-SLAM，它们都是简单地将先验语义信息和几何一致性信息进行<strong>“松组合”</strong>，即利用语义信息和几何信息分别确定出各自认定的动态特征点，然后采用<strong>投票机制</strong>对最终的动态特征点进行确认；其中，DynaSLAM 认为只要有一种方法判定一个点属于动态点就认为该点是动态点（<strong>OR操作</strong>），而DS-SLAM 认为只有两种方法同时认定该点属于动态点才将该点视为动态点（<strong>AND操作</strong>）。由于动态语义先验信息的不确定性，如人或汽车存在静止的情况，而DynaSLAM所代表的方法会剔除掉大量静态特征点，导致位姿估计精度下降，甚至在部分场景中由于特征点的缺少导致解算失败；同时，语义分割存在准确度不够的情况，如物体边缘部分的分割效果较差，DS-SLAM 代表的方法可能会保留实际的动态特征点，从而导致位姿估计精度下降。</p>
+<p>针对以上存在的问题，Cui 等人提出了 SOF-SLAM——Semantic Optical Flow SLAM，一种将语义信息和几何信息进行<strong>“紧组合”</strong>来实现动态目标检测和剔除的鲁棒SLAM方法；所谓的紧组合指的是<strong>利用语义信息来辅助几何信息进行动态物体的探测</strong>：作者首先利用语义分割结果去除掉场景中动态物体和潜在动态物体上的特征点，仅利用<strong>高可能性静态物体</strong>上的特征点进行基础矩阵的求解，进而利用该可靠性更高的基础矩阵应用<strong>对极几何理论</strong>实现对动态特征点的剔除，从而实现更为鲁棒可靠的动态特征点剔除方法；最终，作者在公开数据集和真实场景中进行了测试，证明了本方法较ORB-SLAM2以及其他语义SLAM算法的优势。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/02/18/sof-slam/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/04/ds-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/02/04/ds-slam/" class="post-title-link" itemprop="url">论文记录 DS-SLAM_A Semantic Visual SLAM towards Dynamic Environments</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-02-04 15:49:18 / 修改时间：15:59:56" itemprop="dateCreated datePublished" datetime="2024-02-04T15:49:18+08:00">2024-02-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Yu, Chao, Zuxin Liu, Xin-Jun Liu, Fugui Xie, Yi Yang, Qi Wei, and Qiao Fei. “DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments.” In <em>2018 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 1168–74. Madrid: IEEE, 2018. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/IROS.2018.8593691">https://doi.org/10.1109/IROS.2018.8593691</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>提出一个基于ORB-SLAM2 应用于动态环境中的语义SLAM 系统——DS-SLAM，在公开数据集上进行测试，证明了本系统在动态环境中的<strong>精度与鲁棒性</strong>；</li>
+<li>添加一个<strong>实时语义分割网络线程</strong>，结合<strong>语义分割和运动一致性检验</strong>来滤除场景中的动态区域；</li>
+<li>创建了一个构建稠密3D 语义八叉树地图的线程。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/02/04/ds-slam/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/02/brasch2018/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -693,374 +1035,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/30/detect-slam/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/30/detect-slam/" class="post-title-link" itemprop="url">论文记录 Detect-SLAM_Making Object Detection and SLAM Mutually Beneficial</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-30 20:37:49" itemprop="dateCreated datePublished" datetime="2024-01-30T20:37:49+08:00">2024-01-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-31 22:28:22" itemprop="dateModified" datetime="2024-01-31T22:28:22+08:00">2024-01-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Zhong, Fangwei, Sheng Wang, Ziqi Zhang, China Chen, and Yizhou Wang. “Detect-SLAM: Making Object Detection and SLAM Mutually Beneficial.” In <em>2018 IEEE Winter Conference on Applications of Computer Vision (WACV)</em>, 1001–10, 2018. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/WACV.2018.00115">https://doi.org/10.1109/WACV.2018.00115</a>.</p>
-<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>本文提出的Detect-SLAM 较其他SOTA 方法的优势：</p>
-<ol>
-<li>通过利用物体检测器完成对移动物体上的<strong>不可靠特征点</strong>进行剔除，极大地提高了SLAM 算法在动态环境中的<strong>准确性与鲁棒性</strong>；</li>
-<li>在线构建一个<strong>实例级语义地图</strong>；</li>
-<li>通过利用物体语义地图来<strong>提高物体检测器性能</strong>，使得其在挑战性环境中可以更有效地识别出物体。</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/30/detect-slam/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/30/zhang2018/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/30/zhang2018/" class="post-title-link" itemprop="url">论文记录 Semantic SLAM Based on Object Detection and Improved Octomap</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-30 20:24:55" itemprop="dateCreated datePublished" datetime="2024-01-30T20:24:55+08:00">2024-01-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-31 22:28:53" itemprop="dateModified" datetime="2024-01-31T22:28:53+08:00">2024-01-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Zhang, Liang, Leqi Wei, Peiyi Shen, Wei Wei, Guangming Zhu, and Juan Song. “Semantic SLAM Based on Object Detection and Improved Octomap.” <em>IEEE Access</em> 6 (2018): 75545–59. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ACCESS.2018.2873617">https://doi.org/10.1109/ACCESS.2018.2873617</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>基于ORB-SLAM2，利用YOLO 实现<strong>物体检测</strong>，剔除掉<strong>先验动态物体</strong>上的特征点，提高精度；并建立<strong>物体级语义八叉树地图</strong>，且优化了制图的速度。</p>
-<p>本文的贡献：</p>
-<ul>
-<li>本系统可以检测80-200 种物体种类，而现有的语义制图系统只能检测不超过20个种类；</li>
-<li>本系统不需要先验3D 模型就可以实现对环境中物体的3D 建模；</li>
-<li>本系统利用的是物体级模型信息，而不是像素级的。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/30/zhang2018/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/30/x-view/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/30/x-view/" class="post-title-link" itemprop="url">论文记录 X-View_Graph-Based Semantic Multi-View Localization</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-30 09:29:31" itemprop="dateCreated datePublished" datetime="2024-01-30T09:29:31+08:00">2024-01-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-31 22:29:10" itemprop="dateModified" datetime="2024-01-31T22:29:10+08:00">2024-01-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Topology/" itemprop="url" rel="index"><span itemprop="name">Topology</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Gawel, Abel, Carlo Del Don, Roland Siegwart, Juan Nieto, and Cesar Cadena. “X-View: Graph-Based Semantic Multi-View Localization.” <em>IEEE Robotics and Automation Letters (RA-L)</em> 3, no. 3 (2018): 1687–94.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
-<ol>
-<li>提出一个新颖的<strong>语义拓扑图表示</strong>方法；</li>
-<li>引进了一个<strong>基于随机游走的图描述子</strong>，可以有效地使用既定的匹配方法进行高效匹配；</li>
-<li>用于全局定位的语义分割完整pipeline；</li>
-<li>开源<em>X-View</em> 算法；</li>
-<li>公开数据集的测试结果。</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/30/x-view/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/30/vso/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/30/vso/" class="post-title-link" itemprop="url">论文记录 VSO_Visual Semantic Odometry</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-30 09:16:17" itemprop="dateCreated datePublished" datetime="2024-01-30T09:16:17+08:00">2024-01-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-31 22:29:28" itemprop="dateModified" datetime="2024-01-31T22:29:28+08:00">2024-01-31</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Pose-Optimization/" itemprop="url" rel="index"><span itemprop="name">Pose Optimization</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Lianos, Konstantinos-Nektarios, Johannes L. Schönberger, Marc Pollefeys, and Torsten Sattler. “VSO: Visual Semantic Odometry.” In <em>Computer Vision – ECCV 2018</em>, edited by Vittorio Ferrari, Martial Hebert, Cristian Sminchisescu, and Yair Weiss, 11208:246–63. Lecture Notes in Computer Science. Cham: Springer International Publishing, 2018. <a target="_blank" rel="noopener" href="https://doi.org/10.1007/978-3-030-01225-0_15">https://doi.org/10.1007/978-3-030-01225-0_15</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者认为，VO 的核心问题在于<strong>数据关联DA</strong>。</p>
-<p>通常来讲，有两种方法来减少VO 中的漂移：</p>
-<ol>
-<li>方法一：利用连续图片之间的<strong>短期关联</strong>来进行偏移矫正；</li>
-<li>方法二：利用回环检测实现<strong>长期关联</strong>。</li>
-</ol>
-<p>传统的几何特征（点、线、面）在光照、视角变化下鲁棒性较差，不能在长距离上保持持续跟踪，而语义特征作为更高级的特征，语义特征在光照、视角、尺寸发生较大变化时仍然可以保持不变，使得<strong>中期关联</strong>成为可能，如Fig. 1所示。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/30/vso/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1132,7 +1106,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">53</span>
+          <span class="site-state-item-count">57</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>

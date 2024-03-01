@@ -3052,4 +3052,200 @@
         <tag>Semantic</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 3DS-SLAM_A 3D Object Detection based Semantic SLAM towards Dynamic Indoor Environments</title>
+    <url>/2024/03/01/3ds-slam/</url>
+    <content><![CDATA[<p>Krishna, Ghanta Sai, Kundrapu Supriya, and Sabur Baidya. “3DS-SLAM: A 3D Object Detection Based Semantic SLAM towards Dynamic Indoor Environments.” arXiv, October 10, 2023. <a href="https://doi.org/10.48550/arXiv.2310.06385">https://doi.org/10.48550/arXiv.2310.06385</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ul>
+<li>将一个<strong>轻量级3D HTx 物体检测架构</strong>集成到vSLAM 中，使得系统可以获取动态环境中的<strong>语义-空间信息</strong>；</li>
+<li>提出一个新颖的端到端架构，集成了HTx 和 HDBSCAN 来有效解决<strong>语义和几何约束</strong>，实现对整体的优化；</li>
+<li>实验证明了3DS-SLAM 超越了现有的算法，增强了系统在动态环境中的位姿<strong>准确性与稳定性</strong>。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-3DS-SLAM-The-Approach"><a href="#3-3DS-SLAM-The-Approach" class="headerlink" title="3 3DS-SLAM: The Approach"></a>3 3DS-SLAM: The Approach</h1><h2 id="3-1-System-Architecture"><a href="#3-1-System-Architecture" class="headerlink" title="3.1 System Architecture"></a>3.1 System Architecture</h2><p>3DS-SLAM 是在ORB-SLAM2 的基础上进一步开发实现的，系统整体架构如Fig. 1所示：</p>
+<p><img src="/2024/03/01/3ds-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>相较于ORB-SLAM2 ，本系统额外增加了两个线程：<strong>3D 物体检测线程</strong>以及<strong>动态特征滤波线程</strong>。系统框架如Fig. 2所示，3D 物体检测线程使用一个<strong>轻量级的HTx 架构</strong>，动态特征滤波线程利用<strong>基于几何深度的HDBSCAN 聚类</strong>来识别动态点。</p>
+<p><img src="/2024/03/01/3ds-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-2-Hybrid-Transformer-Light-Weight-3D-Object-Detector"><a href="#3-2-Hybrid-Transformer-Light-Weight-3D-Object-Detector" class="headerlink" title="3.2 Hybrid Transformer: Light-Weight 3D Object Detector"></a>3.2 Hybrid Transformer: Light-Weight 3D Object Detector</h2><p>在vSLAM 中，相机捕获的图片一般只包含物体的<strong>局部信息</strong>，这使得利用局部物体信息进行预测的算法变得很必要。本文使用的HTx 架构以<strong>3D 点云</strong>作为输入，预测物体的状态，包括<strong>深度、朝向以及位置信息</strong>；该方法与现有的transformer 架构在<strong>数据层面</strong>有很大的不同，包括点云预处理以及同时使用<strong>点特征</strong>和<strong>体素特征</strong>来进行局部物体的定位。由于3D 点云的计算量要远大于图片，因此，作者对点云进行了大量的<strong>预处理</strong>（Voxel Downsampling, RANSAC-Ground Filtering, Radius based Outlier Removal 等) 来进行有效压缩；而且，本HTx 架构将实时性作为优先考虑，因此不使用点云的颜色和法向量信息进行物体检测。</p>
+<p>本系统所使用的3D 物体检测算法是基于3DETR 进行改进的，以增强其与vSLAM 的兼容性，特别是强化了<strong>局部物体检测层</strong>，以解决vSLAM 中由于部分观测、相机旋转以及其他环境因素导致的检测失败。同时为局部感知物体定位和类别感知物体定位设计一个损失函数过于复杂，所以作者设计了两个独立的损失函数。对于每个3D bbox，其参数表示为 $\hat{b} =[\hat{c},\hat{d},\hat{a},\hat{s}]$ ，其包含以下元素：</p>
+<ol>
+<li><strong>几何元素</strong> $\hat{c},\hat{d}\in[0,1]^3$ 定义了bbox 的中心与尺寸，$\hat{a} = [\hat{a}_c, \hat{a}_r]$ 表示角度与角度残差；</li>
+<li><strong>语义项</strong> $\hat{s} = [0, 1]^{K+1}$ 表示物体所属类别的概率分布。</li>
+</ol>
+<p>作者使用<strong>L1 回归损失</strong>来表示中心与尺寸的损失函数，使用<strong>Huber 回归损失</strong>表示角度残差损失函数，使用<strong>交叉熵</strong>表示角度和语义分类损失：</p>
+<p><img src="/2024/03/01/3ds-slam/f1.png" alt="f1" title="formula 1"></p>
+<p>对于局部感知物体定位，作者通过表示点在3D bbox 框内的<strong>相对位置</strong>，为每个点定义一个<strong>物体内部局部定位</strong>，每个点坐标为 $(x^p, y^p, z^p)$ ，则其物体内部的局部坐标表示为 $(x^f, y^f, z^f)$ ：</p>
+<p><img src="/2024/03/01/3ds-slam/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$(x^c, y^c, z^c)$ 表示bbox 的中心坐标，bbox 的尺寸与朝向参数为 $(h, w, l, \theta)$ 。</p>
+<p>为了估计 $(x^f, y^f, z^f)$ ，定义每个点的<strong>交叉熵损失函数</strong>：</p>
+<p><img src="/2024/03/01/3ds-slam/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$\tilde{u}^f$ 表示预测的局部坐标 $(x^f, y^f, z^f)$ ；$u^f$ 表示真实的坐标。</p>
+<h2 id="3-3-HDBSCAN-Clustering-and-Dynamic-Feature-Filter"><a href="#3-3-HDBSCAN-Clustering-and-Dynamic-Feature-Filter" class="headerlink" title="3.3 HDBSCAN Clustering and Dynamic Feature Filter"></a>3.3 HDBSCAN Clustering and Dynamic Feature Filter</h2><p>物体检测算法获取的bbox 通常会包含<strong>大量的背景点</strong>，特别是对于非刚性物体情况更为明显。作者以人为对象，阐述一下如何对bbox 内的外点进行剔除。人类表面的特征点通常有着较好的<strong>深度连续性</strong>，且与背景有着较大的深度差别；因此，当人类bbox 占据视野中的绝大部分时，作者对HDBSCAN 密度聚类算法进行优化，来区分bbox 内的前景点与背景点：将具有较低深度参数的点进行<strong>聚类</strong>，作为前景动态点，可增强HDBSCAN 的鲁棒性，且可有效应对人类被其他物体<strong>部分遮挡</strong>的情况。</p>
+<p>HDBSCAN 算法处理3D <strong>空间点 K</strong> 和<strong>深度图 D</strong>，利用core distance $k(i)$  定义点密度， $k(i)$ 表示一个点到k-th 最近邻域的欧式距离。为了区分低密度点（高 $k(i)$ ），作者定义了一个 mutual reachable distance：</p>
+<p><img src="/2024/03/01/3ds-slam/f4.png" alt="f4" title="formula 4"></p>
+<p>本算法与同类算法的精度比较：</p>
+<p><img src="/2024/03/01/3ds-slam/t1.png" alt="t1" title="table 1"></p>
+<p>时间消耗对比：</p>
+<p><img src="/2024/03/01/3ds-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<p>可以看出3DS-SLAM 的实时性能相当不错，这是因为其进行了以下操作：</p>
+<ol>
+<li>对语义线程和几何线程进行<strong>并行处理</strong>；</li>
+<li>对点云进行<strong>预处理</strong>，消除掉不必要的数据。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Semantic SLAM for mobile robots in dynamic environments based on visual camera sensors</title>
+    <url>/2024/03/01/zhang2023a/</url>
+    <content><![CDATA[<p>Zhang, Qi, and Changdi Li. “Semantic SLAM for Mobile Robots in Dynamic Environments Based on Visual Camera Sensors.” <em>Measurement Science and Technology</em> 34, no. 8 (May 2023): 085202. <a href="https://doi.org/10.1088/1361-6501/acd1a4">https://doi.org/10.1088/1361-6501/acd1a4</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ul>
+<li>提出一个可应用于室内外场景的<strong>实时动态语义vSLAM 算法</strong>，可应用于各种相机传感器，并不依赖深度信息；</li>
+<li>受益于<strong>更多的检测类别</strong>，提出一个<strong>动态点剔除算法</strong>；</li>
+<li>提出了一种几乎不受噪声点影响的<strong>移动bbox判断算法</strong>，该算法以所有物体均可能是动态的为假设，使用不同的方法来检测处于不同姿势的人或物体的运动状态。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-System-overview"><a href="#3-System-overview" class="headerlink" title="3 System overview"></a>3 System overview</h1><p>本系统结合<strong>语义和几何信息</strong>来检测动态特征点：</p>
+<ol>
+<li>首先，利用DNN 获取物体的<strong>bbox</strong>，同时使用<strong>运动一致性检验</strong>来获取图片中的外点；</li>
+<li>然后，结合两种信息来高效检测、剔除动态特征点。</li>
+</ol>
+<p>本系统是基于ORB-SLAM3 来搭建的，系统的语义模块参考CrowSLAM，几何模块参考DS-SLAM。</p>
+<p><img src="/2024/03/01/zhang2023a/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-Semantic-Module"><a href="#3-1-Semantic-Module" class="headerlink" title="3.1 Semantic Module"></a>3.1 Semantic Module</h2><p>本系统使用YOLOX 算法，在高精度的同时保证高速计算，并使用GPU 加速方法——TensorRT。与其他SLAM 系统不同的是，本系统认为在复杂环境中<strong>所有物体都有可能是运动的</strong>，为了识别出尽可能多的物体，作者使用COCO 数据集（80个种类）对YOLOX 进行训练；然后，本系统结合一个<strong>自适应阈值算法</strong>来对<strong>每一个bbox</strong> 进行<strong>运动一致性检验</strong>，来确定该物体是否是动态的。</p>
+<h2 id="3-2-Geometry-Module"><a href="#3-2-Geometry-Module" class="headerlink" title="3.2 Geometry Module"></a>3.2 Geometry Module</h2><p>本系统采用DS-SLAM(Yu 等, 2018) 的<strong>运动一致性检验方法</strong>，实现对动态特征点的检测。</p>
+<h2 id="3-3-Judging-moving-boxes"><a href="#3-3-Judging-moving-boxes" class="headerlink" title="3.3 Judging moving boxes"></a>3.3 Judging moving boxes</h2><p>本系统结合语义信息和几何信息来判定bbox 是否是动态的，</p>
+<p><img src="/2024/03/01/zhang2023a/fig3.png" alt="fig3" title="figure 3"></p>
+<p>bbox 运动状态的判定步骤如下：</p>
+<ol>
+<li>首先，使用独特的方法来处理人类的bbox——NHBC 算法来区分人类是坐着还是站着的，这里使用<strong>bbox 的长宽比</strong>进行确认，坐着的人的长宽比一般小于3；作者认为坐着的人只有上半身是动态的，而站着的人全身都是动态的。</li>
+<li>然后，人类和其他物体的判断阈值需<strong>分别决定</strong>，因为人类与其他物体的<strong>运动方式差异较大</strong>，人类通常都是局部运动，如Fig. 4（a）所示，动态人类上只有几个特征点是动态的，所以对于人类bbox，只要其中有一个动态特征点，则视该bbox 为动态的；而其他物体则不尽然，需要bbox 内有足够多的动态特征点才能判定该bbox 是动态的；且部分物体检测到特征点少，部分物体检测到特征点多，因此，设定一个固定的阈值是不合适的。据此，作者提出了<strong>ATA (Adaptive Threshold Adjustment)</strong>，即根据bbox 内外点所占的比例来确定该bbox 是否是动态的，因为false-negative 对SLAM 影响较大，所以作者设置了一个较低的阈值——40%，对于人类，则设置为一个动态特征点。</li>
+</ol>
+<p><img src="/2024/03/01/zhang2023a/fig4.png" alt="fig4" title="figure 4"></p>
+<p>bbox 运动状态检测算法的过程如算法一所示：</p>
+<p><img src="/2024/03/01/zhang2023a/a1.png" alt="a1" title="algorithm 1"></p>
+<h2 id="3-4-Culling-dynamic-points"><a href="#3-4-Culling-dynamic-points" class="headerlink" title="3.4 Culling dynamic points"></a>3.4 Culling dynamic points</h2><p>由于bbox 的模糊性，作者选择仅对<strong>同时属于动态bbox 内且在静态bbox 外的点</strong>进行剔除。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Dynamic SLAM_A Visual SLAM in Outdoor Dynamic Scenes</title>
+    <url>/2024/03/01/wen2023a/</url>
+    <content><![CDATA[<p>Wen, Shuhuan, Xiongfei Li, Xin Liu, Jiaqi Li, Sheng Tao, Yidan Long, and Tony Qiu. “Dynamic SLAM: A Visual SLAM in Outdoor Dynamic Scenes.” <em>IEEE Transactions on Instrumentation and Measurement</em> 72 (2023): 1–11. <a href="https://doi.org/10.1109/TIM.2023.3317378">https://doi.org/10.1109/TIM.2023.3317378</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>提出一个新颖的视觉SLAM 系统，结合<strong>语义分割</strong>和<strong>多视角几何</strong>来有效识别<strong>同一种类不同物体</strong>的运动状态，从而减少动态特征点对系统的影响；</li>
+<li>使用SegNet 网络获取语义信息，基于<strong>匀速运动模型</strong>判断特征点的当前运动状态、估计相机位姿、恢复特征点的空间位置；当计算特征点速度时，为了减少系统噪声的干扰，作者设计了<strong>均值滤波窗口 mean filter window</strong> 来滤除噪声；</li>
+<li>基于<strong>长期观测地图点</strong>提出了一种新的<strong>动态空间点筛选方法</strong> screening method，来应对动态点错误识别或不完整识别的问题。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-System-Description"><a href="#3-System-Description" class="headerlink" title="3 System Description"></a>3 System Description</h1><h2 id="3-1-Overview-of-the-Proposed-Approach"><a href="#3-1-Overview-of-the-Proposed-Approach" class="headerlink" title="3.1 Overview of the Proposed Approach"></a>3.1 Overview of the Proposed Approach</h2><p>本系统是基于ORB-SLAM2 系统搭建的，系统架构如Fig. 1所示，大致流程如下所示：</p>
+<ol>
+<li>首先，将双目相机中左侧图片输入SegNet 获取<strong>语义信息</strong>；</li>
+<li>然后提取图片中的ORB 特征点，并<strong>“移除”</strong>属于动态类别区域的特征点，值得注意的是，此处只是<strong>暂时隐藏</strong>动态物体的特征点，而不是真正地移除它们；本步骤的目的是获取具有<strong>相对准确度的相机位姿</strong>；</li>
+<li>最终，利用剩余的静态特征点进行匹配、估计相机位姿；</li>
+<li>在此基础上，维持一个<strong>窗口</strong>来计算并记录特征点的速度，来减少噪声的影响。</li>
+</ol>
+<p><img src="/2024/03/01/wen2023a/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-3-Dynamic-Feature-Point-Selection"><a href="#3-3-Dynamic-Feature-Point-Selection" class="headerlink" title="3.3 Dynamic Feature Point Selection"></a>3.3 Dynamic Feature Point Selection</h2><p>简单地移除掉属于潜在动态物体上的特征点会导致部分场景定位效果下降甚至失败，如Fig. 3所示；因此，作者利用<strong>动态运动检测</strong>来判断属于潜在动态物体上的特征点是否处于运动状态。</p>
+<p><img src="/2024/03/01/wen2023a/fig3.png" alt="fig3" title="figure 3"></p>
+<h3 id="3-3-1-Scene-Flow-Calculation"><a href="#3-3-1-Scene-Flow-Calculation" class="headerlink" title="3.3.1 Scene Flow Calculation"></a>3.3.1 Scene Flow Calculation</h3><p>作者通过场景光流计算来获取特征点的空间运动信息，此处的特征点使用的是ORB 特征点，并使用图片金字塔方法来解决特征点提取过程的尺度不变。</p>
+<p>过程如Fig. 4所示，在静态场景中，特征点在两帧之间的位移应该具有<strong>相同的整体趋势</strong>，观察Fig. 4可以发现动态特征点位移的<strong>整体方向</strong>和<strong>大小</strong>与静态点不同。当前帧的位姿是通过匀速运动模型和特征点匹配获取的；作者使用双目相机获取<strong>特征点的深度信息</strong>，并不计算整幅图的深度信息以减少运算量。</p>
+<p><img src="/2024/03/01/wen2023a/fig4.png" alt="fig4" title="figure 4"></p>
+<p>匹配点在相邻两帧计算的空间位置信息如下所示：</p>
+<p><img src="/2024/03/01/wen2023a/f1.png" alt="f1" title="formula 1"></p>
+<p><strong>场景光流</strong>的计算如下所示：</p>
+<p><img src="/2024/03/01/wen2023a/f5.png" alt="f5" title="formula 5"></p>
+<h3 id="3-3-2-Variable-Length-Window-Filter"><a href="#3-3-2-Variable-Length-Window-Filter" class="headerlink" title="3.3.2 Variable-Length Window Filter"></a>3.3.2 Variable-Length Window Filter</h3><p>为减少噪声对确定静态点与动态点阈值的影响，作者使用一个窗口进行<strong>均值滤波</strong>。该滤波器记录相同特征点在连续帧中的速度，从该特征点出现的第一帧开始记录，维持一个最大长度的速度纪录，然后计算序列中所有值的均值作为当前帧中该特征点的速度。实际操作中，<strong>位移信息</strong>被转化为特征点的速度参数来进行阈值计算。</p>
+<p><img src="/2024/03/01/wen2023a/f6.png" alt="f6" title="formula 6"></p>
+<p>利用计算的速度信息，地图点可<strong>根据阈值</strong>分为动态点和静态点。</p>
+<h2 id="3-4-Feature-Point-Threshold-Calculation"><a href="#3-4-Feature-Point-Threshold-Calculation" class="headerlink" title="3.4 Feature Point Threshold Calculation"></a>3.4 Feature Point Threshold Calculation</h2><p>首先，选取属于<strong>静态物体类别</strong>的特征点进行阈值计算，来判断属于潜在动态物体上的特征点是否是运动的。</p>
+<p><img src="/2024/03/01/wen2023a/f7.png" alt="f7" title="formula 7"></p>
+<p>在ORB-SLAM2 中，特征点分为近点和远点，它们的估计精度<strong>存在差异</strong>，且近远点在图中的位移或速度也会不同，因此，作者引入一个参数 $\alpha$（<strong>深度的倒数</strong>）来减少噪声对阈值计算的影响：</p>
+<p><img src="/2024/03/01/wen2023a/f8.png" alt="f8" title="formula 8"></p>
+<p>值得注意的是，作者认为，为了提高精度，当特征点数量充足时，应<strong>优先选择静态物体类别区域的特征点</strong>进行计算。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 A semantic SLAM-based dense mapping approach for large-scale dynamic outdoor environment</title>
+    <url>/2024/03/01/yang2022/</url>
+    <content><![CDATA[<p>Yang, Linjie, and Luping Wang. “A Semantic SLAM-Based Dense Mapping Approach for Large-Scale Dynamic Outdoor Environment.” <em>Measurement</em> 204 (November 30, 2022): 112001. <a href="https://doi.org/10.1016/j.measurement.2022.112001">https://doi.org/10.1016/j.measurement.2022.112001</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文提出的方法是针对<strong>室外动态环境中的语义SLAM</strong>，对于动态特征点的筛选，不是简单地利用语义信息对先验动态物体直接剔除，而是采用一个精确、鲁棒的<strong>特征点滤波机制</strong>，实现对特征点动态性的精确识别。</p>
+<p>本文的贡献如下：</p>
+<ul>
+<li>提出了一个应用于大范围<strong>室外动态环境</strong>的<strong>语义SLAM 系统</strong>，该系统是基于ORB-SLAM2 和 深度学习模型的；</li>
+<li>设计了一个<strong>特征点滤除机制</strong>，该机制结合了<strong>语义特征</strong>、<strong>depth local contrast</strong> 以及<strong>多视角投影</strong>来进一步提高鲁棒性与准确性；</li>
+<li>通过采用<strong>后验概率</strong>和<strong>增量更新</strong>，为高等级机器人导航创建了室外环境的<strong>稠密地图</strong>。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-Method"><a href="#3-Method" class="headerlink" title="3 Method"></a>3 Method</h1><h2 id="3-1-The-framework-of-our-method"><a href="#3-1-The-framework-of-our-method" class="headerlink" title="3.1 The framework of our method"></a>3.1 The framework of our method</h2><p>本文方法框架如Fig. 1所示，本系统使用<strong>立体RGB 图像</strong>作为输入，基于ORB-SLAM2 算法，结合不同的深度学习模型分别用于<strong>语义特征</strong>和<strong>深度信息</strong>的获取；根据<strong>多模态特征约束</strong>实现对特征点的滤波，获取<strong>稳定的特征点</strong>进行位姿解算与建图。</p>
+<p><img src="/2024/03/01/yang2022/fig1.png" alt="fig1" title="figure 1"></p>
+<p><strong>深度学习模型：</strong>采用S2R-DepthNet, DeepLab-V3 分别获取深度图片和语义特征，由于缺少大规模标注的室外数据集，两个模型均使用transfer learning 进行训练。</p>
+<p><strong>特征点滤波：</strong>在室外动态环境中如何获取稳定的特征点是本文的<strong>核心内容</strong>，该滤波机制将<strong>语义特征</strong>、<strong>depth local contrast</strong> 以及<strong>多视角投影</strong>进行结合来提高准确性与鲁棒性。</p>
+<p><strong>系统定位：</strong>利用稳定的特征点，并结合立体视角来实现<strong>位姿的估计</strong>与<strong>尺度不确定的消除</strong>。</p>
+<p><strong>建图：</strong>不仅构建用来位姿估计和定位的<strong>稀疏地图</strong>，也为高等级机器人导航以增量更新的方式构建<strong>室外稠密3D 地图</strong>。</p>
+<h2 id="3-2-Deep-learning-model"><a href="#3-2-Deep-learning-model" class="headerlink" title="3.2 Deep learning model"></a>3.2 Deep learning model</h2><h3 id="3-2-1-Depth-estimation-module"><a href="#3-2-1-Depth-estimation-module" class="headerlink" title="3.2.1 Depth estimation module"></a>3.2.1 Depth estimation module</h3><p>S2R-DepthNet 网络包含三个模块：Structure Extraction, Depth-specific Attention, depth prediction。经该网络获取的深度图片不仅用于生成<strong>稠密地图</strong>，也利用local contrast 来<strong>滤除不稳定的特征点</strong>以进行位姿估计。</p>
+<h3 id="3-2-2-Semantic-segmentation-module"><a href="#3-2-2-Semantic-segmentation-module" class="headerlink" title="3.2.2 Semantic segmentation module"></a>3.2.2 Semantic segmentation module</h3><p>考虑到<strong>室外环境的复杂性</strong>以及<strong>迁移学习的限制</strong>，作者使用性能强大的DeepLab-V3+ 作为语义分割模型。</p>
+<p>本系统中，语义分割模块承担着两个作用：</p>
+<ol>
+<li>通过产生一个<strong>二值掩码图片</strong>（背景为1，先验动态实例为0），来协助多视角投影来区分<strong>真正的动态特征点</strong>；</li>
+<li>用于移除所有的动态实例来<strong>增强3D 地图的重复使用性。</strong></li>
+</ol>
+<h2 id="3-3-Multiple-views-projection-constraint"><a href="#3-3-Multiple-views-projection-constraint" class="headerlink" title="3.3 Multiple views projection constraint"></a>3.3 Multiple views projection constraint</h2><p>多视角投影约束的构建过程如Fig. 3所示：</p>
+<p><img src="/2024/03/01/yang2022/fig3.png" alt="fig3" title="figure 3"></p>
+<p>具体步骤如下所示：</p>
+<ul>
+<li>首先，利用Dyna-SLAM 的<strong>轻量跟踪</strong>，只使用语义二值掩码图片中的静态特征点计算当前帧的<strong>初始位姿估计</strong>；</li>
+<li>其次，利用初始位姿估计计算当前帧中每个特征点的<strong>3D 坐标</strong>；</li>
+<li>然后，为当前帧选取几个共视区域足够大的<strong>几个参考帧</strong>，将上步计算的对应3D 地图点投影至参考帧中；</li>
+<li>最后，比较特征点在不同参考帧中的<strong>类别标签</strong>，如果存在类别标签差异，则判定为动态特征点。</li>
+</ul>
+<h2 id="3-4-System-tracking"><a href="#3-4-System-tracking" class="headerlink" title="3.4 System tracking"></a>3.4 System tracking</h2><p>作者认为，如果一个特征点周围存在<strong>巨大的深度差异</strong>，那么该特征点被认为是不稳定的。</p>
+<p>通常来讲，深度图片中的巨大差异也会反映在对应的RGB 图片中，太多、太近的<strong>伪特征点</strong>在跟踪过程中会由于太大的梯度值导致混乱；因此，作者使用深度图中的<strong>局部对比local contrast</strong> 来进一步提高特征点的筛选质量。作者使用简单的<strong>标准差</strong>来描述局部深度差异程度。</p>
+<h2 id="3-5-Dense-mapping"><a href="#3-5-Dense-mapping" class="headerlink" title="3.5 Dense mapping"></a>3.5 Dense mapping</h2><p>本系统构建稠密地图的策略：</p>
+<ol>
+<li>利用获取的深度图片来创建并<strong>增量式更新</strong>稠密地图，而且使用<strong>基于体素的采样方法</strong>来控制稠密地图点的数量；</li>
+<li>为了实现更高级的<strong>3D 场景感知</strong>，作者将关键帧中的语义标签利用ray-casting 策略投影至地图点中。</li>
+</ol>
+<p>此外，考虑到多观测数据融合，作者使用循环贝叶斯recursive Bayesian 进行数据关联，来更新每个地图点的概率分布：</p>
+<p><img src="/2024/03/01/yang2022/f6.png" alt="f6" title="formula 6"></p>
+<p>根据式6，可得到基于最大后验概率的稠密地图点标签。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
 </search>

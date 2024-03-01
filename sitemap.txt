@@ -1,3 +1,7 @@
+http://echo-gh.github.io/2024/03/01/3ds-slam/
+http://echo-gh.github.io/2024/03/01/zhang2023a/
+http://echo-gh.github.io/2024/03/01/wen2023a/
+http://echo-gh.github.io/2024/03/01/yang2022/
 http://echo-gh.github.io/2024/03/01/cfp-slam/
 http://echo-gh.github.io/2024/03/01/yolo-slam/
 http://echo-gh.github.io/2024/03/01/chen2022b/
