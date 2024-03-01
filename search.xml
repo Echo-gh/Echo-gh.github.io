@@ -2943,4 +2943,113 @@
         <tag>Semantic</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 CFP-SLAM_A Real-time Visual SLAM Based on Coarse-to-Fine Probability in Dynamic Environments</title>
+    <url>/2024/03/01/cfp-slam/</url>
+    <content><![CDATA[<p>Hu, Xinggang, Yunzhou Zhang, Zhenzhong Cao, Rong Ma, Yanmin Wu, Zhiqiang Deng, and Wenkai Sun. “CFP-SLAM: A Real-Time Visual SLAM Based on Coarse-to-Fine Probability in Dynamic Environments.” In <em>2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 4399–4406. Kyoto, Japan: IEEE, 2022. <a href="https://doi.org/10.1109/IROS47612.2022.9981826">https://doi.org/10.1109/IROS47612.2022.9981826</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者认为当前面向动态场景的语义SLAM 方法虽然可以有效消除动态物体对位姿解算的影响，但很难实现<strong>精度与时间的平衡</strong>，难以实现实时处理，而且这些算法在<strong>低动态场景</strong>中的效果普遍不好。针对这些问题，作者提出了<strong>CFP-SLAM</strong>。</p>
+<p>本文的贡献如下：</p>
+<ul>
+<li>当使用<strong>DBSCAN 聚类算法</strong>来区分bbox 内的前景点和背景点，基于EKF 和 Hungarian 算法来<strong>补偿物体漏检测</strong>；</li>
+<li>基于<strong>YOLOv5</strong> 和<strong>几何约束</strong>将物体的运动属性分为高动态和低动态，为后续的处理提供先验信息，以此来提高SLAM 系统的<strong>鲁棒性与适应能力</strong>；</li>
+<li>提出一种基于物体静态概率的<strong>关键点静态概率</strong>两阶段计算方法，使用DBSCAN 聚类算法、对极几何约束以及投影约束来解决由非刚性物体局部运动造成的<strong>静态点误检测问题</strong>。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-System-Overview"><a href="#3-System-Overview" class="headerlink" title="3 System Overview"></a>3 System Overview</h1><h2 id="3-2-System-Architecture"><a href="#3-2-System-Architecture" class="headerlink" title="3.2 System Architecture"></a>3.2 System Architecture</h2><p>CFP-SLAM 系统架构如Fig. 1所示，该系统是基于ORB-SLAM2 开发实现的。</p>
+<p><img src="/2024/03/01/cfp-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="4-Specific-Implementation"><a href="#4-Specific-Implementation" class="headerlink" title="4 Specific Implementation"></a>4 Specific Implementation</h1><h2 id="4-1-Missed-Detection-Compensation-Algorithm"><a href="#4-1-Missed-Detection-Compensation-Algorithm" class="headerlink" title="4.1 Missed Detection Compensation Algorithm"></a>4.1 Missed Detection Compensation Algorithm</h2><p>稳定准确的语义信息至关重要，漏检物体会带来以下影响：</p>
+<ol>
+<li>影响后续基于<strong>语义先验信息</strong>处理动态物体的方法的正常运行；</li>
+<li>在动态场景中，动态物体的突然出现会导致邻接帧之间<strong>错误匹配</strong>的特征点数量猛然提高，可能会导致SLAM 算法<strong>跟踪失败</strong>。</li>
+</ol>
+<p>本系统使用<strong>EKF 和 Hungarian 算法</strong>来补偿潜在动态物体的<strong>漏检测</strong>：利用EKF 来<strong>预测</strong>当前帧中的潜在动态物体bbox，Hungarian 算法将EKF 预测的bbox 与YOLOv5 的检测结果<strong>进行关联</strong>，若预测框没有找到一个关联的检测框，则认为出现了漏检测，采用EKF 预测的框作为漏检测的框。然后，EKF 和Hungarian 算法进一步被用于帧间bbox 内的<strong>数据关联</strong>。</p>
+<h2 id="4-2-Static-Probability-of-Objects"><a href="#4-2-Static-Probability-of-Objects" class="headerlink" title="4.2 Static Probability of Objects"></a>4.2 Static Probability of Objects</h2><p>本系统提取并跟踪邻接帧之间的<strong>光流点对</strong>，并使用潜在动态物体bbox <strong>外部的光流点对</strong>计算<strong>基础矩阵</strong>；然后计算光流点对的polar error，并使用卡方分布计算<strong>物体的静态概率</strong>；作者设定阈值为0.9，根据物体的静态概率分为高动态物体和低动态物体，然后将潜在动态物体bbox 内的所有特征点的静态概率<strong>初始化</strong>为物体的静态概率，图片中其余特征点的静态概率设置为1。</p>
+<h2 id="4-3-Static-Probability-of-Keypoints-in-the-First-Stage"><a href="#4-3-Static-Probability-of-Keypoints-in-the-First-Stage" class="headerlink" title="4.3 Static Probability of Keypoints in the First Stage"></a>4.3 Static Probability of Keypoints in the First Stage</h2><h2 id="4-3-1-DBSCAN-Density-Clustering-Algorithm"><a href="#4-3-1-DBSCAN-Density-Clustering-Algorithm" class="headerlink" title="4.3.1 DBSCAN Density Clustering Algorithm"></a>4.3.1 DBSCAN Density Clustering Algorithm</h2><p>物体检测算法无法提供物体<strong>精确的掩码</strong>，特别是对于非刚性物体（如人类），检测框中会有很多的<strong>背景点</strong>。作者认为人表面上特征点的<strong>深度连续性</strong>很好，因此，作者使用<strong>DBSCAN 聚类算法</strong>来区分bbox 内的前景点和背景点，根据集群组的数量，作者将几组具有较小深度的集群组视为前景，该策略使得DBSCAN 聚类算法有着较强的<strong>鲁棒性</strong>。在识别出潜在动态物体bbox 内的前景点和背景点后，作者使用一个soft strategy 来进一步估计<strong>背景点的静态概率</strong>：</p>
+<p><img src="/2024/03/01/cfp-slam/f1.png" alt="f1" title="formula 1"></p>
+<p>当前阶段特征点的静态概率还没有进行严格计算，属于比较粗糙的状态，此时的相机位姿估计容易受到动态点的影响，所以作者将此时<strong>高动态物体</strong>bbox 内<strong>前景点</strong>的静态概率设为0。</p>
+<h3 id="4-3-2-First-Stage-Pose-Optimization"><a href="#4-3-2-First-Stage-Pose-Optimization" class="headerlink" title="4.3.2 First Stage Pose Optimization"></a>4.3.2 First Stage Pose Optimization</h3><p>更新<strong>特征点的静态概率</strong>：</p>
+<p><img src="/2024/03/01/cfp-slam/f2.png" alt="f2" title="formula 2"></p>
+<p>SLAM 系统初始化时，将地图点的静态概率初始化为对应特征点的静态概率；在初始化之后，帧间的<strong>位姿转换矩阵</strong>在第一阶段获取到，然后特征点的静态概率可进一步基于<strong>投影约束</strong>和<strong>对极约束</strong>实现精确计算。</p>
+<h2 id="4-4-Static-Probability-of-Keypoints-in-the-Second-Stage"><a href="#4-4-Static-Probability-of-Keypoints-in-the-Second-Stage" class="headerlink" title="4.4 Static Probability of Keypoints in the Second Stage"></a>4.4 Static Probability of Keypoints in the Second Stage</h2><h3 id="4-4-1-Static-Probability-Based-on-the-Projection-Constraints"><a href="#4-4-1-Static-Probability-Based-on-the-Projection-Constraints" class="headerlink" title="4.4.1 Static Probability Based on the Projection Constraints"></a>4.4.1 Static Probability Based on the Projection Constraints</h3><p>利用初始位姿将上一帧的特征点投影至当前帧中，计算投影点至匹配点之间的<strong>欧氏距离</strong>，记为<strong>投影偏差距离</strong> $d_i^T$ ；统计当前帧中动态物体bbox 外所有特征点的投影偏差距离并按从小到大进行排序，以0.8处的偏差距离作为<strong>自适应阈值</strong> $d_{TH}^T$ ，同时记录最小值 $d_{min}^T$ ，作者使用Sigmoid 函数形式来计算bbox 内匹配点的<strong>静态概率</strong>：</p>
+<p><img src="/2024/03/01/cfp-slam/f5.png" alt="f5" title="formula 5"></p>
+<p>其中，参数 m 表示Sigmoid 函数的间隔。</p>
+<p>对于一对匹配点，投影约束的满足不仅与<strong>静态环境的假设</strong>有关，也与<strong>位姿转换矩阵的求解</strong>正确与否有关。因此，作者计算位姿转换矩阵的<strong>统计置信度和计算置信度</strong>：</p>
+<p><img src="/2024/03/01/cfp-slam/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$N_{BA}$ 为参与上帧位姿求解的<strong>内点数量</strong>；$Th_{BA}$ 为参与位姿解算的<strong>最小内点数量要求</strong>；$N_T$ 为<strong>所有采样点的数量</strong>；$\sum d_i^T$ 表示小于阈值的所有<strong>投影偏差距离之和</strong>。</p>
+<h3 id="4-4-2-Static-Probability-Based-on-the-Epipolar-Constraints"><a href="#4-4-2-Static-Probability-Based-on-the-Epipolar-Constraints" class="headerlink" title="4.4.2 Static Probability Based on the Epipolar Constraints"></a>4.4.2 Static Probability Based on the Epipolar Constraints</h3><p>基于第一阶段的位姿估计，可以得到<strong>更为准确</strong>的基础矩阵：</p>
+<p><img src="/2024/03/01/cfp-slam/f8.png" alt="f8" title="formula 8"></p>
+<p>值得注意的是，上式的计算过程要求相机的平移应该要<strong>足够大</strong>，否则无法计算基础矩阵。由此，可以计算polar error：</p>
+<p><img src="/2024/03/01/cfp-slam/f10.png" alt="f10" title="formula 10"></p>
+<p>与上文类似的，可以基于对极约束计算相应的<strong>静态概率及置信度</strong> $K_i^{Fk}, C_s^{Fk}, C_c^{Fk}$ ；若相机的平移未超过设定的阈值 $t_{Th}$ ，则有：</p>
+<p><img src="/2024/03/01/cfp-slam/f11.png" alt="f11" title="formula 11"></p>
+<h3 id="4-4-3-Second-Stage-Pose-Optimization"><a href="#4-4-3-Second-Stage-Pose-Optimization" class="headerlink" title="4.4.3 Second Stage Pose Optimization"></a>4.4.3 Second Stage Pose Optimization</h3><p>在使用投影约束和对极几何约束后，更新当前帧与上一帧匹配点的静态概率；根据动态物体的移动概率，进行如下的<strong>特征点静态概率更新</strong>：</p>
+<p>若物体静态概率<strong>低于阈值</strong>，则特征点静态概率更新为：</p>
+<p><img src="/2024/03/01/cfp-slam/f12.png" alt="f12" title="formula 12"></p>
+<p>若物体静态概率<strong>高于阈值</strong>，则特征点静态概率更新为：</p>
+<p><img src="/2024/03/01/cfp-slam/f13.png" alt="f13" title="formula 13"></p>
+<p>最后利用低动态特征点和地图点实现对相机位姿的<strong>第二次优化</strong>。</p>
+<h1 id="5-Experiments-and-Results"><a href="#5-Experiments-and-Results" class="headerlink" title="5 Experiments and Results"></a>5 Experiments and Results</h1><p><img src="/2024/03/01/cfp-slam/t1.png" alt="t1" title="table 1"></p>
+<p><img src="/2024/03/01/cfp-slam/t5.png" alt="t5" title="table 5"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 YOLO-SLAM_A semantic SLAM system towards dynamic environment with geometric constraint</title>
+    <url>/2024/03/01/yolo-slam/</url>
+    <content><![CDATA[<p>Wu, Wenxin, Liang Guo, Hongli Gao, Zhichao You, Yuekai Liu, and Zhiqiang Chen. “YOLO-SLAM: A Semantic SLAM System towards Dynamic Environment with Geometric Constraint.” <em>Neural Computing and Applications</em> 34, no. 8 (April 2022): 6011–26. <a href="https://doi.org/10.1007/s00521-021-06764-3">https://doi.org/10.1007/s00521-021-06764-3</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文提出了一种在<strong>动态环境</strong>中可有效消除移动物体影响的<strong>鲁棒SLAM 系统</strong>——YOLO-SLAM，该系统<strong>紧耦合深度学习</strong>在场景理解的优势和特征点的内在<strong>几何深度信息</strong>来检测动态特征点，本文的主要贡献：</p>
+<ol>
+<li>设计了一个<strong>轻量级Darknet19-YOLOv3 物体检测网络</strong>，用于获取视觉语义信息；</li>
+<li>提出了一种<strong>新的几何约束方法</strong>来识别动态特征点；</li>
+<li>基于ORB-SLAM2 构建了YOLO-SLAM 系统，在动态环境中的<strong>准确性</strong>和<strong>鲁棒性</strong>都得到了提高。</li>
+</ol>
+<span id="more"></span>
+<h1 id="2-Related-Work"><a href="#2-Related-Work" class="headerlink" title="2 Related Work"></a>2 Related Work</h1><p>针对动态场景中的SLAM，主要有三种方法来消除动态物体的影响：<strong>几何方法</strong>，<strong>深度学习方法</strong>，以及<strong>两者相结合的方法</strong>。当前学术界更看重两者结合的方法，但是存在一定问题：</p>
+<ol>
+<li>常用的深度学习网络，如SegNet，Mask-RCNN 很耗时；</li>
+<li>多视角几何约束需要多帧图片，无法解决初始化或者前帧图片丢失的情况。</li>
+</ol>
+<p>针对以上问题，作者提出了一种将深度学习和几何约束<strong>紧耦合</strong>的动态特征点剔除方法：</p>
+<ol>
+<li>对YOLOv3 网络进行修改，得到一个<strong>轻量级</strong>的物体检测网络，以减少时间消耗；</li>
+<li>提出一种新的几何约束方法，可在仅使用<strong>一张图片信息</strong>的情况下实现对动态物体特征点的检测。</li>
+</ol>
+<h1 id="3-Proposed-method"><a href="#3-Proposed-method" class="headerlink" title="3 Proposed method"></a>3 Proposed method</h1><h2 id="3-1-Framework-of-YOLO-SLAM"><a href="#3-1-Framework-of-YOLO-SLAM" class="headerlink" title="3.1 Framework of YOLO-SLAM"></a>3.1 Framework of YOLO-SLAM</h2><p>YOLO-SLAM 的整体架构如Fig. 1所示。</p>
+<p><img src="/2024/03/01/yolo-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>移除动态特征点的细节过程如Fig. 2所示：</p>
+<p><img src="/2024/03/01/yolo-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-2-Lightweight-object-detection"><a href="#3-2-Lightweight-object-detection" class="headerlink" title="3.2 Lightweight object detection"></a>3.2 Lightweight object detection</h2><p>作者将YOLOv3 网络的主干网从Darknet-53 更换为 Darknet-19，可在保持一定精度的同时大幅提高运行速度，两者的运行参数对比如下所示：</p>
+<p><img src="/2024/03/01/yolo-slam/t1.png" alt="t1" title="table 1"></p>
+<h2 id="3-3-Dynamic-features-screening"><a href="#3-3-Dynamic-features-screening" class="headerlink" title="3.3 Dynamic features screening"></a>3.3 Dynamic features screening</h2><p>RGB-D 相机获取的深度图如Fig. 5所示，可根据<strong>深度差异</strong>来辨别物体的轮廓，在此基础上，利用<strong>depth-RANSAC</strong> 方法来识别出bbox 内的静态特征点。</p>
+<p><img src="/2024/03/01/yolo-slam/fig5.png" alt="fig5" title="figure 5"></p>
+<p>该方法基于<strong>三个假设</strong>：</p>
+<ol>
+<li>人是最可能移动的物体，且占据了bbox 的大部分空间；</li>
+<li>位于人上的特征点在深度值上差异很小；</li>
+<li>bbox 内，人和其他物体的深度差异较明显。</li>
+</ol>
+<p>基于以上三个假设的depth-RANSAC 算法如下所示。</p>
+<p><strong>注：</strong>文章在对迭代次数 k 进行求解时，关于概率计算问题<strong>出现了错误</strong>。</p>
+<p>文章将内点所占比例表示为 $w$ ，每次用N 个点计算RANSAC 模型时，在所选的N 个点中至少存在一个外点的概率为 $1-w^N$ ；若连续进行k 次迭代，则 $(1-w^N)^k$ 表示的是<strong>k 次迭代中，每次都至少存在一个外点</strong>，而文中错误地将 $(1-w^N)^k$ 表示为k 次连续迭代中至少存在一个外点。</p>
+<p>在此错误前提下，作者使用 P 表示在 k 次迭代中，采样点<strong>全部都是内点</strong>，文中的求解为 $1-P = (1-w^N)^k$ ；但此处 P 代表的含义应是在 k 次迭代中，至少有一次迭代的采样点全部是内点。若要实现作者对P 的含义，则应为 $P = (w^N)^k$ 。</p>
+<p><img src="/2024/03/01/yolo-slam/a1.png" alt="a1" title="algorithm 1"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
 </search>

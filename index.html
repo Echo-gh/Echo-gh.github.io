@@ -191,6 +191,177 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/01/cfp-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/01/cfp-slam/" class="post-title-link" itemprop="url">论文记录 CFP-SLAM_A Real-time Visual SLAM Based on Coarse-to-Fine Probability in Dynamic Environments</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-01 10:57:41 / 修改时间：11:03:55" itemprop="dateCreated datePublished" datetime="2024-03-01T10:57:41+08:00">2024-03-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Hu, Xinggang, Yunzhou Zhang, Zhenzhong Cao, Rong Ma, Yanmin Wu, Zhiqiang Deng, and Wenkai Sun. “CFP-SLAM: A Real-Time Visual SLAM Based on Coarse-to-Fine Probability in Dynamic Environments.” In <em>2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 4399–4406. Kyoto, Japan: IEEE, 2022. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/IROS47612.2022.9981826">https://doi.org/10.1109/IROS47612.2022.9981826</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者认为当前面向动态场景的语义SLAM 方法虽然可以有效消除动态物体对位姿解算的影响，但很难实现<strong>精度与时间的平衡</strong>，难以实现实时处理，而且这些算法在<strong>低动态场景</strong>中的效果普遍不好。针对这些问题，作者提出了<strong>CFP-SLAM</strong>。</p>
+<p>本文的贡献如下：</p>
+<ul>
+<li>当使用<strong>DBSCAN 聚类算法</strong>来区分bbox 内的前景点和背景点，基于EKF 和 Hungarian 算法来<strong>补偿物体漏检测</strong>；</li>
+<li>基于<strong>YOLOv5</strong> 和<strong>几何约束</strong>将物体的运动属性分为高动态和低动态，为后续的处理提供先验信息，以此来提高SLAM 系统的<strong>鲁棒性与适应能力</strong>；</li>
+<li>提出一种基于物体静态概率的<strong>关键点静态概率</strong>两阶段计算方法，使用DBSCAN 聚类算法、对极几何约束以及投影约束来解决由非刚性物体局部运动造成的<strong>静态点误检测问题</strong>。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/03/01/cfp-slam/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/01/yolo-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/01/yolo-slam/" class="post-title-link" itemprop="url">论文记录 YOLO-SLAM_A semantic SLAM system towards dynamic environment with geometric constraint</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-01 10:52:54 / 修改时间：10:56:41" itemprop="dateCreated datePublished" datetime="2024-03-01T10:52:54+08:00">2024-03-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Wu, Wenxin, Liang Guo, Hongli Gao, Zhichao You, Yuekai Liu, and Zhiqiang Chen. “YOLO-SLAM: A Semantic SLAM System towards Dynamic Environment with Geometric Constraint.” <em>Neural Computing and Applications</em> 34, no. 8 (April 2022): 6011–26. <a target="_blank" rel="noopener" href="https://doi.org/10.1007/s00521-021-06764-3">https://doi.org/10.1007/s00521-021-06764-3</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文提出了一种在<strong>动态环境</strong>中可有效消除移动物体影响的<strong>鲁棒SLAM 系统</strong>——YOLO-SLAM，该系统<strong>紧耦合深度学习</strong>在场景理解的优势和特征点的内在<strong>几何深度信息</strong>来检测动态特征点，本文的主要贡献：</p>
+<ol>
+<li>设计了一个<strong>轻量级Darknet19-YOLOv3 物体检测网络</strong>，用于获取视觉语义信息；</li>
+<li>提出了一种<strong>新的几何约束方法</strong>来识别动态特征点；</li>
+<li>基于ORB-SLAM2 构建了YOLO-SLAM 系统，在动态环境中的<strong>准确性</strong>和<strong>鲁棒性</strong>都得到了提高。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/03/01/yolo-slam/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/01/chen2022b/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -857,178 +1028,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/28/stdyn-slam/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/02/28/stdyn-slam/" class="post-title-link" itemprop="url">论文记录 The STDyn-SLAM_A Stereo Vision and Semantic Segmentation Approach for VSLAM in Dynamic Outdoor Environments</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2024-02-28 16:10:09 / 修改时间：16:13:05" itemprop="dateCreated datePublished" datetime="2024-02-28T16:10:09+08:00">2024-02-28</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Esparza, Daniela, and Gerardo Flores. “The STDyn-SLAM: A Stereo Vision and Semantic Segmentation Approach for VSLAM in Dynamic Outdoor Environments.” <em>IEEE Access</em> 10 (2022): 18201–9. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ACCESS.2022.3149885">https://doi.org/10.1109/ACCESS.2022.3149885</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献如下：</p>
-<ul>
-<li>提出一个针对动态环境的立体SLAM 算法——STDyn-SLAM，结合<strong>语义分割</strong>神经网络和<strong>几何约束</strong>对动态物体进行剔除；</li>
-<li>立体相机的深度图用于构建3D 八叉树地图重建，深度图对于本SLAM 不是必要的；</li>
-<li>利用公开数据集进行测试，并于SOTA 方法进行对比；</li>
-<li>开源代码：<a target="_blank" rel="noopener" href="https://github.com/DanielaEsparza/STDyn-SLAM">https://github.com/DanielaEsparza/STDyn-SLAM</a></li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/02/28/stdyn-slam/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/27/yu2021/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/02/27/yu2021/" class="post-title-link" itemprop="url">论文记录 Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2024-02-27 10:26:54 / 修改时间：10:32:32" itemprop="dateCreated datePublished" datetime="2024-02-27T10:26:54+08:00">2024-02-27</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Yu, Peilin, Chi Guo, yang Liu, and Huyin Zhang. “Fusing Semantic Segmentation and Object Detection for Visual SLAM in Dynamic Scenes.” In <em>Proceedings of the 27th ACM Symposium on Virtual Reality Software and Technology</em>, 1–7. VRST ’21. New York, NY, USA: Association for Computing Machinery, 2021. <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3489849.3489882">https://doi.org/10.1145/3489849.3489882</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文针对SLAM 算法环境中存在的动态物体，结合<strong>物体检测</strong>和<strong>语义分割</strong>来获取<strong>潜在动态物体</strong>的先验轮廓，在此基础上应用<strong>几何约束</strong>实现对动态特征点的剔除。</p>
-<p>本文做出的贡献：</p>
-<ol>
-<li>提出一种<strong>自适应机制</strong>，使得系统可根据不同的环境选择使用语义分割还是物体检测；</li>
-<li>提出一种<strong>静态点恢复技术</strong>，以减少可用静态点的损失，并使用光流和对极约束来检查物体的状态；</li>
-<li>在公开数据集TUM 上进行评估，在<strong>高动态环境</strong>下实现了良好的表现。</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/02/27/yu2021/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1100,7 +1099,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
