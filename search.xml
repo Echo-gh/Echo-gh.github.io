@@ -2814,4 +2814,42 @@
         <tag>Semantic</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 Monocular Localization in HD Maps by Combining Semantic Segmentation and Distance Transform</title>
+    <url>/2024/03/01/pauls2020/</url>
+    <content><![CDATA[<p>Pauls, Jan-Hendrik, Kursat Petek, Fabian Poggenhans, and Christoph Stiller. “Monocular Localization in HD Maps by Combining Semantic Segmentation and Distance Transform.” In <em>2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 4595–4601. Las Vegas, NV, USA: IEEE, 2020. <a href="https://doi.org/10.1109/IROS45743.2020.9341003">https://doi.org/10.1109/IROS45743.2020.9341003</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>提出使用语义分割网络来克服之前常用的物体探测网络生成<strong>bboxing 的空间限制</strong>，这使得我们可以检测到稀疏、可共享、独立于传感器的HD 地图中的所有地图元素；</li>
+<li>使用distance transform 来解决稠密语义信息的<strong>数据关联</strong>问题，且该关联过程本质上是动态的；</li>
+<li>将<strong>语义信息和标准的汽车里程计</strong>组成为一个鲁棒的位姿图优化，克服了语义定位只使用图片的缺点。</li>
+</ol>
+<span id="more"></span>
+<p><img src="/2024/03/01/pauls2020/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-Semantic-Segmentation-and-Post-processing"><a href="#3-Semantic-Segmentation-and-Post-processing" class="headerlink" title="3 Semantic Segmentation and Post-processing"></a>3 Semantic Segmentation and Post-processing</h1><p>作者使用包含多个检测头的ResNet-38 网络进行语义分割：</p>
+<ul>
+<li>其中一个检测头按照<strong>增强型Cityscapes 数据集种类</strong>进行分割，种类的增强在于增加了所有的道路标志lane marking 类别，该结果被命名为Cityscapes+<em>LM</em>。</li>
+<li>第二个检测头预测<strong>车道</strong>，特别是本车所在的车道区域。</li>
+</ul>
+<p>只关注与地图元素对应的语义类别，curbs (C), lane borders (LB), lane markings (LM), traffic lights (TL), traffic signs (TS)。由于本网络无法检测车道边界LB，作者采用<strong>形态学方法</strong>根据<strong>车道区域</strong>提取出相应的LB。</p>
+<h1 id="4-Distance-Transform"><a href="#4-Distance-Transform" class="headerlink" title="4 Distance Transform"></a>4 Distance Transform</h1><p>将某个类别的<strong>二值图片</strong>记为 $B_c$ ，distance transform 用于将 $B_c$ 转化为一个<strong>距离图片</strong> $D_c$ ，具有相同的维度，但是是连续的像素数值。</p>
+<p><img src="/2024/03/01/pauls2020/f1.png" alt="f1" title="formula 1"></p>
+<h1 id="5-Semantic-Localization"><a href="#5-Semantic-Localization" class="headerlink" title="5 Semantic Localization"></a>5 Semantic Localization</h1><p>作者将不同地标采样成<strong>3D 点</strong>来表示，这样可以适用于任何形状的地标。利用<strong>初始位姿估计</strong>将附近的地表点映射至距离图片 $D_c$ ，构建如下所示的<strong>损失函数</strong>：</p>
+<p><img src="/2024/03/01/pauls2020/f2.png" alt="f2" title="formula 2"></p>
+<p>原理在于最优位姿p 会使得所有投影后的地标位于相应的<strong>语义标签图片块</strong>中，对于非最优的情况，每个地标需要移动至下一个合适的图片块，该信息可通过对距离图片进行<strong>插值</strong>以生成一个<strong>顺滑的梯度</strong>。因此，插值后的距离图片可以视为一个<strong>快速查找表</strong>，只需计算一次然后就可用于每一次优化步骤。另一个优势在于这个查找可<strong>动态</strong>构建地标与图片块之间的联系，也就是说，不需要额外的处理就可以在每一次优化中改变。</p>
+<p>对于外点剔除，作者使用带有<strong>变量宽度</strong>的Tukey’s biweight 损失作为<strong>鲁棒损失函数</strong> $\rho$ ，距离较远的地图元素，如交通牌、交通灯等可以相应调整变量宽度。</p>
+<h1 id="6-Pose-Graph-Optimization"><a href="#6-Pose-Graph-Optimization" class="headerlink" title="6 Pose Graph Optimization"></a>6 Pose Graph Optimization</h1><p>作者构建了一个包含图片定位和汽车VO 的<strong>滑动窗口位姿图优化</strong>，VO 主要用来获取径向longitudinal 速度与 yaw 转向速率，作者假定在连续帧间VO 满足常数速度和转向速率 $v,w$ ，因此，部分2D 位姿在汽车坐标系中的非线性更新 $\widetilde{p} = (x, y, \theta)$ ：</p>
+<p><img src="/2024/03/01/pauls2020/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$\Delta T$  表示连续两帧之间的时间间隔。然后该部分2D 位姿被转换至相机坐标系，并使用在高度、pitch、roll 方向的弱正则化进行补充，作为一个简化的6自由度运动模型。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
 </search>
