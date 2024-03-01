@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Xiao, Zhongyang, Diange Yang, Tuopu Wen, Kun Jiang, and Ruidong Yan. “Monocular Localization with Vector HD Map (MLVHM): A Low-Cost Method for Commercial IVs.” Sensors 20, no. 7 (March 27, 2020): 1870">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Monocular Localization with Vector HD Map (MLVHM)_A Low-Cost Method for Commercial IVs">
+<meta property="og:url" content="http://echo-gh.github.io/2024/03/01/xiao2020/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Xiao, Zhongyang, Diange Yang, Tuopu Wen, Kun Jiang, and Ruidong Yan. “Monocular Localization with Vector HD Map (MLVHM): A Low-Cost Method for Commercial IVs.” Sensors 20, no. 7 (March 27, 2020): 1870">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/f13.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/a1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/f18.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/f19.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/f20.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/f21.png">
+<meta property="article:published_time" content="2024-03-01T00:49:21.000Z">
+<meta property="article:modified_time" content="2024-03-01T01:03:34.138Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Map Match">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/03/01/xiao2020/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/03/01/xiao2020/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Monocular Localization with Vector HD Map (MLVHM)_A Low-Cost Method for Commercial IVs | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/01/xiao2020/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Monocular Localization with Vector HD Map (MLVHM)_A Low-Cost Method for Commercial IVs
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-01 08:49:21 / 修改时间：09:03:34" itemprop="dateCreated datePublished" datetime="2024-03-01T08:49:21+08:00">2024-03-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Map-Match/" itemprop="url" rel="index"><span itemprop="name">Map Match</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Xiao, Zhongyang, Diange Yang, Tuopu Wen, Kun Jiang, and Ruidong Yan. “Monocular Localization with Vector HD Map (MLVHM): A Low-Cost Method for Commercial IVs.” <em>Sensors</em> 20, no. 7 (March 27, 2020): 1870. <a target="_blank" rel="noopener" href="https://doi.org/10.3390/s20071870">https://doi.org/10.3390/s20071870</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>提出一个基于<strong>语义向量提取</strong>和<strong>鲁棒地图匹配算法</strong>的低成本高精度定位算法；</li>
+<li>提出一个<strong>基于滑动窗口的帧间运动融合（单目相机视觉里程计作为帧间约束）</strong>来有效提高定位的稳定性，特别是在<strong>稀疏定位特征的场景</strong>中也可以实现实时的稳定定位；</li>
+<li>在真实世界中进行实验证明了精度与可靠性。</li>
+</ol>
+<span id="more"></span>
+<p>不同种类的高精度地图：</p>
+<p><img src="/2024/03/01/xiao2020/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-System-Overview"><a href="#3-System-Overview" class="headerlink" title="3 System Overview"></a>3 System Overview</h1><p>MLVHM 系统概述如Fig. 2所示：</p>
+<p><img src="/2024/03/01/xiao2020/fig2.png" alt="fig2" title="figure 2"></p>
+<p>值得注意的是，ORB 特征只用来进行里程计计算作为<strong>帧间动作约束</strong>，并不参与地图匹配。</p>
+<h1 id="4-Map-Based-Localization"><a href="#4-Map-Based-Localization" class="headerlink" title="4 Map-Based Localization"></a>4 Map-Based Localization</h1><h2 id="4-1-Line-and-Point-Based-Camera-Localization"><a href="#4-1-Line-and-Point-Based-Camera-Localization" class="headerlink" title="4.1 Line-and Point-Based Camera Localization"></a>4.1 Line-and Point-Based Camera Localization</h2><p>MLVHM 使用的是<strong>带有语义信息的几何特征</strong>，如Fig. 3所示，在Image processing 阶段，这些点与线特征被识别为带有语义信息，相应地，地图中的地标也是环境中关键元素的几何描述。</p>
+<p><img src="/2024/03/01/xiao2020/fig3.png" alt="fig3" title="figure 3"></p>
+<p>建立图片与地图间点、线特征的Mahalanobis 范数非线性优化：</p>
+<p><img src="/2024/03/01/xiao2020/f13.png" alt="f13" title="formula 13"></p>
+<p>其中，$r^{\mathcal{P}}(z_{i,t}^{(P)},x_t),r^{\mathcal{L}}(z_{m,t}^{(L)},x_t)$  分别是点与线的<strong>观测残差</strong>。如Fig. 4所示：</p>
+<p><img src="/2024/03/01/xiao2020/fig4.png" alt="fig4" title="figure 4"></p>
+<p><strong>点特征</strong>的观测残差表示为 $r^{\mathcal{P}}(z_{i,t}^{(P)},x_t) = h_j^{(P)} - \hat{p}_i^{(P)}$ 。<strong>线特征两个端点</strong>的观测残差分别为 $r^{\mathcal{L}}(z_{m,t}^{(L)},x_t) = [d_1, d_2]^T$ 。</p>
+<h2 id="4-2-Data-Association-Method"><a href="#4-2-Data-Association-Method" class="headerlink" title="4.2 Data Association Method"></a>4.2 Data Association Method</h2><p>作者采用一个RANSAC 升级版进行数据关联。</p>
+<h3 id="Basic-RANSAC-method"><a href="#Basic-RANSAC-method" class="headerlink" title="Basic RANSAC method"></a>Basic RANSAC method</h3><p>随机选取语义标签正确匹配的一组<strong>可能匹配点子集</strong>来评估该子集的质量，传统RANSAC 是通过测量内点的数量来评价子集的质量，即将地图投影到像素坐标系中，根据符合一定阈值内的<strong>匹配点数量</strong>来评判该子集的质量。</p>
+<h3 id="Improved-RANSAC-method"><a href="#Improved-RANSAC-method" class="headerlink" title="Improved RANSAC method"></a>Improved RANSAC method</h3><p>伪代码如Algorithm 1所示，$\mathbf{c}_{1-3}^{(L)}$  表示选取三个（计算位姿的最小匹配数量）<strong>线匹配</strong>计算相机位姿 $\hat{\mathbf{x}}^{<em>}$ ，根据该相机位姿 $\hat{\mathbf{x}}^{</em>}$ 将地图投影到像素坐标系，计算内点（投影地标与图片特征小于阈值视为内点）集合 $\mathbf{c}^<em>$ 。此外，作者计算相机位姿 $\hat{\mathbf{x}}^{</em>}$ 与初始位姿估计 $\bar{\mathbf{p}}$ 之间的<strong>偏移量</strong>，若该偏移量小于 D，则将内点集合 $\mathbf{c}^*$ 并入关联集合 C 中（Algorithm 1：step 6）。</p>
+<p>阈值 D 的设置是根据初始位姿估计 $\bar{\mathbf{p}}$ 的<strong>置信度</strong>来决定的，第一帧的初始位姿估计 $\bar{\mathbf{p}}$ 是通过低成本GNSS 接收机获取的，后续的初始位姿估计是结合上一帧的位姿与VO 进行估计的。</p>
+<p>最终选取内点数最多的一组C 作为最终的数据关联结果。</p>
+<p><img src="/2024/03/01/xiao2020/a1.png" alt="a1" title="algorithm 1"></p>
+<h2 id="4-3-Integrating-Frame-to-Frame-Motion"><a href="#4-3-Integrating-Frame-to-Frame-Motion" class="headerlink" title="4.3 Integrating Frame-to-Frame Motion"></a>4.3 Integrating Frame-to-Frame Motion</h2><p>利用ORB-SLAM 算法计算帧间VO ，作为帧间运动约束实现对位姿估计的优化。</p>
+<p><img src="/2024/03/01/xiao2020/fig5.png" alt="fig5" title="figure 5"></p>
+<p>设定：帧 $c_i$ 较第一帧图像 $C_0$ 的位姿变换是 $\mathbf{R}_{c_i}^{C_0},\mathbf{t}_{c_i}^{C_0}$ ；由于单目相机的<strong>尺度不确定性</strong>，$\mathbf{t}_{c_i}^{C_0}$ 较真正的平移向量存在一个尺度因子 $s$ 的差距；相机坐标系与世界坐标系之间的转换关系为  $\mathbf{R}^{w}_{C_0},\mathbf{t}^{w}_{C_0}$ ；则相应的帧 $c_i$ 在世界坐标系下的位姿为：</p>
+<p><img src="/2024/03/01/xiao2020/f18.png" alt="f18" title="formula 18"></p>
+<p><img src="/2024/03/01/xiao2020/f19.png" alt="f19" title="formula 19"></p>
+<p>由于语义分割消耗时间较久，故地图匹配的位姿结果通常与当前帧的时间不同，假定中间的<strong>延迟为M 帧</strong>。即假设当前时间为t，则距离最近的地图匹配位姿为 t-M 帧的结果，设定帧 $c_i$ 根据<strong>地图匹配</strong>求得的位姿为 $\mathbf{\hat{R}}_{c_i}^{w},\mathbf{\hat{t}}_{c_i}^{w}$ 。设定一个宽度为N 的滑动窗口对位姿进行优化，最终，使用<strong>帧间VO 约束</strong>的基于地图匹配的定位算法优化目标定义为：</p>
+<p><img src="/2024/03/01/xiao2020/f20.png" alt="f20" title="formula 20"></p>
+<p>由此，可以得到<strong>帧t 对应的位姿</strong>：</p>
+<p><img src="/2024/03/01/xiao2020/f21.png" alt="f21" title="formula 21"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Map-Match/" rel="tag"><i class="fa fa-tag"></i> Map Match</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/02/29/hu2022/" rel="prev" title="论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios">
+      <i class="fa fa-chevron-left"></i> 论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/03/01/pauls2020/" rel="next" title="论文记录 Monocular Localization in HD Maps by Combining Semantic Segmentation and Distance Transform">
+      论文记录 Monocular Localization in HD Maps by Combining Semantic Segmentation and Distance Transform <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-System-Overview"><span class="nav-text">3 System Overview</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Map-Based-Localization"><span class="nav-text">4 Map-Based Localization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Line-and-Point-Based-Camera-Localization"><span class="nav-text">4.1 Line-and Point-Based Camera Localization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Data-Association-Method"><span class="nav-text">4.2 Data Association Method</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Basic-RANSAC-method"><span class="nav-text">Basic RANSAC method</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Improved-RANSAC-method"><span class="nav-text">Improved RANSAC method</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Integrating-Frame-to-Frame-Motion"><span class="nav-text">4.3 Integrating Frame-to-Frame Motion</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
