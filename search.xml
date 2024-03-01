@@ -3248,4 +3248,65 @@
         <tag>Semantic</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文介绍 DynaTM-SLAM_Fast filtering of dynamic feature points and object-based localization in dynamic indoor environments</title>
+    <url>/2024/03/01/dynatm-slam/</url>
+    <content><![CDATA[<p>Zhong, Meiling, Chuyuan Hong, Zhaoqian Jia, Chunyu Wang, and Zhiguo Wang. “DynaTM-SLAM: Fast Filtering of Dynamic Feature Points and Object-Based Localization in Dynamic Indoor Environments.” <em>Robotics and Autonomous Systems</em> 174 (April 2024): 104634. <a href="https://doi.org/10.1016/j.robot.2024.104634">https://doi.org/10.1016/j.robot.2024.104634</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>针对dynamic SLAM，作者提到DS-SLAM 和 DynaSLAM 是两个代表性作品：</p>
+<ul>
+<li>DS-SLAM 通过<strong>语义分割</strong>和<strong>运动一致性</strong>检验来减少动态物体的影响，但是其效果因高度依赖<strong>阈值设定</strong>而受限，因为该方法是根据物体内动态特征点所占比例来判断该物体是否是动态的。</li>
+<li>DynaSLAM 使用<strong>语义分割</strong>和<strong>多视图几何理论</strong>来检测动态物体，该方法利用一个区域成长算法 region growing algorithm ，从孤立的外点来判断整个区域是否是动态的，即便该区域只有一个特征点被判别为外点，那么整个区域就被判定为是动态的；这就导致该算法对外点检测的表现要求极高。</li>
+</ul>
+<p>且上述两个算法均是使用语义分割网络来获取语义信息，其<strong>复杂度较高、运算速度较慢</strong>。</p>
+<p>本文作者基于ORB-SLAM2 算法，提出一种<strong>在线滤除动态物体</strong>的算法，并使用更多的<strong>静态物体信息</strong>来优化相机位姿：在RGB 图片上进行物体检测之后，使用滑动窗口约束的<strong>模板匹配方法</strong>来检测动态物体，而不需要预先假定某类物体的运动状态；此外，还为静态物体建立数据关联，为系统增加额外的<strong>物体级语义约束</strong>。</p>
+<p>本文的主要贡献如下：</p>
+<ol>
+<li>在ORB-SLAM2 中增加一个<strong>物体检测线程</strong>，在RGB 图片上进行<strong>物体检测</strong>，并使用<strong>物体匹配</strong>和<strong>滑动窗口</strong>来滤除真正的动态特征点，并从静态物体上提取语义信息。该算法可<strong>精确识别</strong>物体的当前运动状态，甚至可以识别出物体<strong>极小幅度的运动</strong>，如人的轻微晃动等；且<strong>时间复杂度较低</strong>。</li>
+<li>提出一种使用静态<strong>物体的语义约束来优化相机位姿</strong>，该算法利用静态物体的语义和几何信息来建立物体级的数据关联，从而构建一个在线<strong>物体数据库</strong>。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-System-overview"><a href="#3-System-overview" class="headerlink" title="3 System overview"></a>3 System overview</h1><p>DynaTM-SLAM 的整体架构如Fig. 1 所示，对每一张输入图片进行ORB 特征提取和物体检测，YOLOv7 可实现高精度高帧率（30FPS）的检测效果；然后使用<strong>滑动窗口机制</strong>和<strong>模板匹配算法</strong>进行动态特征点剔除；在跟踪相机位姿阶段，基于<strong>相似物体间的中心距离</strong>构建额外的语义约束进行相机位姿优化。</p>
+<p><img src="/2024/03/01/dynatm-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-1-Sliding-Window-amp-Template-Matching"><a href="#3-1-Sliding-Window-amp-Template-Matching" class="headerlink" title="3.1 Sliding Window &amp; Template Matching"></a>3.1 Sliding Window &amp; Template Matching</h2><p>检测物体运动状态有两种常用的方法：</p>
+<ol>
+<li>方法一：建立一个相对参考坐标系来观察物体的运动状态；</li>
+<li>方法二：比较不同时间图片在同一区域内的相似度，若相似度高，则判定为静态的。</li>
+</ol>
+<p>方法一对相对参考坐标系的选取要求较高，若选取的坐标系本身是动态的，那么检测会失败；因此，作者使用<strong>基于方法二的模板匹配算法</strong>来估计物体的运动状态。</p>
+<p>本文作者使用<strong>标准相关系数匹配</strong>来减小计算结果中光照的影响：</p>
+<p><img src="/2024/03/01/dynatm-slam/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，I 和 T 分别表示源图片和目标图片；$(x, y)$ 表示像素坐标。</p>
+<p>利用<strong>滑动窗口机制</strong>，DynaTM-SLAM 通过模板匹配来比较固定时间间隔的两张图片，来检测物体的运动状态；窗口内存储固定数量的连续图片。该过程如Fig. 2所示：图片j 中的检测框box1 经<strong>位姿转换矩阵</strong> $T_{ij}$ 投影至图片i 中，得到检测框box2；然后对box1 和 box2 进行<strong>模板匹配</strong>，如果匹配数值超过一个预定义的阈值，则判定box1 是静态的。</p>
+<p><img src="/2024/03/01/dynatm-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-2-Data-Association"><a href="#3-2-Data-Association" class="headerlink" title="3.2 Data Association"></a>3.2 Data Association</h2><p>数据关联指的是<strong>当前帧</strong>检测到的物体与<strong>地图中现存</strong>物体的匹配与关联。利用RGB 图片获取的物体检测bbox，结合深度图，可以得到对应的物体3D 点云；物体检测会包含部分背景信息，作者使用<strong>基于密度的聚类方法</strong>来剔除背景点，然后在于数据库中的物体进行匹配；聚类的可视化过程如Fig. 3所示：</p>
+<p><img src="/2024/03/01/dynatm-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<p>本算法构建一个物体数据库并进行实时数据关联，物体中心的计算如下所示：</p>
+<p><img src="/2024/03/01/dynatm-slam/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$r_i = (x_i, y_i, z_i), i = 1, 2, …, n$ 表示每个粒子的坐标；$m_i$ 表示每个粒子的质量。</p>
+<p>在实际应用中，作者假设每个粒子的质量为1，则上式演变为：</p>
+<p><img src="/2024/03/01/dynatm-slam/f4.png" alt="f4" title="formula 4"></p>
+<h2 id="3-3-Bundle-Adjustment-with-Static-Objects"><a href="#3-3-Bundle-Adjustment-with-Static-Objects" class="headerlink" title="3.3 Bundle Adjustment with Static Objects"></a>3.3 Bundle Adjustment with Static Objects</h2><p>DynaTM-SLAM 使用因子图进行BA 优化，如Fig. 4所示：</p>
+<p><img src="/2024/03/01/dynatm-slam/fig4.png" alt="fig4" title="figure 4"></p>
+<p>地图点重投影误差表示为：</p>
+<p><img src="/2024/03/01/dynatm-slam/f6.png" alt="f6" title="formula 6"></p>
+<p>物体中心距离误差表示为：</p>
+<p><img src="/2024/03/01/dynatm-slam/f7.png" alt="f7" title="formula 7"></p>
+<p>其中，$^cp’$ 表示当前帧构建物体的中心坐标；$^cp$ 表示数据库中同一物体的中心坐标；$T_{cw}, T_{cw}^\ast$ 分别是当前帧的初始位姿估计、优化后的位姿估计。</p>
+<h1 id="4-Experimental-results"><a href="#4-Experimental-results" class="headerlink" title="4 Experimental results"></a>4 Experimental results</h1><h2 id="4-1-Ablation-Study"><a href="#4-1-Ablation-Study" class="headerlink" title="4.1 Ablation Study"></a>4.1 Ablation Study</h2><p>只包含动态特征点滤除的方法记为 DynaTM-SLAM（A），只包含静态物体中心约束的方法记为 DynaTM-SLAM（B），两种方法的结合记为DynaTM-SLAM（A+B）。实验结果如Table 1所示，其中，前四个为高动态场景，本文提出的方法有巨大精度提升；后两个为低动态场景，本文提出的方法有略微提升，这是因为ORB-SLAM2 本身在这种环境中表现就很不错，但本方法加上了物体级约束后，会有轻微的提升效果。</p>
+<p><img src="/2024/03/01/dynatm-slam/t1.png" alt="t1" title="table 1"></p>
+<h2 id="4-2-Comparison-with-other-advanced-SLAM-algorithms"><a href="#4-2-Comparison-with-other-advanced-SLAM-algorithms" class="headerlink" title="4.2 Comparison with other advanced SLAM algorithms"></a>4.2 Comparison with other advanced SLAM algorithms</h2><p>Table 2，3，4展示了本方法与其他dynamic SLAM 方法的效果对比。</p>
+<p><img src="/2024/03/01/dynatm-slam/t2.png" alt="t2" title="table 2"></p>
+<p><img src="/2024/03/01/dynatm-slam/t3.png" alt="t3" title="table 3"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Pose Optimization</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Pose Optimization</tag>
+      </tags>
+  </entry>
 </search>

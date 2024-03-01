@@ -191,6 +191,97 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/01/dynatm-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/01/dynatm-slam/" class="post-title-link" itemprop="url">论文介绍 DynaTM-SLAM_Fast filtering of dynamic feature points and object-based localization in dynamic indoor environments</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-01 16:58:47 / 修改时间：17:05:34" itemprop="dateCreated datePublished" datetime="2024-03-01T16:58:47+08:00">2024-03-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Pose-Optimization/" itemprop="url" rel="index"><span itemprop="name">Pose Optimization</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Zhong, Meiling, Chuyuan Hong, Zhaoqian Jia, Chunyu Wang, and Zhiguo Wang. “DynaTM-SLAM: Fast Filtering of Dynamic Feature Points and Object-Based Localization in Dynamic Indoor Environments.” <em>Robotics and Autonomous Systems</em> 174 (April 2024): 104634. <a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.robot.2024.104634">https://doi.org/10.1016/j.robot.2024.104634</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>针对dynamic SLAM，作者提到DS-SLAM 和 DynaSLAM 是两个代表性作品：</p>
+<ul>
+<li>DS-SLAM 通过<strong>语义分割</strong>和<strong>运动一致性</strong>检验来减少动态物体的影响，但是其效果因高度依赖<strong>阈值设定</strong>而受限，因为该方法是根据物体内动态特征点所占比例来判断该物体是否是动态的。</li>
+<li>DynaSLAM 使用<strong>语义分割</strong>和<strong>多视图几何理论</strong>来检测动态物体，该方法利用一个区域成长算法 region growing algorithm ，从孤立的外点来判断整个区域是否是动态的，即便该区域只有一个特征点被判别为外点，那么整个区域就被判定为是动态的；这就导致该算法对外点检测的表现要求极高。</li>
+</ul>
+<p>且上述两个算法均是使用语义分割网络来获取语义信息，其<strong>复杂度较高、运算速度较慢</strong>。</p>
+<p>本文作者基于ORB-SLAM2 算法，提出一种<strong>在线滤除动态物体</strong>的算法，并使用更多的<strong>静态物体信息</strong>来优化相机位姿：在RGB 图片上进行物体检测之后，使用滑动窗口约束的<strong>模板匹配方法</strong>来检测动态物体，而不需要预先假定某类物体的运动状态；此外，还为静态物体建立数据关联，为系统增加额外的<strong>物体级语义约束</strong>。</p>
+<p>本文的主要贡献如下：</p>
+<ol>
+<li>在ORB-SLAM2 中增加一个<strong>物体检测线程</strong>，在RGB 图片上进行<strong>物体检测</strong>，并使用<strong>物体匹配</strong>和<strong>滑动窗口</strong>来滤除真正的动态特征点，并从静态物体上提取语义信息。该算法可<strong>精确识别</strong>物体的当前运动状态，甚至可以识别出物体<strong>极小幅度的运动</strong>，如人的轻微晃动等；且<strong>时间复杂度较低</strong>。</li>
+<li>提出一种使用静态<strong>物体的语义约束来优化相机位姿</strong>，该算法利用静态物体的语义和几何信息来建立物体级的数据关联，从而构建一个在线<strong>物体数据库</strong>。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/03/01/dynatm-slam/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/01/3ds-slam/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -954,86 +1045,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/02/29/hu2022/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/02/29/hu2022/" class="post-title-link" itemprop="url">论文记录 Semantic SLAM Based on Improved DeepLabv3⁺ in Dynamic Scenarios</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2024-02-29 22:57:43 / 修改时间：23:02:22" itemprop="dateCreated datePublished" datetime="2024-02-29T22:57:43+08:00">2024-02-29</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Dynamic-SLAM/" itemprop="url" rel="index"><span itemprop="name">Dynamic SLAM</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Hu, Zhangfang, Jiang Zhao, Yuan Luo, and Junxiong Ou. “Semantic SLAM Based on Improved DeepLabv3+ in Dynamic Scenarios.” <em>IEEE Access</em> 10 (2022): 21160–68. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ACCESS.2022.3154086">https://doi.org/10.1109/ACCESS.2022.3154086</a>.</p>
-<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>本文提出动态场景中的语义SLAM 系统DeepLabv3+_SLAM 包含三个线程：<strong>ORB-SLAM3</strong>，<strong>语义分割</strong>线程以及<strong>几何</strong>线程。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/02/29/hu2022/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1105,7 +1116,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>

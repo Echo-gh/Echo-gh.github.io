@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/03/01/dynatm-slam/
 http://echo-gh.github.io/2024/03/01/3ds-slam/
 http://echo-gh.github.io/2024/03/01/zhang2023a/
 http://echo-gh.github.io/2024/03/01/wen2023a/
