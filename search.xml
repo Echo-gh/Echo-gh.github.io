@@ -2901,4 +2901,46 @@
         <tag>Map Match</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 A Monocular-Visual SLAM System with Semantic and Optical-Flow Fusion for Indoor Dynamic Environments</title>
+    <url>/2024/03/01/chen2022b/</url>
+    <content><![CDATA[<p>Chen, Weifeng, Guangtao Shang, Kai Hu, Chengjun Zhou, Xiyang Wang, Guisheng Fang, and Aihong Ji. “A Monocular-Visual SLAM System with Semantic and Optical-Flow Fusion for Indoor Dynamic Environments.” <em>Micromachines</em> 13, no. 11 (November 17, 2022): 2006. <a href="https://doi.org/10.3390/mi13112006">https://doi.org/10.3390/mi13112006</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
+<ol>
+<li>提出一个基于ORB-SLAM2 的新颖的<strong>单目视觉SLAM 系统</strong>，可在<strong>动态场景</strong>中实现更精确的定位与建图；</li>
+<li>对Mask R-CNN 网络进行修改，使其可以在室内动态环境中<strong>更准确</strong>地分割出先验高动态物体；</li>
+<li>结合<strong>光流法</strong>和<strong>几何方法</strong>来识别出高动态物体。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-System-Overview-and-Approach"><a href="#3-System-Overview-and-Approach" class="headerlink" title="3 System Overview and Approach"></a>3 System Overview and Approach</h1><h2 id="3-1-System-Overview"><a href="#3-1-System-Overview" class="headerlink" title="3.1 System Overview"></a>3.1 System Overview</h2><p>系统架构如Fig. 2 所示，建图与回环检测线程与ORB-SLAM2 一致，作者在跟踪线程前增加了一个动态物体检测线程，该线程包含三步：先验动态物体的分割，光流特征跟踪，以及动态特征消除。</p>
+<p><img src="/2024/03/01/chen2022b/fig2.png" alt="fig2" title="figure 2"></p>
+<p>具体来讲，动态特征剔除过程包括以下三个步骤：</p>
+<ol>
+<li>Mask R-CNN 网络处理RGB 图片，识别出<strong>先验动态物体</strong>并<strong>移除所属的特征点</strong>，该步骤<strong>同时提取ORB 特征点</strong>；</li>
+<li>使用<strong>运动一致性检验</strong>来识别动态特征点：使用光流跟踪来求解基础矩阵，利用对极几何识别出动态特征点，建立动态特征点集合；</li>
+<li><strong>动态特征剔除模块</strong>根据识别出的动态特征点判断图像中的物体是否是动态的，然后剔除掉<strong>属于动态物体的ORB 特征</strong>。</li>
+</ol>
+<h2 id="3-3-Dynamic-Object-Removal"><a href="#3-3-Dynamic-Object-Removal" class="headerlink" title="3.3 Dynamic-Object Removal"></a>3.3 Dynamic-Object Removal</h2><p>动态特征识别过程如Fig. 5所示</p>
+<p><img src="/2024/03/01/chen2022b/fig5.png" alt="fig5" title="figure 5"></p>
+<h3 id="3-3-1-Optical-Flow-Tracking"><a href="#3-3-1-Optical-Flow-Tracking" class="headerlink" title="3.3.1 Optical-Flow Tracking"></a>3.3.1 Optical-Flow Tracking</h3><p>移除掉属于先验动态物体上的特征点后，对<strong>剩余ORB 特征点</strong>进行光流跟踪，作者使用<strong>LK 光流法</strong>。图像中物体的运动状态可通过对所有像素的光流向量进行分析得到，然而，对于稀疏光流来说，获取到的光流向量不足以完成以上分析，因此，这里作者只用光流法实现对<strong>特征点的跟踪</strong>。光流法如Fig. 6所示，其中 $I_{t1}, I_{t2}, I_{t3}$ 为不同时刻下像素的灰度值。利用LK 光流实现对特征点的跟踪之后，即可解算相邻帧之间的<strong>基础矩阵</strong>。</p>
+<p><img src="/2024/03/01/chen2022b/fig6.png" alt="fig6" title="figure 6"></p>
+<h3 id="3-3-2-Geometric-Constraints"><a href="#3-3-2-Geometric-Constraints" class="headerlink" title="3.3.2 Geometric Constraints"></a>3.3.2 Geometric Constraints</h3><p>在获取了基础矩阵之后，结合特征点坐标即可根据<strong>对极几何理论</strong>构建极线，若特征点与极线之间的距离大于一定阈值，则判定该特征点属于动态特征点。理想状态下，两个匹配点会服从以下约束：</p>
+<p><img src="/2024/03/01/chen2022b/f14.png" alt="f14" title="formula 14"></p>
+<p>其中，F 是基础矩阵；$x_i$ 为特征点在两帧图片上的齐次坐标。</p>
+<p>考虑到噪声与畸变的影响，式14表示的理想状态基本无法实现，因此求取特征点距离极线的距离作为判断参数：</p>
+<p><img src="/2024/03/01/chen2022b/f15.png" alt="f15" title="formula 15"></p>
+<p>若距离 D超过给定的阈值，则判定该点不满足对极几何约束。本文中，作者<strong>将不符合对极几何约束的特征点均视为动态特征点</strong>。</p>
+<p>Fig. 7展示了本文提出的动态特征检测算法的效果，图1、2中，人搬着箱子移动，通过本文方法判定箱子上的特征点也属于动态特征点，并进行剔除；图3、4箱子被放置在地上之后，其上的特征点又被正确识别为静态特征点。</p>
+<p><img src="/2024/03/01/chen2022b/fig7.png" alt="fig7" title="figure 7"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
 </search>
