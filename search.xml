@@ -3309,4 +3309,104 @@
         <tag>Pose Optimization</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 A Light-Weight Semantic Map for Visual Localization towards Autonomous Driving</title>
+    <url>/2024/03/02/qin2021/</url>
+    <content><![CDATA[<p>Qin, Tong, Yuxin Zheng, Tongqing Chen, Yilun Chen, and Qing Su. “A Light-Weight Semantic Map for Visual Localization towards Autonomous Driving.” In <em>2021 IEEE International Conference on Robotics and Automation (ICRA)</em>, 11248–54. Xi’an, China: IEEE, 2021. <a href="https://doi.org/10.1109/ICRA48506.2021.9561663">https://doi.org/10.1109/ICRA48506.2021.9561663</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>提出一个新颖的面向无人驾驶的<strong>轻量级定位架构</strong>，该架构包括<strong>车载制图</strong>、<strong>云端地图维护</strong>，以及<strong>用户终端定位</strong>；</li>
+<li>提出一个新颖的想法：让具有丰富传感器的车辆来辅助低成本量产汽车，具体途径为让具有丰富传感器的汽车每天收集数据并自动更新地图；</li>
+<li>利用真实场景实验验证了该系统的可行性。</li>
+</ol>
+<span id="more"></span>
+<p><img src="/2024/03/02/qin2021/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-System-Overview"><a href="#3-System-Overview" class="headerlink" title="3 System Overview"></a>3 System Overview</h1><p>系统架构如Fig. 2所示，该系统包含三个部分：</p>
+<ol>
+<li><strong>车载制图</strong>：汽车装备有前向摄像头、RTK-GPS，以及一些基础导航传感器（IMU、轮速记等）；利用分割网络从前向摄像头获取的图像中提取语义信息，然后基于<strong>优化后的汽车位姿</strong>将语义信息投影至<strong>世界坐标系</strong>，由此车辆本地可构建一个<strong>局部的语义地图</strong>，然后被上传至云端服务器。</li>
+<li><strong>云端制图</strong>：将众多局部地图融合为一个<strong>全局地图</strong>，然后该全局地图经边界提取进行<strong>压缩</strong>，最终，压缩后的全局地图被分发至终端用户。</li>
+<li><strong>终端定位</strong>：终端用户为量产汽车，装备有低成本传感器，如相机、GPS、IMU 及轮速记等；与<strong>车载制图步骤</strong>一样，终端用户从本地的车载摄像头获取的图像中提取语义信息；终端用户将下载的语义地图进行解码，然后根据<strong>语义特征匹配</strong>进行定位。</li>
+</ol>
+<p><img src="/2024/03/02/qin2021/fig2.png" alt="fig2" title="figure 2"></p>
+<h1 id="4-On-Vehicle-Mapping"><a href="#4-On-Vehicle-Mapping" class="headerlink" title="4 On-Vehicle Mapping"></a>4 On-Vehicle Mapping</h1><h2 id="4-1-Image-Segmentation"><a href="#4-1-Image-Segmentation" class="headerlink" title="4.1 Image Segmentation"></a>4.1 Image Segmentation</h2><p>利用CNN 网络进行语义分割，分类结果中使用<strong>地面、车道线、停止线、道路标志信息</strong>进行语义制图，语义语义分割结果如Fig. 3所示：</p>
+<p><img src="/2024/03/02/qin2021/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="4-2-Inverse-Perspective-Transformation"><a href="#4-2-Inverse-Perspective-Transformation" class="headerlink" title="4.2 Inverse Perspective Transformation"></a>4.2 Inverse Perspective Transformation</h2><p>获取到语义信息之后，在汽车坐标系下，将语义像素点从图像平面<strong>逆投影</strong>至<strong>地平面</strong>，该过程也被称为 Inverse Perspective Mapping（<strong>IPM</strong>）。相机内参和相机到车辆中心的外部转换矩阵已经<strong>提前标定</strong>好了。由于观测噪声，越远的地方误差越大，所以作者只选取Region Of Interest（<strong>ROI</strong>）区域的像素进行IPM，如Fig. 3（a）所示。</p>
+<p>假设地面是个平面，语义像素点投影至地平面（z 等于0）的<strong>IPM 过程</strong>如下所示：</p>
+<p><img src="/2024/03/02/qin2021/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$\pi_c()$ 是相机的畸变+投影模型，$\pi_c()^{-1}$ 是逆投影过程；$[\mathbf{R}_c, \mathbf{t}_c]$ 是每个相机相对于汽车中心的<strong>外参矩阵</strong>；$[u, v]$ 表示图像坐标系中的像素坐标；$[x^v, y^v]$ 表示特征在汽车中心坐标系下的位置；$\lambda$ 为尺度参数；$()_{col:i}$ 表示选取矩阵的第 i 列。IPM 的过程如Fig. 3（c）所示。</p>
+<h2 id="4-3-Pose-Graph-Optimization"><a href="#4-3-Pose-Graph-Optimization" class="headerlink" title="4.3 Pose Graph Optimization"></a>4.3 Pose Graph Optimization</h2><p>为了构建地图，需要获取车辆精确的位姿信息。为了减小在GNSS 拒止环境下<strong>里程计的漂移</strong>，作者使用<strong>位姿图</strong>进行优化，如Fig. 5所示：</p>
+<p><img src="/2024/03/02/qin2021/fig5.png" alt="fig5" title="figure 5"></p>
+<p>位姿图优化过程可建模为：</p>
+<p><img src="/2024/03/02/qin2021/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$\mathbf{s}$ 为汽车位姿信息（位置和朝向信息）；$\mathbf{r}_o$ 表示里程计因子的残差；$\hat{\mathbf{m}}_{i-1, i}^o$ 表示里程计观测信息，其中包含相邻两个状态间的位置变化 $\delta \hat{\mathbf{p}}_{i-1, i}$ 和朝向变化 $\delta \hat{\mathbf{q}}_{i-1, i}$ ；$\mathbf{r}_g$ 表示里程计因子的残差；$\mathcal{G}$ 为GNSS 良好观测区域的状态组；$\hat{\mathbf{m}}_{i}^g$ 表示GNSS 观测信息，即全局坐标系下的位置信息 $\hat{\mathbf{p}}_i$ 。</p>
+<p>残差因子的定义如下所示：</p>
+<p><img src="/2024/03/02/qin2021/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$\mathbf{q}$ 为四元数表示的朝向信息；$\mathbf{R}(\mathbf{q})$ 表示将四元数转换为旋转矩阵；$[]_{xyz}$ 表示取四元数的前三个元素，近似等于<strong>流形上的误差扰动</strong>。</p>
+<h2 id="4-4-Local-Mapping"><a href="#4-4-Local-Mapping" class="headerlink" title="4.4 Local Mapping"></a>4.4 Local Mapping</h2><p>基于位姿图优化获取的位姿，将语义特征从汽车坐标系转换至全局坐标系：</p>
+<p><img src="/2024/03/02/qin2021/f4.png" alt="f4" title="formula 4"></p>
+<p>对于语义特征，每一个像素点代表了真实世界中的一小块区域，随着汽车移动，该区域会被观测到多次；然而，由于分割噪声的存在，该区域可能会被识别为不同的种类，为了减少噪声的影响，作者<strong>使用统计数据来滤除噪声</strong>：作者将地图分为 $0.1 \times 0.1 \times 0.1 m$ 的网格，每个网格包含<strong>位置</strong>、<strong>语义标签</strong>以及每种标签的<strong>计数信息</strong>，随着观测的增多，每个网格内不同标签的计数逐渐变化，最终选取计数最多的标签作为该网格的语义类别，作者通过这种统计策略来增强鲁棒性。全局制图的结果如Fig. 6（a）所示：</p>
+<p><img src="/2024/03/02/qin2021/fig6.png" alt="fig6" title="figure 6"></p>
+<h1 id="5-On-Cloud-Mapping"><a href="#5-On-Cloud-Mapping" class="headerlink" title="5 On-Cloud Mapping"></a>5 On-Cloud Mapping</h1><h2 id="5-1-Map-Merging-Updating"><a href="#5-1-Map-Merging-Updating" class="headerlink" title="5.1 Map Merging / Updating"></a>5.1 Map Merging / Updating</h2><p>为了节省带宽，只将局部地图的占据网格信息上传至云端，网格的分辨率同样是 $0.1 \times 0.1 \times 0.1 m$ ，值得注意的是，局部地图的网格被加到全局地图上时，会将标签的计数信息同时加上去，并根据<strong>计数信息来更新</strong>当前网格的语义标签。更新过程如Fig. 9所示：</p>
+<p><img src="/2024/03/02/qin2021/fig9.png" alt="fig9" title="figure 9"></p>
+<h2 id="5-2-Map-Compression"><a href="#5-2-Map-Compression" class="headerlink" title="5.2 Map Compression"></a>5.2 Map Compression</h2><p>为了节省带宽，需要进一步压缩语义地图。作者使用<strong>边界提取</strong>方法来进一步压缩语义地图：</p>
+<ol>
+<li>首先，产生语义地图的顶视图，每个像素代表一个网格；</li>
+<li>然后，提取每个语义群的边界；</li>
+<li>最终，保存边界点然后分发至各个终端车辆。</li>
+</ol>
+<p>该过程如Fig. 6所示。</p>
+<h1 id="6-User-End-Localization"><a href="#6-User-End-Localization" class="headerlink" title="6 User-End Localization"></a>6 User-End Localization</h1><p>终端代表的是量产汽车，装备了低成本传感器。</p>
+<h2 id="6-1-Map-Decompression"><a href="#6-1-Map-Decompression" class="headerlink" title="6.1 Map Decompression"></a>6.1 Map Decompression</h2><p>终端汽车将边界点地图<strong>解压缩</strong>为语义地图：在边界内填充相同语义标签的像素。</p>
+<h2 id="6-2-ICP-Localization"><a href="#6-2-ICP-Localization" class="headerlink" title="6.2 ICP Localization"></a>6.2 ICP Localization</h2><p>与制图过程类似，终端汽车通过CNN 网络提取前视摄像头捕捉图片中的语义信息，并投影至汽车坐标系中，然后当前汽车的位姿通过<strong>语义特征匹配</strong>进行获取。这里，作者使用<strong>ICP 方法</strong>来进行位姿估计：</p>
+<p><img src="/2024/03/02/qin2021/f5.png" alt="f5" title="formula 5"></p>
+<p>其中，$\mathbf{q, p}$ 分别是当前帧的四元数和位置参数；$\mathcal{S}$ 表示当前帧中的语义特征点；$[x_k^v, y_k^v, 0]$ 表示语义特征在汽车坐标系下的坐标；$[x_k^w, y_k^w, 0]$ 表示世界坐标系下地图中最近的点坐标。</p>
+<p>最终，作者采用<strong>EKF 架构</strong>将里程计和视觉定位结果进行<strong>融合</strong>，得到鲁棒、顺滑的轨迹。</p>
+<h1 id="7-Experimental-Results"><a href="#7-Experimental-Results" class="headerlink" title="7 Experimental Results"></a>7 Experimental Results</h1><p>在定位精度测试中，作者使用RTK GPS 作为真值，对于自动驾驶任务，只解算 $[x, y, yaw]$ 信息，作者将本文方法与基于Lidar 的方法进行比较，结果如下所示：</p>
+<p><img src="/2024/03/02/qin2021/t1.png" alt="t1" title="table 1"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Self-Calibration of the Offset Between GPS and Semantic Map Frames for Robust Localization</title>
+    <url>/2024/03/02/tseng2021/</url>
+    <content><![CDATA[<p>Tseng, Wei-Kang, Angela P. Schoellig, and Timothy D. Barfoot. “Self-Calibration of the Offset Between GPS and Semantic Map Frames for Robust Localization.” In <em>2021 18th Conference on Robots and Vision (CRV)</em>, 173–80. Burnaby, BC, Canada: IEEE, 2021. <a href="https://doi.org/10.1109/CRV52889.2021.00031">https://doi.org/10.1109/CRV52889.2021.00031</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>当利用语义信息（如车道线、交通灯等）进行定位时，会出现部分路段无语义信息观测的情况，导致定位失败；此时，可将GPS 与其结合起来进行定位，但是在<strong>制图与定位之间会有时间流逝</strong>，导致实时GPS 坐标系会与语义地图坐标系之间形成偏差，这就需要<strong>对准标定操作</strong>。对准操作的常规做法是为实验增加一个手动设定的矫正先验值，但经常会出现错误对准的情况，不太可靠。</p>
+<span id="more"></span>
+<p><img src="/2024/03/02/tseng2021/fig1.png" alt="fig1" title="figure 1"></p>
+<p>本系统的架构如下所示：</p>
+<p><img src="/2024/03/02/tseng2021/fig2.png" alt="fig2" title="figure 2"></p>
+<h1 id="3-Semantic-Cue-Preprocessing"><a href="#3-Semantic-Cue-Preprocessing" class="headerlink" title="3 Semantic Cue Preprocessing"></a>3 Semantic Cue Preprocessing</h1><p>本文方法使用轻量级HD 语义地图进行辅助定位，包含车道线与交通灯。</p>
+<p><strong>数据关联</strong>如Fig. 3所示，作者利用<strong>估计位姿</strong>将语义地图上的路标投影至图像平面，利用ICP 寻找数据关联。</p>
+<p><img src="/2024/03/02/tseng2021/fig3.png" alt="fig3" title="figure 3"></p>
+<h1 id="4-Vehicle-Localization"><a href="#4-Vehicle-Localization" class="headerlink" title="4 Vehicle Localization"></a>4 Vehicle Localization</h1><h2 id="4-1-Problem-Setup"><a href="#4-1-Problem-Setup" class="headerlink" title="4.1 Problem Setup"></a>4.1 Problem Setup</h2><p>问题描述如Fig. 4所示，一共有三个坐标系：<strong>汽车</strong>、<strong>GPS</strong> 以及<strong>语义地图</strong>。利用 $\mathbf{T}_{VM,k}$ 将语义地图中位置已知的点 $\mathbf{p}_M^j$ 投影至图像中，利用<strong>重投影误差</strong>进行定位，并对 GPS 与语义地图间的偏差 $\mathbf{T}_{GM,k}$ 进行矫正。</p>
+<p><img src="/2024/03/02/tseng2021/fig4.png" alt="fig4" title="figure 4"></p>
+<h2 id="4-2-Process-and-Observation-Models"><a href="#4-2-Process-and-Observation-Models" class="headerlink" title="4.2 Process and Observation Models"></a>4.2 Process and Observation Models</h2><p>包括：</p>
+<ul>
+<li>Vehicle Dynamic Process Model</li>
+<li>GPS Offset Process Model</li>
+<li>GPS Observation Model</li>
+<li>Traffic Light Observation Model</li>
+<li>Lane Marking Observation Model</li>
+<li>Wheel Encoder Observation Model</li>
+<li>Pseudo-Measurement Observation Model</li>
+</ul>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
 </search>
