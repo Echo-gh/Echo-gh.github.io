@@ -3257,14 +3257,14 @@
 <li>DS-SLAM 通过<strong>语义分割</strong>和<strong>运动一致性</strong>检验来减少动态物体的影响，但是其效果因高度依赖<strong>阈值设定</strong>而受限，因为该方法是根据物体内动态特征点所占比例来判断该物体是否是动态的。</li>
 <li>DynaSLAM 使用<strong>语义分割</strong>和<strong>多视图几何理论</strong>来检测动态物体，该方法利用一个区域成长算法 region growing algorithm ，从孤立的外点来判断整个区域是否是动态的，即便该区域只有一个特征点被判别为外点，那么整个区域就被判定为是动态的；这就导致该算法对外点检测的表现要求极高。</li>
 </ul>
-<p>且上述两个算法均是使用语义分割网络来获取语义信息，其<strong>复杂度较高、运算速度较慢</strong>。</p>
+<p>且上述两个算法均是使用语义分割网络来获取语义信息，其<strong>复杂度较高、运算速度较慢</strong>，而且均使用了<strong>先验动态物体假设</strong>，具有局限性。</p>
+<span id="more"></span>
 <p>本文作者基于ORB-SLAM2 算法，提出一种<strong>在线滤除动态物体</strong>的算法，并使用更多的<strong>静态物体信息</strong>来优化相机位姿：在RGB 图片上进行物体检测之后，使用滑动窗口约束的<strong>模板匹配方法</strong>来检测动态物体，而不需要预先假定某类物体的运动状态；此外，还为静态物体建立数据关联，为系统增加额外的<strong>物体级语义约束</strong>。</p>
 <p>本文的主要贡献如下：</p>
 <ol>
 <li>在ORB-SLAM2 中增加一个<strong>物体检测线程</strong>，在RGB 图片上进行<strong>物体检测</strong>，并使用<strong>物体匹配</strong>和<strong>滑动窗口</strong>来滤除真正的动态特征点，并从静态物体上提取语义信息。该算法可<strong>精确识别</strong>物体的当前运动状态，甚至可以识别出物体<strong>极小幅度的运动</strong>，如人的轻微晃动等；且<strong>时间复杂度较低</strong>。</li>
 <li>提出一种使用静态<strong>物体的语义约束来优化相机位姿</strong>，该算法利用静态物体的语义和几何信息来建立物体级的数据关联，从而构建一个在线<strong>物体数据库</strong>。</li>
 </ol>
-<span id="more"></span>
 <h1 id="3-System-overview"><a href="#3-System-overview" class="headerlink" title="3 System overview"></a>3 System overview</h1><p>DynaTM-SLAM 的整体架构如Fig. 1 所示，对每一张输入图片进行ORB 特征提取和物体检测，YOLOv7 可实现高精度高帧率（30FPS）的检测效果；然后使用<strong>滑动窗口机制</strong>和<strong>模板匹配算法</strong>进行动态特征点剔除；在跟踪相机位姿阶段，基于<strong>相似物体间的中心距离</strong>构建额外的语义约束进行相机位姿优化。</p>
 <p><img src="/2024/03/01/dynatm-slam/fig1.png" alt="fig1" title="figure 1"></p>
 <h2 id="3-1-Sliding-Window-amp-Template-Matching"><a href="#3-1-Sliding-Window-amp-Template-Matching" class="headerlink" title="3.1 Sliding Window &amp; Template Matching"></a>3.1 Sliding Window &amp; Template Matching</h2><p>检测物体运动状态有两种常用的方法：</p>
