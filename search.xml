@@ -3506,4 +3506,57 @@
         <tag>Map Match</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 VOOM_Robust Visual Object Odometry and Mapping using Hierarchical Landmarks</title>
+    <url>/2024/03/04/wang2024/</url>
+    <content><![CDATA[<p>Wang, Yutong, Chaoyang Jiang, and Xieyuanli Chen. “VOOM: Robust Visual Object Odometry and Mapping Using Hierarchical Landmarks.” arXiv, February 26, 2024. <a href="https://doi.org/10.48550/arXiv.2402.13609">https://doi.org/10.48550/arXiv.2402.13609</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>作者提到，物体SLAM 可以在保证计算效率的同时提供高等级的语义信息，部分研究者将建模的物体观测残差添加进BA 中进行位姿优化，但由于物体模型的精度问题，导致优化效果不如基于特征点的方法。基于此，作者提出了一种<strong>视觉物体里程计和制图</strong>架构——VOOM (Visual Object Odometry and Mapping)，该架构不直接将观测物体残差添加进BA 中，而是使用一种<strong>由粗到细</strong>的方式将高等级物体和低等级特征点作为<strong>层级地标观测</strong>。</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者认为，本方法是第一个利用<strong>对偶二次曲面和特征点</strong>实现比基于特征点的SOTA SLAM 算法更好定位精度的物体SLAM 算法。</p>
+<p>本文的贡献如下：</p>
+<ul>
+<li>提出了一种新颖的<strong>视觉里程计和制图架构</strong>，该架构同时使用<strong>特征点和对偶二次曲面</strong>作为地标；</li>
+<li>提出了一种有效的算法，使用<strong>层级地标</strong>进行物体优化、物体关联和基于物体的地图点关联，以进行地图构建；</li>
+<li>大量实验证明了本算法较SOTA 算法的优越性。</li>
+</ul>
+<span id="more"></span>
+<p><img src="/2024/03/04/wang2024/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="3-VOOM"><a href="#3-VOOM" class="headerlink" title="3 VOOM"></a>3 VOOM</h1><h2 id="3-1-System-Overview"><a href="#3-1-System-Overview" class="headerlink" title="3.1 System Overview"></a>3.1 System Overview</h2><p>VOOM 系统以RGB-D 图片为输入，输出包含地图点和3D 物体的3D 地图。整体架构如Fig. 2所示，包含两个主要部分：<strong>视觉物体里程计</strong>和<strong>视觉物体建图</strong>。</p>
+<p><img src="/2024/03/04/wang2024/fig2.png" alt="fig2" title="figure 2"></p>
+<p>系统的实例分割采用YOLOv8 网络进行处理，特征点部分是基于ORB-SLAM2 算法构建的。在物体级前端，基于实例分割获取的特征点，使用<strong>direct least squares 直接最小二乘法</strong>来估计椭圆形；物体级数据关联是基于3D 物体重投影与估计椭圆之间的<strong>Wasserstein distance</strong> 进行的。</p>
+<h2 id="3-2-Observation-Model-of-Objects"><a href="#3-2-Observation-Model-of-Objects" class="headerlink" title="3.2 Observation Model of Objects"></a>3.2 Observation Model of Objects</h2><p>VOOM 对每张输入图片进行实例分割，QISO-SLAM (Wang 等, 2023)中提到，使用实例分割的轮廓线会比使用bbox 实现更高精度的物体建图与定位；基于此，作者对于第 f 张图片上的第 k 个物体，通过最小化<strong>所有分割轮廓点</strong>和<strong>椭圆边界</strong>的最小距离和来估计物体的椭圆观测 $E_{fk}^{obs}$ 。</p>
+<p>作者使用受限对偶二次曲面 $Q_k^\ast \in \mathbb{R}^{4 \times 4}$  来表示物体，投影至图像平面后表示为对偶二次曲线：</p>
+<p><img src="/2024/03/04/wang2024/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$\mathbf{P}_f = \mathbf{K}_f[\mathbf{R}_f | \mathbf{t}_f^T] \in \mathbb{R}^{3 \times 4}$ 为相机投影矩阵；$\mathbf{C}_{fk}^\ast$ 表示<strong>根据位姿估计</strong>得到的椭圆  $E_{fk}^{est}$ 。可根据 $E_{fk}^{obs}$ 和 $E_{fk}^{est}$ 构建相应的误差方程。</p>
+<p>受到OA-SLAM (Zins 等, 2022)的启发，作者使用2D 高斯分布 $\mathcal{N}(\mu, \sum^{-1})$ 来表示椭圆：</p>
+<p><img src="/2024/03/04/wang2024/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$[p_x, p_y]^T, [\alpha, \beta]^T,  \theta$  分别表示椭圆的<strong>中心点</strong>、<strong>长短轴长度</strong>以及<strong>旋转角度</strong>。基于高斯分布，构建 $E_{fk}^{obs}$ 和 $E_{fk}^{est}$ 之间的二阶 Wasserstein distance 误差：</p>
+<p><img src="/2024/03/04/wang2024/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，$||.||_F$ 为F 范数。假设第k 个物体的观测帧集合为 $\mathcal{F}_L$ ，则该物体的<strong>椭球体参数</strong>可通过最小化下式来获取：</p>
+<p><img src="/2024/03/04/wang2024/f4.png" alt="f4" title="formula 4"></p>
+<h2 id="3-3-Object-level-Data-Association"><a href="#3-3-Object-level-Data-Association" class="headerlink" title="3.3 Object-level Data Association"></a>3.3 Object-level Data Association</h2><p>使用bbox 的IoU 进行物体级数据关联存在诸多问题，因此，作者使用<strong>归一化的 Wasserstein distance</strong> 进行数据关联，基于式3，可得到归一化的结果：</p>
+<p><img src="/2024/03/04/wang2024/f5.png" alt="f5" title="formula 5"></p>
+<p>其中，C 是一个常数。该度量方式包含了椭圆的<strong>中心点、轴长度以及方向信息</strong>，要比bbox IoU 方法更为准确。</p>
+<h2 id="3-4-Coarse-to-fine-Odometry-and-Mapping"><a href="#3-4-Coarse-to-fine-Odometry-and-Mapping" class="headerlink" title="3.4 Coarse-to-fine Odometry and Mapping"></a>3.4 Coarse-to-fine Odometry and Mapping</h2><p>主要出发点在于使用3D 物体地标的鲁棒性来提高特征点法的效率与精度。</p>
+<h3 id="3-4-1-Coarse-to-fine-Visual-Object-Odometry-Backend"><a href="#3-4-1-Coarse-to-fine-Visual-Object-Odometry-Backend" class="headerlink" title="3.4.1 Coarse-to-fine Visual Object Odometry Backend"></a>3.4.1 Coarse-to-fine Visual Object Odometry Backend</h3><p>利用<strong>特征级前端</strong>的运动模型得到<strong>粗略</strong>的<strong>位姿估计</strong>，结合<strong>物体级前端</strong>的<strong>关联物体</strong>，算法在属于<strong>每个物体的地图点</strong>和<strong>关联物体实例中的特征点</strong>之间中搜寻匹配关系（基于ORB 特征描述子），如Fig. 3所示。</p>
+<p><img src="/2024/03/04/wang2024/fig3.png" alt="fig3" title="figure 3"></p>
+<p>该方法通过<strong>减小搜索区域</strong>来实现更高效、更精准的地图点数据关联，并从<strong>更早的关联帧</strong>中恢复更多的地图点，而不是只能从最近的帧中进行关联。根据地图点和关键点之间的匹配，可基于重投影误差来<strong>优化相机位姿</strong>；然后，更新当前帧的local map，使用局部地图中更多的匹配关系对相机位姿进行进一步的优化。</p>
+<h3 id="3-4-2-Coarse-to-fine-Visual-Object-Mapping"><a href="#3-4-2-Coarse-to-fine-Visual-Object-Mapping" class="headerlink" title="3.4.2 Coarse-to-fine Visual Object Mapping"></a>3.4.2 Coarse-to-fine Visual Object Mapping</h3><p>在为当前帧获取了可靠的位姿估计和地图点关联之后，基于<strong>物体共视图 object covisibility graph</strong> 来更新局部地图，物体共视图记录了不同帧中不同物体间的公式关系，如Fig. 4（a）所示，这可以帮助选择一组<strong>与当前帧最相关的关键帧</strong>，与传统的共视图（Fig. 4 b）相比，物体共视图<strong>体积更小</strong>、<strong>鲁棒性更强</strong>。在物体共视图的帮助下，可以为当前帧建立与更早观测帧之间的关联，以此实现对位姿更高精度的优化效果。作者这里提到，由于物体的鲁棒性，仅使用local map 就可以实现<strong>类似回环检测的功能</strong>。</p>
+<p><img src="/2024/03/04/wang2024/fig4.png" alt="fig4" title="figure 4"></p>
+<blockquote>
+<p><strong>值得注意的是，</strong>由于物体建模的精确度问题，<strong>观测物体的残差不参与BA 优化</strong>。也就是说，物体在这里的作用仅在于增强帧之间特征点匹配的作用。</p>
+</blockquote>
+<h1 id="4-Experimental-Results"><a href="#4-Experimental-Results" class="headerlink" title="4 Experimental Results"></a>4 Experimental Results</h1><p>定位实验结果如表1所示：</p>
+<p><img src="/2024/03/04/wang2024/t1.png" alt="t1" title="table 1"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Pose Optimization</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Pose Optimization</tag>
+        <tag>Object SLAM</tag>
+      </tags>
+  </entry>
 </search>
