@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://echo-gh.github.io/2024/01/30/dynaslam/</loc>
+    
+    <lastmod>2024-03-05</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://echo-gh.github.io/2024/03/05/liao2020/</loc>
     
     <lastmod>2024-03-05</lastmod>
@@ -444,15 +453,6 @@
   
   <url>
     <loc>http://echo-gh.github.io/2024/01/30/detect-slam/</loc>
-    
-    <lastmod>2024-01-31</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://echo-gh.github.io/2024/01/30/dynaslam/</loc>
     
     <lastmod>2024-01-31</lastmod>
     

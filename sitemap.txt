@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/01/30/dynaslam/
 http://echo-gh.github.io/2024/03/05/liao2020/
 http://echo-gh.github.io/2024/03/05/wang2022/
 http://echo-gh.github.io/2024/03/04/wang2024/
@@ -48,7 +49,6 @@ http://echo-gh.github.io/2024/01/30/vso/
 http://echo-gh.github.io/2024/01/30/x-view/
 http://echo-gh.github.io/2024/01/30/zhang2018/
 http://echo-gh.github.io/2024/01/30/detect-slam/
-http://echo-gh.github.io/2024/01/30/dynaslam/
 http://echo-gh.github.io/2024/01/30/civera2011/
 http://echo-gh.github.io/2024/01/31/laneloc/
 http://echo-gh.github.io/2024/01/31/vins/
