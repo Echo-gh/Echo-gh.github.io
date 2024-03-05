@@ -3559,4 +3559,199 @@
         <tag>Object SLAM</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 RGB-D Object SLAM Using Quadrics for Indoor Environments</title>
+    <url>/2024/03/05/liao2020/</url>
+    <content><![CDATA[<p>Liao, Ziwei, Wei Wang, Xianyu Qi, and Xiaoyu Zhang. “RGB-D Object SLAM Using Quadrics for Indoor Environments.” <em>Sensors</em> 20, no. 18 (January 2020): 5150. <a href="https://doi.org/10.3390/s20185150">https://doi.org/10.3390/s20185150</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ul>
+<li>提出了一种使用二次曲面作为物体模型的<strong>物体级SLAM 算法</strong>，并使用了两种RGB-D 二次曲面观测模型；</li>
+<li>提出了一种从单张RGB-D 图片中提取出表示物体的完整椭球体的方法，该方法基于<strong>物体和其支撑平面</strong>之间的关系；</li>
+<li>为二次曲面模型引进了一种<strong>非参数位姿图</strong> nonparametric pose graph，来解决后端的语义数据关联问题；</li>
+<li>在两个公开数据集和自采数据集上，与两个SOTA 物体级SLAM 算法进行比较，评估了本算法的有效性。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-Materials-and-Methods"><a href="#3-Materials-and-Methods" class="headerlink" title="3 Materials and Methods"></a>3 Materials and Methods</h1><h2 id="3-1-System-Overview"><a href="#3-1-System-Overview" class="headerlink" title="3.1 System Overview"></a>3.1 System Overview</h2><p>Fig. 1展示了本文方法的整体架构：</p>
+<p><img src="/2024/03/05/liao2020/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-2-Quadrics-Model"><a href="#3-2-Quadrics-Model" class="headerlink" title="3.2 Quadrics Model"></a>3.2 Quadrics Model</h2><p>二次曲面包含多种类型，如椭球体、圆柱体等，考虑到室内人造物体多为闭合几何形状，作者使用椭球体作为物体的模型表示。</p>
+<p>二次曲面可使用<strong>对偶形式</strong> $\mathbf{Q}^\ast$ 来表示，对于任意切平面 $\pi$ 满足以下关系：</p>
+<p><img src="/2024/03/05/liao2020/f1.png" alt="f1" title="formula 1"></p>
+<p>对偶二次曲面在相机观测 $\mathbf{P}$ 下得到曲线 $\mathbf{C}^\ast$ ，该过程如Fig. 2所示，并表示为下式：</p>
+<p><img src="/2024/03/05/liao2020/f2.png" alt="f2" title="formula 2"></p>
+<p>其中，$\mathbf{P} = \mathbf{K}[\mathbf{R}|\mathbf{t}]$ 。</p>
+<p><img src="/2024/03/05/liao2020/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-3-RGB-D-Camera-Ellipsoid-Observation-Model"><a href="#3-3-RGB-D-Camera-Ellipsoid-Observation-Model" class="headerlink" title="3.3 RGB-D Camera-Ellipsoid Observation Model"></a>3.3 RGB-D Camera-Ellipsoid Observation Model</h2><p>使用式2对椭球体进行投影映射为图像平面上的<strong>椭圆</strong>，结合<strong>物体检测bbox</strong> 构建约束，则单次观测只能包含<strong>4自由度的约束</strong>（bbox 4条边），因此，为了解算具有9自由度的椭球体，需要<strong>多次观测</strong>，且观测之间要有足<strong>够的视差</strong>。考虑到移动机器人的运动模式，其在垂直方向和pitch 方向的视角变化受限，容易造成<strong>unobservable 问题</strong>。</p>
+<p>为解决该问题，作者使用RGB-D 相机提供的<strong>深度信息</strong>：从深度信息中提取物体的支撑平面，由此引入<strong>物体-平面的支撑关系</strong>来帮助<strong>分割物体点云</strong>，并估计物体的朝向信息。为解决多视角变化的需求，作者推导了RGB-D <strong>完整观测模型</strong>，并使用单帧RGB-D 数据来估计完整的椭球体，以实现快速的初始化。针对物体遮挡导致的深度数据严重缺失问题，作者使用物体检测bbox 构建了<strong>部分约束模型</strong>，以实现对观测信息的最大化利用。</p>
+<p>尽管RGB-D 观测可提供深度信息，但仍存在以下问题：1. 图像边缘造成的物体不完整；2. 物体间的遮挡；3. 光照、材料反射导致的深度信息不准确、不完整。这些问题会造成物体<strong>点云的缺失</strong>，对观测模型的构建造成影响。</p>
+<p><img src="/2024/03/05/liao2020/fig3.png" alt="fig3" title="figure 3"></p>
+<p>根据点云数据的完整度，作者提出了两种观测模型：<strong>部分约束模型</strong>和<strong>完整约束模型</strong>，如Fig. 4所示。</p>
+<p>当点云质量较高时，使用完整约束模型从单帧RGB-D 图像中恢复完整的椭球体，该方法充分利用<strong>室内物体</strong>和其<strong>支撑平面</strong>之间的支撑关系来估计物体的位姿与形状；最终，该算法会为该椭球体建立一个约束立方体，立方体的6个面与该椭球体相切，从而获取至多9自由度的完整约束模型。</p>
+<p>当出现严重遮挡或点云质量不足以构建一个完整的椭球体时，算法会使用部分约束模型，该方法充分利用bbox 产生的约束平面，并生成至多<strong>4个正切平面</strong>的约束。</p>
+<p>此外，作者还提出了一种新颖的评估方式来<strong>判断立方体的质量</strong>，从而实现两种观测模型之间的<strong>灵活切换</strong>。</p>
+<p><img src="/2024/03/05/liao2020/fig4.png" alt="fig4" title="figure 4"></p>
+<p>作者将提出的<strong>观测模型</strong>和<strong>评估方式</strong>应用至物体级语义SLAM 架构：</p>
+<ul>
+<li>使用完整约束模型构建的椭球体来<strong>初始化新物体</strong>；</li>
+<li>使用约束模型作为图优化中的<strong>损失函数</strong>，并解决<strong>数据关联</strong>问题。</li>
+</ul>
+<h2 id="3-4-Complete-Constraint-Model"><a href="#3-4-Complete-Constraint-Model" class="headerlink" title="3.4 Complete Constraint Model"></a>3.4 Complete Constraint Model</h2><p>完整约束模型充分利用人造物体的特性，以及它们与结构平面之间的关系；基于这些特性从单帧RGB-D 观测中恢复椭球体的完整参数，该过程如Fig. 5所示：</p>
+<p><img src="/2024/03/05/liao2020/fig5.png" alt="fig5" title="figure 5"></p>
+<p>完成对椭球体的估计后，使用所提出的<strong>评估方式</strong>对椭球体进行评估：如果超过预设阈值，则保留该椭球体；否则切换至<strong>部分观测模</strong>型来实现对观测信息的最大化利用，并保留<strong>约束置信度</strong>。</p>
+<h3 id="3-4-1-Supporting-Planes-Segmentation"><a href="#3-4-1-Supporting-Planes-Segmentation" class="headerlink" title="3.4.1 Supporting Planes Segmentation"></a>3.4.1 Supporting Planes Segmentation</h3><p>典型的人造室内场景有许多特性：存在大量平面，平面之间平行或正交，物体一般有对应的支撑平面。作者利用这些特性来<strong>辅助分割点云</strong>，并为椭球体<strong>旋转参数</strong>提供<strong>先验约束</strong>。</p>
+<p><img src="/2024/03/05/liao2020/fig6.png" alt="fig6" title="figure 6"></p>
+<p>首先，基于作者之前的研究，使用<strong>RANSAC 方法</strong>从深度图像中<strong>提取平面</strong>，并记为平面集合 $S_0 = \{\pi_i\}$ ；这里作者使用了假设：物体的支撑平面与重力方向垂直，如地面、桌面等。然后，作者根据粗略估计的<strong>重力方向</strong> $\mathbf{n}_g$ 选择潜在的支撑平面：认为机器人的支撑平面是地面，且RGB-D 相机在机器人上是固定的，则可从相机与机器人之间的转换矩阵中得到重力方向的粗略估计。根据重力方向与平面法向量之间的夹角，筛选出<strong>潜在支撑平面集合</strong> $S = \{\pi_i\}$ 。</p>
+<h3 id="3-4-2-Object-Point-Cloud-Segmentation"><a href="#3-4-2-Object-Point-Cloud-Segmentation" class="headerlink" title="3.4.2 Object Point Cloud Segmentation"></a>3.4.2 Object Point Cloud Segmentation</h3><p>基于物体检测bbox，将深度图进行<strong>逆投影</strong>可以获取物体粗略的点云集合，然后，作者使用一个轻量级的分割方法获取更为精确的物体点云：使用<strong>Euclidean filtering 方法</strong>滤除属于支撑平面的点云，保留属于物体的点云 $\mathcal{C}_i$ 。</p>
+<h3 id="3-4-3-Object-Orientation-Estimation"><a href="#3-4-3-Object-Orientation-Estimation" class="headerlink" title="3.4.3 Object Orientation Estimation"></a>3.4.3 Object Orientation Estimation</h3><p>作者提出一种基于物体和其支撑平面之间关系的<strong>物体朝向估计方法</strong>，该方法基于两个假设：1. 物体的主轴之一与支撑平面的法向量平行；2. 对于有着主朝向方向的人造物体，物体表面的法向量直方图可以反应这种方向趋势。</p>
+<h4 id="A-Definition-of-object-coordinate-system"><a href="#A-Definition-of-object-coordinate-system" class="headerlink" title="A Definition of object coordinate system"></a>A Definition of object coordinate system</h4><p>系统坐标系如Fig. 4（a）所示，Z 轴沿着重力方向向上，X 轴和 Y 轴表示物体两个正交的主方向。作者提到，由于椭球体是对称的，若沿着Z 轴每隔90度旋转四次，会得到四组旋转矩阵来表示椭球体的相同旋转。</p>
+<h4 id="B-Z-axis-estimation-based-on-the-supporting-plane"><a href="#B-Z-axis-estimation-based-on-the-supporting-plane" class="headerlink" title="B Z-axis estimation based on the supporting plane"></a>B Z-axis estimation based on the supporting plane</h4><p>室内场景下，物体的支撑平面基本是地面和桌面，这种情况下，物体和对应的支撑平面形成一种垂直关系，因此物体的Z 轴与支撑平面的法向量平行。在点云分割过程中，获取了物体支撑平面 $\pi_s$ ，据此可得到物体的Z 轴 $\mathbf{n}_s$ 。</p>
+<h4 id="C-Y-axis-estimation-based-on-the-histogram-of-normal-vectors"><a href="#C-Y-axis-estimation-based-on-the-histogram-of-normal-vectors" class="headerlink" title="C Y-axis estimation based on the histogram of normal vectors"></a>C Y-axis estimation based on the histogram of normal vectors</h4><p>如Fig. 7所示，大部分人造物体拥有互相垂直的主方向，如显示器、沙发等，对于这些物体，可以使用旋转作为<strong>角度约束信息</strong>；对于对称性物体，如水杯、瓶子等，方向信息对于这些物体没有意义。因此，作者根据物体<strong>语义标签</strong>来判断是否使用主方向来约束该物体。</p>
+<p><img src="/2024/03/05/liao2020/fig7.png" alt="fig7" title="figure 7"></p>
+<p>对于有主方向的物体，作者取物体点云<strong>法向量集合中yaw 角直方图</strong>的峰值来作为该物体的Y 轴。首先，作者在支撑平面上搭建一个极坐标系统，取平面上一个单位向量 $\mathbf{n}_r$ 作为坐标轴。具体算法如下所示：</p>
+<ol>
+<li><p>对于属于物体点云中的所有点 $\mathbf{P} \in \mathcal{C}_i$ 执行2-4步，通过将法向量投影至支撑平面来计算yaw 角；</p>
+</li>
+<li><p>根据局部深度信息来计算该点的法向量 $\mathbf{n}_p$ 。在提取平面的过程中，已经计算了整个深度图的法向量，所以可以直接获取该向量；</p>
+</li>
+<li><p>将法向量 $\mathbf{n}_p$ 投影至支撑平面 $\pi_s$ 来获取yaw 角。假设支撑平面的法向量为 $\mathbf{n}_s$ ，计算法向量 $\mathbf{n}_p$ 在平面上的投影向量 $\mathbf{n}_{ps}$ ：</p>
+<p><img src="/2024/03/05/liao2020/f6.png" alt="f6" title="formula 6"></p>
+</li>
+<li><p>计算yaw 角 $\theta = acos(\mathbf{n}_{ps}, \mathbf{n}_r)$ ，将 $\theta$ 归一化至 $[0, \pi)$ 范围，并将 $\theta$ 添加至集合 Y中；</p>
+</li>
+<li><p>在获取所有点的法向量后，获取集合 Y 中的最大值，作为最终的 $\theta$ 值；</p>
+</li>
+<li><p>根据 $\theta$ 值计算相应的法向量形式  $\mathbf{n}_x$ —— <strong>沿着平面法向量 $\mathbf{n}_s$ 将极坐标轴 $\mathbf{n}_r$ 旋转 $\theta$ 度</strong>：首先根据Rodriguez 公式计算旋转矩阵 $\mathbf{R}_{\theta}$ ，进而得到法向量  $\mathbf{n}_x$ 。</p>
+</li>
+</ol>
+<p><img src="/2024/03/05/liao2020/f8.png" alt="f8" title="formula 8"></p>
+<p><img src="/2024/03/05/liao2020/f9.png" alt="f9" title="formula 9"></p>
+<p>此外，基于该角度在集合直方图中的比例计算该<strong>置信度</strong> $P_{rot}$ ：</p>
+<p><img src="/2024/03/05/liao2020/f10.png" alt="f10" title="formula 10"></p>
+<h3 id="3-4-4-Ellipsoid-Generation"><a href="#3-4-4-Ellipsoid-Generation" class="headerlink" title="3.4.4 Ellipsoid Generation"></a>3.4.4 Ellipsoid Generation</h3><p>根据物体的旋转矩阵 $\mathbf{R}_c$ 和物体点云，可以构建出点云的最小bounding 立方体。确定点云在三个主轴的半轴长 $\mathbf{s} = [a, b, c]^T$ ，取各轴的中心作为立方体的中心点 $\mathbf{t}_c$ ，进而得到该立方体的位姿：</p>
+<script type="math/tex; mode=display">
+\mathbf{T}_c = \begin{bmatrix}
+\mathbf{R}_c     & \mathbf{t}_c \\
+\mathbf{0}     & 1
+\end{bmatrix}</script><p>对于任意立方体，均有其对应的<strong>内切椭球体</strong>。根据立方体主轴长度生成对角矩阵 $\mathbf{D} = diag(\mathbf{s})$ ，则该立方体的内切椭球体表示为：</p>
+<p><img src="/2024/03/05/liao2020/f11.png" alt="f11" title="formula 11"></p>
+<p>由此，实现了从单帧RGB-D 提取了物体立方体模型。</p>
+<h3 id="3-4-5-Confidence-Evaluation-of-the-Complete-Constraint-Model"><a href="#3-4-5-Confidence-Evaluation-of-the-Complete-Constraint-Model" class="headerlink" title="3.4.5 Confidence Evaluation of the Complete Constraint Model"></a>3.4.5 Confidence Evaluation of the Complete Constraint Model</h3><p>由于物体检测得到的bbox 是可靠的物体约束，所以，作者基于bbox 和完整约束模型构建的立方体来计算该模型的置信度。</p>
+<p>首先，计算椭球体外形匹配概率 $P_{shape}$ ，根据式2将椭球体投影至图像平面中的椭圆形，在此基础上生成受限矩形；然后与bbox 计算IoU：</p>
+<p><img src="/2024/03/05/liao2020/f12.png" alt="f12" title="formula 12"></p>
+<p>其中，$\beta(\mathbf{C}^\ast)$ 表示获取椭圆的外包矩形。</p>
+<p>在此基础上，基于<strong>贝叶斯理论</strong>，结合物体检测概率 $P_{det}$ 、主方向估计概率 $P_{rot}$ ，得到该椭球体<strong>约束模型的置信度</strong>：</p>
+<p><img src="/2024/03/05/liao2020/f13.png" alt="f13" title="formula 13"></p>
+<p>其中，$\alpha$ 为置信度阈值，判断当前模型是否可靠，若不可靠则选择使用<strong>部分约束模型</strong>。</p>
+<h3 id="3-4-6-Generate-Constraint-Planes"><a href="#3-4-6-Generate-Constraint-Planes" class="headerlink" title="3.4.6 Generate Constraint Planes"></a>3.4.6 Generate Constraint Planes</h3><h4 id="A-Acquisition-of-tangent-plane"><a href="#A-Acquisition-of-tangent-plane" class="headerlink" title="A Acquisition of tangent plane"></a>A Acquisition of tangent plane</h4><p>为了灵活适应遮挡情况，作者将椭球体约束分割为<strong>多重离散约束</strong>。立方体的6个面均满足式1的正切约束，且满足<strong>角度约束</strong>：面的法向量与椭球体的某个主轴共线。因此，一个完整的约束平面包含两部分约束：<strong>正切约束</strong>和<strong>角度约束</strong>。整体的约束方程如下所示：</p>
+<p><img src="/2024/03/05/liao2020/f15.png" alt="f15" title="formula 15"></p>
+<p>其中，$Sem(\pi, l)$ 用来判断物体是否有主方向，或切平面是否垂直于Z 轴。基于式15构建的完整约束包含6个约束平面和对应的角度约束。</p>
+<h4 id="B-Occlusion-of-the-image-edges"><a href="#B-Occlusion-of-the-image-edges" class="headerlink" title="B Occlusion of the image edges"></a>B Occlusion of the image edges</h4><p>因为使用了正切平面的形式来表示约束，所以可以判断每个正切平面的有效性，并移除由于遮挡造成的无效约束。每个正切平面包含受限矩形的4个顶点，作者通过判断位于<strong>图像边界内的投影顶点数量</strong>来决定该正切平面是否有效。</p>
+<h2 id="3-5-Partial-Constraint-Model"><a href="#3-5-Partial-Constraint-Model" class="headerlink" title="3.5 Partial Constraint Model"></a>3.5 Partial Constraint Model</h2><p>对于完整约束模型和部分约束模型，作者均采用<strong>约束平面</strong>来表示，以实现在图优化期间更好的收敛表现。</p>
+<h3 id="3-5-1-Acquisition-of-constraint-planes"><a href="#3-5-1-Acquisition-of-constraint-planes" class="headerlink" title="3.5.1 Acquisition of constraint planes"></a>3.5.1 Acquisition of constraint planes</h3><p>物体检测bbox 的每条边可通过逆投影形成一个平面：</p>
+<p><img src="/2024/03/05/liao2020/f18.png" alt="f18" title="formula 18"></p>
+<p>其中，$\mathbf{P}$ 表示相机位姿；l 表示bbox 中的一个边。</p>
+<h3 id="3-5-2-Occlusion-of-the-image-edges"><a href="#3-5-2-Occlusion-of-the-image-edges" class="headerlink" title="3.5.2 Occlusion of the image edges"></a>3.5.2 Occlusion of the image edges</h3><p>与完整约束模型类似，作者根据bbox 边与图像边界的距离来判断该边是否有效。有效边利用式18获取正切平面，进一步构建正切约束：</p>
+<p><img src="/2024/03/05/liao2020/f19.png" alt="f19" title="formula 19"></p>
+<p><img src="/2024/03/05/liao2020/f20.png" alt="f20" title="formula 20"></p>
+<p>若所有的bbox 边均有效，则单帧图片可构建4自由度的约束，式19的约束方程与式15相比，<strong>缺少了角度约束</strong>。但由此完整约束模型和部分约束模型形成了统一的形式。</p>
+<h2 id="3-6-Object-Level-SLAM"><a href="#3-6-Object-Level-SLAM" class="headerlink" title="3.6 Object-Level SLAM"></a>3.6 Object-Level SLAM</h2><p>作者将未知的语义数据关联和物体语义标签作为<strong>离散随机变量</strong>添加进系统中，因此，系统变成了包含连续变量（相机位姿）和离散变量（数据关联、语义标签）的<strong>混合系统</strong>，使得位姿图优化传统的非线性优化方法<strong>失效</strong>；为此，作者提出了一种<strong>非参数化位姿图</strong>对该问题进行建模，并得到最优解。</p>
+<h3 id="3-6-1-Semantic-Data-Association"><a href="#3-6-1-Semantic-Data-Association" class="headerlink" title="3.6.1 Semantic Data Association"></a>3.6.1 Semantic Data Association</h3><p>作者提到，不同于传统SLAM 中拥有众多的特征点，物体级SLAM 中只包含少量的物体，若发生DA 错误，则会对解算结果产生巨大影响；此外，同一类别的物体还会包含多个不同的个体，且常出现不同物体相隔较近甚至出现物体相接的情况。所以，在前端直接进行物体DA 比较困难。基于前人研究基础，作者进一步将<strong>二次曲面模型</strong>引进非参数化位姿图中来解决DA 问题。</p>
+<h2 id="3-7-Nonparametric-Pose-Graph"><a href="#3-7-Nonparametric-Pose-Graph" class="headerlink" title="3.7 Nonparametric Pose Graph"></a>3.7 Nonparametric Pose Graph</h2><h3 id="3-7-1-The-Definition-of-a-Nonparametric-Pose-Graph"><a href="#3-7-1-The-Definition-of-a-Nonparametric-Pose-Graph" class="headerlink" title="3.7.1 The Definition of a Nonparametric Pose Graph"></a>3.7.1 The Definition of a Nonparametric Pose Graph</h3><p>在传统位姿图的基础上进行扩展，得到了如下式所示的联合优化问题：</p>
+<p><img src="/2024/03/05/liao2020/f28.png" alt="f28" title="formula 28"></p>
+<p>其中，$o,z$ 分别是里程计观测和地标观测；$\mathbf{X}, \mathbf{L}$ 分别是相机位姿与地标参数，$\mathbf{L}_i = \{\mathbf{Q}_i, l_i\}$ 包含物体的椭球体参数和语义标签；$u, y$ 分别是语义标签的观测和数据关联DA；物体个数M 是未知的，需要进行优化求解。</p>
+<p><img src="/2024/03/05/liao2020/fig8.png" alt="fig8" title="figure 8"></p>
+<h3 id="3-7-2-The-Solution-of-a-Nonparametric-Pose-Graph"><a href="#3-7-2-The-Solution-of-a-Nonparametric-Pose-Graph" class="headerlink" title="3.7.2 The Solution of a Nonparametric Pose Graph"></a>3.7.2 The Solution of a Nonparametric Pose Graph</h3><p>前人使用 <strong>Dirichlet Process（DP）方法</strong>来计算非参数化位姿图，如Fig. 9所示，主要分为两步：</p>
+<ol>
+<li>固定数据关联 y，利用最大似然法解算 $\mathbf{X}, \mathbf{L}$ ；</li>
+<li>固定 $\mathbf{X}, \mathbf{L}$ ，利用最大似然法解算数据关联 y。</li>
+</ol>
+<p><img src="/2024/03/05/liao2020/fig9.png" alt="fig9" title="figure 9"></p>
+<p>具体来讲，可分为以下步骤：</p>
+<ol>
+<li><p><strong>初始化：</strong>根据里程计数据初始化位姿 $\mathbf{X}$ ，将所有观测物体视为新物体来初始化物体地标 $\mathbf{L}$ ，初始化物体语义标签 $\beta_0$ ，然后重复执行2-4步直到收敛；</p>
+</li>
+<li><p><strong>优化DA：</strong>固定 $\mathbf{X}, \mathbf{L},\beta$ ，使用下式<strong>更新数据关联</strong> $y_t^k$ ：</p>
+<p><img src="/2024/03/05/liao2020/f29.png" alt="f29" title="formula 29"></p>
+<p>上式为<strong>DP 先验</strong>与<strong>观测似然</strong>的乘积；$p(u_t^k;l_i)$ 通过语义标签的数学模型来给定；$p(z_t^k;\mathbf{X}_t,\mathbf{L}_i)$ 通过二次曲面观测模型给定。然后使用最大似然确定数据关联 $y_t^k$ ：</p>
+<p><img src="/2024/03/05/liao2020/f30.png" alt="f30" title="formula 30"></p>
+</li>
+<li><p><strong>更新物体标签：</strong>固定数据关联 $y_t^k$ ，更新物体标签Dirichlet 分布的<strong>后验参数</strong>，直觉上讲，有最多观测次数的类别就是该物体的语义类别；</p>
+</li>
+<li><p><strong>优化位姿与物体参数：</strong>固定DA $y_t^k$ ，解算 $\mathbf{X}, \mathbf{L}$ ，此处相当于<strong>传统的位姿图优化</strong>；</p>
+</li>
+<li><p><strong>滤除false positive：</strong>对于观测次数少于设定阈值的物体，将其视为FP。</p>
+</li>
+</ol>
+<h1 id="4-Experiment"><a href="#4-Experiment" class="headerlink" title="4 Experiment"></a>4 Experiment</h1><p><img src="/2024/03/05/liao2020/t6.png" alt="t6" title="table 6"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Pose Optimization</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Pose Optimization</tag>
+        <tag>Object SLAM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 LTSR_Long-term Semantic Relocalization based on HD Map for Autonomous Vehicles</title>
+    <url>/2024/03/05/wang2022/</url>
+    <content><![CDATA[<p>Wang, Huayou, Changliang Xue, Yu Tang, Wanlong Li, Feng Wen, and Hongbo Zhang. “LTSR: Long-Term Semantic Relocalization Based on HD Map for Autonomous Vehicles.” In <em>2022 International Conference on Robotics and Automation (ICRA)</em>, 2171–78. Philadelphia, PA, USA: IEEE, 2022. <a href="https://doi.org/10.1109/ICRA46639.2022.9811855">https://doi.org/10.1109/ICRA46639.2022.9811855</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出以下贡献：</p>
+<ul>
+<li>提出一种基于语义特征和HD 地图的准确、鲁棒的<strong>长期重定位算法</strong>，该算法不依赖于GNSS；</li>
+<li>提出一种基于<strong>局部语义描述子</strong>（编码了语义特征间的空间和法向normal 关系）的鲁棒语义特征匹配方法；</li>
+<li>通过评估局部、全局几何一致性和时间一致性的准确高效简单的<strong>外点剔除方法</strong>；</li>
+<li>大量的实验证明了方法的有效性。</li>
+</ul>
+<span id="more"></span>
+<h1 id="3-System-Review"><a href="#3-System-Review" class="headerlink" title="3 System Review"></a>3 System Review</h1><p>参考作者去年的文章(Wang 等, 2021)，系统框架如Fig. 2所示：</p>
+<p><img src="/2024/03/05/wang2022/fig2.png" alt="fig2" title="figure 2"></p>
+<p>相机和Lidar 用来探测3D 语义特征。数据关联过程分为三个步骤：</p>
+<ol>
+<li>为每个感知到的语义特征生成描述子，该描述子编码了语义特征之间的空间和法向normal 关系；</li>
+<li>基于特征描述子相似度的数据关联；</li>
+<li>通过评估局部、全局几何一致性和时间一致性的外点剔除方法。</li>
+</ol>
+<h1 id="4-Methodology"><a href="#4-Methodology" class="headerlink" title="4 Methodology"></a>4 Methodology</h1><h2 id="4-1-Semantic-Features-and-Detection"><a href="#4-1-Semantic-Features-and-Detection" class="headerlink" title="4.1 Semantic Features and Detection"></a>4.1 Semantic Features and Detection</h2><p>本文使用的语义特征为：道路线、道路标志、杆状物、交通灯和指示牌。</p>
+<p>与作者前作相同，使用YOLOV3 来进行语义探测，所不同的是，本文作者添加了Lidar 传感器，来为感知到的特征产生<strong>3D 位置信息和法向量</strong>。探测到的语义特征 $\mathcal{Z}_i$ 包含<strong>种类信息</strong>和<strong>用中心点与法向量表示的几何信息</strong>，如Fig. 3所示，其中，杆状物的中心点是其与地面的接触点，其法向量为杆状物所在道路线的方向。道路线表示为三次曲线线段。</p>
+<p><img src="/2024/03/05/wang2022/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="4-2-Semantic-Feature-Description-and-Association"><a href="#4-2-Semantic-Feature-Description-and-Association" class="headerlink" title="4.2 Semantic Feature Description and Association"></a>4.2 Semantic Feature Description and Association</h2><p>编码了语义特征之间的空间和法向normal 关系的<strong>描述子</strong>。为了减少计算量，所有的点和法向量都被投影至XY 平面，对于每个语义特征，与它在特定距离内的邻接特征被用来构建描述子，该局部描述子编码了<strong>相对位置、相对角度以及相对法向量</strong>参数。</p>
+<p>当前扫描中感知到的某个语义特征 $\mathcal{Z}_i$ 和<strong>HD</strong> <strong>地图中的每一个地标</strong> $\mathcal{L}j$ 对应的邻接特征集合分别表示为：</p>
+<p><img src="/2024/03/05/wang2022/f3.png" alt="f3" title="formula 3"></p>
+<p>根据邻接特征建立 $\mathcal{Z}_i$ 和 $\mathcal{L}j$ 的特征描述子（边组合）：</p>
+<p><img src="/2024/03/05/wang2022/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$\mathcal{E}_i^l$ 编码了相对位置 $d_i^l$ ，相对逆时针角度 $\theta_i^l$ 以及相对逆时针法向量 $n_i^l$ 。</p>
+<p>如果 $\mathcal{Z}_i$ 和 $\mathcal{L}j$ 具有相同的语义标签，且它们匹配上的边个数超过一定比例，那么就可以认为两者为一个匹配对。</p>
+<p><img src="/2024/03/05/wang2022/f5.png" alt="f5" title="formula 5"></p>
+<p>这样，语义特征的匹配问题就转化为了语义边组合中的边匹配问题，边匹配需要满足以下4个条件：</p>
+<ol>
+<li>两条边的语义标签一致；</li>
+<li>两条边的距离误差小于一个阈值；</li>
+<li>两条边的角度误差小于一个阈值；</li>
+<li>两条边的法向量误差小于一个阈值。</li>
+</ol>
+<p><img src="/2024/03/05/wang2022/f6.png" alt="f6" title="formula 6"></p>
+<h2 id="4-3-Outlier-Removal"><a href="#4-3-Outlier-Removal" class="headerlink" title="4.3 Outlier Removal"></a>4.3 Outlier Removal</h2><p>外点剔除的目标为：寻找一个几何一致性最大的组，即该组拥有最大数量的几何一致特征对，问题表示为：</p>
+<p><img src="/2024/03/05/wang2022/f7.png" alt="f7" title="formula 7"></p>
+<p>其中，$\mathcal{I}$ 表示内点组，$\epsilon$  表示一个内点阈值，$(\mathcal{Z}_i, \mathcal{L}_{Z_i})$ 表示匹配点对，局部几何一致性可表示为：</p>
+<p><img src="/2024/03/05/wang2022/f8.png" alt="f8" title="formula 8"></p>
+<p>其中，$d_l, d_g$ 分别表示局部地图中两点之间的距离和全局HD 地图中对应特征点之间的距离，$n_l, n_j$ 表示法向量角度。</p>
+<p>外点剔除算法如下所示：</p>
+<p><img src="/2024/03/05/wang2022/a1.png" alt="a1" title="algorithm 1"></p>
+<h2 id="4-4-Semantic-Tracking"><a href="#4-4-Semantic-Tracking" class="headerlink" title="4.4 Semantic Tracking"></a>4.4 Semantic Tracking</h2><p>作者采用前作(Wang 等, 2021)中的方法来构建连续帧间的特征关联，在此基础上，为了应对误匹配，作者使用CLEAR (Consistent Lifting, Embedding and Alignment Rectification) 算法来建立多视角下正确的语义特征关联。</p>
+<h2 id="4-5-Matching-Consistency-Check"><a href="#4-5-Matching-Consistency-Check" class="headerlink" title="4.5 Matching Consistency Check"></a>4.5 Matching Consistency Check</h2><p>参考作者前作(Wang 等, 2021)。</p>
+<h2 id="4-6-Robust-Long-term-Relocalization"><a href="#4-6-Robust-Long-term-Relocalization" class="headerlink" title="4.6 Robust Long-term Relocalization"></a>4.6 Robust Long-term Relocalization</h2><p>在匹配对的基础上，作者使用GNC（Graduated Non-Convexity）算法来解算重定位位姿，误差模型定位为中心位置和法向量的欧氏距离。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Map Match</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Map Match</tag>
+      </tags>
+  </entry>
 </search>
