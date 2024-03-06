@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Zhou, Yuxuan, Xingxing Li, Shengyu Li, and Xuanbin Wang. “Visual Mapping and Localization System Based on Compact Instance-Level Road Markings With Spatial Uncertainty.” IEEE Robotics and Automation L">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Visual Mapping and Localization System Based on Compact Instance-Level Road Markings With Spatial Uncertainty">
+<meta property="og:url" content="http://echo-gh.github.io/2024/03/06/zhou2022/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Zhou, Yuxuan, Xingxing Li, Shengyu Li, and Xuanbin Wang. “Visual Mapping and Localization System Based on Compact Instance-Level Road Markings With Spatial Uncertainty.” IEEE Robotics and Automation L">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/f10.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/f11.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig9.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig10.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig11.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig13.png">
+<meta property="article:published_time" content="2024-03-06T02:15:37.000Z">
+<meta property="article:modified_time" content="2024-03-06T02:22:23.302Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Map Match">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/03/06/zhou2022/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/03/06/zhou2022/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Visual Mapping and Localization System Based on Compact Instance-Level Road Markings With Spatial Uncertainty | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/06/zhou2022/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Visual Mapping and Localization System Based on Compact Instance-Level Road Markings With Spatial Uncertainty
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-06 10:15:37 / 修改时间：10:22:23" itemprop="dateCreated datePublished" datetime="2024-03-06T10:15:37+08:00">2024-03-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Map-Match/" itemprop="url" rel="index"><span itemprop="name">Map Match</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Zhou, Yuxuan, Xingxing Li, Shengyu Li, and Xuanbin Wang. “Visual Mapping and Localization System Based on Compact Instance-Level Road Markings With Spatial Uncertainty.” <em>IEEE Robotics and Automation Letters</em> 7, no. 4 (October 2022): 10802–9. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/LRA.2022.3196470">https://doi.org/10.1109/LRA.2022.3196470</a>.</p>
+<h1 id="3-System-Overview"><a href="#3-System-Overview" class="headerlink" title="3 System Overview"></a>3 System Overview</h1><p>Fig .1是本系统的基本框架，在本系统中汽车被假设为拥有基本的基于GNSS 的全局定位能力，以及基于轮式里程计或视觉-惯性里程计（VIO）的局部导航能力。对于基于视觉的环境感知，制图与定位阶段<strong>共享产生语义道路标志的pipeline</strong>。对于位姿估计，一个<strong>统一的位姿图优化框架</strong>被用于制图和定位阶段，将全局定位、局部导航以及地图匹配（限于终端用户）信息结合在一起实现鲁棒准确的定位。</p>
+<span id="more"></span>
+<p><img src="/2024/03/06/zhou2022/fig1.png" alt="fig1" title="figure 1"></p>
+<h1 id="4-Semantic-Road-Marking-Extraction"><a href="#4-Semantic-Road-Marking-Extraction" class="headerlink" title="4 Semantic Road Marking Extraction"></a>4 Semantic Road Marking Extraction</h1><p>作者采用一个在Appoloscape 上预训练的语义分割模型，并在自采数据（在武汉市采集的227张图片）上进行细调，采用了以下分割种类：车道线（虚线）、车道线（实线）、指引标志（箭头或菱形）、斑马线、停止线及其他。值得注意的是，道路标志的语义分割可以被集成到车辆系统的感知模块内，不必将其视为一个独立模块。</p>
+<p>进行语义分割之后，使用IPM 模型来恢复路标的公制几何信息，流程如Fig. 2所示，经过转换，可以<strong>将原始图片中的道路像素转换到相机坐标系中的3D点或带有公制几何信息的IPM 图片中的点</strong>。</p>
+<p><img src="/2024/03/06/zhou2022/fig2.png" alt="fig2" title="figure 2"></p>
+<h1 id="5-Modelling-the-Instance-level-Road-Markings"><a href="#5-Modelling-the-Instance-level-Road-Markings" class="headerlink" title="5 Modelling the Instance-level Road Markings"></a>5 Modelling the Instance-level Road Markings</h1><h2 id="5-1-Parameterization-of-the-Road-Markings"><a href="#5-1-Parameterization-of-the-Road-Markings" class="headerlink" title="5.1 Parameterization of the Road Markings"></a>5.1 Parameterization of the Road Markings</h2><p>在第4章提到的分割种类中，虽然斑马线形式非常独特，但是由于计算复杂度的问题，其不被用于制图和定位过程。对于其他种类，作者将其分为两种类型：</p>
+<ol>
+<li>块状patch-like 路标：车道线（虚线），指引标志（箭头、菱形）；</li>
+<li>线状路标：车道线（实线），停止线。</li>
+</ol>
+<p>对于块状路标，经过像素聚类pixel clustering之后，语义点云的<strong>中心、主方向以及特征值eigenvalue</strong> 通过奇异值分解（SVD）计算得到。</p>
+<ul>
+<li>中心被视为路标的参考位置；</li>
+<li>主方向表示路标的方向，可以用于数据关联data association，以及估计汽车的朝向；</li>
+<li>特征值是以一种高压缩方式表征路标的形状，类似于bounding box，但是由于其考虑点云中的每一个像素，所以对于边缘噪声更不敏感。</li>
+</ul>
+<p>对于线状路标，它们被参数化一条包含有任意数量线段的线带：</p>
+<blockquote>
+<p>after pixel-level clustering, the point cloud of the road marking is fitted using a cubic polynomial along the principal direction.</p>
+</blockquote>
+<p><strong>采样点</strong>使用特定的间隔（如0.5m）从曲线上获取，线段直接表征着线状路标的局部朝向以及形状，可被用来进行数据关联。</p>
+<p><img src="/2024/03/06/zhou2022/fig3.png" alt="fig3" title="figure 3"></p>
+<p>使用上述的参数化之后，原始点云数据即可被舍弃，本参数化方法以损失一些细节局部几何信息为代价，实现了更为紧凑的参数化，而且<strong>使得进一步的复杂处理成为可能，</strong>如考虑地图中元素的概率属性或者地图匹配过程中的高效迭代。</p>
+<h2 id="5-2-Modelling-the-Uncertainty"><a href="#5-2-Modelling-the-Uncertainty" class="headerlink" title="5.2 Modelling the Uncertainty"></a>5.2 Modelling the Uncertainty</h2><p>由于相机模型的透视本质，其不能像LiDAR一样直接获取环境的准确测距信息；通过IPM 转换可获取周围道路元素的3D 几何信息，但是<strong>其准确性对于像素误差、道路不规则以及汽车的姿势改变较为敏感</strong>。因此，为了概率制图与定位，进而在复杂环境中获取足够的精确度，需要对IPM 生成元素的空间不确定性进行研究。</p>
+<h3 id="5-2-1-Pixel-error"><a href="#5-2-1-Pixel-error" class="headerlink" title="5.2.1 Pixel error"></a>5.2.1 Pixel error</h3><p>像素误差可以由相机模型和语义分割误差造成。</p>
+<h3 id="5-2-2-Pitch-angle-error"><a href="#5-2-2-Pitch-angle-error" class="headerlink" title="5.2.2 Pitch angle error"></a>5.2.2 Pitch angle error</h3><p>在IPM 转换中，作者做了<strong>虚拟相机坐标系与地面平行的假设</strong>，但由于道路不规则以及车辆的加速刹车等原因，汽车的俯仰角相对于地面会有改变，导致上述假设失效，造成相应的误差。</p>
+<h3 id="5-2-3-Road-height-error"><a href="#5-2-3-Road-height-error" class="headerlink" title="5.2.3 Road height error"></a>5.2.3 Road height error</h3><p>作者假设的虚拟相机坐标系距离地面的高度可能存在误差。</p>
+<p>本文中，上述误差因子被假设服从0均值的高斯分布。在给定0.1°的俯仰角误差，0.05m的高度误差以及2像素误差时，IPM 中点的横向与纵向不确定度如Fig .4所示，可以发现：</p>
+<ul>
+<li>感知距离越近，不确定度越小；</li>
+<li>纵向不确定度要远大于横向不确定度，已经达到分米级，不可被忽略。</li>
+</ul>
+<p><img src="/2024/03/06/zhou2022/fig4.png" alt="fig4" title="figure 4"></p>
+<p>当把道路元素添加至全局地图中后，汽车位姿估计的不确定度也需要被考虑。</p>
+<h2 id="5-3-Dealing-With-Complex-Road-Conditions"><a href="#5-3-Dealing-With-Complex-Road-Conditions" class="headerlink" title="5.3 Dealing With Complex Road Conditions"></a>5.3 Dealing With Complex Road Conditions</h2><p>只要上述提到的误差银子较小且服从相关假设，IPM 转换得到的路标概率属性可以通过<strong>不确定模型</strong>得到处理。然而，现实世界中经常出现与上述假设不符的情况（如Fig. 5所示），导致IPM 产生的系统误差可能会超过米级，不再适用于本文提出的不确定模型，因此需要采取具体措施来解决这些情况。</p>
+<p><img src="/2024/03/06/zhou2022/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="5-4-Data-Association"><a href="#5-4-Data-Association" class="headerlink" title="5.4 Data Association"></a>5.4 Data Association</h2><p>尽管路标几何信息的大部分细节已经被舍弃了，但受益于路标的规则离散分布，仍然可以进行有效的数据关联。一般将路标的语义类别、参考位置、朝向以及特征值用于数据关联。</p>
+<p>在定位阶段，将感知到的路标投影至地图坐标系来寻找最近的匹配，由于作者对路标进行了<strong>最小的参数化</strong>，<strong>方便进行高效的重复搜索</strong>来保持多个路标观测的最好一致性。</p>
+<h1 id="6-Pose-Graph-Optimization"><a href="#6-Pose-Graph-Optimization" class="headerlink" title="6 Pose Graph Optimization"></a>6 Pose Graph Optimization</h1><p>本架构在制图与定位阶段都使用了位姿图优化，如Fig. 7所示</p>
+<p><img src="/2024/03/06/zhou2022/fig7.png" alt="fig7" title="figure 7"></p>
+<h2 id="Patch-toPatch-Factor"><a href="#Patch-toPatch-Factor" class="headerlink" title="Patch-toPatch Factor"></a>Patch-toPatch Factor</h2><p>将相机感知到的块状路标与全局地图中的元素进行联系，构建一个简单的<strong>点对点约束</strong>：</p>
+<p><img src="/2024/03/06/zhou2022/f10.png" alt="f10" title="formula 10"></p>
+<p>式中，$\tilde{p}_{p_j}^{b_k}$ 表示利用IPM 映射产生的路标观测位置， $p_{p_j}^{b_k}$  表示地图中元素在汽车坐标系中的位置。</p>
+<h2 id="Line-to-Line-Factor"><a href="#Line-to-Line-Factor" class="headerlink" title="Line-to-Line Factor"></a>Line-to-Line Factor</h2><p>对于相机感知到的线状路标，其中的<strong>采样点与地图中对应线段的距离</strong>被作为构建因子：</p>
+<p><img src="/2024/03/06/zhou2022/f11.png" alt="f11" title="formula 11"></p>
+<p>式中，$\tilde{p}_{l_j, m}^{b_k}$ 表示IPM 产生的线状路标中一个采样点的观测位置， $p_{l_j, z}^{b_k}, p_{l_j, z+1}^{b_k}$  表示线状地图元素的对应线段在汽车坐标系中的两个顶点。</p>
+<p>添加完Fig. 7所示的不同因子之后，即可构建位姿图优化问题来获取汽车位姿的最优估计。值得注意的是，作者在当前系统的部署过程中，为了简化制图过程，地图匹配（patch-to-patch，line-to-line）因子没有被考虑。在制图阶段，需要维护一个<strong>全局的位姿图</strong>；而对于定位阶段，只需要维持一个<strong>几秒的窗口来保证高效性</strong>。</p>
+<p>在地图辅助定位中，<strong>路标的不确定性用来决定地图匹配因子的权重</strong>，但是地图中的元素不会进行相应的更新，因为终端用户无权进行地图更新。</p>
+<h1 id="7-Experiment"><a href="#7-Experiment" class="headerlink" title="7 Experiment"></a>7 Experiment</h1><p>作者在10月13日采集两组数据序列（A1，A2），进行融合制图，采用RTK/INS（战术级INS）的平滑解作为真值；在11月28日采集了用来进行评估的数据序列（U1），如Fig. 9所示，值得注意的是，U1数据序列的采集汽车方向与A1、A2相反。</p>
+<p><img src="/2024/03/06/zhou2022/fig9.png" alt="fig9" title="figure 9"></p>
+<h2 id="7-1-On-Vehicle-Mapping"><a href="#7-1-On-Vehicle-Mapping" class="headerlink" title="7.1 On-Vehicle Mapping"></a>7.1 On-Vehicle Mapping</h2><p>在制图过程中，参数化的路标被添加进全局地图中，并基于空间不确定性进行聚集与融合，如Fig. 10所示。</p>
+<p><img src="/2024/03/06/zhou2022/fig10.png" alt="fig10" title="figure 10"></p>
+<h2 id="7-2-Multi-Source-Map-Merging"><a href="#7-2-Multi-Source-Map-Merging" class="headerlink" title="7.2 Multi-Source Map Merging"></a>7.2 Multi-Source Map Merging</h2><p>在数据序列A1与A2分别进行on-vehicle mapping之后，两个地图会进行融合，进而得到一个一致且相对完整的道路地图，如Fig. 11所示。</p>
+<p><img src="/2024/03/06/zhou2022/fig11.png" alt="fig11" title="figure 11"></p>
+<h2 id="7-3-Map-Aided-Localization"><a href="#7-3-Map-Aided-Localization" class="headerlink" title="7.3 Map-Aided Localization"></a>7.3 Map-Aided Localization</h2><p>终端汽车中的车载GNSS 利用standard point positioning (SPP) 来实现米级的全局定位，图片与IMU 数据用来进行基于VIO 的局部导航，结合生成的道路地图进行匹配定位，最终利用上述的所有信息进行位姿图优化得到最终的位姿估计。值得注意的是，本架构没有使用边缘化marginalization策略。</p>
+<p>考虑到路标的模糊属性，汽车需要观测到足够多的可区分信息才能实现成功的重定位，如Fig. 13所示，</p>
+<ol>
+<li>由于指示路标（蓝色）更稀疏、更具有区分性，所以它们在地图匹配的第一阶段被使用，以保证在非常有限个候选匹配点对中进行高效匹配；</li>
+<li>在经过迭代汽车位姿更为精准后，使用更多的观测路标进行地图匹配，以检查地图匹配的一致性并提高定位精度。</li>
+</ol>
+<p>本方法与使用稠密点云和iterative closest point (ICP) 方法相比更高效、更灵活，此外，本方法良好的建模空间不确定度有潜力实现更高的定位精度。</p>
+<p><img src="/2024/03/06/zhou2022/fig13.png" alt="fig13" title="figure 13"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Map-Match/" rel="tag"><i class="fa fa-tag"></i> Map Match</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/05/liao2020/" rel="prev" title="论文记录 RGB-D Object SLAM Using Quadrics for Indoor Environments">
+      <i class="fa fa-chevron-left"></i> 论文记录 RGB-D Object SLAM Using Quadrics for Indoor Environments
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/03/06/bev-locator/" rel="next" title="论文记录 BEV-Locator_An End-to-end Visual Semantic Localization Network Using Multi-View Images">
+      论文记录 BEV-Locator_An End-to-end Visual Semantic Localization Network Using Multi-View Images <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#3-System-Overview"><span class="nav-text">3 System Overview</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Semantic-Road-Marking-Extraction"><span class="nav-text">4 Semantic Road Marking Extraction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Modelling-the-Instance-level-Road-Markings"><span class="nav-text">5 Modelling the Instance-level Road Markings</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Parameterization-of-the-Road-Markings"><span class="nav-text">5.1 Parameterization of the Road Markings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Modelling-the-Uncertainty"><span class="nav-text">5.2 Modelling the Uncertainty</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-1-Pixel-error"><span class="nav-text">5.2.1 Pixel error</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-2-Pitch-angle-error"><span class="nav-text">5.2.2 Pitch angle error</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-3-Road-height-error"><span class="nav-text">5.2.3 Road height error</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Dealing-With-Complex-Road-Conditions"><span class="nav-text">5.3 Dealing With Complex Road Conditions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-Data-Association"><span class="nav-text">5.4 Data Association</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-Pose-Graph-Optimization"><span class="nav-text">6 Pose Graph Optimization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Patch-toPatch-Factor"><span class="nav-text">Patch-toPatch Factor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Line-to-Line-Factor"><span class="nav-text">Line-to-Line Factor</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-Experiment"><span class="nav-text">7 Experiment</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-On-Vehicle-Mapping"><span class="nav-text">7.1 On-Vehicle Mapping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-Multi-Source-Map-Merging"><span class="nav-text">7.2 Multi-Source Map Merging</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-3-Map-Aided-Localization"><span class="nav-text">7.3 Map-Aided Localization</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
