@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Lin, Shiqi, Jikai Wang, Meng Xu, Hao Zhao, and Zonghai Chen. “Topology Aware Object-Level Semantic Mapping Towards More Robust Loop Closure.” IEEE Robotics and Automation Letters 6, no. 4 (October 202">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 Topology Aware Object-Level Semantic Mapping Towards More Robust Loop Closure">
+<meta property="og:url" content="http://echo-gh.github.io/2024/03/06/lin2021/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Lin, Shiqi, Jikai Wang, Meng Xu, Hao Zhao, and Zonghai Chen. “Topology Aware Object-Level Semantic Mapping Towards More Robust Loop Closure.” IEEE Robotics and Automation Letters 6, no. 4 (October 202">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f9.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f10.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f11.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f12.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/f13.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig8.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig9.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig10.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/06/lin2021/t1.png">
+<meta property="article:published_time" content="2024-03-06T02:27:44.000Z">
+<meta property="article:modified_time" content="2024-03-06T02:41:56.681Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Topology">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/03/06/lin2021/fig1.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/03/06/lin2021/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 Topology Aware Object-Level Semantic Mapping Towards More Robust Loop Closure | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/06/lin2021/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 Topology Aware Object-Level Semantic Mapping Towards More Robust Loop Closure
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-06 10:27:44 / 修改时间：10:41:56" itemprop="dateCreated datePublished" datetime="2024-03-06T10:27:44+08:00">2024-03-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Topology/" itemprop="url" rel="index"><span itemprop="name">Topology</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Lin, Shiqi, Jikai Wang, Meng Xu, Hao Zhao, and Zonghai Chen. “Topology Aware Object-Level Semantic Mapping Towards More Robust Loop Closure.” <em>IEEE Robotics and Automation Letters</em> 6, no. 4 (October 2021): 7041–48. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/LRA.2021.3097242">https://doi.org/10.1109/LRA.2021.3097242</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>SLAM 回环检测可有效消除累计误差，但是在大视角变化与环境外观变化时难以实现有效的检测，本文提出了基于物体建模object modeling与语义图匹配semantic graph matching的回环检测技术。作者使用体素与立方体cuboids对环境中的物体进行物体级别特征建模，将环境进一步表示为带有拓扑信息的语义图，在此基础上提出了一种<strong>基于edit distance的高效图匹配方法</strong>，最终通过语义地图的对齐来实现回环检测。</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>人类通过环境中物体的外观与轮廓来识别场景，并在短时间内判断是否来过该该处，通过借鉴人类的回环检测方式作者提出了一种基于<strong>对象级拓扑感知语义匹配topology aware object-level semantic mapping</strong>的回环检测方法：</p>
+<blockquote>
+<p><em>将环境表示为包含物体的语义图，通过图匹配来实现回环探测</em>。</p>
+</blockquote>
+<p><img src="/2024/03/06/lin2021/fig1.png" alt="fig1" title="figure 1"></p>
+<p><img src="/2024/03/06/lin2021/fig2.png" alt="fig2" title="figure 2"></p>
+<p>本文做出的贡献总结如下：</p>
+<ol>
+<li>提出一个构建<strong>多粒度语义地图</strong>的框架，包含地图点、体素与立方体；</li>
+<li>提取物体的<strong>多维特征（包括语义、尺寸、颜色分布以及拓朴结构）</strong>作为描述子来实现物体间的精确关联；</li>
+<li>提出了一个基于<strong>语义图匹配</strong>的回环检测方法，对于视角与外观变化具有较强的鲁棒性；</li>
+<li>提出一种<strong>基于物体对齐的回环矫正</strong>方法，可精确计算漂移误差。</li>
+</ol>
+<h1 id="2-Related-Work"><a href="#2-Related-Work" class="headerlink" title="2 Related Work"></a>2 Related Work</h1><h2 id="2-1-Object-SLAM"><a href="#2-1-Object-SLAM" class="headerlink" title="2.1 Object SLAM"></a>2.1 Object SLAM</h2><p>相对于低级的几何信息，物体特征object features更稳定，且有着丰富的语义与先验信息。根据物体建模策略的不同，object SLAM 可分为specific type 与 general type：</p>
+<ul>
+<li><strong>specific type</strong>：需要提前建立精准的3D模型数据库，然后进行实时检索匹配，从而实现物体的精确估计，但由于先验数据库的要求导致该方法的通用性有限；</li>
+<li><strong>general type</strong>：可在跟踪相机位姿的过程中实现物体在线建模，有着更优的应用能力。一些方法使用通用的三维几何结构，如立方体、椭球体来建立粗粒度的物体模型。</li>
+</ul>
+<h2 id="2-2-Loop-Closure"><a href="#2-2-Loop-Closure" class="headerlink" title="2.2 Loop Closure"></a>2.2 Loop Closure</h2><p>基于观测信息建立场景的鲁棒描述子是回环检测的核心问题，常见的描述子有以下几种：</p>
+<ul>
+<li>提取图像的<strong>局部特征</strong>作为图像的抽象描述子，如SIFT、ORB 等；</li>
+<li>直接提取整幅图像的<strong>全局特征</strong>实现场景描述，如GIST 等；</li>
+<li>结合上述两种方法的优势，从图片的多个局部区域提取全局特征，组建场景的鲁棒表示。</li>
+</ul>
+<p>以上基于外观的描述子构建方法受限于视角与场景外观的变化，而语义信息却具有更强的鲁棒性。据此，有作者提出<strong>利用环境中的物体来实现回环检测的视角不变性</strong>，然而，场景遮挡、布局改变以及多个重复物体的情况也很常见，这些因素对于基于穷尽搜索的物体匹配方法提出了挑战。</p>
+<blockquote>
+<p>因此，本文作者提出使用物体的<strong>多维信息（包括语义、颜色与拓扑关系）作为描述子</strong>来实现物体的精准匹配，进而实现语义图匹配的回环检测。</p>
+</blockquote>
+<h1 id="3-Object-SLAM"><a href="#3-Object-SLAM" class="headerlink" title="3 Object SLAM"></a>3 Object SLAM</h1><p>本文提出的架构是基于<strong>ORB-SLAM2</strong> 而设计的，使用<strong>RGB-D 数据</strong>来实现初步的位姿估计与<em>稀疏地图</em>构建；在此基础上，通过融合RGB-D 数据与它的实例分割结果来构建<em>稠密点云</em>，进而产生<em>体素模型</em>。基于体素模型使用<strong>离散采样与粒子群优化算法</strong>产生物体的<em>压缩立方体模型</em>，过程如Fig. 3所示。</p>
+<p><img src="/2024/03/06/lin2021/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-1-Voxel-Model-Construction"><a href="#3-1-Voxel-Model-Construction" class="headerlink" title="3.1 Voxel Model Construction"></a>3.1 Voxel Model Construction</h2><p>从单张图片的RGB-D 与实例分割获取物体的<strong>稠密点云</strong>，<strong>体素</strong>被用来融合、量化多帧图片的稠密点云，根据连续观测信息更新<strong>体素被占据的概率。</strong>给定传感器测量数据$z_{1:t}$ ，体素被占据的概率可由下式计算获取：</p>
+<p><img src="/2024/03/06/lin2021/f1.png" alt="f1" title="formula 1"></p>
+<p>$P(n)$ 表示体素被占据的先验概率，本文设置为0.5；在得到传感器测量值$z_t$ 后可通过下式获取后验概率：</p>
+<p><img src="/2024/03/06/lin2021/f2.png" alt="f2" title="formula 2"></p>
+<p>在实验中，$l_{occ}, l_{free}$ 分别被设定为0.7，0.4。</p>
+<p>由于传感器测量误差与实例分割误差，在物体初步建模中存在很多离散的外点，作者首先使用<strong>DBSCAN 算法</strong>进行density clustering 来去除孤立的小团点簇，然后将剩余的3D 体素投影到地面上，使用<strong>seed filling</strong> 来探测平面的连接区域，小团点簇被进一步去除。</p>
+<h2 id="3-2-Cuboid-Generation"><a href="#3-2-Cuboid-Generation" class="headerlink" title="3.2 Cuboid Generation"></a>3.2 Cuboid Generation</h2><p>一个通用的立方体模型包含9个自由度：3个自由度的位置信息 $t = (t_x, t_y, t_z)$，3个自由度的旋转信息 $r = (roll, pitch, yaw)$ ，以及3个自由度的尺寸信息 $d = (l, w, h)$。因此，地图中的物体地标被表示为 $O = \{T_0, d\}$ ，其中 $T_0 \in SE(3)$ 表示6自由度的位姿参数。作者假设所有物体地标均位于水平平面，所以<em>roll, pitch</em> 参数设置为0。</p>
+<p>如Fig. 4所示，首先将3D 体素投影到平面上，然后对 <em>yaw</em> 参数在<strong>二维投影平面上</strong>进行从0°到180°的离散采样，对于每个采样，可以获取一个完全覆盖2D 投影区域的最小bounding box，然后将这个box 设定为目标立方体的top view，由此可以获得立方体的5个参数：$\{t_x, t_y, yaw, l, w\}$ 。</p>
+<p><img src="/2024/03/06/lin2021/fig4.png" alt="fig4" title="figure 4"></p>
+<p>然后，令该立方体包含垂直方向上的所有3D 体素，即可获取剩余两个参数：$\{t_z, h\}$ ，由此可以得到一个初步的立方体模型。在此基础上，使用<strong>粒子群优化算法</strong>进一步优化该立方体模型，从而得到最优的模型：</p>
+<p><img src="/2024/03/06/lin2021/f3.png" alt="f3" title="formula 3"></p>
+<p>式中，$N_{occ}$ 表示立方体中被占据体素的体积，$N_{free}$ 表示未被占据的体积，权重参数 $\lambda$ 根据传感器噪声进行调整。</p>
+<h2 id="3-3-Data-Association"><a href="#3-3-Data-Association" class="headerlink" title="3.3 Data Association"></a>3.3 Data Association</h2><p>当物体建模完成以后，我们可以获取到物体的语义与尺寸信息。当两个物体的尺寸差异小于它们平均值的1/3时，我们认为两个物体尺寸匹配成功；作者将图片转化为HSV 色域空间，计算两幅图片的颜色直方图并产生归一化特征向量，当两个特征向量的相关系数超过0.5时认为颜色匹配成功；使用<strong>random walk descriptor</strong>来提取物体周围的拓扑结构信息，本实验的 random walk descriptor 阈值设定为探索次数的0.5倍。</p>
+<h1 id="4-Loop-Closure-With-Semantic-Graph"><a href="#4-Loop-Closure-With-Semantic-Graph" class="headerlink" title="4 Loop Closure With Semantic Graph"></a>4 Loop Closure With Semantic Graph</h1><h2 id="4-1-Graph-Representation"><a href="#4-1-Graph-Representation" class="headerlink" title="4.1 Graph Representation"></a>4.1 Graph Representation</h2><p>作者将环境中的物体作为顶点，将物体中心在世界坐标系中的坐标设定为该顶点坐标，将覆盖物体模型的<strong>最小球形区域定义为该节点的邻接空间</strong>，邻接空间有相交部分的节点使用<strong>无向边undirected edges</strong> 进行连接；此外，对于图中的每一个节点，遍历其余所有节点找到与其距离最近的一个节点，使用无向边进行连接，如Fig. 5所示。</p>
+<p><img src="/2024/03/06/lin2021/fig5.png" alt="fig5" title="figure 5"></p>
+<p>作者使用<strong>图嵌入方法graph embedding method</strong> 来将基于图的结构信息嵌入到<strong>线性向量空间</strong>，如Fig. 6所示，首先选取一个边缘节点作为根节点，并测量根节点距离其他所有节点的距离，根据距离进行降序排列得到一个支持向量 $V = \{v_1, v_2, …, v_n\}$ 来表示图的拓扑结构，支持向量中的元素 $v_i$ 表示物体的描述子（语义、尺寸、颜色以及random walk descriptor）；通过替换根节点并重复上述操作，即可从图中获取多个支持向量。</p>
+<p><img src="/2024/03/06/lin2021/fig6.png" alt="fig6" title="figure 6"></p>
+<h2 id="4-2-Loop-Detection"><a href="#4-2-Loop-Detection" class="headerlink" title="4.2 Loop Detection"></a>4.2 Loop Detection</h2><p>对于<strong>两个子图的支持向量</strong> $V_a = \{v^1_a, v^2_a,…, v^m_a\}$ , $V_b = \{v^1_b, v^2_b,…, v^n_b\}$ ，编辑 $V_a$ 中的节点来转化为 $V_b$ ，将最小的编辑次数定义为两者之间的edit distance。节点编辑操作包括四种：插入、删除、单节点替换与两个邻接节点的交换。相邻节点的交换操作可以阻止支持向量元素的排序混乱问题，只允许与根节点有相似距离的两个节点进行交换操作，定义两个支持向量的编辑距离：</p>
+<p><img src="/2024/03/06/lin2021/f7.png" alt="f7" title="formula 7"></p>
+<p>$sub_{a, b}(i, j)$ 表示交换 $v^i_a, v^{i-1}_a$ 之后的最小编辑距离，相应的，$nousub_{a, b}(i, j)$ 表示 $v^i_a, v^{i-1}_a$ 交换操作被禁止的最小编辑距离：</p>
+<p><img src="/2024/03/06/lin2021/f9.png" alt="f9" title="formula 9"></p>
+<p>作为拓扑结构的补充，两个地图中匹配物体之间的<strong>空间距离一致性</strong>也被考虑，若两个向量包含共同的节点，但是节点间的距离（在语义图中用边连接的<strong>任意两个节点</strong>）超出阈值，那么就视为不匹配。最终，当每一对支持向量中的编辑距离满足以下约束则视为构成回环：</p>
+<p><img src="/2024/03/06/lin2021/f10.png" alt="f10" title="formula 10"></p>
+<p>式中 $\lambda$ 被设为0.3。</p>
+<h2 id="4-3-Loop-Correction"><a href="#4-3-Loop-Correction" class="headerlink" title="4.3 Loop Correction"></a>4.3 Loop Correction</h2><p>当检测到回环时，使用物体对齐来矫正偏移误差，偏移误差可通过对齐匹配物体来获取：</p>
+<p><img src="/2024/03/06/lin2021/f11.png" alt="f11" title="formula 11"></p>
+<p>然后使用偏移误差来矫正相机位姿 $T_c$ ：</p>
+<p><img src="/2024/03/06/lin2021/f12.png" alt="f12" title="formula 12"></p>
+<p>由于立方体的对称性，相机位姿有两个可行解，因此需要两对匹配立方体来消除模糊度。在获取了当前关键帧的初始位姿后，使用所有匹配的地标利用非线性最小二乘进行优化：</p>
+<p><img src="/2024/03/06/lin2021/f13.png" alt="f13" title="formula 13"></p>
+<p>在优化了当前关键帧的位姿后，使用图优化方法来矫正整个轨迹。</p>
+<h1 id="5-Experiments"><a href="#5-Experiments" class="headerlink" title="5 Experiments"></a>5 Experiments</h1><h2 id="5-1-Datasets"><a href="#5-1-Datasets" class="headerlink" title="5.1 Datasets"></a>5.1 Datasets</h2><p>使用TUM RGB-D benchmark，以及作者自采数据进行实验。</p>
+<h2 id="5-2-Semantic-Mapping-Performance"><a href="#5-2-Semantic-Mapping-Performance" class="headerlink" title="5.2 Semantic Mapping Performance"></a>5.2 Semantic Mapping Performance</h2><p>Fig. 7展示了基于本文提出的方法构建的语义地图。</p>
+<p><img src="/2024/03/06/lin2021/fig7.png" alt="fig7" title="figure 7"></p>
+<h2 id="5-3-Loop-Detection-Performance"><a href="#5-3-Loop-Detection-Performance" class="headerlink" title="5.3 Loop Detection Performance"></a>5.3 Loop Detection Performance</h2><p>作者在同一场景中以不同的视角、距离采集图像，理论上来讲所有的图片都可以被视为回环，作者使用SLAM 算法计算每张图片代表的相机位姿，固定一些图片作为模板，剩余图片进行匹配预测测试；将本文提出的方法与基于ORB 特征的回环检测算法进行对比，回环检测评价标准是匹配成功的数量，实验结果如Fig. 8、Fig. 9所示。</p>
+<p><img src="/2024/03/06/lin2021/fig8.png" alt="fig8" title="figure 8"></p>
+<p><img src="/2024/03/06/lin2021/fig9.png" alt="fig9" title="figure 9"></p>
+<h2 id="5-4-Localization-Accuracy"><a href="#5-4-Localization-Accuracy" class="headerlink" title="5.4 Localization Accuracy"></a>5.4 Localization Accuracy</h2><p>与BAD-SLAM、ORB-SLAM2 进行对比实验，计算绝对偏移误差，实验结果如Fig. 10、Table 1（RMSE）所示，</p>
+<p><img src="/2024/03/06/lin2021/fig10.png" alt="fig10" title="figure 10"></p>
+<p><img src="/2024/03/06/lin2021/t1.png" alt="t1" title="table 1"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Topology/" rel="tag"><i class="fa fa-tag"></i> Topology</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/06/bev-locator/" rel="prev" title="论文记录 BEV-Locator_An End-to-end Visual Semantic Localization Network Using Multi-View Images">
+      <i class="fa fa-chevron-left"></i> 论文记录 BEV-Locator_An End-to-end Visual Semantic Localization Network Using Multi-View Images
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/03/06/ji2023/" rel="next" title="论文记录 Loop Closure Detection Based on Object-level Spatial Layout and Semantic Consistency">
+      论文记录 Loop Closure Detection Based on Object-level Spatial Layout and Semantic Consistency <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Related-Work"><span class="nav-text">2 Related Work</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Object-SLAM"><span class="nav-text">2.1 Object SLAM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Loop-Closure"><span class="nav-text">2.2 Loop Closure</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Object-SLAM"><span class="nav-text">3 Object SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Voxel-Model-Construction"><span class="nav-text">3.1 Voxel Model Construction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Cuboid-Generation"><span class="nav-text">3.2 Cuboid Generation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Data-Association"><span class="nav-text">3.3 Data Association</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Loop-Closure-With-Semantic-Graph"><span class="nav-text">4 Loop Closure With Semantic Graph</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Graph-Representation"><span class="nav-text">4.1 Graph Representation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Loop-Detection"><span class="nav-text">4.2 Loop Detection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Loop-Correction"><span class="nav-text">4.3 Loop Correction</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Experiments"><span class="nav-text">5 Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Datasets"><span class="nav-text">5.1 Datasets</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Semantic-Mapping-Performance"><span class="nav-text">5.2 Semantic Mapping Performance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Loop-Detection-Performance"><span class="nav-text">5.3 Loop Detection Performance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-Localization-Accuracy"><span class="nav-text">5.4 Localization Accuracy</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">69</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

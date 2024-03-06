@@ -3884,4 +3884,211 @@
         <tag>Map Match</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 Loop Closure Detection Based on Object-level Spatial Layout and Semantic Consistency</title>
+    <url>/2024/03/06/ji2023/</url>
+    <content><![CDATA[<p>Ji, Xingwu, Peilin Liu, Haochen Niu, Xiang Chen, Rendong Ying, and Fei Wen. “Loop Closure Detection Based on Object-Level Spatial Layout and Semantic Consistency.” arXiv, April 14, 2023. <a href="http://arxiv.org/abs/2304.05146">http://arxiv.org/abs/2304.05146</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
+<ol>
+<li>在3D 场景图中基于<strong>拓扑结构与几何匹配</strong>的回环检测方法，利用物体的信息和它们的邻域来建立<strong>3D 拓扑结构</strong>，保证几何布局以及语义属性的一致；</li>
+<li>包含<strong>语义标签、bounding box IoU、物体颜色编码、物体级embedding</strong> 信息的物体级数据关联方法，基于该方法构建了<strong>3D 语义地图</strong>；</li>
+<li>一个完整的视觉SLAM 系统，实验结果表证明了本算法的优越性。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-Object-Level-Semantic-Mapping"><a href="#3-Object-Level-Semantic-Mapping" class="headerlink" title="3 Object-Level Semantic Mapping"></a>3 Object-Level Semantic Mapping</h1><p>本系统的架构如Fig. 2所示：</p>
+<ol>
+<li>基于<strong>双目里程计</strong>利用双目RGB 图片流获取初步的相对位姿；</li>
+<li>利用一个<strong>物体提取网络</strong>来进行语义标记，并生成2D bounding boxes 和3D 立方体proposals；</li>
+<li>将bounding boxes 输入<strong>instance-feature 学习网络</strong>来提取<strong>物体级的embeddings</strong>；</li>
+<li>利用物体的语义等信息实现局部地图中的物体和全局地图中物体的<strong>数据关联</strong>，若全局地图中没有物体与检测到的物体实现匹配，则在全局地图中添加一个cuboid；</li>
+<li>基于数据关联，利用物体位姿求解算法来将新检测到的物体放入全局地图的cuboid中，利用BA <strong>同时优化物体与相机的位姿</strong>。</li>
+</ol>
+<p><img src="/2024/03/06/ji2023/fig2.png" alt="fig2" title="figure 2"></p>
+<h2 id="3-1-Object-Semantic-Information-Extraction"><a href="#3-1-Object-Semantic-Information-Extraction" class="headerlink" title="3.1 Object Semantic Information Extraction"></a>3.1 Object Semantic Information Extraction</h2><h3 id="3-1-1-Geometry-information"><a href="#3-1-1-Geometry-information" class="headerlink" title="3.1.1 Geometry information"></a>3.1.1 Geometry information</h3><p>几何信息包含：语义标签、物体尺寸、2D bounding boxes 以及 3D 立方体proposals。作者使用VisualDet3D 来提取2D bounding boxes 以及 3D 立方体，在所有物体均位于统一平面上的假设下，一个物体的3D cuboid 包含<strong>7自由度</strong>：3位置、3尺寸、yaw角，获取过程如Fig. 3所示。值得注意的是，作者在数据关联过程中忽略了那些体积过大或者距离相机过远的物体，以方便后续的3D 环境重建和回环检测。</p>
+<p><img src="/2024/03/06/ji2023/fig3.png" alt="fig3" title="figure 3"></p>
+<h3 id="3-1-2-Color-information"><a href="#3-1-2-Color-information" class="headerlink" title="3.1.2 Color information"></a>3.1.2 Color information</h3><p>为获取图片的颜色信息，作者将RGB 格式的图片转换为HSV (hue, saturation and value)格式，bounding box内的区域作为物体在图片中的区域，作者使用K-means++ 算法将物体的HSV 数值进行聚类，并分为K 个集群，对于每个集群选取其中心作为该集群的基本色彩，然后使用 <strong>K维的特征向量</strong>来表示集群色彩直方图的分布，以该向量作为物体的色彩信息。</p>
+<h3 id="3-1-3-Embedding-information"><a href="#3-1-3-Embedding-information" class="headerlink" title="3.1.3 Embedding information"></a>3.1.3 Embedding information</h3><p>相似地，作者使用bounding boxes区域作为物体的图像块image patches，利用fast-reid 算法将patches 编码为向量表示。注：fast-reid 算法经VERI-Wild 数据集进行预训练。</p>
+<p><img src="/2024/03/06/ji2023/fig4.png" alt="fig4" title="figure 4"></p>
+<h2 id="3-2-Object-Data-Association"><a href="#3-2-Object-Data-Association" class="headerlink" title="3.2 Object Data Association"></a>3.2 Object Data Association</h2><p>假设在第 $c_i$ 帧照片上检测到N 个物体，则表示为 $D = \{d_i\}_N$  <em>,</em> $d_i = \{l_i, b_i, h_i, e_i, T_{co}\}$ ，其中，$l_i$  表示语义标签，$b_i$ 表示bounding box，$h_i$ 表示归一化的颜色直方图，$e_i$ 表示物体embedding，$T_{co}$ 表示物体<strong>在相机坐标系中的位姿</strong>。</p>
+<p>相应地，全局地图中存在M 个物体地标 $O = \{o_k\}_{k=1}^M$ <em>，</em>每一个地标可表示为 $ o_k = \{\tilde{l}_k, \tilde{u}_k, \tilde{b}_k, H_k, E_k, T_{wo_k}\}$ ，其中，$\tilde{l}_k$ 表示语义标签，$H_k = \{\tilde{h}_j\}_{j=1}^n,E_k= \{\tilde{e}_j\}_{j=1}^n$ 分别是<strong>过去n 个匹配的颜色直方图和物体embedding 向量组</strong>，$T_{wo_k}$ 是<strong>物体在世界坐标系中的坐标</strong>，$\tilde{u}_k,\tilde{b}_k$  分别是cuboid 和 bounding box。<strong>bounding box 是由 cuboid 处理得到的</strong>：将cuboid 的8个顶点映射到图片中，获取x-y 坐标的最小值与最大值来形成一个矩形：</p>
+<p><img src="/2024/03/06/ji2023/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，$\pi(.)$  表示相机映射方程， R，t表示旋转与平移矩阵。</p>
+<p>物体相似度计算如下所示：</p>
+<p><img src="/2024/03/06/ji2023/f2.png" alt="f2" title="formula 2"></p>
+<p>相似度计算涉及到物体的<strong>bounding boxes，颜色直方图以及物体embedding</strong>：</p>
+<p><img src="/2024/03/06/ji2023/f3.png" alt="f3" title="formula 3"></p>
+<p>其中，</p>
+<p><img src="/2024/03/06/ji2023/f4.png" alt="f4" title="formula 4"></p>
+<h2 id="3-3-Object-Pose-Refinement"><a href="#3-3-Object-Pose-Refinement" class="headerlink" title="3.3 Object Pose Refinement"></a>3.3 Object Pose Refinement</h2><p>实现数据关联之后，使用相机运动模型和物体空间定位来优化位姿。使用BA 联合优化物体与相机的位姿，形成一个<strong>非线性最小二乘优化问题</strong>：</p>
+<p><img src="/2024/03/06/ji2023/f7.png" alt="f7" title="formula 7"></p>
+<p>其中，$c_0, c_n$ 表示跟踪的图片帧数范围。作者采用VINS-Fusion 的<strong>滑动窗口优化机制</strong>。由此构建一个有着精确物体位姿的<strong>物体级语义地图</strong>。</p>
+<h1 id="4-Loop-Closure-With-Semantic-Landmarks"><a href="#4-Loop-Closure-With-Semantic-Landmarks" class="headerlink" title="4 Loop Closure With Semantic Landmarks"></a>4 Loop Closure With Semantic Landmarks</h1><p>基于空间拓扑以及顶点属性，作者采用两步拓扑图匹配来确认局部图与全局图之间的联系：</p>
+<ol>
+<li>首先构建邻域拓扑结构，并基于<strong>空间布局一致性</strong>选取局部地图与全局地图的候选匹配；</li>
+<li>计算<strong>语义相似度</strong>，选取相似度最高的匹配组。</li>
+</ol>
+<h2 id="4-1-Graph-Generation"><a href="#4-1-Graph-Generation" class="headerlink" title="4.1 Graph Generation"></a>4.1 Graph Generation</h2><p>顶点包含语义标签，颜色直方图向量，以及物体embedding 信息；顶点之间的边是由物体之间的空间距离决定的，作者选取K 个最近的邻接顶点进行连接。基于此，可分别根据局部地图与全局地图获取相应的图 $G_l, G_g$ 。</p>
+<h2 id="4-2-Spatial-Layout-Matching"><a href="#4-2-Spatial-Layout-Matching" class="headerlink" title="4.2 Spatial Layout Matching"></a>4.2 Spatial Layout Matching</h2><p><img src="/2024/03/06/ji2023/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="4-3-Semantic-Properties-Verifying"><a href="#4-3-Semantic-Properties-Verifying" class="headerlink" title="4.3 Semantic Properties Verifying"></a>4.3 Semantic Properties Verifying</h2><p>经过空间布局匹配之后得到的候选匹配点需进一步计算语义属性的一致性：</p>
+<p><img src="/2024/03/06/ji2023/f11.png" alt="f11" title="formula 11"></p>
+<p>其中，$[d_x, d_y, d_z],t$ 表示顶点的尺寸和位置信息，$h, e$ 分别表示顶点的颜色和embedding 信息。最终，匹配点对的相似度需要大于一个阈值才可判定为匹配对。</p>
+<h2 id="4-4-Pose-Graph-Optimization"><a href="#4-4-Pose-Graph-Optimization" class="headerlink" title="4.4 Pose Graph Optimization"></a>4.4 Pose Graph Optimization</h2><p>在回环检测中，当前帧的物体可能与之前多个帧中的物体匹配上了，此时选择第一个匹配帧作为回环检测对象，如Fig. 6所示。</p>
+<p><img src="/2024/03/06/ji2023/fig6.png" alt="fig6" title="figure 6"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Topology</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Topology</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Towards View-invariant and Accurate Loop Detection Based on Scene Graph</title>
+    <url>/2024/03/06/liu2023/</url>
+    <content><![CDATA[<p>Liu, Chuhao, and Shaojie Shen. “Towards View-Invariant and Accurate Loop Detection Based on Scene Graph.” arXiv, May 24, 2023. <a href="http://arxiv.org/abs/2305.14885">http://arxiv.org/abs/2305.14885</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>Lin 等人(Lin 等, 2021)提出了使用随机游走描述子建立物体实例的拓扑结构，进而实现语义图匹配，该方法可实现系数环境中大视角变化下的回环检测；但是，该方法难以处理<strong>距离较近的、具有相同语义标签的模糊实例</strong>，然而，室内场景中这种情况有很常见，如Fig. 1 所示，这些具有相同语义标签的临近物体实例（如图中的沙发）共享近邻neighbors，如果简单地使用随机游走描述子进行表示，它们<strong>会拥有相同的随机游走路线以及同样的拓扑结构描述子</strong>，进而会导致回环检测失败。</p>
+<span id="more"></span>
+<p><img src="/2024/03/06/liu2023/fig1.png" alt="fig1" title="figure 1"></p>
+<p>除了模糊实例外，随机扫描的路线所生成的语义图会包含一些变化因素：如当从不同视角扫描一个稠密场景时，只有实例的一部分会被同时观测到，由此所重建的语义图会由于较小的重叠体积<strong>导致两图不相同</strong>；又如低动态物体，打开的窗帘或者移动的椅子，它们会在重建语义图中创形成一个<strong>micro-differences</strong> 。在使用语义地标的拓扑结构进行回环检测时需要考虑这些变化因素，来保证系统的鲁棒性。</p>
+<p>此外，语义信息辅助的回环检测性能严重依赖于<strong>前端是否可以构建持续一致的语义地标</strong>，之前的方法(Lin 等, 2021)使用object map 作为前端，在重建之前对采集到的图片进行实例分割；但是，<strong>实例分割对于视角变化较为敏感</strong>，当图片中物体的形状、外观发生变化，或者被遮挡时可能会产生不同的语义分割结果，这就导致图片间的数据关联异常困难，因此，之前的语义信息辅助回环检测大部分是基于<strong>稀疏物体场景的应用</strong>，或者<strong>忽略许多不能确定联系的物体</strong>。</p>
+<p>基于以上分析，本文提出了使用RGB-D 相机作为采集设备，通过<strong>匹配inactive 场景图与active 场景图</strong>来实现回环检测，作者不使用object map 作为前端，而是基于<strong>SceneGraphFusion</strong> 创建语义地标，SceneGraphFusion 可将一个重建的3D 图<strong>实时分割为语义实例</strong>。由于语义实例是从<strong>增量式图accumulated map</strong>中提取得到的，因此不需要帧间的数据关联。在后端中，作者使用一个随机游走描述子来创建<strong>全局拓扑结构</strong>，使用一个邻域游走描述子neighbor walk descriptor 来表示<strong>局部拓扑结构</strong>，利用一个<strong>占据体积相似度occupancy similarity</strong> 来联合考虑两种拓扑结构，实现关联查找。</p>
+<h2 id="2-Related-Works"><a href="#2-Related-Works" class="headerlink" title="2 Related Works"></a>2 Related Works</h2><h2 id="2-1-Semantic-Mapping-with-RGB-D-Camera"><a href="#2-1-Semantic-Mapping-with-RGB-D-Camera" class="headerlink" title="2.1 Semantic Mapping with RGB-D Camera"></a>2.1 Semantic Mapping with RGB-D Camera</h2><p>object mapping 和 scene segmentation 都可以建立一个语义图，关键区别在于分割是在场景重建前还是重建后。</p>
+<h2 id="2-2-Semantic-aided-Loop-Detection"><a href="#2-2-Semantic-aided-Loop-Detection" class="headerlink" title="2.2 Semantic-aided Loop Detection"></a>2.2 Semantic-aided Loop Detection</h2><p>RGB-D 相机位姿服从<strong>4自由度</strong>：x, y, z, yaw angle。</p>
+<p>根据node2vec 的阐述，随机游走描述子中有两种不同的游走策略：<strong>breadth-first sampling (BFS), depth-first sampling (DFS)</strong>，前者代表了图的micro-view，后者代表了macro-view。X-View (Gawel 等, 2018)提出了使用DFS 策略处理随机游走描述子，然而，DFS 策略是基于<strong>同质性homophily</strong> 建立顶点的拓扑结构，代表了图中顶点的共同出现，因此，当出现具有共享邻域的模糊语义实例时会导致错误匹配；而且，DFS 对于图变化更敏感，特别是当使用不准确的特征来描述顶点时。这就导致当出现视角或分割变化时随机游走描述子的退化。</p>
+<p>因此，为了确保实例拓扑的可区分描述discriminative description 来提高剧烈视角变化时的鲁棒性，作者联合使用<strong>随机游走描述子</strong>与<strong>邻域游走描述子</strong>来表示实例拓扑结构。</p>
+<h1 id="3-Methodology"><a href="#3-Methodology" class="headerlink" title="3 Methodology"></a>3 Methodology</h1><h2 id="3-1-System-Overview"><a href="#3-1-System-Overview" class="headerlink" title="3.1 System Overview"></a>3.1 System Overview</h2><p><img src="/2024/03/06/liu2023/fig2.png" alt="fig2" title="figure 2"></p>
+<p>系统工作流程如下：</p>
+<ol>
+<li>本系统使用RGB-D 图片作为输入，并使用ORB-SLAM3 来计算相机位姿；</li>
+<li>前端使用SceneGraphFusion 对重建场景进行<strong>增量式分割</strong>，基于此创建一个动态场景图activate scene graph，并<strong>为每个实例创建拓扑描述子</strong>；</li>
+<li>然后，将动态图与一个提前构建的非动态图进行匹配实现回环检测，如果成功检测到回环，对两图之间的位姿漂移进行估计，并融合相应的场景图。</li>
+</ol>
+<h2 id="3-2-Active-Scene-Graph-Construction"><a href="#3-2-Active-Scene-Graph-Construction" class="headerlink" title="3.2 Active Scene Graph Construction"></a>3.2 Active Scene Graph Construction</h2><p>基于SceneGraphFusion 构建一个场景图 $G = \{V, \xi\}$ ，其中 $V$ 是顶点组合，$\xi$ 是边组合。</p>
+<p>将SceneGraphFusion 产生的节点nodes 作为输入来产生顶点，一些节点可能是被过度分割的物体实例的部分，作者将这些节点进行融合作为一个实例；忽略那些体积太小或者低置信度的物体实例。每一个被创建的实例表示为顶点 $v_i = \{\mathbf{p, b, n}, l\}, v_i \in V$ ，其中 $\mathbf{p} \in R^3$  表示实例中心坐标，轴对齐的bounding box 尺寸 $\mathbf{b} \in R^3$ ，法向量 $\mathbf{n} \in R^3$ ，以及语义标签 $l$ ，其中，法向量 $\mathbf{n}$ 只适用于平面类实例，如墙壁、地板等。由于相机位姿为4自由度，所以各顶点会将其roll、pitch朝向进行对齐。</p>
+<p>边 $\xi$ 的构建过程考虑顶点的语义和几何属性来添加<strong>有向边</strong>：</p>
+<ul>
+<li>对于两个物体，如果它们的中心点距离小于一个阈值则添加一条边；</li>
+<li>对于一个物体和一个垂直的墙体，如果它们的垂直距离小于一个阈值则添加一条边；</li>
+<li>对于两个墙体，如果它们的中心距离近且其法线角度大于一个阈值，则添加一条边；</li>
+<li>对于任意的顶点以及一个地板，如果它们水平重叠，则添加一条边。</li>
+</ul>
+<h2 id="3-3-Topology-Descriptors"><a href="#3-3-Topology-Descriptors" class="headerlink" title="3.3 Topology Descriptors"></a>3.3 Topology Descriptors</h2><p>在构建活动场景图active scene graph $G^a$ 时，每个顶点的拓扑描述子也被增量式生成。使用随机游走描述子 $\mathbf{d_i^r} \in C^{N_i \times k}$ 来描述顶点 $v_i$ 的macro-view 拓扑结构，其中  $N_i$ 表示随机游走数量，$k=4$ 表示随机游走深度。随机游走描述子生成过程如Fig. 3所示，但是它<strong>不能区分模糊实例</strong>。</p>
+<p><img src="/2024/03/06/liu2023/fig3.png" alt="fig3" title="figure 3"></p>
+<p>为了解决模糊实例、提高鲁棒性，作者提出了顶点 $v_i$ 的邻域游走描述子 $\mathbf{d^n_i} \in C^{M_i \times q}$ ，其中 $M_i$ 表示邻域游走数量，$q=4$ 表示游走深度。<strong>沿着z 轴逆时针遍历</strong>顶点 $v_i$ 的邻域，若当前邻接物体与上个邻接物体之间的角度大于 150°，则忽略该次游走。如Fig. 3所示，使用邻域游走描述子可以区分模糊实例（图中的两把椅子）。邻域游走描述子是收到node2vec 的BFS 策略启发产生的，强调了顶点的<strong>结构一致性</strong>，另一个优点是对于<strong>4自由度位姿漂移的不变性</strong>。</p>
+<p>顶点 $v_i$ 的完整拓扑结构描述子表示为 $\{\mathbf{d_i^r, d_i^n}\}$ 。</p>
+<h2 id="3-4-Graph-Match"><a href="#3-4-Graph-Match" class="headerlink" title="3.4 Graph Match"></a>3.4 Graph Match</h2><h3 id="3-4-1-Build-Score-Matrix"><a href="#3-4-1-Build-Score-Matrix" class="headerlink" title="3.4.1 Build Score Matrix"></a>3.4.1 Build Score Matrix</h3><p>计算所有可能节点对的相似度得分，如对于活动场景图与先验场景图中的一对节点 $\{v_i, v_j | v_i\in V^a, v_j \in V^i\}$ ，它们的相似度计算公式如下所示：</p>
+<p><img src="/2024/03/06/liu2023/f1.png" alt="f1" title="formula 1"></p>
+<p>其中，随机游走项与邻域游走项分别计算并归一化：</p>
+<p><img src="/2024/03/06/liu2023/f1-1.png" alt="f1-1" title="formula 1-1"></p>
+<p>两式的分子均为<strong>两组描述子中相同行的个数</strong>，值得注意的是，两个式子的归一化分母取值不同：</p>
+<ul>
+<li>对于随机游走描述子，归一化分母取值为两个描述子行数的<strong>最小值</strong>，这样可以实现当 $v_i$ 由于不完整扫描导致部分游走缺失，但 $\mathbf{d_i^r}$ 中的大部分游走都可以在 $\mathbf{d_j^r}$ 中找到相同部分时，仍可实现较高的相似度得分；</li>
+<li>而邻域游走描述子的归一化分母取值为两个描述子行数中的<strong>最大值</strong>，当 $v_i$ 与 $v_j$ 拥有不同的邻域描述子，即便部分游走相同，但是计算得到的相似度得分较低，这样就相当于设定了一个较高的匹配阈值，可有效减小模糊实例的错误匹配。</li>
+</ul>
+<p>此外，相似度计算还考虑了物体的体积相似度，计算如下所示：</p>
+<p><img src="/2024/03/06/liu2023/f2.png" alt="f2" title="formula 2"></p>
+<p>其中， $\mathbf{b} \in R^3$ 是轴对齐的bounding box 尺寸，而 $l(\mathbf{b})$ 是对角线长度。</p>
+<p>由此可得到两节点的相似度得分 $S_{ij}$ ，进而得到<strong>两图的完整得分矩阵</strong> $S \in R^{|V^s| \times |V^t|}$ 。</p>
+<h3 id="3-4-2-Find-Correspondences"><a href="#3-4-2-Find-Correspondences" class="headerlink" title="3.4.2 Find Correspondences"></a>3.4.2 Find Correspondences</h3><p>由上文得到的得分矩阵 $S$ ，将每行、每列的最高分保留，其余元素置零，如果最大相似度大于阈值 $\tau = 0.5$ ，则将其标记为一对匹配实例。最终，如果达到最小匹配数量 $\epsilon = 4$ ，表示回环检测成功。</p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Topology</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Topology</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Topology Aware Object-Level Semantic Mapping Towards More Robust Loop Closure</title>
+    <url>/2024/03/06/lin2021/</url>
+    <content><![CDATA[<p>Lin, Shiqi, Jikai Wang, Meng Xu, Hao Zhao, and Zonghai Chen. “Topology Aware Object-Level Semantic Mapping Towards More Robust Loop Closure.” <em>IEEE Robotics and Automation Letters</em> 6, no. 4 (October 2021): 7041–48. <a href="https://doi.org/10.1109/LRA.2021.3097242">https://doi.org/10.1109/LRA.2021.3097242</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>SLAM 回环检测可有效消除累计误差，但是在大视角变化与环境外观变化时难以实现有效的检测，本文提出了基于物体建模object modeling与语义图匹配semantic graph matching的回环检测技术。作者使用体素与立方体cuboids对环境中的物体进行物体级别特征建模，将环境进一步表示为带有拓扑信息的语义图，在此基础上提出了一种<strong>基于edit distance的高效图匹配方法</strong>，最终通过语义地图的对齐来实现回环检测。</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>人类通过环境中物体的外观与轮廓来识别场景，并在短时间内判断是否来过该该处，通过借鉴人类的回环检测方式作者提出了一种基于<strong>对象级拓扑感知语义匹配topology aware object-level semantic mapping</strong>的回环检测方法：</p>
+<blockquote>
+<p><em>将环境表示为包含物体的语义图，通过图匹配来实现回环探测</em>。</p>
+</blockquote>
+<p><img src="/2024/03/06/lin2021/fig1.png" alt="fig1" title="figure 1"></p>
+<p><img src="/2024/03/06/lin2021/fig2.png" alt="fig2" title="figure 2"></p>
+<p>本文做出的贡献总结如下：</p>
+<ol>
+<li>提出一个构建<strong>多粒度语义地图</strong>的框架，包含地图点、体素与立方体；</li>
+<li>提取物体的<strong>多维特征（包括语义、尺寸、颜色分布以及拓朴结构）</strong>作为描述子来实现物体间的精确关联；</li>
+<li>提出了一个基于<strong>语义图匹配</strong>的回环检测方法，对于视角与外观变化具有较强的鲁棒性；</li>
+<li>提出一种<strong>基于物体对齐的回环矫正</strong>方法，可精确计算漂移误差。</li>
+</ol>
+<h1 id="2-Related-Work"><a href="#2-Related-Work" class="headerlink" title="2 Related Work"></a>2 Related Work</h1><h2 id="2-1-Object-SLAM"><a href="#2-1-Object-SLAM" class="headerlink" title="2.1 Object SLAM"></a>2.1 Object SLAM</h2><p>相对于低级的几何信息，物体特征object features更稳定，且有着丰富的语义与先验信息。根据物体建模策略的不同，object SLAM 可分为specific type 与 general type：</p>
+<ul>
+<li><strong>specific type</strong>：需要提前建立精准的3D模型数据库，然后进行实时检索匹配，从而实现物体的精确估计，但由于先验数据库的要求导致该方法的通用性有限；</li>
+<li><strong>general type</strong>：可在跟踪相机位姿的过程中实现物体在线建模，有着更优的应用能力。一些方法使用通用的三维几何结构，如立方体、椭球体来建立粗粒度的物体模型。</li>
+</ul>
+<h2 id="2-2-Loop-Closure"><a href="#2-2-Loop-Closure" class="headerlink" title="2.2 Loop Closure"></a>2.2 Loop Closure</h2><p>基于观测信息建立场景的鲁棒描述子是回环检测的核心问题，常见的描述子有以下几种：</p>
+<ul>
+<li>提取图像的<strong>局部特征</strong>作为图像的抽象描述子，如SIFT、ORB 等；</li>
+<li>直接提取整幅图像的<strong>全局特征</strong>实现场景描述，如GIST 等；</li>
+<li>结合上述两种方法的优势，从图片的多个局部区域提取全局特征，组建场景的鲁棒表示。</li>
+</ul>
+<p>以上基于外观的描述子构建方法受限于视角与场景外观的变化，而语义信息却具有更强的鲁棒性。据此，有作者提出<strong>利用环境中的物体来实现回环检测的视角不变性</strong>，然而，场景遮挡、布局改变以及多个重复物体的情况也很常见，这些因素对于基于穷尽搜索的物体匹配方法提出了挑战。</p>
+<blockquote>
+<p>因此，本文作者提出使用物体的<strong>多维信息（包括语义、颜色与拓扑关系）作为描述子</strong>来实现物体的精准匹配，进而实现语义图匹配的回环检测。</p>
+</blockquote>
+<h1 id="3-Object-SLAM"><a href="#3-Object-SLAM" class="headerlink" title="3 Object SLAM"></a>3 Object SLAM</h1><p>本文提出的架构是基于<strong>ORB-SLAM2</strong> 而设计的，使用<strong>RGB-D 数据</strong>来实现初步的位姿估计与<em>稀疏地图</em>构建；在此基础上，通过融合RGB-D 数据与它的实例分割结果来构建<em>稠密点云</em>，进而产生<em>体素模型</em>。基于体素模型使用<strong>离散采样与粒子群优化算法</strong>产生物体的<em>压缩立方体模型</em>，过程如Fig. 3所示。</p>
+<p><img src="/2024/03/06/lin2021/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-1-Voxel-Model-Construction"><a href="#3-1-Voxel-Model-Construction" class="headerlink" title="3.1 Voxel Model Construction"></a>3.1 Voxel Model Construction</h2><p>从单张图片的RGB-D 与实例分割获取物体的<strong>稠密点云</strong>，<strong>体素</strong>被用来融合、量化多帧图片的稠密点云，根据连续观测信息更新<strong>体素被占据的概率。</strong>给定传感器测量数据$z_{1:t}$ ，体素被占据的概率可由下式计算获取：</p>
+<p><img src="/2024/03/06/lin2021/f1.png" alt="f1" title="formula 1"></p>
+<p>$P(n)$ 表示体素被占据的先验概率，本文设置为0.5；在得到传感器测量值$z_t$ 后可通过下式获取后验概率：</p>
+<p><img src="/2024/03/06/lin2021/f2.png" alt="f2" title="formula 2"></p>
+<p>在实验中，$l_{occ}, l_{free}$ 分别被设定为0.7，0.4。</p>
+<p>由于传感器测量误差与实例分割误差，在物体初步建模中存在很多离散的外点，作者首先使用<strong>DBSCAN 算法</strong>进行density clustering 来去除孤立的小团点簇，然后将剩余的3D 体素投影到地面上，使用<strong>seed filling</strong> 来探测平面的连接区域，小团点簇被进一步去除。</p>
+<h2 id="3-2-Cuboid-Generation"><a href="#3-2-Cuboid-Generation" class="headerlink" title="3.2 Cuboid Generation"></a>3.2 Cuboid Generation</h2><p>一个通用的立方体模型包含9个自由度：3个自由度的位置信息 $t = (t_x, t_y, t_z)$，3个自由度的旋转信息 $r = (roll, pitch, yaw)$ ，以及3个自由度的尺寸信息 $d = (l, w, h)$。因此，地图中的物体地标被表示为 $O = \{T_0, d\}$ ，其中 $T_0 \in SE(3)$ 表示6自由度的位姿参数。作者假设所有物体地标均位于水平平面，所以<em>roll, pitch</em> 参数设置为0。</p>
+<p>如Fig. 4所示，首先将3D 体素投影到平面上，然后对 <em>yaw</em> 参数在<strong>二维投影平面上</strong>进行从0°到180°的离散采样，对于每个采样，可以获取一个完全覆盖2D 投影区域的最小bounding box，然后将这个box 设定为目标立方体的top view，由此可以获得立方体的5个参数：$\{t_x, t_y, yaw, l, w\}$ 。</p>
+<p><img src="/2024/03/06/lin2021/fig4.png" alt="fig4" title="figure 4"></p>
+<p>然后，令该立方体包含垂直方向上的所有3D 体素，即可获取剩余两个参数：$\{t_z, h\}$ ，由此可以得到一个初步的立方体模型。在此基础上，使用<strong>粒子群优化算法</strong>进一步优化该立方体模型，从而得到最优的模型：</p>
+<p><img src="/2024/03/06/lin2021/f3.png" alt="f3" title="formula 3"></p>
+<p>式中，$N_{occ}$ 表示立方体中被占据体素的体积，$N_{free}$ 表示未被占据的体积，权重参数 $\lambda$ 根据传感器噪声进行调整。</p>
+<h2 id="3-3-Data-Association"><a href="#3-3-Data-Association" class="headerlink" title="3.3 Data Association"></a>3.3 Data Association</h2><p>当物体建模完成以后，我们可以获取到物体的语义与尺寸信息。当两个物体的尺寸差异小于它们平均值的1/3时，我们认为两个物体尺寸匹配成功；作者将图片转化为HSV 色域空间，计算两幅图片的颜色直方图并产生归一化特征向量，当两个特征向量的相关系数超过0.5时认为颜色匹配成功；使用<strong>random walk descriptor</strong>来提取物体周围的拓扑结构信息，本实验的 random walk descriptor 阈值设定为探索次数的0.5倍。</p>
+<h1 id="4-Loop-Closure-With-Semantic-Graph"><a href="#4-Loop-Closure-With-Semantic-Graph" class="headerlink" title="4 Loop Closure With Semantic Graph"></a>4 Loop Closure With Semantic Graph</h1><h2 id="4-1-Graph-Representation"><a href="#4-1-Graph-Representation" class="headerlink" title="4.1 Graph Representation"></a>4.1 Graph Representation</h2><p>作者将环境中的物体作为顶点，将物体中心在世界坐标系中的坐标设定为该顶点坐标，将覆盖物体模型的<strong>最小球形区域定义为该节点的邻接空间</strong>，邻接空间有相交部分的节点使用<strong>无向边undirected edges</strong> 进行连接；此外，对于图中的每一个节点，遍历其余所有节点找到与其距离最近的一个节点，使用无向边进行连接，如Fig. 5所示。</p>
+<p><img src="/2024/03/06/lin2021/fig5.png" alt="fig5" title="figure 5"></p>
+<p>作者使用<strong>图嵌入方法graph embedding method</strong> 来将基于图的结构信息嵌入到<strong>线性向量空间</strong>，如Fig. 6所示，首先选取一个边缘节点作为根节点，并测量根节点距离其他所有节点的距离，根据距离进行降序排列得到一个支持向量 $V = \{v_1, v_2, …, v_n\}$ 来表示图的拓扑结构，支持向量中的元素 $v_i$ 表示物体的描述子（语义、尺寸、颜色以及random walk descriptor）；通过替换根节点并重复上述操作，即可从图中获取多个支持向量。</p>
+<p><img src="/2024/03/06/lin2021/fig6.png" alt="fig6" title="figure 6"></p>
+<h2 id="4-2-Loop-Detection"><a href="#4-2-Loop-Detection" class="headerlink" title="4.2 Loop Detection"></a>4.2 Loop Detection</h2><p>对于<strong>两个子图的支持向量</strong> $V_a = \{v^1_a, v^2_a,…, v^m_a\}$ , $V_b = \{v^1_b, v^2_b,…, v^n_b\}$ ，编辑 $V_a$ 中的节点来转化为 $V_b$ ，将最小的编辑次数定义为两者之间的edit distance。节点编辑操作包括四种：插入、删除、单节点替换与两个邻接节点的交换。相邻节点的交换操作可以阻止支持向量元素的排序混乱问题，只允许与根节点有相似距离的两个节点进行交换操作，定义两个支持向量的编辑距离：</p>
+<p><img src="/2024/03/06/lin2021/f7.png" alt="f7" title="formula 7"></p>
+<p>$sub_{a, b}(i, j)$ 表示交换 $v^i_a, v^{i-1}_a$ 之后的最小编辑距离，相应的，$nousub_{a, b}(i, j)$ 表示 $v^i_a, v^{i-1}_a$ 交换操作被禁止的最小编辑距离：</p>
+<p><img src="/2024/03/06/lin2021/f9.png" alt="f9" title="formula 9"></p>
+<p>作为拓扑结构的补充，两个地图中匹配物体之间的<strong>空间距离一致性</strong>也被考虑，若两个向量包含共同的节点，但是节点间的距离（在语义图中用边连接的<strong>任意两个节点</strong>）超出阈值，那么就视为不匹配。最终，当每一对支持向量中的编辑距离满足以下约束则视为构成回环：</p>
+<p><img src="/2024/03/06/lin2021/f10.png" alt="f10" title="formula 10"></p>
+<p>式中 $\lambda$ 被设为0.3。</p>
+<h2 id="4-3-Loop-Correction"><a href="#4-3-Loop-Correction" class="headerlink" title="4.3 Loop Correction"></a>4.3 Loop Correction</h2><p>当检测到回环时，使用物体对齐来矫正偏移误差，偏移误差可通过对齐匹配物体来获取：</p>
+<p><img src="/2024/03/06/lin2021/f11.png" alt="f11" title="formula 11"></p>
+<p>然后使用偏移误差来矫正相机位姿 $T_c$ ：</p>
+<p><img src="/2024/03/06/lin2021/f12.png" alt="f12" title="formula 12"></p>
+<p>由于立方体的对称性，相机位姿有两个可行解，因此需要两对匹配立方体来消除模糊度。在获取了当前关键帧的初始位姿后，使用所有匹配的地标利用非线性最小二乘进行优化：</p>
+<p><img src="/2024/03/06/lin2021/f13.png" alt="f13" title="formula 13"></p>
+<p>在优化了当前关键帧的位姿后，使用图优化方法来矫正整个轨迹。</p>
+<h1 id="5-Experiments"><a href="#5-Experiments" class="headerlink" title="5 Experiments"></a>5 Experiments</h1><h2 id="5-1-Datasets"><a href="#5-1-Datasets" class="headerlink" title="5.1 Datasets"></a>5.1 Datasets</h2><p>使用TUM RGB-D benchmark，以及作者自采数据进行实验。</p>
+<h2 id="5-2-Semantic-Mapping-Performance"><a href="#5-2-Semantic-Mapping-Performance" class="headerlink" title="5.2 Semantic Mapping Performance"></a>5.2 Semantic Mapping Performance</h2><p>Fig. 7展示了基于本文提出的方法构建的语义地图。</p>
+<p><img src="/2024/03/06/lin2021/fig7.png" alt="fig7" title="figure 7"></p>
+<h2 id="5-3-Loop-Detection-Performance"><a href="#5-3-Loop-Detection-Performance" class="headerlink" title="5.3 Loop Detection Performance"></a>5.3 Loop Detection Performance</h2><p>作者在同一场景中以不同的视角、距离采集图像，理论上来讲所有的图片都可以被视为回环，作者使用SLAM 算法计算每张图片代表的相机位姿，固定一些图片作为模板，剩余图片进行匹配预测测试；将本文提出的方法与基于ORB 特征的回环检测算法进行对比，回环检测评价标准是匹配成功的数量，实验结果如Fig. 8、Fig. 9所示。</p>
+<p><img src="/2024/03/06/lin2021/fig8.png" alt="fig8" title="figure 8"></p>
+<p><img src="/2024/03/06/lin2021/fig9.png" alt="fig9" title="figure 9"></p>
+<h2 id="5-4-Localization-Accuracy"><a href="#5-4-Localization-Accuracy" class="headerlink" title="5.4 Localization Accuracy"></a>5.4 Localization Accuracy</h2><p>与BAD-SLAM、ORB-SLAM2 进行对比实验，计算绝对偏移误差，实验结果如Fig. 10、Table 1（RMSE）所示，</p>
+<p><img src="/2024/03/06/lin2021/fig10.png" alt="fig10" title="figure 10"></p>
+<p><img src="/2024/03/06/lin2021/t1.png" alt="t1" title="table 1"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Topology</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Topology</tag>
+      </tags>
+  </entry>
 </search>
