@@ -3845,7 +3845,7 @@
 </ul>
 <p><img src="/2024/03/06/zhou2022/fig4.png" alt="fig4" title="figure 4"></p>
 <p>当把道路元素添加至全局地图中后，汽车位姿估计的不确定度也需要被考虑。</p>
-<h2 id="5-3-Dealing-With-Complex-Road-Conditions"><a href="#5-3-Dealing-With-Complex-Road-Conditions" class="headerlink" title="5.3 Dealing With Complex Road Conditions"></a>5.3 Dealing With Complex Road Conditions</h2><p>只要上述提到的误差银子较小且服从相关假设，IPM 转换得到的路标概率属性可以通过<strong>不确定模型</strong>得到处理。然而，现实世界中经常出现与上述假设不符的情况（如Fig. 5所示），导致IPM 产生的系统误差可能会超过米级，不再适用于本文提出的不确定模型，因此需要采取具体措施来解决这些情况。</p>
+<h2 id="5-3-Dealing-With-Complex-Road-Conditions"><a href="#5-3-Dealing-With-Complex-Road-Conditions" class="headerlink" title="5.3 Dealing With Complex Road Conditions"></a>5.3 Dealing With Complex Road Conditions</h2><p>只要上述提到的误差因子较小且服从相关假设，IPM 转换得到的路标概率属性可以通过<strong>不确定模型</strong>得到处理。然而，现实世界中经常出现与上述假设不符的情况（如Fig. 5所示），导致IPM 产生的系统误差可能会超过米级，不再适用于本文提出的不确定模型，因此需要采取具体措施来解决这些情况。</p>
 <p><img src="/2024/03/06/zhou2022/fig5.png" alt="fig5" title="figure 5"></p>
 <h2 id="5-4-Data-Association"><a href="#5-4-Data-Association" class="headerlink" title="5.4 Data Association"></a>5.4 Data Association</h2><p>尽管路标几何信息的大部分细节已经被舍弃了，但受益于路标的规则离散分布，仍然可以进行有效的数据关联。一般将路标的语义类别、参考位置、朝向以及特征值用于数据关联。</p>
 <p>在定位阶段，将感知到的路标投影至地图坐标系来寻找最近的匹配，由于作者对路标进行了<strong>最小的参数化</strong>，<strong>方便进行高效的重复搜索</strong>来保持多个路标观测的最好一致性。</p>
