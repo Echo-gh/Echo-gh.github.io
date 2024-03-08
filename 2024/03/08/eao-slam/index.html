@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="Wu, Yanmin, Yunzhou Zhang, Delong Zhu, Yonghui Feng, Sonya Coleman, and Dermot Kerr. “EAO-SLAM: Monocular Semi-Dense Object SLAM Based on Ensemble Data Association.” In 2020 IEEE&#x2F;RSJ International Con">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文记录 EAO-SLAM_Monocular Semi-Dense Object SLAM Based on Ensemble Data Association">
+<meta property="og:url" content="http://echo-gh.github.io/2024/03/08/eao-slam/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="Wu, Yanmin, Yunzhou Zhang, Delong Zhu, Yonghui Feng, Sonya Coleman, and Dermot Kerr. “EAO-SLAM: Monocular Semi-Dense Object SLAM Based on Ensemble Data Association.” In 2020 IEEE&#x2F;RSJ International Con">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/fig2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/fig2-1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/fig3.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/f1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/f4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/f5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/f6.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/f7.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/fig2-2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/f9.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/a1.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/fig4.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/a2.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/fig5.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/f15.png">
+<meta property="article:published_time" content="2024-03-08T03:19:52.000Z">
+<meta property="article:modified_time" content="2024-03-08T03:31:14.464Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Semantic">
+<meta property="article:tag" content="Pose Optimization">
+<meta property="article:tag" content="Object SLAM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/03/08/eao-slam/fig2.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/03/08/eao-slam/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>论文记录 EAO-SLAM_Monocular Semi-Dense Object SLAM Based on Ensemble Data Association | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/08/eao-slam/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          论文记录 EAO-SLAM_Monocular Semi-Dense Object SLAM Based on Ensemble Data Association
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-03-08 11:19:52 / 修改时间：11:31:14" itemprop="dateCreated datePublished" datetime="2024-03-08T11:19:52+08:00">2024-03-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Pose-Optimization/" itemprop="url" rel="index"><span itemprop="name">Pose Optimization</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Wu, Yanmin, Yunzhou Zhang, Delong Zhu, Yonghui Feng, Sonya Coleman, and Dermot Kerr. “EAO-SLAM: Monocular Semi-Dense Object SLAM Based on Ensemble Data Association.” In <em>2020 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)</em>, 4966–73. Las Vegas, NV, USA: IEEE, 2020. <a target="_blank" rel="noopener" href="https://doi.org/10.1109/IROS45743.2020.9341757">https://doi.org/10.1109/IROS45743.2020.9341757</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者认为object SLAM 当前面对两种问题：</p>
+<ol>
+<li>在面对包含多个物体实例的复杂场景中，现有的<strong>DA 方法</strong>不够鲁棒或准确。</li>
+<li><strong>物体位姿估计</strong>不够准确，特别是对于单目object SLAM。</li>
+</ol>
+<p>为此，作者提出了一个单目object SLAM 算法——EAO-SLAM，来解决DA 和位姿估计问题。</p>
+<span id="more"></span>
+<p>本文的贡献如下：</p>
+<ol>
+<li>提出一种<strong>集合数据关联策略</strong>，可有效聚合不同的观测信息来提高DA 精度；</li>
+<li>提出一种基于iForest (isolation forest) 的<strong>物体位姿估计架构</strong>，该架构对外点具有鲁棒性，可准确实现对物体位置、姿态及尺寸的估计；</li>
+<li>基于提出的方法，应用EAO-SLAM 构建<strong>轻量级面向物体的语义地图</strong>；</li>
+<li>在公开数据集和真实场景中进行测试，证明了本方法的有效性，代码开源：<a target="_blank" rel="noopener" href="https://github.com/yanmin-wu/EAO-SLAM。">https://github.com/yanmin-wu/EAO-SLAM。</a></li>
+</ol>
+<h1 id="3-System-Overview"><a href="#3-System-Overview" class="headerlink" title="3 System Overview"></a>3 System Overview</h1><p>系统整体架构如Fig.2所示，该算法是基于ORB-SLAM2 进一步开发的：</p>
+<ol>
+<li><strong>集合数据关联</strong>是在跟踪线程完成的，结合了<strong>bbox</strong>、<strong>语义标签</strong>和<strong>点云信息</strong>；</li>
+<li>在DA 的基础上，使用iForest 来<strong>消除外点</strong>，并为联合优化提供准确的<strong>初始位姿估计</strong>；</li>
+<li>然后对物体位姿与尺度、相机位姿进行<strong>联合优化</strong>，并构建一个<strong>轻量级物体语义地图</strong>；</li>
+<li>最后，将该语义地图与半稠密地图进行结合，生成<strong>半稠密语义地图</strong>。</li>
+</ol>
+<p><img src="/2024/03/08/eao-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<h1 id="4-Ensemble-Data-Association"><a href="#4-Ensemble-Data-Association" class="headerlink" title="4 Ensemble Data Association"></a>4 Ensemble Data Association</h1><p>本文的标注：</p>
+<p><img src="/2024/03/08/eao-slam/fig2-1.png" alt="fig2-1" title="figure 2-1"></p>
+<h2 id="4-1-Nonparametric-Test"><a href="#4-1-Nonparametric-Test" class="headerlink" title="4.1 Nonparametric Test"></a>4.1 Nonparametric Test</h2><p>非参数测试是用来处理物体点云的（Fig.3 a中的红绿点），根据作者的实验研究（6.1节），这些点云<strong>不服从高斯分布</strong>。理论上讲，若P 和 Q 属于同一个物体，那么它们应该服从相同的分布，即 $f_P = f_Q$ ，接下来作者进行验证。</p>
+<p><img src="/2024/03/08/eao-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<p>作者使用Mann-Whitney statistics：$W = min(W_P,W_Q)$ ，其中 $W_P,W_Q$ 定义如下：</p>
+<p><img src="/2024/03/08/eao-slam/f1.png" alt="f1" title="formula 1"></p>
+<p>最终，作者证明如果两组点云 P、Q的Mann-Whitney statistics W满足式4，则证明这两组点云属于同一个物体，即标明DA 成功：</p>
+<p><img src="/2024/03/08/eao-slam/f4.png" alt="f4" title="formula 4"></p>
+<h2 id="4-2-Single-sample-and-Double-sample-T-test"><a href="#4-2-Single-sample-and-Double-sample-T-test" class="headerlink" title="4.2 Single-sample and Double-sample T-test"></a>4.2 Single-sample and Double-sample T-test</h2><p><strong>单采样t-test</strong> 用于处理不同帧中观测到的物体中心（Fig.3 b 中的星形），被证明服从高斯分布（6.1节）。作者假设 $C, \mathbf{c}$ 来自同一物体，定义t：</p>
+<p><img src="/2024/03/08/eao-slam/f5.png" alt="f5" title="formula 5"></p>
+<p>作者阐述，如果t 满足式6，则可证明假设成立，即 $C, \mathbf{c}$ 来自同一物体。</p>
+<p><img src="/2024/03/08/eao-slam/f6.png" alt="f6" title="formula 6"></p>
+<p>由于上述严格的DA 策略，以及较差的观测视角等情况，有可能将现有的物体判定为新物体，为此，作者提出了<strong>双采样t-test</strong>，通过对历史中心距离进行测试来判定是否需要融合两个物体（Fig.3 c）。为 $C_1, C_2$ 构建t：</p>
+<p><img src="/2024/03/08/eao-slam/f7.png" alt="f7" title="formula 7"></p>
+<p>同样的，如果t 满足式6，则证明属于同一物体，进行融合。</p>
+<h1 id="5-Object-SLAM"><a href="#5-Object-SLAM" class="headerlink" title="5 Object SLAM"></a>5 Object SLAM</h1><p>本节内容的标注：</p>
+<p><img src="/2024/03/08/eao-slam/fig2-2.png" alt="fig2-2" title="figure 2-2"></p>
+<h2 id="5-1-Object-Representation"><a href="#5-1-Object-Representation" class="headerlink" title="5.1 Object Representation"></a>5.1 Object Representation</h2><p>作者使用<strong>立方体</strong>和<strong>二次曲面</strong>来表示物体：</p>
+<ul>
+<li>对于常规形状的物体，如书、键盘、椅子等，作者使用立方体来表示（使用顶点 $P_O$ 进行编码）；</li>
+<li>对于没有具体方向的非常规物体，如球、瓶子等，作者使用二次曲面来表示（使用半轴 $Q_O$ 进行编码）。</li>
+</ul>
+<p>立方体和二次曲面在<strong>世界坐标系</strong>中的表示为：</p>
+<p><img src="/2024/03/08/eao-slam/f9.png" alt="f9" title="formula 9"></p>
+<p>作者假设物体被放置在与地面平行的状态，即 $\theta_r = \theta_p = 0$ ，则对于立方体，只需要估计 $[\theta_y, \mathbf{t}, \mathbf{s}]$ ；对于二次曲面，只需要估计  $[ \mathbf{t}, \mathbf{s}]$ 。</p>
+<h2 id="5-2-Estimate-t-and-s"><a href="#5-2-Estimate-t-and-s" class="headerlink" title="5.2 Estimate t and s"></a>5.2 Estimate <em>t</em> and <em>s</em></h2><p>基于iForest 的外点鲁棒的物体中心和尺度估计算法如下所示：</p>
+<p><img src="/2024/03/08/eao-slam/a1.png" alt="a1" title="algorithm 1"></p>
+<p>该算法的关键点在于：将数据点递归分为一系列孤立的数据点，将<strong>最容易被孤立出来</strong>的点视为外点。如Fig.4所示，d中的黄点经过4步被孤立出来，所以其步长为4，而e中的绿点步长为8，那么黄点<strong>更有可能是外点</strong>。</p>
+<p><img src="/2024/03/08/eao-slam/fig4.png" alt="fig4" title="figure 4"></p>
+<p>经过算法1，使用剩下的点计算 $\mathbf{t},\mathbf{s}$ ，基于 $\mathbf{s}$ 可在物体坐标系中初始化构建立方体和二次曲面，如Fig.4 a-c所示。 $\mathbf{s}$ 会与后续的物体和相机位姿得到进一步优化。</p>
+<h2 id="5-3-Estimate-yaw-angle"><a href="#5-3-Estimate-yaw-angle" class="headerlink" title="5.3 Estimate yaw angle"></a>5.3 Estimate yaw angle</h2><p>$\theta_y$ 的优化分为两步：首先找到一个良好的初始化值，然后基于初始化进行数次优化。位姿初始化过程如算法2所示：</p>
+<p><img src="/2024/03/08/eao-slam/a2.png" alt="a2" title="algorithm 2"></p>
+<p>LSD 线段是从t 张连续图片中获取，位于bbox 内部的线段被分配给对应物体，如Fig.5 a所示。物体的初始姿态被假定为与全局坐标系保持一致，即 $\theta_0 =0$ （Fig.5 b），然后在 $[-\pi/2, \pi/2]$ 中均匀采样30个角度，针对每个采样角度，通过计算LSD 线段 $Z_{lsd}$ 和2D 投影边（由上步得到的立方体进行投影得到）之间的<strong>累积角度误差</strong>来得到该采样角度的得分，最终选取最高得分的角度作为初始值参与后续的联合优化。</p>
+<p><img src="/2024/03/08/eao-slam/fig5.png" alt="fig5" title="figure 5"></p>
+<h2 id="5-4-Joint-Optimization"><a href="#5-4-Joint-Optimization" class="headerlink" title="5.4 Joint Optimization"></a>5.4 Joint Optimization</h2><p>利用初始估计进行联合优化：</p>
+<p><img src="/2024/03/08/eao-slam/f15.png" alt="f15" title="formula 15"></p>
+<p>其中，$e(\theta)$ 为物体姿态误差，如Fig.5 e-g所示；$e(s)$ 定义为立方体投影边与最近的平行LSD 线段之间的距离；$e(p)$ 为传统SLAM 的重投影误差项。</p>
+<h1 id="6-Experimental-Results"><a href="#6-Experimental-Results" class="headerlink" title="6 Experimental Results"></a>6 Experimental Results</h1><p>作者的实验包含以下部分：</p>
+<ul>
+<li>Distributions of Different Statistics</li>
+<li>Ensemble Data Association Experiments</li>
+<li>Qualitative Assessment of Object Pose Estimation</li>
+<li>Object-Oriented Map Building</li>
+</ul>
+<p>本文算法着力于对物体位姿与尺寸进行估计，并构建半稠密物体级语义地图，没有对相机位姿解算效果进行介绍。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Semantic/" rel="tag"><i class="fa fa-tag"></i> Semantic</a>
+              <a href="/tags/Pose-Optimization/" rel="tag"><i class="fa fa-tag"></i> Pose Optimization</a>
+              <a href="/tags/Object-SLAM/" rel="tag"><i class="fa fa-tag"></i> Object SLAM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/06/liu2023/" rel="prev" title="论文记录 Towards View-invariant and Accurate Loop Detection Based on Scene Graph">
+      <i class="fa fa-chevron-left"></i> 论文记录 Towards View-invariant and Accurate Loop Detection Based on Scene Graph
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-text">1 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-System-Overview"><span class="nav-text">3 System Overview</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Ensemble-Data-Association"><span class="nav-text">4 Ensemble Data Association</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Nonparametric-Test"><span class="nav-text">4.1 Nonparametric Test</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Single-sample-and-Double-sample-T-test"><span class="nav-text">4.2 Single-sample and Double-sample T-test</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Object-SLAM"><span class="nav-text">5 Object SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Object-Representation"><span class="nav-text">5.1 Object Representation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Estimate-t-and-s"><span class="nav-text">5.2 Estimate t and s</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Estimate-yaw-angle"><span class="nav-text">5.3 Estimate yaw angle</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-Joint-Optimization"><span class="nav-text">5.4 Joint Optimization</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-Experimental-Results"><span class="nav-text">6 Experimental Results</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">70</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
