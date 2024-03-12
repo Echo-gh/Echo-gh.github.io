@@ -4197,4 +4197,28 @@
         <tag>Object SLAM</tag>
       </tags>
   </entry>
+  <entry>
+    <title>C++ 将整型参数传递至argv[]中</title>
+    <url>/2024/03/12/cpp-notes-01/</url>
+    <content><![CDATA[<p>本文参考<a href="https://blog.csdn.net/Blunt_Du/article/details/111621039">文章1</a>、<a href="https://blog.csdn.net/MM_man/article/details/103475684">文章2</a>。</p>
+<p>对于C++程序，主程序<code>int main(int argc, char *argv[])</code>中，参数含义如下所示：</p>
+<ul>
+<li><code>argc</code>代表向main函数传入参数的数量；</li>
+<li><code>argv[]</code>代表传入的字符串构成的数组，默认<code>argv[0]</code>表示程序的名称，后续的<code>argv[1]</code>、<code>argv[2]</code>…表示传入的字符串数量。</li>
+</ul>
+<p>由于<code>argv[]</code>是字符串数组，若想传入整型参数则需要进行额外操作：</p>
+<ul>
+<li>包含头文件 <code>#include &lt;stdlib.h&gt;</code>;</li>
+<li><code>int i = atoi(argv[1]);</code>：将字符型<code>argv[1]</code>转换为整型并赋值给 <code>i</code>。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>随记</category>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>C++</tag>
+      </tags>
+  </entry>
 </search>
