@@ -4222,4 +4222,95 @@
         <tag>C++</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 RLD-SLAM_A Robust Lightweight VI-SLAM for Dynamic Environments Leveraging Semantics and Motion Information</title>
+    <url>/2024/03/15/rld-slam/</url>
+    <content><![CDATA[<p>Zheng, Zengrui, Shifeng Lin, and Chenguang Yang. “RLD-SLAM: A Robust Lightweight VI-SLAM for Dynamic Environments Leveraging Semantics and Motion Information.” <em>IEEE Transactions on Industrial Electronics</em>, 2024, 1–11. <a href="https://doi.org/10.1109/TIE.2024.3363744">https://doi.org/10.1109/TIE.2024.3363744</a>.</p>
+<h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>现存的主流动态SLAM 可分为两个方向：基于<strong>语义分割</strong>和基于<strong>物体检测</strong>，两者均存在明显的优劣势，为此，作者提出了一种robust lightweight dynamic SLAM (RLD-SLAM)，利用语义、运动信息在动态环境中实现<strong>鲁棒、轻量</strong>的视觉-惯性SLAM系统。</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本算法结合<strong>物体检测</strong>和<strong>贝叶斯滤波器</strong>来准确识别出环境中的动态特征点，不依赖于深度信息，因此可适用于各种输入设备。此外，RLD-SLAM 可使用<strong>IMU观测预积分</strong>来辅助高动态场景中动态物体的跟踪，如Fig.1所示。</p>
+<span id="more"></span>
+<p><img src="/2024/03/15/rld-slam/fig1.png" alt="fig1" title="figure 1"></p>
+<p>本文的贡献：</p>
+<ol>
+<li>结合物体检测和贝叶斯滤波器来快速获取动态环境中的静态特征点；</li>
+<li>使用IMU 信息来跟踪动态物体，以增强SLAM 在高动态场景中的鲁棒性；</li>
+<li>设计了RLD-SLAM，可适应各种输入传感器和动态场景，实验证明了算法的有效性。</li>
+</ol>
+<h1 id="3-System-Introduction"><a href="#3-System-Introduction" class="headerlink" title="3 System Introduction"></a>3 System Introduction</h1><h2 id="3-1-Overall-Framework"><a href="#3-1-Overall-Framework" class="headerlink" title="3.1 Overall Framework"></a>3.1 Overall Framework</h2><p>RLD-SLAM 包含以下四个线程：</p>
+<ol>
+<li>物体检测</li>
+<li>特征跟踪</li>
+<li>局部制图</li>
+<li>回环检测</li>
+</ol>
+<p><img src="/2024/03/15/rld-slam/fig2.png" alt="fig2" title="figure 2"></p>
+<p>本系统支持单目/双目/RGB-D 相机作为输入。通过IMU 预积分来获取位姿转换矩阵 $T_I$ ，可作为一个先验位姿，其作用在于：</p>
+<ol>
+<li>用于矫正图片以提高物体检测性能；</li>
+<li>实现更好的<strong>3D 物体跟踪</strong>，特别是在超过半数特征均是<strong>语义动态</strong>的场景下。</li>
+</ol>
+<p>为了增强系统的<strong>容错性能</strong>，RLD-SLAM 会在IMU 失效时继续工作：图片矫正矩阵通过后端优化得到的参考关键帧来获取，且只实现2D 物体跟踪。</p>
+<h2 id="3-2-Image-Rectification-and-Object-Detection"><a href="#3-2-Image-Rectification-and-Object-Detection" class="headerlink" title="3.2 Image Rectification and Object Detection"></a>3.2 Image Rectification and Object Detection</h2><p>本系统使用YOLOv5 进行物体检测，物体检测算法在<strong>相机旋转</strong>情况下会面临<strong>精度下降</strong>的问题，为解决该问题，作者利用IMU 数据来获取一个<strong>矫正矩阵</strong>：</p>
+<ol>
+<li><p>首先，计算重力加速度于图片y 轴的夹角：</p>
+<p><img src="/2024/03/15/rld-slam/f1.png" alt="f1" title="formula 1"></p>
+</li>
+<li><p>然后，将该图片旋转一定的角度 $\theta$ ：</p>
+<p><img src="/2024/03/15/rld-slam/f2.png" alt="f2" title="formula 2"></p>
+</li>
+</ol>
+<p>当IMU 不可用时，利用后端优化的<strong>参考关键帧位姿</strong>来提供矫正矩阵。</p>
+<p>图片矫正过程如Fig.3所示，虽然步骤简单，但是在相机大角度旋转情况下可大幅提高动静态特征点的识别精度。</p>
+<p><img src="/2024/03/15/rld-slam/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-3-Multiview-Probability-Estimation-and-Weighted-Optimization"><a href="#3-3-Multiview-Probability-Estimation-and-Weighted-Optimization" class="headerlink" title="3.3 Multiview Probability Estimation and Weighted Optimization"></a>3.3 Multiview Probability Estimation and Weighted Optimization</h2><p>物体检测bbox 内会包含大量的静态背景，针对这个情况，作者设计一种<strong>基于贝叶斯滤波器的多视图概率估计算法</strong>来区分bbox 内的动静态特征点，该过程如Fig.4所示，本算法利用与当前帧具有最高共视率的N 个关键帧来计算特定<strong>特征点的动态概率</strong>。</p>
+<p><img src="/2024/03/15/rld-slam/fig4.png" alt="fig4" title="figure 4"></p>
+<p>语义概率的更新可表示为下述的贝叶斯滤波问题：</p>
+<p><img src="/2024/03/15/rld-slam/f4-1.png" alt="f4-1" title="formula 4-1"></p>
+<p><img src="/2024/03/15/rld-slam/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$\eta$ 为归一化常数。当前观测 $z_i$ 仅依赖于当前状态 $x_i$ ，因此概率分布 $p(z_i | x_i)$ 可从<strong>物体检测的置信度</strong>获取。</p>
+<p>假设服从一阶Markov 过程，则有：</p>
+<p><img src="/2024/03/15/rld-slam/f5.png" alt="f5" title="formula 5"></p>
+<p>根据关键帧的选取策略可知，关键帧之间的时间间隔是不确定的；且物体在动态环境中的运动状态会随着时间改变，基于此，可以自然作出假设：同一物体在不同关键帧之间的<strong>运动状态相关性</strong>会随着时间增长而下降。因此，特征点的动态概率估计中可增加一个<strong>衰减因子</strong>：</p>
+<p><img src="/2024/03/15/rld-slam/f6.png" alt="f6" title="formula 6"></p>
+<p>作者提出的该方法与其他使用帧间动态概率传递方法的不同之处在于：有效利用了相关的<strong>多个历史关键帧</strong>。贝叶斯滤波器中引入的<strong>衰减因子</strong>使得该算法可以更侧重临近观测，这使得系统可以<strong>快速识别</strong>出从动态转为静态的特征点，然后作为优化过程中的地标特征点。包含了<strong>静态概率权重</strong>的RLD-SLAM 后端优化方程表示如下：</p>
+<p><img src="/2024/03/15/rld-slam/f7.png" alt="f7" title="formula 7"></p>
+<p>其中，$\mathcal{Z}^j$ 为所有观测到的 3D 地标；$\mathbf{r}_{ij}$ 表示重投影误差；$\Omega$ 表示将地表点投影至像素坐标系；$\Lambda_{ij}$ 表示信息矩阵；$P_{staticij}$ 表示第j 个特征点在第i 次观测后的静态概率。</p>
+<h2 id="3-4-Dynamic-Object-Tracking-With-IMU-Measurement"><a href="#3-4-Dynamic-Object-Tracking-With-IMU-Measurement" class="headerlink" title="3.4 Dynamic Object Tracking With IMU Measurement"></a>3.4 Dynamic Object Tracking With IMU Measurement</h2><p>仅利用语义信息无法判断物体的真实运动状态，部分算法使用物体跟踪来解决该问题，但同时会带来大量的算力负担。本算法融合IMU 观测和视觉里程计来进行<strong>动态物体的3D 跟踪</strong>，并<strong>实时更新速度与运动状态</strong>；根据物体的运动状态，系统可自动决定是否将这些特征点包含进优化过程。该过程如Fig.5所示：</p>
+<p><img src="/2024/03/15/rld-slam/fig5.png" alt="fig5" title="figure 5"></p>
+<p>当一个动态物体进入相机视野中时，系统利用<strong>卡尔曼滤波器</strong>来对观测进行处理：</p>
+<ol>
+<li><p>首先，假设观测到的动态物体（汽车）服从<strong>匀加速模型</strong>，<strong>初始状态</strong>表示为：</p>
+<p><img src="/2024/03/15/rld-slam/f10.png" alt="f10" title="formula 10"></p>
+</li>
+<li><p>然后，<strong>预测</strong>该动态物体的下一状态：</p>
+<p><img src="/2024/03/15/rld-slam/f11-1.png" alt="f11-1" title="formula 11-1"></p>
+<p><img src="/2024/03/15/rld-slam/f11.png" alt="f11" title="formula 11"></p>
+<p>当获取了观测信息后，<strong>更新</strong>状态：</p>
+<p><img src="/2024/03/15/rld-slam/f12.png" alt="f12" title="formula 12"></p>
+</li>
+</ol>
+<p>该算法的<strong>关键在于获取动态环境中的观测信息</strong>。当算法可获取充足的静态特征点时，VO 效果较好，此时可计算出动态物体的世界坐标：</p>
+<p><img src="/2024/03/15/rld-slam/f13.png" alt="f13" title="formula 13"></p>
+<p>当物体检测算法判断当前视野中大部分特征点属于先验动态物体时，难以获取相机自身位姿 $T_{WC}^i$ ，也就无法实现对动态物体速度等状态信息的计算。在此情况下，本算法利用IMU 来增强系统的<strong>鲁棒性</strong>：对关键帧之间的IMU 观测进行短期预积分，假设(i-1) 和i 关键帧分别对应 j 和 n IMU 观测数据，则有</p>
+<p><img src="/2024/03/15/rld-slam/f14.png" alt="f14" title="formula 14"></p>
+<p><img src="/2024/03/15/rld-slam/f15.png" alt="f15" title="formula 15"></p>
+<p>陀螺仪和加速度计的偏差可从后端的近期优化中获取，噪声影响可通过<strong>信息矩阵</strong>来表示，考虑到关键帧之间的时间<strong>间隔较短</strong>（一般不超过1s），可认为IMU 预积分<strong>误差可忽略</strong>，由此可计算汽车位姿：</p>
+<p><img src="/2024/03/15/rld-slam/f17.png" alt="f17" title="formula 17"></p>
+<p>利用上述观测信息来实现<strong>滤波器更新</strong>，以此计算物体的运动状态。对于静态物体，其特征点可为VO 提供更多的地标，由此可增强SLAM 的精度与鲁棒性；在此基础上，可将VO 与IMU 进行<strong>紧耦合优化</strong>来消除IMU 漂移：</p>
+<p><img src="/2024/03/15/rld-slam/f20.png" alt="f20" title="formula 20"></p>
+<p>总的来讲，本算法利用<strong>短期 IMU 预积分</strong>来恢复<strong>高动态场景</strong>下的 VO，然后进一步对VO 和 IMU 进行<strong>联合优化</strong>，解决IMU 的长期漂移问题。</p>
+<h1 id="4-Experimental-Results"><a href="#4-Experimental-Results" class="headerlink" title="4 Experimental Results"></a>4 Experimental Results</h1><p><img src="/2024/03/15/rld-slam/t1.png" alt="t1" title="table 1"></p>
+<p>作者在KITTI 数据集进行测试：在01-04 序列的郊区环境中，相机载体与动态物体速度较慢，本算法的提升效果较小；序列13和19 是城市场景，有各种动态物体，如自行车、行人、汽车等，作者认为对于非常规形状或较小形状的物体而言，没必要从中提取地标；序列08和20是高速路场景，移动物体数量较多、速度较快，该场景中RLD-SLAM 算法优势明显，这是使用<strong>历史视觉信息</strong>和<strong>IMU 运动先验</strong>带来的优势；此外，使用卡尔曼滤波器对动态物体进行松耦合状态估计也会大幅减小运算负担。</p>
+<p><img src="/2024/03/15/rld-slam/t3.png" alt="t3" title="table 3"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Dynamic SLAM</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+      </tags>
+  </entry>
 </search>
