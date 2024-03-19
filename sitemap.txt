@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/03/19/text-slam/
 http://echo-gh.github.io/2024/03/15/rld-slam/
 http://echo-gh.github.io/2024/03/12/cpp-notes-01/
 http://echo-gh.github.io/2024/03/08/eao-slam/
