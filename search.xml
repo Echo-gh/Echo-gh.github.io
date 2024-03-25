@@ -4372,4 +4372,102 @@
         <tag>Object SLAM</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 3D LiDAR Aided GNSS NLOS Mitigation for Reliable GNSS-RTK Positioning in Urban Canyons</title>
+    <url>/2024/03/25/liu2022a/</url>
+    <content><![CDATA[<p>Liu, Xikun, Weisong Wen, Feng Huang, Han Gao, Yongliang Wang, and Li-Ta Hsu. “3D LiDAR Aided GNSS NLOS Mitigation for Reliable GNSS-RTK Positioning in Urban Canyons.” arXiv, December 11, 2022. <a href="https://doi.org/10.48550/arXiv.2212.05477">https://doi.org/10.48550/arXiv.2212.05477</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文的贡献：</p>
+<ol>
+<li>提出一个基于<strong>无漂移的3D 滑动窗口PCM (Point Cloud Map) 辅助的GNSS NLOS 信号消除</strong>方法，以此提高GNSS 原始观测量的质量。3D 滑动窗口PCM 的漂移是通过提高后的GNSS-RTK 进行矫正的；</li>
+<li>提出一个<strong>基于LiDAR 地标的VS (Virtual Satellite) 约束模型</strong>，来提高城市峡谷GNSS <strong>卫星的几何布局</strong>。通过GNSS 原始观测数据、IMU 以及仔细挑选过的VS 观测量进行<strong>紧耦合</strong>来提高浮点解精度。此外，作者还推导了VS 引入对几何布局的提高程度；</li>
+<li>在香港的城市峡谷中进行大量的实验验证。</li>
+</ol>
+<span id="more"></span>
+<h1 id="3-Methodology"><a href="#3-Methodology" class="headerlink" title="3 Methodology"></a>3 Methodology</h1><h2 id="3-1-System-Overview"><a href="#3-1-System-Overview" class="headerlink" title="3.1 System Overview"></a>3.1 System Overview</h2><p>本系统的流程图如Fig. 2所示，本系统主要包含两部分：<strong>LiDAR 辅助NLOS 信号剔除，利用VS 提高卫星几何布局进行定位</strong>。</p>
+<p><img src="/2024/03/25/liu2022a/fig2.png" alt="fig2" title="figure 2"></p>
+<p>系统大致流程如下所示：</p>
+<ol>
+<li>IMU 使用<strong>预积分技术</strong>进行处理，来获取滑动窗口中每个关键帧的<strong>初始位姿</strong>；</li>
+<li>利用关键帧的初始位姿以及相应的局部PCM 进行<strong>NLOS 和周跳探测</strong>。同时，从提取到的特征和PCM 中获取<strong>VS 约束</strong>；</li>
+<li>在前两步的预处理之后，利用因子图优化 FGO (Factor Graph Optimization) （包含VS 、GNSS 以及 IMU 约束）实现对<strong>滑动窗口状态的联合优化</strong>，从而获得提高过的<strong>浮点解及协方差矩阵</strong>；</li>
+<li>提高过的浮点解及协方差矩阵被用于AR (Ambiguity Resolution) 进行<strong>固定解</strong>求解；</li>
+<li>最终，基于固定解和浮点解进行<strong>全局位姿图优化</strong>，来获取最终的位姿结果。更新过的全局位姿以及相应的PCM 用于下一步的NLOS 探测。</li>
+</ol>
+<h2 id="3-2-3D-LiDAR-Aided-GNSS-NLOS-Mitigation"><a href="#3-2-3D-LiDAR-Aided-GNSS-NLOS-Mitigation" class="headerlink" title="3.2 3D LiDAR-Aided GNSS NLOS Mitigation"></a>3.2 3D LiDAR-Aided GNSS NLOS Mitigation</h2><p>利用3D LiDAR PCM 进行NLOS 信号探测参考文章(Wen 和 Hsu, 2022)，预期不同之处在于，本文<strong>利用GNSS-RTK 对3D PCM 的漂移进行矫正</strong>。</p>
+<p>利用3D PCM 进行NLOS 探测严重依赖于<strong>朝向估计的准确性</strong>，而其容易受到漂移的影响，如Fig. 3（b）所示，因此，本文提出了使用提高的GNSS-RTK 实现对PCM 的优化。</p>
+<p><img src="/2024/03/25/liu2022a/fig3.png" alt="fig3" title="figure 3"></p>
+<h2 id="3-3-Virtual-Satellite-aided-GNSS-RTK-IMU-Factor-Graph-Optimization-and-Ambiguity-Resolution"><a href="#3-3-Virtual-Satellite-aided-GNSS-RTK-IMU-Factor-Graph-Optimization-and-Ambiguity-Resolution" class="headerlink" title="3.3 Virtual Satellite aided GNSS-RTK/IMU Factor Graph Optimization and Ambiguity Resolution"></a>3.3 Virtual Satellite aided GNSS-RTK/IMU Factor Graph Optimization and Ambiguity Resolution</h2><p>利用<strong>最大后验概率估计</strong>得到本模型的目标方程：</p>
+<p><img src="/2024/03/25/liu2022a/f2.png" alt="f2" title="formula 2"></p>
+<p>括号内各项分别是：<strong>边缘项（窗口外的约束）、VS 约束项、IMU 约束项、双差伪距、双差载波相位、双差整周模糊度、多普勒频移</strong>。</p>
+<p>相应的因子图结构如Fig. 4所示，由于不同传感器观测频率的不同，GNSS 因子（双差伪距、双差载波相位、多普勒频移）通过插值状态 $x_t$  来对系统状态 $x_k$  和 $x_{k+1}$  进行约束。</p>
+<p><img src="/2024/03/25/liu2022a/fig4.png" alt="fig4" title="figure 4"></p>
+<p>对于整周模糊度因子，作者使用文章(Huang 等, 2022)提到的方法，利用LiDAR 辅助进行周跳探测，该方法是利用<strong>三差TD 一致性检测</strong>来实现对周跳的探测。</p>
+<p><img src="/2024/03/25/liu2022a/f16.png" alt="f16" title="formula 16"></p>
+<p>根据上式可以发现，TD 利用测距来估计双差DD 的整周模糊度，这对于初始位姿估计的精度要求较高，作者利用LiDAR 和 IMU 实现一个<strong>高质量的初始位姿估计</strong>，从而实现对较小周跳的成功探测。</p>
+]]></content>
+      <categories>
+        <category>GNSS</category>
+        <category>NLOS</category>
+      </categories>
+      <tags>
+        <tag>GNSS</tag>
+        <tag>NLOS</tag>
+        <tag>LiDAR</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>论文记录 Analysis and modeling GPS NLOS effect in highly urbanized area</title>
+    <url>/2024/03/25/hsu2017/</url>
+    <content><![CDATA[<p>Hsu, Li-Ta. “Analysis and Modeling GPS NLOS Effect in Highly Urbanized Area.” <em>GPS Solutions</em> 22, no. 1 (November 4, 2017): 7. <a href="https://doi.org/10.1007/s10291-017-0667-9">https://doi.org/10.1007/s10291-017-0667-9</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>传统的<strong>基于测距的NLOS探测矫正方法</strong>难以适用于低成本接收器的原因在于：</p>
+<ol>
+<li>利用ray-tracing 的计算成本太高；</li>
+<li>3D 建筑模型难以实时获取到。</li>
+</ol>
+<p>本文的创新与贡献在于提出一个应用于低成本设备中用于基于假设定位 hypothesis-based positioning 的NLOS 模型，而不需要使用ray-tracing。</p>
+<span id="more"></span>
+<p>在分析阶段，利用给定的<strong>接收机位置真值和3D 建筑模型</strong>进行NLOS 识别，也就是说，如果ray-tracing 模拟表明建筑模型挡到了信号的直线传播，但是接收机仍然接收到了该卫星的信号，那么就认定该信号为NLOS 信号。为了获取伪距NLOS 信号延迟，利用差分GPS 对其他误差进行消除；在城市环境中采集24h 的GPS 原始数据来恢复<strong>不同载噪比、不同高度角</strong>的NLOS 信号伪距误差。作者发现，NLOS 信号造成的伪距误差<strong>与卫星的高度角高度相关</strong>，而不是载噪比。最终，作者构建了一个关于<strong>卫星高度角和接收机与反射建筑物之间距离</strong>的方程来作为<strong>NLOS 延迟模型</strong>。</p>
+<p><img src="/2024/03/25/hsu2017/fig2.png" alt="fig2" title="figure 2"></p>
+<h1 id="2-Estimation-of-NLOS-delays-in-the-pseudorange-domain"><a href="#2-Estimation-of-NLOS-delays-in-the-pseudorange-domain" class="headerlink" title="2 Estimation of NLOS delays in the pseudorange domain"></a>2 Estimation of NLOS delays in the pseudorange domain</h1><p>伪距测量的误差项包括电离层延迟、对流层延迟、卫星钟差、轨道误差、接收机钟差以及我们的目标NLOS，其他误差需要在NLOS 分析前进行消除，本文分别使用 DGPS 和 最小二乘法（LSE）来处理前部和后部误差。</p>
+<h2 id="2-1-Differential-GPS-correction"><a href="#2-1-Differential-GPS-correction" class="headerlink" title="2.1 Differential GPS correction"></a>2.1 Differential GPS correction</h2><p>参考站的多路径、NLOS 效应可以忽略，因为参考站一般选取安置在开阔环境中，且使用带有扼流圈的接收天线。理论上来讲，若流动站和参考站之间的距离小于100 km时，DGPS 矫正参数可以消除卫星钟差、轨道误差、电离层对流层延迟。</p>
+<h2 id="2-2-Receiver-clock-bias-and-thermal-noise"><a href="#2-2-Receiver-clock-bias-and-thermal-noise" class="headerlink" title="2.2 Receiver clock bias and thermal noise"></a>2.2 Receiver clock bias and thermal noise</h2><p>接收机钟差的消除是通过将其视为未知数，利用多个伪距观测连同位置参数一同解算来获取的。为了更好地计算接收机钟差可以将位置参数从求解方程中进行剔除，作者利用香港的精细地形图（分辨率20 cm）等手段来获取接收机的<strong>精确静态位置</strong>，从而实现对位置参数的消除，进而利用伪距观测来计算接收机钟差。为了进一步提高对接收机钟差的解算精度，作者利用<strong>载噪比和ray-tracing 方法</strong>对NLOS 信号进行简单地识别，只利用LOS 信号对接收机钟差进行解算。</p>
+<p>接收机热噪声误差被忽略掉，因为其远小于NLOS 带来的影响。</p>
+<p>最终，<strong>NLOS 信号带来的延迟</strong>被定义为：</p>
+<p><img src="/2024/03/25/hsu2017/f4.png" alt="f4" title="formula 4"></p>
+<p>其中，$\rho$ 表示NLOS 伪距测量值；$R^{rcv}$  表示卫星与接收机之间的LOS 距离；$\rho^{Coor}$  表示DGPS 矫正参数。</p>
+<h1 id="3-NLOS-data-analysis"><a href="#3-NLOS-data-analysis" class="headerlink" title="3 NLOS data analysis"></a>3 NLOS data analysis</h1><p>一个level of detai (LOD) 1 的3D 建筑模型从香港地政总署获取，在香港九龙的不同地方采集到了两份数据，数据一与数据二分别包含24 h 以及 30 min 的GPS 伪距原始观测量，两份数据的天空视图如Fig. 4所示。</p>
+<p><img src="/2024/03/25/hsu2017/fig4.png" alt="fig4" title="figure 4"></p>
+<h2 id="3-1-NLOS-data-1：case-of-24-h"><a href="#3-1-NLOS-data-1：case-of-24-h" class="headerlink" title="3.1 NLOS data 1：case of 24 h"></a>3.1 NLOS data 1：case of 24 h</h2><p>24 h 的观测数据中一共有128,054个NLOS 观测数据，Fig. 5展示了NLOS 信号伪距延迟直方图。</p>
+<p><img src="/2024/03/25/hsu2017/fig5.png" alt="fig5" title="figure 5"></p>
+<p>作者对该NLOS 误差概率分布利用Gamma 分布进行拟合：</p>
+<p><img src="/2024/03/25/hsu2017/f5.png" alt="f5" title="formula 5"></p>
+<p>根据传统的定权模型，信号强度表明了伪距测量的质量，Fig. 6展示了<strong>NLOS 延迟与载噪比</strong>之间的关系，观察该图可以发现，随着载噪比的增加，NLOS 误差会缓慢下降，其标准差也有相同的趋势。这表明利用信号载噪比对GPS 观测进行定权确实可在一定程度上提高定位结果。</p>
+<p><img src="/2024/03/25/hsu2017/fig6.png" alt="fig6" title="figure 6"></p>
+<p>在传统的<strong>基于高度角的定权模型</strong>中，一些误差源（如大气误差、多路径误差等）与卫星高度角相关，这些误差通常随着高度角降低而单调增加。Fig. 7展示了NLOS 延迟与高度角之间的对应关系，由图可直观看出NLOS 延迟与高度角有明显的负相关关系，这说明传统的高度角定权模型也可用于消除NLOS 效应。</p>
+<p><img src="/2024/03/25/hsu2017/fig7.png" alt="fig7" title="figure 7"></p>
+<p>Fig .8展示了使用相同接收机接收到的LOS/NLOS 信号的不同表现。对于LOS 信号，高度角越高，载噪比均值越大、标准差越小，这说明对于LOS信号而言，高度角越高质量越稳定。然而，NLOS 信号却不同，随着高度角的增加，载噪比均值与标准差均没有明显的改善，这是因为NLOS 信号是反射信号，<strong>反射表面的材料</strong>会严重影响信号的强度。比较Fig .8 的上下两图，发现也许可以利用<strong>信号在不同高度角下的载噪比变化</strong>来区分LOS/NLOS 信号。</p>
+<p><img src="/2024/03/25/hsu2017/fig8.png" alt="fig8" title="figure 8"></p>
+<h2 id="3-2-NLOS-data-2：case-of-30-min"><a href="#3-2-NLOS-data-2：case-of-30-min" class="headerlink" title="3.2 NLOS data 2：case of 30 min"></a>3.2 NLOS data 2：case of 30 min</h2><p><img src="/2024/03/25/hsu2017/fig9.png" alt="fig9" title="figure 9"></p>
+<p><img src="/2024/03/25/hsu2017/fig10.png" alt="fig10" title="figure 10"></p>
+<p>如Fig. 9，Fig. 10 所示，NLOS 伪距延迟并不会随着载噪比的增加而有明显的下降，但是会随着高度角的增加而明显下降。由于NLOS 信号可以一直存在于环境中，其载噪比也可以很强，所以<strong>无法利用载噪比来判断LOS/NLOS 信号</strong>。上节提到的载噪比与NLOS 延迟之间存在一定的相关关系（Fig. 6），这是因为高度角与载噪比之间的关系造成的：高度角增加，载噪比也会增加。</p>
+<p>综上所述，作者认为<strong>高度角是NLOS 伪距误差的主导因素</strong>。</p>
+<h1 id="4-Modeling-of-NLOS"><a href="#4-Modeling-of-NLOS" class="headerlink" title="4 Modeling of NLOS"></a>4 Modeling of NLOS</h1><p>作者考虑现代城市环境中，建筑表面多使用玻璃作为外表材料，因此GPS 信号的反射遵循反射定律，如Fig. 11所示。</p>
+<p><img src="/2024/03/25/hsu2017/fig11.png" alt="fig11" title="figure 11"></p>
+<p>由于卫星距离接收机的距离远大于LOS 与反射信号之间的距离，因此可以认为蓝色的LOS 线不仅与绿色线平行，而且距离相等。因此，<strong>NLOS 延迟 $\gamma$</strong> 可表示为：</p>
+<p><img src="/2024/03/25/hsu2017/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，$\alpha$  表示接收机与反射信号的遮挡物之间的距离；$\theta_{ele}$ 表示卫星高度角。根据反射定理可以得到 $\theta_{ele}=\theta_2=\theta_1=\theta_0$ ，最终，<strong>NLOS 延迟 $\gamma$</strong> 可表示为：</p>
+<p><img src="/2024/03/25/hsu2017/f9.png" alt="f9" title="formula 9"></p>
+<p>上式中，对与接收机而言只有距离参数 $\alpha$ 是未知的，可通过2D 地图或者LiDAR 进行获取。</p>
+<p>Fig. 12展示了<strong>卫星高度角以及距离参数</strong> $\alpha$ 对NLOS 模型误差的影响。</p>
+<p><img src="/2024/03/25/hsu2017/fig12.png" alt="fig12" title="figure 12"></p>
+]]></content>
+      <categories>
+        <category>GNSS</category>
+        <category>NLOS</category>
+      </categories>
+      <tags>
+        <tag>GNSS</tag>
+        <tag>NLOS</tag>
+      </tags>
+  </entry>
 </search>
