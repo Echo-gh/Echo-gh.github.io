@@ -4508,13 +4508,12 @@
 ]]></content>
       <categories>
         <category>SLAM</category>
-        <category>Pose Optimization</category>
+        <category>Dynamic SLAM</category>
       </categories>
       <tags>
         <tag>Dynamic SLAM</tag>
         <tag>SLAM</tag>
         <tag>Semantic</tag>
-        <tag>Pose Optimization</tag>
       </tags>
   </entry>
 </search>
