@@ -4470,4 +4470,51 @@
         <tag>NLOS</tag>
       </tags>
   </entry>
+  <entry>
+    <title>论文记录 Fusing Semantics and Motion State Detection for Robust Visual SLAM</title>
+    <url>/2024/04/03/singh2020/</url>
+    <content><![CDATA[<p>Singh, Gaurav, Meiqing Wu, and Siew-Kei Lam. “Fusing Semantics and Motion State Detection for Robust Visual SLAM.” In <em>2020 IEEE Winter Conference on Applications of Computer Vision (WACV)</em>, 2753–62. Snowmass Village, CO, USA: IEEE, 2020. <a href="https://doi.org/10.1109/WACV45572.2020.9093359">https://doi.org/10.1109/WACV45572.2020.9093359</a>.</p>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>作者将<strong>语义信息</strong>和<strong>物体的运动状态</strong>融合到一个<strong>概率框架</strong>中，进行准确鲁棒的动态区域检测，为位姿估计和制图保留可靠的特征点。本算法包括以下步骤：</p>
+<ol>
+<li>首先，利用一个轻量级的<strong>场景流估计</strong>和<strong>聚类方法</strong>来提取场景中的<strong>动态区域</strong>；</li>
+<li>然后，利用<strong>语义分割</strong>提取场景的语义信息；</li>
+<li>最后，为了解决前两步获取的动态区域和语义信息的<strong>不确定性</strong>，本算法使用一个<strong>概率框架</strong>来融合两个信息，来实现对移动区域的鲁棒检测。</li>
+</ol>
+<p>这里，作者不使用RANSAC 算法，因为该算法无法应对动态物体占据主要区域的情况；作者使用一个<strong>基于图的方法</strong>来检测几何移动区域。</p>
+<span id="more"></span>
+<h2 id="3-Proposed-Method"><a href="#3-Proposed-Method" class="headerlink" title="3 Proposed Method"></a>3 Proposed Method</h2><p>本文提出算法的架构如Fig.1所示：</p>
+<p><img src="/2024/04/03/singh2020/fig1.png" alt="fig1" title="figure 1"></p>
+<h2 id="3-1-Sparse-Scene-Flow-based-Segmentation"><a href="#3-1-Sparse-Scene-Flow-based-Segmentation" class="headerlink" title="3.1 Sparse Scene Flow based Segmentation"></a>3.1 Sparse Scene Flow based Segmentation</h2><h3 id="3-1-1-Sparse-Scene-Flow-Estimation"><a href="#3-1-1-Sparse-Scene-Flow-Estimation" class="headerlink" title="3.1.1 Sparse Scene Flow Estimation"></a>3.1.1 Sparse Scene Flow Estimation</h3><p>作者使用viso2 特征来计算相邻帧之间的2D 光流，以及双目相机之间的视差。</p>
+<h2 id="3-2-Semantic-Segmentation"><a href="#3-2-Semantic-Segmentation" class="headerlink" title="3.2 Semantic Segmentation"></a>3.2 Semantic Segmentation</h2><p>作者使用语义信息作为额外的线索来对物体的状态进行最终确认，为了进行横向对比，作者使用<strong>SegNet</strong> 进行语义分割，结合语义信息，上节获取的移动聚类区域只有位于<strong>可移动物体区域内</strong>的才可被视为是移动的。使用AND 或 OR 策略来融合几何信息和语义信息会造成比较大的误差：OR 策略会导致大量静态特征点被错误判定为静态点，而AND 策略会保留部分动态特征点。为了避免这种简单的融合策略，作者提出使用<strong>概率模型</strong>来对两种信息进行鲁棒融合。</p>
+<h2 id="3-3-Fusion-of-Geometric-and-Semantic-methods"><a href="#3-3-Fusion-of-Geometric-and-Semantic-methods" class="headerlink" title="3.3 Fusion of Geometric and Semantic methods"></a>3.3 Fusion of Geometric and Semantic methods</h2><p>基于几何聚类获取的场景流可以检测出图片中的移动区域，如Fig.2（a）所示，并将其转化为掩码图片 G，如（b）所示；同样地，作者将语义分割中的潜在动态物体转化为掩码图片 D，如（c）所示。</p>
+<p><img src="/2024/04/03/singh2020/fig2.png" alt="fig2" title="figure 2"></p>
+<p>作者认为不能直接根据G 和 S 来对动态区域进行判断，而是引入了概率模型，作者使用(Lianos 等, 2018)中提到的<strong>distance transform 方法</strong>来将G、S转换至一个<strong>距离地图</strong>中，并使用<strong>高斯模型</strong>来估计移动概率；该概率模型考虑了<strong>不确定度</strong>，使得G、S可以进行鲁棒融合。</p>
+<p>对于几何观测掩码图 G，使用欧氏距离作为距离尺度来构建距离地图 $DT_g$ ：</p>
+<p><img src="/2024/04/03/singh2020/f6.png" alt="f6" title="formula 6"></p>
+<p>其中，B 表示掩码图。基于距离图 $DT_g$ 定义像素点 $x_i$ 属于动态区域的概率：</p>
+<p><img src="/2024/04/03/singh2020/f8.png" alt="f8" title="formula 8"></p>
+<p>其中，$\sigma_g$ 表示基于几何分割的<strong>场景光流的不确定性</strong>。</p>
+<p>同样地，可以确定语义分割掩码图中像素点 $x_i$ 属于动态区域的概率：</p>
+<p><img src="/2024/04/03/singh2020/f9.png" alt="f9" title="formula 9"></p>
+<p>其中，$\sigma_s$ 表示<strong>语义分割的不确定度</strong>。</p>
+<p>因为语义分割S 和基于场景流的几何分割G 是独立估计的，所以可以将两种估计进行融合来减少不确定度，以此获取<strong>移动区域似然</strong>：</p>
+<p><img src="/2024/04/03/singh2020/f10.png" alt="f10" title="formula 10"></p>
+<p>两者融合后的概率图如Fig.2（f）所示，其中 $\sigma_s = 40 pixels, \sigma_g = 80 pixels$ 。根据设定的移动概率阈值，得到最终的动态区域，如（g）所示。</p>
+<p>概率融合来确定动态区域的优势在于可以将两种检测方式（几何和语义）进行<strong>优势互补、效果增强</strong>，如（b）中几何方法无法实现对完整动态物体的检测，（c）中语义信息无法确定先验动态物体的真正运动状态，（j）中可消除错误分类的影响。</p>
+<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1><p>在TUM 数据集上的测试结果：</p>
+<p><img src="/2024/04/03/singh2020/t1.png" alt="t1" title="table 1"></p>
+<p>在KITTI 数据集上的测试结果：</p>
+<p><img src="/2024/04/03/singh2020/t2.png" alt="t2" title="table 2"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Pose Optimization</category>
+      </categories>
+      <tags>
+        <tag>Dynamic SLAM</tag>
+        <tag>SLAM</tag>
+        <tag>Semantic</tag>
+        <tag>Pose Optimization</tag>
+      </tags>
+  </entry>
 </search>
