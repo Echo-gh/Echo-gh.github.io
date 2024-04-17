@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/04/17/imu-preinteg/
 http://echo-gh.github.io/2024/04/08/orb-slam3/
 http://echo-gh.github.io/2024/04/03/singh2020/
 http://echo-gh.github.io/2024/03/25/liu2022a/
@@ -107,6 +108,7 @@ http://echo-gh.github.io/tags/zsh/
 http://echo-gh.github.io/tags/GNSS/
 http://echo-gh.github.io/tags/NLOS/
 http://echo-gh.github.io/tags/LiDAR/
+http://echo-gh.github.io/tags/Preintegration/
 http://echo-gh.github.io/categories/SLAM/
 http://echo-gh.github.io/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/
 http://echo-gh.github.io/categories/SLAM/Dynamic-SLAM/
@@ -119,3 +121,4 @@ http://echo-gh.github.io/categories/%E9%9A%8F%E8%AE%B0/
 http://echo-gh.github.io/categories/%E9%9A%8F%E8%AE%B0/C/
 http://echo-gh.github.io/categories/GNSS/
 http://echo-gh.github.io/categories/GNSS/NLOS/
+http://echo-gh.github.io/categories/SLAM/Multi-source/

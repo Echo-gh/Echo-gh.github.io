@@ -4636,4 +4636,170 @@
         <tag>ORB-SLAM2</tag>
       </tags>
   </entry>
+  <entry>
+    <title>IMU预积分总结与公式推导</title>
+    <url>/2024/04/17/imu-preinteg/</url>
+    <content><![CDATA[<p>注：本文是对北航邱笑晨博士总结的预积分公式推导过程进行记录，由于是个人简单记录，所以基本上内容、公式都是截取自该文章。</p>
+<h1 id="1-IMU-测量模型（Sensor-Model）和运动学模型（Kinetic-Model）"><a href="#1-IMU-测量模型（Sensor-Model）和运动学模型（Kinetic-Model）" class="headerlink" title="1 IMU 测量模型（Sensor Model）和运动学模型（Kinetic Model）"></a>1 IMU 测量模型（Sensor Model）和运动学模型（Kinetic Model）</h1><p>陀螺测量模型：</p>
+<p><img src="/2024/04/17/imu-preinteg/01.png" alt="01" title="01"></p>
+<p>其中，$\mathbf{b}_g$ 是bias，$\mathbf{\eta}_g$ 是白噪声。该模型利用了static world assumption：考虑到MEMS IMU 的观测精度，以及SLAM 的运动场景较小，因此忽略地球自转（认为地球是static world），并假设运行区域水平面是个平面，重力矢量 $\mathbf{g}^w$ 的指向固定且模值恒定。</p>
+<p>加速度计测量模型：</p>
+<p><img src="/2024/04/17/imu-preinteg/02.png" alt="02" title="02"></p>
+<p>其中，$\mathbf{b}_a$ 是bias，$\mathbf{\eta}_a$ 是白噪声。</p>
+<span id="more"></span>
+<p>运动模型的微分方程：</p>
+<p><img src="/2024/04/17/imu-preinteg/03.png" alt="03" title="03"></p>
+<p>注：观察旋转的微分形式，斜对称矩阵在右边，说明这是在body 参考系下的，参照<a href="https://fzheng.me/2016/11/20/imu_model_eq/">文章</a>。</p>
+<p>运动方程的离散形式：</p>
+<p><img src="/2024/04/17/imu-preinteg/04.png" alt="04" title="04"></p>
+<p>将测量模型代入离散运动方程有：</p>
+<p><img src="/2024/04/17/imu-preinteg/05.png" alt="05" title="05"></p>
+<p>离散噪声和连续噪声的协方差有如下关系：</p>
+<p><img src="/2024/04/17/imu-preinteg/06.png" alt="06" title="06"></p>
+<p>进一步假设 $\Delta t$ 恒定（即采样频率固定），使用 $k = 0, 1, 2, …$ 表示采样的离散时刻，则<strong>离散运动方程</strong>可进一步简化为：</p>
+<p><img src="/2024/04/17/imu-preinteg/07.png" alt="07" title="07"></p>
+<h1 id="2-IMU-预积分"><a href="#2-IMU-预积分" class="headerlink" title="2 IMU 预积分"></a>2 IMU 预积分</h1><p>当IMU 参与的组合导航时，IMU 的采样频率一般高于其他传感器，所以会将一段时间内的IMU 观测数据进行积分作为整个观测，以参与同其他传感器的组合求解，如利用 $k=i$ 时刻与 $k=j-1$ 时刻内所有的IMU 观测，基于 $k=i$ 时刻的 $\mathbf{R}_i, \mathbf{v}_i, \mathbf{q}_i$ 直接更新 $k=j$ 时刻的  $\mathbf{R}_j, \mathbf{v}_j, \mathbf{q}_j$ :</p>
+<p><img src="/2024/04/17/imu-preinteg/08.png" alt="08" title="08"></p>
+<p>在每次优化迭代后，会得到新的 $\mathbf{R}_i, \mathbf{v}_i, \mathbf{q}_i$ ，则上式中的积分操作就需要重新计算一遍，导致运算量极大。而IMU 预积分的思路就是把每次优化迭代时不变的项提取出来，以减小每次重新积分的计算量；即剥离出与更新量无关的参数（在上式中，更新量为 $\mathbf{R}_i, \mathbf{v}_i, \mathbf{q}_i$ 和 bias），得到 $k=i,k=j$ 之间的相对变化量，这样在每次迭代更新后只需要重新计算与更新量相关的项即可。根据上式获取的<strong>预积分项</strong>为：</p>
+<p><img src="/2024/04/17/imu-preinteg/09.png" alt="09" title="09"></p>
+<p>此处可进一步参考<a href="https://zhuanlan.zhihu.com/p/438525032">文章</a>的讲解，如下图所示，绿色部分即为与更新量相关的项，蓝色部分表示与更新量无关的项，$\alpha$ 相当于上式中的 $\Delta \mathbf{p}_{ij}$ ，$\beta$ 相当于上式中的 $\Delta \mathbf{v}_{ij}$ 。</p>
+<p><img src="/2024/04/17/imu-preinteg/10.png" alt="10" title="10"></p>
+<h1 id="3-预积分测量值与测量噪声"><a href="#3-预积分测量值与测量噪声" class="headerlink" title="3 预积分测量值与测量噪声"></a>3 预积分测量值与测量噪声</h1><p>将噪声项 ($\eta^{gd}_k, \eta^{ad}_k$) 从预积分项中分离出来，获得 “预积分测量值 = 理想值 + 白噪声” 的形式。首先做一个假设：在与积分时间内bias保持不变，即 $\mathbf{b}_{i}^g = \mathbf{b}_{i+1}^g = … = \mathbf{b}_{j}^g, \mathbf{b}_{i}^a = \mathbf{b}_{i+1}^a = … = \mathbf{b}_{j}^a$ 。</p>
+<h2 id="3-1-旋转预积分项"><a href="#3-1-旋转预积分项" class="headerlink" title="3.1 旋转预积分项"></a>3.1 旋转预积分项</h2><p><img src="/2024/04/17/imu-preinteg/11.png" alt="11" title="11"></p>
+<p>其中，① 处使用了旋转矩阵的右乘小量扰动；② 处使用了Adjoint 性质，对 “ABABAB…AB” 连乘进行转换顺序即可。</p>
+<p>对于上式，令</p>
+<p><img src="/2024/04/17/imu-preinteg/12.png" alt="12" title="12"></p>
+<p>则有：</p>
+<p><img src="/2024/04/17/imu-preinteg/13.png" alt="13" title="13"></p>
+<p>从而获得了旋转预积分项 “预积分测量值 = 理想值 + 白噪声” 的形式，其中，$\Delta \tilde{\mathbf{R}}_{ij}$ 为预积分测量值，由陀螺仪测量值和对陀螺仪bias 的估计值计算得到；$\delta \overrightarrow{\phi}_{ij}$ 为测量噪声。</p>
+<p>补充说明：</p>
+<p><strong>Adjoint 性质</strong>表示如下：</p>
+<p>$Exp(\phi)\cdot \mathbf{R} = \mathbf{R} \cdot Exp(\mathbf{R}^T \phi)$</p>
+<p>证明过程如下所示：</p>
+<script type="math/tex; mode=display">Exp(\phi) = exp(\hat{\phi}) = exp(\theta \hat{\mathbf{a}}) \\
+\begin{aligned}
+\mathbf{R}^T Exp(\phi)\cdot \mathbf{R} &= \mathbf{R}^T [cos\theta \cdot \mathbf{I} + (1-cos\theta)\mathbf{a}\mathbf{a}^T + sin\theta \cdot \hat{\mathbf{a}}] \mathbf{R} \\
+&= cos\theta \cdot \mathbf{R}^T \mathbf{R} + (1-cos\theta)\mathbf{R}^T\mathbf{a}\mathbf{a}^T\mathbf{R} + sin\theta \cdot \mathbf{R}^T\hat{\mathbf{a}}\mathbf{R} \\
+&= cos\theta \cdot \mathbf{I} + (1-cos\theta)(\mathbf{R}^T\mathbf{a})(\mathbf{R}^T\mathbf{a})^T + sin\theta (\hat{\mathbf{R}^T\mathbf{a}}) \\
+&= Exp(\mathbf{R}^T\mathbf{a})
+\end{aligned}</script><p>其中，用到了 $\mathbf{R}\hat{\mathbf{a}}\mathbf{R}^T = \hat{(\mathbf{R}\mathbf{a})}$ 的性质，该性质的证明可参考<a href="https://fzheng.me/2017/12/10/Rvhat/">文章</a>。</p>
+<h2 id="3-2-速度预积分项"><a href="#3-2-速度预积分项" class="headerlink" title="3.2 速度预积分项"></a>3.2 速度预积分项</h2><p>将上节获取的旋转预积分项代入 $\Delta \mathbf{v}_{ij}$ 中，可得：</p>
+<p><img src="/2024/04/17/imu-preinteg/14.png" alt="14" title="14"></p>
+<p>对于上式，令：</p>
+<p><img src="/2024/04/17/imu-preinteg/15.png" alt="15" title="15"></p>
+<p>则有：</p>
+<p><img src="/2024/04/17/imu-preinteg/16.png" alt="16" title="16"></p>
+<p>从而获得了速度预积分项 “预积分测量值 = 理想值 + 白噪声” 的形式，其中，$\Delta \tilde{\mathbf{v}}_{ij}$ 为预积分测量值，由IMU 测量值和对bias 的估计值计算得到；$\delta \mathbf{v}_{ij}$ 为测量噪声。</p>
+<h2 id="3-3-位置预积分项"><a href="#3-3-位置预积分项" class="headerlink" title="3.3 位置预积分项"></a>3.3 位置预积分项</h2><p>将旋转预积分项、速度预积分项代入 $\Delta \mathbf{p}_{ij}$ 中，有：</p>
+<p><img src="/2024/04/17/imu-preinteg/17.png" alt="17" title="17"></p>
+<p>对于上式，令：</p>
+<p><img src="/2024/04/17/imu-preinteg/18.png" alt="18" title="18"></p>
+<p>则有：</p>
+<p><img src="/2024/04/17/imu-preinteg/19.png" alt="19" title="19"></p>
+<p>从而获得了位置预积分项 “预积分测量值 = 理想值 + 白噪声” 的形式，其中，$\Delta \tilde{\mathbf{p}}_{ij}$ 为预积分测量值，由IMU 测量值和对bias 的估计值计算得到；$\delta \mathbf{p}_{ij}$ 为测量噪声。</p>
+<h2 id="3-4-总结"><a href="#3-4-总结" class="headerlink" title="3.4 总结"></a>3.4 总结</h2><p>对前三节获取的预积分项理想值与测量值之间的关系汇总如下：</p>
+<p><img src="/2024/04/17/imu-preinteg/20.png" alt="20" title="20"></p>
+<p>代入预积分项<strong>理想值</strong>的表达式：</p>
+<p><img src="/2024/04/17/imu-preinteg/21.png" alt="21" title="21"></p>
+<p>则有：</p>
+<p><img src="/2024/04/17/imu-preinteg/22.png" alt="22" title="22"></p>
+<p>上式即为最终的 “测量值=真实值 + 测量噪声” 的模式。</p>
+<h2 id="3-5-测量噪声分析"><a href="#3-5-测量噪声分析" class="headerlink" title="3.5 测量噪声分析"></a>3.5 测量噪声分析</h2><p>将预积分测量噪声表示为：</p>
+<p><img src="/2024/04/17/imu-preinteg/23.png" alt="23" title="23"></p>
+<p>希望其满足高斯分布，则对 $\eta_{ij}^\Delta$ 进行分析。</p>
+<h3 id="3-5-1-旋转预积分测量噪声"><a href="#3-5-1-旋转预积分测量噪声" class="headerlink" title="3.5.1 旋转预积分测量噪声"></a>3.5.1 旋转预积分测量噪声</h3><p><img src="/2024/04/17/imu-preinteg/24.png" alt="24" title="24"></p>
+<p>其中，$\mathbf{J}_r^k = \mathbf{J}_r((\tilde{\omega}_k - \mathbf{b}_i^g)\Delta t)$ 。对上式两侧取对数：</p>
+<p><img src="/2024/04/17/imu-preinteg/25.png" alt="25" title="25"></p>
+<p>对上式进行处理：</p>
+<p><img src="/2024/04/17/imu-preinteg/26.png" alt="26" title="26"></p>
+<p>即：</p>
+<p><img src="/2024/04/17/imu-preinteg/27.png" alt="27" title="27"></p>
+<p>由于 $\Delta \tilde{\mathbf{R}}_{k+1,j}^T, \mathbf{J}_r^k, \Delta t$ 均是已知量，而 $\eta_k^{gd}$ 是零均值高斯噪声，因此，$\delta \overrightarrow{\phi}_{ij}$ 也是零均值高斯噪声。</p>
+<p>在此基础上，进一步推导旋转预积分测量噪声的递推形式，对于 $\delta \overrightarrow{\phi}_{ij-1}\rightarrow \delta \overrightarrow{\phi}_{ij}$ ，有：</p>
+<p><img src="/2024/04/17/imu-preinteg/28.png" alt="28" title="28"></p>
+<h3 id="3-5-2-速度预积分测量噪声"><a href="#3-5-2-速度预积分测量噪声" class="headerlink" title="3.5.2 速度预积分测量噪声"></a>3.5.2 速度预积分测量噪声</h3><p>由于$\delta \overrightarrow{\phi}_{ij}$ 近似为零均值高斯噪声，且 $\eta_k^{ad}$ 也是零均值高斯噪声，则根据 $\delta \mathbf{v}_{ij}$ 表达式可知其也具有高斯分布的性质：</p>
+<p><img src="/2024/04/17/imu-preinteg/29.png" alt="29" title="29"></p>
+<p>在此基础上，进一步推导速度预积分测量噪声的递推形式，对于 $\delta \mathbf{v}_{ij-1}\rightarrow \delta \mathbf{v}_{ij}$ ，有：</p>
+<p><img src="/2024/04/17/imu-preinteg/30.png" alt="30" title="30"></p>
+<h3 id="3-5-3-位置预积分测量噪声"><a href="#3-5-3-位置预积分测量噪声" class="headerlink" title="3.5.3 位置预积分测量噪声"></a>3.5.3 位置预积分测量噪声</h3><p>类似 $\delta \mathbf{v}_{ij}$ ， $\delta \mathbf{p}_{ij}$ 也具有高斯分布的性质：</p>
+<p><img src="/2024/04/17/imu-preinteg/31.png" alt="31" title="31"></p>
+<p>在此基础上，进一步推导速度预积分测量噪声的递推形式，对于 $\delta \mathbf{p}_{ij-1}\rightarrow \delta \mathbf{p}_{ij}$ ，有：</p>
+<p><img src="/2024/04/17/imu-preinteg/32.png" alt="32" title="32"></p>
+<h3 id="3-5-4-总结"><a href="#3-5-4-总结" class="headerlink" title="3.5.4 总结"></a>3.5.4 总结</h3><p>综上所述，可以得到预积分测量噪声 $\eta_{ij}^\Delta$ 的递推形式：</p>
+<p><img src="/2024/04/17/imu-preinteg/33.png" alt="33" title="33"></p>
+<p>其中，$\eta_k^d = [(\eta_k^{gd})^T, (\eta_k^{ad})^T]^T$ 。若令：</p>
+<p><img src="/2024/04/17/imu-preinteg/34.png" alt="34" title="34"></p>
+<p>则有：</p>
+<p><img src="/2024/04/17/imu-preinteg/35.png" alt="35" title="35"></p>
+<p>相应地，预积分测量噪声的<strong>协方差矩阵的递推计算形式</strong>为：</p>
+<p><img src="/2024/04/17/imu-preinteg/36.png" alt="36" title="36"></p>
+<h2 id="3-6-bias-更新时的预积分测量值更新"><a href="#3-6-bias-更新时的预积分测量值更新" class="headerlink" title="3.6 bias 更新时的预积分测量值更新"></a>3.6 bias 更新时的预积分测量值更新</h2><p>前面的预积分计算是在积分区间bias 固定的假设下进行的，当bias 变化时为了减小预积分测量值计算的负担，<strong>利用线性化进行预积分项的一阶近似更新</strong>。对bias 更新过程进行如下定义：</p>
+<p><img src="/2024/04/17/imu-preinteg/37.png" alt="37" title="37"></p>
+<p>其中，$\overline{\mathbf{b}}$ 表示旧的bias，$\delta{\mathbf{b}}$ 表示bias变化量，$\hat{\mathbf{b}}$ 表示更新后的bias。预积分项的线性化更新过程如下所示：</p>
+<p><img src="/2024/04/17/imu-preinteg/38.png" alt="38" title="38"></p>
+<p>上式简写为：</p>
+<p><img src="/2024/04/17/imu-preinteg/39.png" alt="39" title="39"></p>
+<h3 id="3-6-1-旋转预积分bias更新偏导项求解"><a href="#3-6-1-旋转预积分bias更新偏导项求解" class="headerlink" title="3.6.1 旋转预积分bias更新偏导项求解"></a>3.6.1 旋转预积分bias更新偏导项求解</h3><p>求解过程如下所示：</p>
+<p><img src="/2024/04/17/imu-preinteg/40.png" alt="40" title="40"></p>
+<p>对上式进行同样的利用Adjoint性质对连乘顺序进行调整，即可得到：</p>
+<p><img src="/2024/04/17/imu-preinteg/41.png" alt="41" title="41"></p>
+<p>当 $\mathbf{c}_k$ 极小时，有 $\mathbf{J}_r(\mathbf{c}_k) \approx \mathbf{I}$ ，对上式进一步处理可得到：</p>
+<p><img src="/2024/04/17/imu-preinteg/42.png" alt="42" title="42"></p>
+<p>由此可以得到：</p>
+<p><img src="/2024/04/17/imu-preinteg/43.png" alt="43" title="43"></p>
+<p>其中，$\mathbf{J}_r^k = \mathbf{J}_r((\tilde{\omega}_k - \overline{\mathbf{b}}_i^g)\Delta t)$。</p>
+<h3 id="3-6-2-速度预积分bias更新偏导项求解"><a href="#3-6-2-速度预积分bias更新偏导项求解" class="headerlink" title="3.6.2 速度预积分bias更新偏导项求解"></a>3.6.2 速度预积分bias更新偏导项求解</h3><p>与旋转预积分类似，可以得到两个偏导项为：</p>
+<p><img src="/2024/04/17/imu-preinteg/44.png" alt="44" title="44"></p>
+<h3 id="3-6-3-位置预积分bias更新偏导项求解"><a href="#3-6-3-位置预积分bias更新偏导项求解" class="headerlink" title="3.6.3 位置预积分bias更新偏导项求解"></a>3.6.3 位置预积分bias更新偏导项求解</h3><p>位置预积分的两个偏导项为：</p>
+<p><img src="/2024/04/17/imu-preinteg/45.png" alt="45" title="45"></p>
+<h1 id="4-残差及Jacobian"><a href="#4-残差及Jacobian" class="headerlink" title="4 残差及Jacobian"></a>4 残差及Jacobian</h1><h2 id="4-1-残差项"><a href="#4-1-残差项" class="headerlink" title="4.1 残差项"></a>4.1 残差项</h2><p>预积分项的<strong>理想值</strong>为：</p>
+<p><img src="/2024/04/17/imu-preinteg/46.png" alt="46" title="46"></p>
+<p>当状态参数更新时，形成的<strong>残差</strong>为：</p>
+<p><img src="/2024/04/17/imu-preinteg/47.png" alt="47" title="47"></p>
+<p>即，残差定义为 “残差 = 理想值 - 后验观测值”。</p>
+<p>状态参数的<strong>更新过程</strong>表示为：</p>
+<p><img src="/2024/04/17/imu-preinteg/48.png" alt="48" title="48"></p>
+<p>在迭代优化中，待优化的<strong>状态参数</strong>为 $\mathbf{R}_i, \mathbf{p}_i, \mathbf{v}_i, \mathbf{R}_j, \mathbf{p}_j, \mathbf{v}_j, \delta  \mathbf{b}_i^g, \delta \mathbf{b}_i^a$ ，而迭代中求解增量方程得到的增量是：$\delta \overrightarrow{\phi}_i,\delta\mathbf{p}_i, \delta\mathbf{v}_i, \delta \overrightarrow{\phi}_j,\delta\mathbf{p}_j, \delta\mathbf{v}_j, \tilde{\delta \mathbf{b}_i^g}, \tilde{\delta \mathbf{b}_i^a}$ ，最后两项是<strong>bias增量的增量</strong>。</p>
+<h2 id="4-2-Jacobian"><a href="#4-2-Jacobian" class="headerlink" title="4.2 Jacobian"></a>4.2 Jacobian</h2><p>求<strong>残差项</strong>（$\mathbf{r}_{\Delta \mathbf{R}_{ij}}, \mathbf{r}_{\Delta \mathbf{v}_{ij}}, \mathbf{r}_{\Delta \mathbf{p}_{ij}}$ ）关于<strong>各个状态参数</strong>的Jacobian。</p>
+<h3 id="4-2-1-旋转残差项Jacobian"><a href="#4-2-1-旋转残差项Jacobian" class="headerlink" title="4.2.1 旋转残差项Jacobian"></a>4.2.1 旋转残差项Jacobian</h3><p><img src="/2024/04/17/imu-preinteg/49.png" alt="49" title="49"></p>
+<p>首先是“0类”：</p>
+<p><img src="/2024/04/17/imu-preinteg/50.png" alt="50" title="50"></p>
+<p><strong>注：</strong>上式中应该是写错了，应是对状态参数进行Jacobian求解，而不是对状态参数的增量进行求解。</p>
+<p>然后是“复杂类”：</p>
+<p><img src="/2024/04/17/imu-preinteg/51.png" alt="51" title="51"></p>
+<p>由此得到 $\mathbf{r}_{\Delta \mathbf{R}_{ij}}$ 关于 $\overrightarrow{\phi}_i$ 的Jacobian：</p>
+<p><img src="/2024/04/17/imu-preinteg/52.png" alt="52" title="52"></p>
+<p>同样地，可得到 $\mathbf{r}_{\Delta \mathbf{R}_{ij}}$ 关于 $\overrightarrow{\phi}_j, {\delta \mathbf{b}_i^g}$ 的Jacobian：</p>
+<p><img src="/2024/04/17/imu-preinteg/53.png" alt="53" title="53"></p>
+<p><img src="/2024/04/17/imu-preinteg/54.png" alt="54" title="54"></p>
+<h3 id="4-2-2-速度残差项Jacobian"><a href="#4-2-2-速度残差项Jacobian" class="headerlink" title="4.2.2 速度残差项Jacobian"></a>4.2.2 速度残差项Jacobian</h3><p><img src="/2024/04/17/imu-preinteg/55.png" alt="55" title="55"></p>
+<p>首先是“0类”：</p>
+<p><img src="/2024/04/17/imu-preinteg/56.png" alt="56" title="56"></p>
+<p>然后是“线性类”：</p>
+<p><img src="/2024/04/17/imu-preinteg/57.png" alt="57" title="57"></p>
+<p>最后是“复杂类”，$\mathbf{r}_{\Delta \mathbf{v}_{ij}}$ 关于 $\mathbf{v}_i, \mathbf{v}_j, \overrightarrow{\phi}_i$ 的Jacobian：</p>
+<p><img src="/2024/04/17/imu-preinteg/58.png" alt="58" title="58"></p>
+<p><img src="/2024/04/17/imu-preinteg/59.png" alt="59" title="59"></p>
+<p><img src="/2024/04/17/imu-preinteg/60.png" alt="60" title="60"></p>
+<h3 id="4-2-3-位置残差项Jacobian"><a href="#4-2-3-位置残差项Jacobian" class="headerlink" title="4.2.3 位置残差项Jacobian"></a>4.2.3 位置残差项Jacobian</h3><p><img src="/2024/04/17/imu-preinteg/61.png" alt="61" title="61"></p>
+<p>首先是“0类”：</p>
+<p><img src="/2024/04/17/imu-preinteg/62.png" alt="62" title="62"></p>
+<p>然后是“线性类”：</p>
+<p><img src="/2024/04/17/imu-preinteg/63.png" alt="63" title="63"></p>
+<p>最后是“复杂类”，$\mathbf{r}_{\Delta \mathbf{p}_{ij}}$ 关于 $\mathbf{p}_i, \mathbf{p}_j, \mathbf{v}_i, \overrightarrow{\phi}_i$ 的Jacobian：</p>
+<p><img src="/2024/04/17/imu-preinteg/64.png" alt="64" title="64"></p>
+<p><img src="/2024/04/17/imu-preinteg/65.png" alt="65" title="65"></p>
+<p><img src="/2024/04/17/imu-preinteg/66.png" alt="66" title="66"></p>
+<p><img src="/2024/04/17/imu-preinteg/67.png" alt="67" title="67"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Multi-source</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>IMU</tag>
+        <tag>Preintegration</tag>
+      </tags>
+  </entry>
 </search>

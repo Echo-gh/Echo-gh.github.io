@@ -195,6 +195,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/04/17/imu-preinteg/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/04/17/imu-preinteg/" class="post-title-link" itemprop="url">IMU预积分总结与公式推导</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-04-17 16:16:58 / 修改时间：16:50:37" itemprop="dateCreated datePublished" datetime="2024-04-17T16:16:58+08:00">2024-04-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Multi-source/" itemprop="url" rel="index"><span itemprop="name">Multi-source</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>注：本文是对北航邱笑晨博士总结的预积分公式推导过程进行记录，由于是个人简单记录，所以基本上内容、公式都是截取自该文章。</p>
+<h1 id="1-IMU-测量模型（Sensor-Model）和运动学模型（Kinetic-Model）"><a href="#1-IMU-测量模型（Sensor-Model）和运动学模型（Kinetic-Model）" class="headerlink" title="1 IMU 测量模型（Sensor Model）和运动学模型（Kinetic Model）"></a>1 IMU 测量模型（Sensor Model）和运动学模型（Kinetic Model）</h1><p>陀螺测量模型：</p>
+<p><img src="/2024/04/17/imu-preinteg/01.png" alt="01" title="01"></p>
+<p>其中，$\mathbf{b}_g$ 是bias，$\mathbf{\eta}_g$ 是白噪声。该模型利用了static world assumption：考虑到MEMS IMU 的观测精度，以及SLAM 的运动场景较小，因此忽略地球自转（认为地球是static world），并假设运行区域水平面是个平面，重力矢量 $\mathbf{g}^w$ 的指向固定且模值恒定。</p>
+<p>加速度计测量模型：</p>
+<p><img src="/2024/04/17/imu-preinteg/02.png" alt="02" title="02"></p>
+<p>其中，$\mathbf{b}_a$ 是bias，$\mathbf{\eta}_a$ 是白噪声。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/04/17/imu-preinteg/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/04/08/orb-slam3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -947,91 +1032,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/03/06/ji2023/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/03/06/ji2023/" class="post-title-link" itemprop="url">论文记录 Loop Closure Detection Based on Object-level Spatial Layout and Semantic Consistency</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2024-03-06 10:42:30 / 修改时间：10:54:42" itemprop="dateCreated datePublished" datetime="2024-03-06T10:42:30+08:00">2024-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Topology/" itemprop="url" rel="index"><span itemprop="name">Topology</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Ji, Xingwu, Peilin Liu, Haochen Niu, Xiang Chen, Rendong Ying, and Fei Wen. “Loop Closure Detection Based on Object-Level Spatial Layout and Semantic Consistency.” arXiv, April 14, 2023. <a target="_blank" rel="noopener" href="http://arxiv.org/abs/2304.05146">http://arxiv.org/abs/2304.05146</a>.</p>
-<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>本文做出的贡献：</p>
-<ol>
-<li>在3D 场景图中基于<strong>拓扑结构与几何匹配</strong>的回环检测方法，利用物体的信息和它们的邻域来建立<strong>3D 拓扑结构</strong>，保证几何布局以及语义属性的一致；</li>
-<li>包含<strong>语义标签、bounding box IoU、物体颜色编码、物体级embedding</strong> 信息的物体级数据关联方法，基于该方法构建了<strong>3D 语义地图</strong>；</li>
-<li>一个完整的视觉SLAM 系统，实验结果表证明了本算法的优越性。</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/03/06/ji2023/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1103,20 +1103,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-count">78</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
