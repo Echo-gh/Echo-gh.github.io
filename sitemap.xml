@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://echo-gh.github.io/2024/01/31/vins/</loc>
+    
+    <lastmod>2024-04-17</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://echo-gh.github.io/2024/04/17/imu-preinteg/</loc>
     
     <lastmod>2024-04-17</lastmod>
@@ -605,15 +614,6 @@
   </url>
   
   <url>
-    <loc>http://echo-gh.github.io/2024/01/31/vins/</loc>
-    
-    <lastmod>2024-01-31</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://echo-gh.github.io/2024/01/29/orb-slam2/</loc>
     
     <lastmod>2024-01-30</lastmod>
@@ -988,13 +988,6 @@
   
   <url>
     <loc>http://echo-gh.github.io/categories/SLAM/ORB-SLAM/</loc>
-    <lastmod>2024-04-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://echo-gh.github.io/categories/SLAM/Multi-source-Navigation/</loc>
     <lastmod>2024-04-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
