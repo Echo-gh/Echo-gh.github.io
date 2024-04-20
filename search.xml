@@ -1742,7 +1742,7 @@
     <title>Object SLAM部署过程</title>
     <url>/2024/01/26/object-slam/</url>
     <content><![CDATA[<p>系统代码包下载地址为<a href="https://github.com/yangliu9527/Object_SLAM.git">github地址</a>，论文为(Liu 等, 2023).</p>
-<h2 id="1-ORB-SLAM2基础问题"><a href="#1-ORB-SLAM2基础问题" class="headerlink" title="1 ORB-SLAM2基础问题"></a>1 ORB-SLAM2基础问题</h2><p>该算法是在ORB-SLAM2 的基础上进行改进的，编译过程可参考ORB-SLAM2的部署教程，此处不再赘述。除此之外，本人在部署过程中还遇到了其他问题，这里记录一下。</p>
+<h2 id="1-ORB-SLAM2基础问题"><a href="#1-ORB-SLAM2基础问题" class="headerlink" title="1 ORB-SLAM2基础问题"></a>1 ORB-SLAM2基础问题</h2><p>该算法是在ORB-SLAM2 的基础上进行改进的，编译过程可参考<a href="https://echo-gh.github.io/2024/01/26/orbslam2-env/">ORB-SLAM2的部署教程</a>，此处不再赘述。除此之外，本人在部署过程中还遇到了其他问题，这里记录一下。</p>
 <span id="more"></span>
 <h2 id="2-其他问题"><a href="#2-其他问题" class="headerlink" title="2 其他问题"></a>2 其他问题</h2><ul>
 <li>PCL 报错：</li>
@@ -2626,9 +2626,9 @@
 <li><strong>跟踪质量</strong>：如果当前帧跟踪到的特征数量低于一个阈值，则将当前帧设为关键帧。</li>
 </ol>
 <h2 id="4-2-IMU-Preintegration"><a href="#4-2-IMU-Preintegration" class="headerlink" title="4.2 IMU Preintegration"></a>4.2 IMU Preintegration</h2><p>作者使用之前工作中用的连续时间基于四元数的IMU 预积分推导方法。</p>
-<h3 id="4-2-1-IMU-Noise-and-Bias"><a href="#4-2-1-IMU-Noise-and-Bias" class="headerlink" title="4.2.1 IMU Noise and Bias"></a>4.2.1 IMU Noise and Bias</h3><p>IMU 的观测信息是在物体坐标系下的，结合了 the force for countering gravity and the platform dynamics，观测还包含加速度偏差 $\mathbf{b}_a$ 、陀螺仪偏差 $\mathbf{b}_w$ 以及额外噪声，陀螺仪和加速度计的原始观测量 $\hat{\mathcal{w}}, \hat{\mathcal{a}}$ 如下所示：</p>
+<h3 id="4-2-1-IMU-Noise-and-Bias"><a href="#4-2-1-IMU-Noise-and-Bias" class="headerlink" title="4.2.1 IMU Noise and Bias"></a>4.2.1 IMU Noise and Bias</h3><p>IMU 的观测信息是在<strong>物体坐标系</strong>下的，包含重力和平台的运动信息，此外，观测还包含加速度偏差 $\mathbf{b}_a$ 、陀螺仪偏差 $\mathbf{b}_w$ 以及额外噪声，陀螺仪和加速度计的原始观测量 $\hat{\mathcal{w}}, \hat{\mathcal{a}}$ 如下所示：</p>
 <p><img src="/2024/01/31/vins/image-20240131103735319.png" alt="image-20240131103735319" title="formula 1"></p>
-<p>作者假设加速度计和陀螺仪的观测噪声服从高斯分布：$\mathbf{n}_a\sim\mathcal{N}(0, \sigma_a^2), \mathbf{n}_w\sim\mathcal{N}(0, \sigma_w^2)$ ；偏差 $\mathbf{b}_a$ 、 $\mathbf{b}_w$ 被建模为随机游走，其对应导数为高斯白噪声，$\mathbf{n}_{b_a}\sim\mathcal{N}(0, \sigma_{b_a}^2), \mathbf{n}_{b_w}\sim\mathcal{N}(0, \sigma_{b_w}^2)$ 。</p>
+<p>作者假设加速度计和陀螺仪的观测噪声服从高斯分布：$\mathbf{n}_a\sim\mathcal{N}(0, \sigma_a^2), \mathbf{n}_w\sim\mathcal{N}(0, \sigma_w^2)$ ；偏差 $\mathbf{b}_a$ 、 $\mathbf{b}_w$ 被建模为<strong>随机游走</strong>，其对应导数为高斯白噪声，$\mathbf{n}_{b_a}\sim\mathcal{N}(0, \sigma_{b_a}^2), \mathbf{n}_{b_w}\sim\mathcal{N}(0, \sigma_{b_w}^2)$ 。</p>
 <p><img src="/2024/01/31/vins/image-20240131104508327.png" alt="image-20240131104508327" title="formula 2"></p>
 <h3 id="4-2-2-Preintegration"><a href="#4-2-2-Preintegration" class="headerlink" title="4.2.2 Preintegration"></a>4.2.2 Preintegration</h3><p>连续两帧图片 $b_k, b_{k+1}$ 之间存在多组惯性观测数据，给定偏差估计，在局部坐标系 $b_k$ 中进行积分：</p>
 <p><img src="/2024/01/31/vins/image-20240131104847991.png" alt="image-20240131104847991" title="formula 3"></p>
