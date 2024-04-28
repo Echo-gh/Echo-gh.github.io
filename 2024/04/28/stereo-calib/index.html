@@ -27,7 +27,7 @@
 
   <meta name="description" content="1 介绍最近使用两个Flir相机采了数据，打算在ORB-SLAM2系列代码上进行测试，采集完数据后需要对双目相机进行标定，在网上搜寻了相关资料后，发现使用Matlab工具库可以比较方便地进行双目相机的标定，在此记录一下。注：本文主要参考了该文章。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用Matlab对双目相机进行">
+<meta property="og:title" content="使用Matlab对双目相机进行标定">
 <meta property="og:url" content="http://echo-gh.github.io/2024/04/28/stereo-calib/index.html">
 <meta property="og:site_name" content="Echo&#39;s blog">
 <meta property="og:description" content="1 介绍最近使用两个Flir相机采了数据，打算在ORB-SLAM2系列代码上进行测试，采集完数据后需要对双目相机进行标定，在网上搜寻了相关资料后，发现使用Matlab工具库可以比较方便地进行双目相机的标定，在此记录一下。注：本文主要参考了该文章。">
@@ -42,7 +42,7 @@
 <meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428221338847.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428221819515.png">
 <meta property="article:published_time" content="2024-04-28T13:22:51.000Z">
-<meta property="article:modified_time" content="2024-04-28T14:34:20.802Z">
+<meta property="article:modified_time" content="2024-04-28T14:41:36.364Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="SLAM">
 <meta property="article:tag" content="Stereo">
@@ -63,7 +63,7 @@
   };
 </script>
 
-  <title>使用Matlab对双目相机进行 | Echo's blog</title>
+  <title>使用Matlab对双目相机进行标定 | Echo's blog</title>
   
 
 
@@ -224,7 +224,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          使用Matlab对双目相机进行
+          使用Matlab对双目相机进行标定
         </h1>
 
         <div class="post-meta">
@@ -235,7 +235,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-04-28 21:22:51 / 修改时间：22:34:20" itemprop="dateCreated datePublished" datetime="2024-04-28T21:22:51+08:00">2024-04-28</time>
+              <time title="创建时间：2024-04-28 21:22:51 / 修改时间：22:41:36" itemprop="dateCreated datePublished" datetime="2024-04-28T21:22:51+08:00">2024-04-28</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -343,7 +343,7 @@
 <li><p><code>stereoParams.CameraParameters1</code></p>
 <ul>
 <li><code>K</code>：左相机内参矩阵；</li>
-<li><code>RadialDistortion</code>：左相机径向畸变参数 <code>k1, k2, k3</code>，只有两位时表示 <code>k3 = 0</code>；</li>
+<li><code>RadialDistortion</code>：左相机径向畸变参数 <code>k1, k2, k3</code>，只有两个数值时表示 <code>k3 = 0</code>；</li>
 <li><code>TangentialDistortion</code>：左相机切向畸变参数 <code>p1, p2</code>。</li>
 </ul>
 </li>
@@ -363,7 +363,7 @@
 </ul>
 <p><img src="/2024/04/28/stereo-calib/image-20240428221819515.png" alt="fig9" title="fig 9"></p>
 <blockquote>
-<p>记录一下OpenCV的相机参数：</p>
+<p>记录一下OpenCV的相机参数格式：</p>
 <ul>
 <li><p>内参矩阵: </p>
 <script type="math/tex; mode=display">

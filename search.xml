@@ -4804,7 +4804,7 @@
       </tags>
   </entry>
   <entry>
-    <title>使用Matlab对双目相机进行</title>
+    <title>使用Matlab对双目相机进行标定</title>
     <url>/2024/04/28/stereo-calib/</url>
     <content><![CDATA[<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>最近使用两个Flir相机采了数据，打算在ORB-SLAM2系列代码上进行测试，采集完数据后需要对双目相机进行标定，在网上搜寻了相关资料后，发现使用Matlab工具库可以比较方便地进行双目相机的标定，在此记录一下。注：本文主要参考了该<a href="https://www.cnblogs.com/champrin/p/17034043.html">文章</a>。</p>
 <span id="more"></span>
@@ -4887,7 +4887,7 @@
 <li><p><code>stereoParams.CameraParameters1</code></p>
 <ul>
 <li><code>K</code>：左相机内参矩阵；</li>
-<li><code>RadialDistortion</code>：左相机径向畸变参数 <code>k1, k2, k3</code>，只有两位时表示 <code>k3 = 0</code>；</li>
+<li><code>RadialDistortion</code>：左相机径向畸变参数 <code>k1, k2, k3</code>，只有两个数值时表示 <code>k3 = 0</code>；</li>
 <li><code>TangentialDistortion</code>：左相机切向畸变参数 <code>p1, p2</code>。</li>
 </ul>
 </li>
@@ -4907,7 +4907,7 @@
 </ul>
 <p><img src="/2024/04/28/stereo-calib/image-20240428221819515.png" alt="fig9" title="fig 9"></p>
 <blockquote>
-<p>记录一下OpenCV的相机参数：</p>
+<p>记录一下OpenCV的相机参数格式：</p>
 <ul>
 <li><p>内参矩阵: </p>
 <script type="math/tex; mode=display">
