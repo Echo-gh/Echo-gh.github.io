@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="1 介绍最近使用两个Flir相机采了数据，打算在ORB-SLAM2系列代码上进行测试，采集完数据后需要对双目相机进行标定，在网上搜寻了相关资料后，发现使用Matlab工具库可以比较方便地进行双目相机的标定，在此记录一下。注：本文主要参考了该文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Matlab对双目相机进行">
+<meta property="og:url" content="http://echo-gh.github.io/2024/04/28/stereo-calib/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="1 介绍最近使用两个Flir相机采了数据，打算在ORB-SLAM2系列代码上进行测试，采集完数据后需要对双目相机进行标定，在网上搜寻了相关资料后，发现使用Matlab工具库可以比较方便地进行双目相机的标定，在此记录一下。注：本文主要参考了该文章。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428215150018.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428215334884.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428215622524.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428215905715.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428220159080.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428220342804.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428220540621.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428221338847.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428221819515.png">
+<meta property="article:published_time" content="2024-04-28T13:22:51.000Z">
+<meta property="article:modified_time" content="2024-04-28T14:34:20.802Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="Stereo">
+<meta property="article:tag" content="Calibration">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428215150018.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/04/28/stereo-calib/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>使用Matlab对双目相机进行 | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/04/28/stereo-calib/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用Matlab对双目相机进行
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-04-28 21:22:51 / 修改时间：22:34:20" itemprop="dateCreated datePublished" datetime="2024-04-28T21:22:51+08:00">2024-04-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Experiments/" itemprop="url" rel="index"><span itemprop="name">Experiments</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>最近使用两个Flir相机采了数据，打算在ORB-SLAM2系列代码上进行测试，采集完数据后需要对双目相机进行标定，在网上搜寻了相关资料后，发现使用Matlab工具库可以比较方便地进行双目相机的标定，在此记录一下。注：本文主要参考了该<a target="_blank" rel="noopener" href="https://www.cnblogs.com/champrin/p/17034043.html">文章</a>。</p>
+<span id="more"></span>
+<p>简单记录一下相机的相关参数：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>型号</td>
+<td>FLIR BFS-U3-31S4</td>
+</tr>
+<tr>
+<td>分辨率</td>
+<td>2048*1536</td>
+</tr>
+<tr>
+<td>最大帧率</td>
+<td>55 FPS</td>
+</tr>
+<tr>
+<td>快门类型</td>
+<td>全局快门</td>
+</tr>
+<tr>
+<td>传感器型号</td>
+<td>Sony IMX265, CMOS</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="2-标定图片采集"><a href="#2-标定图片采集" class="headerlink" title="2 标定图片采集"></a>2 标定图片采集</h1><h2 id="2-1-标定棋盘"><a href="#2-1-标定棋盘" class="headerlink" title="2.1 标定棋盘"></a>2.1 标定棋盘</h2><p>标定棋盘可以从网上下载，也可使用程序生成特定参数的图片，此处可参考<a target="_blank" rel="noopener" href="https://docs.opencv.org/4.x/da/d0d/tutorial_camera_calibration_pattern.html">OpenCV网站</a>提供的<a target="_blank" rel="noopener" href="https://github.com/opencv/opencv/blob/4.x/doc/pattern.png">成品图片</a>或<a target="_blank" rel="noopener" href="https://github.com/opencv/opencv/blob/4.x/doc/pattern_tools/gen_pattern.py">生成程序</a>。将生成的图片保存下来，并进行打印，在打印时选择1:1比例即可。</p>
+<p>注：本人尝试了使用上文所述的OpenCV提供的成品图片与生成程序制作的图片，在打印后使用直尺测量棋盘网格大小，发现均无法实现严格定义的尺寸，不知道是不是打印时出现了问题；后面在进行标定时，手动量了网格大小作为标定参数。</p>
+<h2 id="2-2-图片采集"><a href="#2-2-图片采集" class="headerlink" title="2.2 图片采集"></a>2.2 图片采集</h2><p>为了保证标定效果，建议将标定棋盘放在不同的位置，抓拍十张以上的照片。该<a target="_blank" rel="noopener" href="https://www.cnblogs.com/champrin/p/17034043.html">文章</a>介绍了棋盘图的拍摄规范，现记录如下：</p>
+<ol>
+<li><p>在一次标定的整个过程中，不能调节相机的光圈、焦距。也就是说，在标定过程中，要保证摄像头进光量与焦距的一致，每次改变参数均需重新进行标定。</p>
+</li>
+<li><p>把相机图像分成四个象限（如fig 1所示），应保证拍摄的标定板图像均匀分布在五个位置（四个象限以及正中心）中，且在每个位置进行不同方向的两次倾斜，参考fig 2；或者，也可以固定住标定板，移动相机在不同角度进行拍摄。</p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428215150018.png" alt="fig1" title="fig 1"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428215334884.png" alt="fig2" title="fig 2"></p>
+</li>
+<li><p>标定板的成像应大致占摄像头视野的1/4左右。</p>
+</li>
+<li><p>标定板成像不能过曝，过曝会导致特征轮廓的提取的偏移。</p>
+</li>
+<li><p>拍摄过程中可以对标定板适当的进行补光，调节标定板到镜头的距离，以便于拍出清晰的图片。</p>
+</li>
+<li><p>标定图片数量通常在15~25张之间，数量太少，标定的参数会不准确。</p>
+</li>
+<li><p>标定时用的标定板最好选择x方向与y方向棋盘格不同的，便于标定程序识别标定板方向。</p>
+</li>
+</ol>
+<p>按照以上采集规则采集标定图片即可。</p>
+<h1 id="3-标定过程"><a href="#3-标定过程" class="headerlink" title="3 标定过程"></a>3 标定过程</h1><p>使用Matlab标定的过程如下所示：</p>
+<p>打开Matlab，在命令行窗口输入<code>stereoCameraCalibrator</code>：</p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428215622524.png" alt="fig3" title="fig 3"></p>
+<p>然后会跳出fig 4所示的窗口，点击<code>Add Images</code>：</p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428215905715.png" alt="fig4" title="fig 4"></p>
+<p>在弹出的窗口中分别输入左图、右图的文件夹路径，并设置网格的尺寸（注意，此处的网格尺寸本人是使用实际测量得到的尺寸），：</p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428220159080.png" alt="fig5" title="fig 5"></p>
+<p>然后点击确定，Matlab开始对标定图片进行处理：</p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428220342804.png" alt="fig6" title="fig 6"></p>
+<p>接下来对标定参数进行设定：</p>
+<ul>
+<li>选择<code>Compute Intrinsics</code>；</li>
+<li>选择<code>2 Coefficients</code>（注：<code>3 Coefficients</code>是针对鱼眼相机标定的）；</li>
+<li>选择<code>Tangential Distortion</code>（注：无需勾选<code>Skew</code>，否则相机内参标定结果中会出现参数<code>s</code>，即相机内参矩阵的第一行会变成<code>[fx, s, u0]</code>，与OpenCV的参数格式不同）；</li>
+<li>点击<code>Calibrate</code>按钮进行标定计算。</li>
+</ul>
+<p><img src="/2024/04/28/stereo-calib/image-20240428220540621.png" alt="fig7" title="fig 7"></p>
+<p>然后即可得到标定后的结果，fig 8左下区域表示重投影误差，对误差较大的图片进行剔除，来实现达到较低像素精度的表现（<code>Overall Mean Error</code>小于0.1 pixels）。</p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428221338847.png" alt="fig8" title="fig 8"></p>
+<p>最后，点击<code>Export Camera Parameters</code>按钮，即可返回工作区查看标定结果：</p>
+<ul>
+<li><p><code>stereoParams.CameraParameters1</code></p>
+<ul>
+<li><code>K</code>：左相机内参矩阵；</li>
+<li><code>RadialDistortion</code>：左相机径向畸变参数 <code>k1, k2, k3</code>，只有两位时表示 <code>k3 = 0</code>；</li>
+<li><code>TangentialDistortion</code>：左相机切向畸变参数 <code>p1, p2</code>。</li>
+</ul>
+</li>
+<li><p><code>stereoParams.CameraParameters2</code> 参数同上</p>
+</li>
+<li><p><code>stereoParams.PoseCamera2</code></p>
+<ul>
+<li><p><code>R</code>: 左相机到右相机的旋转矩阵，本次标定得到的参数为 </p>
+<p>0.995139840336347    -0.00663565457289115    0.0982479835097892<br>-0.000660670904084147    0.997254587919016    0.0740462719414676<br>-0.0984695977919431    -0.0737513048214236    0.992403387412513</p>
+<p>可以看到，由于两个相机固定位置较好，旋转矩阵基本为一个单位矩阵；</p>
+</li>
+<li><p><code>Translation</code>: 左相机到右相机的平移向量，本次标定得到的参数为</p>
+<p>[-3.858979029808597e+02,-2.237062834310436,-22.218127814587270]</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2024/04/28/stereo-calib/image-20240428221819515.png" alt="fig9" title="fig 9"></p>
+<blockquote>
+<p>记录一下OpenCV的相机参数：</p>
+<ul>
+<li><p>内参矩阵: </p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+
+f_x & 0 & c_x \\
+
+0 & f_y & c_y \\
+
+0 & 0 & 1
+
+\end{bmatrix}</script></li>
+<li><p>畸变向量: $(k_1 k_2 p_1 p_2 k_3)$</p>
+</li>
+</ul>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/Stereo/" rel="tag"><i class="fa fa-tag"></i> Stereo</a>
+              <a href="/tags/Calibration/" rel="tag"><i class="fa fa-tag"></i> Calibration</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/04/17/imu-preinteg/" rel="prev" title="IMU预积分总结与公式推导">
+      <i class="fa fa-chevron-left"></i> IMU预积分总结与公式推导
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%BB%8B%E7%BB%8D"><span class="nav-text">1 介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%A0%87%E5%AE%9A%E5%9B%BE%E7%89%87%E9%87%87%E9%9B%86"><span class="nav-text">2 标定图片采集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E6%A0%87%E5%AE%9A%E6%A3%8B%E7%9B%98"><span class="nav-text">2.1 标定棋盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%9B%BE%E7%89%87%E9%87%87%E9%9B%86"><span class="nav-text">2.2 图片采集</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%A0%87%E5%AE%9A%E8%BF%87%E7%A8%8B"><span class="nav-text">3 标定过程</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:zxr_404@outlook.com" title="E-Mail → mailto:zxr_404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
