@@ -4849,7 +4849,8 @@
 </li>
 <li><p>把相机图像分成四个象限（如fig 1所示），应保证拍摄的标定板图像均匀分布在五个位置（四个象限以及正中心）中，且在每个位置进行不同方向的两次倾斜，参考fig 2；或者，也可以固定住标定板，移动相机在不同角度进行拍摄。</p>
 <p><img src="/2024/04/28/stereo-calib/image-20240428215150018.png" alt="fig1" title="fig 1"></p>
-<p><img src="/2024/04/28/stereo-calib/image-20240428215334884.png" alt="fig2" title="fig 2"></p>
+<p><img src="/2024/04/28/stereo-calib/1.png" alt="img2" title="img 2"></p>
+<p>图片参考自<a href="https://community.element14.com/technologies/fpga-group/b/blog/posts/stereo-calibration-for-the-dual-camera-mezzanine">文章</a>。</p>
 </li>
 <li><p>标定板的成像应大致占摄像头视野的1/4左右。</p>
 </li>
@@ -4895,11 +4896,11 @@
 </li>
 <li><p><code>stereoParams.PoseCamera2</code></p>
 <ul>
-<li><p><code>R</code>: 左相机到右相机的旋转矩阵，本次标定得到的参数为 </p>
+<li><p><code>R</code>: 左相机到右相机的旋转矩阵；本次标定得到的参数为 </p>
 <p>0.995139840336347    -0.00663565457289115    0.0982479835097892<br>-0.000660670904084147    0.997254587919016    0.0740462719414676<br>-0.0984695977919431    -0.0737513048214236    0.992403387412513</p>
 <p>可以看到，由于两个相机固定位置较好，旋转矩阵基本为一个单位矩阵；</p>
 </li>
-<li><p><code>Translation</code>: 左相机到右相机的平移向量，本次标定得到的参数为</p>
+<li><p><code>Translation</code>: 左相机到右相机的平移向量；本次标定得到的参数为</p>
 <p>[-3.858979029808597e+02,-2.237062834310436,-22.218127814587270]</p>
 </li>
 </ul>
@@ -4920,7 +4921,7 @@ f_x & 0 & c_x \\
 0 & 0 & 1
 
 \end{bmatrix}</script></li>
-<li><p>畸变向量: $(k_1 k_2 p_1 p_2 k_3)$</p>
+<li><p>畸变向量: $(k_1, k_2, p_1, p_2, k_3)$</p>
 </li>
 </ul>
 </blockquote>
