@@ -42,7 +42,7 @@
 <meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428221338847.png">
 <meta property="og:image" content="http://echo-gh.github.io/2024/04/28/stereo-calib/image-20240428221819515.png">
 <meta property="article:published_time" content="2024-04-28T13:22:51.000Z">
-<meta property="article:modified_time" content="2024-04-29T03:25:20.916Z">
+<meta property="article:modified_time" content="2024-04-29T08:10:39.784Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="SLAM">
 <meta property="article:tag" content="Stereo">
@@ -241,7 +241,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-04-29 11:25:20" itemprop="dateModified" datetime="2024-04-29T11:25:20+08:00">2024-04-29</time>
+                <time title="修改时间：2024-04-29 16:10:39" itemprop="dateModified" datetime="2024-04-29T16:10:39+08:00">2024-04-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -310,8 +310,8 @@
 <li><p>在一次标定的整个过程中，不能调节相机的光圈、焦距。也就是说，在标定过程中，要保证摄像头进光量与焦距的一致，每次改变参数均需重新进行标定。</p>
 </li>
 <li><p>把相机图像分成四个象限（如fig 1所示），应保证拍摄的标定板图像均匀分布在五个位置（四个象限以及正中心）中，且在每个位置进行不同方向的两次倾斜，参考fig 2；或者，也可以固定住标定板，移动相机在不同角度进行拍摄。</p>
-<p><img src="/2024/04/28/stereo-calib/image-20240428215150018.png" alt="fig1" title="fig 1"></p>
-<p><img src="/2024/04/28/stereo-calib/1.png" alt="img2" title="img 2"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428215150018.png" alt="fig1" title="fig 1" style="zoom:50%;"></p>
+<p><img src="/2024/04/28/stereo-calib/1.png" alt="img2" title="img 2" style="zoom:50%;"></p>
 <p>图片参考自<a target="_blank" rel="noopener" href="https://community.element14.com/technologies/fpga-group/b/blog/posts/stereo-calibration-for-the-dual-camera-mezzanine">文章</a>。</p>
 </li>
 <li><p>标定板的成像应大致占摄像头视野的1/4左右。</p>
@@ -328,13 +328,13 @@
 <p>按照以上采集规则采集标定图片即可。</p>
 <h1 id="3-标定过程"><a href="#3-标定过程" class="headerlink" title="3 标定过程"></a>3 标定过程</h1><p>使用Matlab标定的过程如下所示：</p>
 <p>打开Matlab，在命令行窗口输入<code>stereoCameraCalibrator</code>：</p>
-<p><img src="/2024/04/28/stereo-calib/image-20240428215622524.png" alt="fig3" title="fig 3"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428215622524.png" alt="fig3" title="fig 3" style="zoom: 67%;"></p>
 <p>然后会跳出fig 4所示的窗口，点击<code>Add Images</code>：</p>
-<p><img src="/2024/04/28/stereo-calib/image-20240428215905715.png" alt="fig4" title="fig 4"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428215905715.png" alt="fig4" title="fig 4" style="zoom:50%;"></p>
 <p>在弹出的窗口中分别输入左图、右图的文件夹路径，并设置网格的尺寸（注意，此处的网格尺寸本人是使用实际测量得到的尺寸），：</p>
-<p><img src="/2024/04/28/stereo-calib/image-20240428220159080.png" alt="fig5" title="fig 5"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428220159080.png" alt="fig5" title="fig 5" style="zoom:67%;"></p>
 <p>然后点击确定，Matlab开始对标定图片进行处理：</p>
-<p><img src="/2024/04/28/stereo-calib/image-20240428220342804.png" alt="fig6" title="fig 6"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428220342804.png" alt="fig6" title="fig 6" style="zoom: 50%;"></p>
 <p>接下来对标定参数进行设定：</p>
 <ul>
 <li>选择<code>Compute Intrinsics</code>；</li>
@@ -342,9 +342,9 @@
 <li>选择<code>Tangential Distortion</code>（注：无需勾选<code>Skew</code>，否则相机内参标定结果中会出现参数<code>s</code>，即相机内参矩阵的第一行会变成<code>[fx, s, u0]</code>，与OpenCV的参数格式不同）；</li>
 <li>点击<code>Calibrate</code>按钮进行标定计算。</li>
 </ul>
-<p><img src="/2024/04/28/stereo-calib/image-20240428220540621.png" alt="fig7" title="fig 7"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428220540621.png" alt="fig7" title="fig 7" style="zoom:50%;"></p>
 <p>然后即可得到标定后的结果，fig 8左下区域表示重投影误差，对误差较大的图片进行剔除，来实现达到较低像素精度的表现（<code>Overall Mean Error</code>小于0.1 pixels）。</p>
-<p><img src="/2024/04/28/stereo-calib/image-20240428221338847.png" alt="fig8" title="fig 8"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428221338847.png" alt="fig8" title="fig 8" style="zoom:50%;"></p>
 <p>最后，点击<code>Export Camera Parameters</code>按钮，即可返回工作区查看标定结果：</p>
 <ul>
 <li><p><code>stereoParams.CameraParameters1</code></p>
@@ -368,7 +368,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2024/04/28/stereo-calib/image-20240428221819515.png" alt="fig9" title="fig 9"></p>
+<p><img src="/2024/04/28/stereo-calib/image-20240428221819515.png" alt="fig9" title="fig 9" style="zoom:50%;"></p>
 <blockquote>
 <p>记录一下OpenCV的相机参数格式：</p>
 <ul>
