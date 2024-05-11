@@ -4933,7 +4933,7 @@ f_x & 0 & c_x \\
 <p><img src="/2024/04/28/stereo-calib/图片2.png" alt="图片2" title="figure 10" style="zoom: 33%;"></p>
 <p>经过立体校正之后，即可根据双目匹配点进行深度获取，该过程如Fig 11所示：</p>
 <p><img src="/2024/04/28/stereo-calib/image-20240509095832658.png" alt="image-20240509095832658" title="fig 11" style="zoom: 50%;"></p>
-<p>根据比例关系，可以求得深度信息：$z = \frac{bf}{x_l - x_r} = \frac{bf}{d}$ ，其中，$d$ 即为视差。</p>
+<p>根据比例关系，可以求得深度信息：$z = \frac{bf}{x_l - x_r} = \frac{bf}{d}$ ，其中，$d$ 即为视差。此处参考<a href="https://437436999.github.io/2020/02/25/%E5%8F%8C%E7%9B%AE%E5%8C%B9%E9%85%8D/">文章</a>。</p>
 <h2 id="4-2-OpenCV双目校正过程"><a href="#4-2-OpenCV双目校正过程" class="headerlink" title="4.2 OpenCV双目校正过程"></a>4.2 OpenCV双目校正过程</h2><p>在OpenCV中，立体校正的流程如下所示：</p>
 <ol>
 <li>利用 <code>stereoRectify()</code>  函数实现Bouguet算法，得到立体校正所需的变换矩阵和投影矩阵；</li>
