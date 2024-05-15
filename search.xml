@@ -43,6 +43,7 @@
 </ol>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -186,6 +187,7 @@
 <h1 id="7-Object-Instance-Segmentation"><a href="#7-Object-Instance-Segmentation" class="headerlink" title="7 Object Instance Segmentation"></a>7 Object Instance Segmentation</h1><p>使用实例分割网络SharpMask 进行物体语义信息的获取。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -287,6 +289,7 @@
 <p>前人的工作使用硬数据关联 a hard data association，在传感器位姿节点和地标节点之间定义一个单独的因子factor；而本文考虑使用soft semantic data association multiple factors，在节点间使用多个因子进行关联：Semantic Factors, Geometric Factors and Inertial Factors。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -336,6 +339,7 @@
 <h2 id="3-3-Real-time-semantic-segmentation"><a href="#3-3-Real-time-semantic-segmentation" class="headerlink" title="3.3 Real-time semantic segmentation"></a>3.3 Real-time semantic segmentation</h2><p>高动态场景中，图片内容会快速发生变化，因此需要在每一帧中提取新的关键点来保持足够多的数量进行跟踪，为了让每个新的地图点得到一致的语义观测，作者对<strong>所有帧</strong>进行语义分割。作者使用<strong>ICNet</strong> 进行语义分割。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -378,6 +382,7 @@
 <p><img src="/2024/03/01/chen2022b/fig7.png" alt="fig7" title="figure 7"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -444,6 +449,7 @@
 <p>作者提到本算法将<strong>相机运动和3D 场景理解</strong>结合了起来，提供了部分标注的地图和相机位姿，方便后期机器人的任务开发（如抓住某个物体等）；此外，基于提前构建的物体3D 模型库，可以实现在观察到物体某一面之后即可将整个3D 物体添加进地图中去，完成对于未观测信息的补充。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -502,6 +508,7 @@
 <p><img src="/2024/03/01/cfp-slam/t5.png" alt="t5" title="table 5"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -618,6 +625,7 @@
 <h2 id="8-4-Dynamic-Object"><a href="#8-4-Dynamic-Object" class="headerlink" title="8.4 Dynamic Object"></a>8.4 Dynamic Object</h2><p><img src="/2024/01/31/cubeslam/fig12.png" alt="fig12" title="figure 12"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -682,6 +690,7 @@
 <p><img src="/2024/01/30/detect-slam/fig7.png" alt="fig7" title="figure 7"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -736,6 +745,7 @@
 </ul>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -833,6 +843,7 @@
 <p>本文方法是基于平面道路或者有着较小俯仰角变化的假设，利用IPM 来获取路标位置的；所以当出现颠簸，或者汽车刹车时，IPM 的假设基础不再满足，定位误差（特别是径向误差）会增大。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -891,6 +902,7 @@
 <p><img src="/2024/02/28/doherty2019/f14.png" alt="f14" title="formula 14"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -953,6 +965,7 @@
 <h1 id="4-Experimental-Results"><a href="#4-Experimental-Results" class="headerlink" title="4 Experimental Results"></a>4 Experimental Results</h1><p><img src="/2024/02/04/ds-slam/t3.png" alt="t3" title="table 3"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -1002,6 +1015,7 @@
 <p><img src="/2024/01/30/dynaslam/t2.png" alt="t2" title="table 2"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -1060,6 +1074,7 @@
 <p><img src="/2024/02/24/dp-slam/fig10.png" alt="fig10" title="figure 10"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -1070,7 +1085,7 @@
       </tags>
   </entry>
   <entry>
-    <title>论文介绍 DynaTM-SLAM_Fast filtering of dynamic feature points and object-based localization in dynamic indoor environments</title>
+    <title>论文记录 DynaTM-SLAM_Fast filtering of dynamic feature points and object-based localization in dynamic indoor environments</title>
     <url>/2024/03/01/dynatm-slam/</url>
     <content><![CDATA[<p>Zhong, Meiling, Chuyuan Hong, Zhaoqian Jia, Chunyu Wang, and Zhiguo Wang. “DynaTM-SLAM: Fast Filtering of Dynamic Feature Points and Object-Based Localization in Dynamic Indoor Environments.” <em>Robotics and Autonomous Systems</em> 174 (April 2024): 104634. <a href="https://doi.org/10.1016/j.robot.2024.104634">https://doi.org/10.1016/j.robot.2024.104634</a>.</p>
 <h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h1><p>针对dynamic SLAM，作者提到DS-SLAM 和 DynaSLAM 是两个代表性作品：</p>
@@ -1120,6 +1135,7 @@
 <p><img src="/2024/03/01/dynatm-slam/t3.png" alt="t3" title="table 3"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -1185,6 +1201,7 @@
 </ol>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -1227,6 +1244,7 @@
 <p><img src="/2024/01/31/laneloc/fig11.png" alt="fig11" title="figure 11"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -1279,6 +1297,7 @@
 <p>完成地图匹配之后即可得到两个相机轨迹之间的相对转换关系。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Topology</category>
       </categories>
@@ -1314,6 +1333,7 @@
 <p><img src="/2024/02/29/hu2022/fig6.png" alt="fig6" title="figure 6"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -1380,6 +1400,7 @@
 <p><img src="/2024/02/26/li2020/t1.png" alt="t1" title="table 1"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Topology</category>
       </categories>
@@ -1486,6 +1507,7 @@
 <p>上述优化策略可应用于对相机位姿和特征点地标的同时优化中，但是会大幅增加计算复杂度。在作者的实验中，仅利用其对相机位姿进行优化（match local map）来限制约束数量以及计算负载。作者还利用Kd-tree 来加速最邻近点的搜寻。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -1545,6 +1567,7 @@
 <p><img src="/2024/02/20/liu2019/fig9.png" alt="fig9" title="figure 9"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Topology</category>
       </categories>
@@ -1669,6 +1692,7 @@
 <h2 id="7-4-Essential-Graph-Optimization"><a href="#7-4-Essential-Graph-Optimization" class="headerlink" title="7.4 Essential Graph Optimization"></a>7.4 Essential Graph Optimization</h2><p>利用essential graph 将回环闭合误差分布至整个图上以进行优化；利用<strong>相似转换</strong>进行优化来矫正尺度偏移。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>ORB-SLAM</category>
       </categories>
@@ -1729,6 +1753,7 @@
 <h2 id="3-6-Localization-Mode"><a href="#3-6-Localization-Mode" class="headerlink" title="3.6 Localization Mode"></a>3.6 Localization Mode</h2><p>本系统引入了一个<strong>定位模式</strong>，可在已经制图的区域进行<strong>轻量级长期定位</strong>。该过程利用<strong>视觉里程计匹配点</strong>和<strong>地图匹配点</strong>进行定位，其中视觉里程计匹配是基于当前帧的ORB 和历史帧创建的3D 点之间进行的，这些匹配可在无地图区域进行定位，但会存在累积漂移；而地图点匹配会得到与地图无偏的定位结果。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>ORB-SLAM</category>
       </categories>
@@ -1925,6 +1950,7 @@
 <p>其中，$\Delta T$  表示连续两帧之间的时间间隔。然后该部分2D 位姿被转换至相机坐标系，并使用在高度、pitch、roll 方向的弱正则化进行补充，作为一个简化的6自由度运动模型。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -1990,6 +2016,7 @@
 <p><img src="/2024/03/02/qin2021/t1.png" alt="t1" title="table 1"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -2041,6 +2068,7 @@
 <p>其中，X 表示地图点的3D 位姿；T 表示待优化关键帧位姿；x 表示关键帧中的匹配特征点。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -2102,6 +2130,7 @@
 <p><img src="/2024/02/23/rdmo-slam/fig10.png" alt="fig10" title="figure 10"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -2181,6 +2210,7 @@
 <p>作者通过进一步实验：对于fr1_desk2, fr3_office 数据序列，作者舍弃宽高标准差大于一定值的物体bbox ，从而实现两个数据序列的定位精度分别达到0.0239和0.0087。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -2226,6 +2256,7 @@
 <p>作者穷尽匹配对所有的转换假设，对于每一个转换假设P，将query经P转换后与数据库地图进行对齐，计算正确对齐的体素个数，体素的正确对齐包含几何（占用）与语义的一致性。作者使用ICP (Iterative Closest Point) 算法进一步细调对齐关系。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -2267,6 +2298,7 @@
 <p><img src="/2024/02/22/sad-slam/t3.png" alt="t3" title="table 3"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -2332,6 +2364,7 @@
 <p><img src="/2024/02/19/so-slam/f21.png" alt="f21" title="formula 21"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -2353,6 +2386,7 @@
 <p><img src="/2024/02/18/sof-slam/image-20240218104037049.png" alt="image-20240218104037049" title="figure 3"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -2390,6 +2424,7 @@
 <h3 id="3-2-3-3D-Reconstruction"><a href="#3-2-3-3D-Reconstruction" class="headerlink" title="3.2.3 3D Reconstruction"></a>3.2.3 3D Reconstruction</h3><p>利用左图、语义分割图以及利用视觉里程计得到的深度图进行3D 重建，值得注意的是，本算法<strong>只对左图</strong>进行语义分割、光流跟踪以及几何约束，以减少时间消耗。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -2468,6 +2503,7 @@
 <p>其中，作者利用稠密光流估计来最大化<strong>动态物体的跟踪点数量</strong>，本方法利用稠密光流在语义掩码中的所有点进行采样来大幅增加物体特征点的数量；此外，稠密光流法通过对同一物体掩码内的所有点赋予一个独特的<strong>物体识别码</strong>，实现同时跟踪多个物体，且在实例分割失败的情况下可以<strong>恢复物体掩码</strong>。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -2503,6 +2539,7 @@
 </ul>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -2570,6 +2607,7 @@
 <p>其中，$w_t^{(j)}$ 是在状态 $\mathbf{x}_t^{(j)}$ 下粒子 j 的<strong>权重</strong>；s 是<strong>尺度参数</strong>，本文设定为3；$n_{\lambda_t}$ 是映射到图像中的地图特征点个数；$N_c = 400$ 是<strong>截断值</strong>，作者认为更多的映射特征点不会提供更多的信息，因为更多的特征点意味着它们之间的间距越小，那么它们之间的相关性越强。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -2723,6 +2761,7 @@
 <p><img src="/2024/01/31/vins/image-20240131205629702.png" alt="image-20240131205629702" title="figure 13"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Multi-source</category>
       </categories>
@@ -2760,6 +2799,7 @@
 <p><img src="/2024/02/21/wang2019/f5.png" alt="f5" title="formula 5"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -2812,6 +2852,7 @@
 <p><img src="/2024/02/29/wang2020/f6.png" alt="f6" title="formula 6"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Topology</category>
       </categories>
@@ -2876,6 +2917,7 @@
 <h2 id="3-4-Obtaining-Semantic-Constraints-amp-System-Integration"><a href="#3-4-Obtaining-Semantic-Constraints-amp-System-Integration" class="headerlink" title="3.4 Obtaining Semantic Constraints &amp; System Integration"></a>3.4 Obtaining Semantic Constraints &amp; System Integration</h2><p>类似于传统VO 使用的关键帧active window (AW)，作者也定义了一个关键帧active semantic window (ASW)，一个关键帧从AW 中剔除后会被添加进ASW，本算法在尽可能覆盖更多的轨迹的同时，也会限制ASW 中关键帧的数量。且，ASW 中关键帧的位姿<strong>不再进行优化</strong>，因为这些关键帧通常与目前的帧缺少光度/几何约束。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -2963,6 +3005,7 @@
 <p>值得注意的是，作者认为，为了提高精度，当特征点数量充足时，应<strong>优先选择静态物体类别区域的特征点</strong>进行计算。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -3012,6 +3055,7 @@
 <p><img src="/2024/03/01/xiao2020/f21.png" alt="f21" title="formula 21"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -3074,6 +3118,7 @@
 <p><img src="/2024/01/30/x-view/t1.png" alt="t1" title="table 1"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Topology</category>
       </categories>
@@ -3129,6 +3174,7 @@
 <p>根据式6，可得到基于最大后验概率的稠密地图点标签。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -3180,6 +3226,7 @@
 <p><img src="/2024/03/01/yolo-slam/a1.png" alt="a1" title="algorithm 1"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -3227,6 +3274,7 @@
 <p><img src="/2024/02/27/yu2021/fig5.png" alt="fig5" title="figure 5"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -3318,6 +3366,7 @@
 <p><img src="/2024/01/30/zhang2018/fig10.png" alt="fig10" title="figure 10"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -3360,6 +3409,7 @@
 <h2 id="3-4-Culling-dynamic-points"><a href="#3-4-Culling-dynamic-points" class="headerlink" title="3.4 Culling dynamic points"></a>3.4 Culling dynamic points</h2><p>由于bbox 的模糊性，作者选择仅对<strong>同时属于动态bbox 内且在静态bbox 外的点</strong>进行剔除。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -3408,6 +3458,7 @@
 <h1 id="5-Conclusion"><a href="#5-Conclusion" class="headerlink" title="5 Conclusion"></a>5 Conclusion</h1><p>现有的工作主要聚焦于准确性或者实时性能，但这对于<strong>机器人整体感知层面</strong>的提升较小；作者利用带有GPS 信息的KITTI 数据集进行<strong>地标语义融合</strong>以及<strong>拓扑语义制图</strong>，结合Google Map API，可构建包含<strong>真实名字与位置信息的地标</strong>，使得离线人机语言交互、任务导向的导航或者地标级的定位成为可能。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -3538,6 +3589,7 @@
 <p><img src="/2024/03/04/wang2021a/t1.png" alt="t1" title="table 1"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -3590,6 +3642,7 @@
 <p><img src="/2024/03/04/wang2024/t1.png" alt="t1" title="table 1"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -3725,6 +3778,7 @@
 <h1 id="4-Experiment"><a href="#4-Experiment" class="headerlink" title="4 Experiment"></a>4 Experiment</h1><p><img src="/2024/03/05/liao2020/t6.png" alt="t6" title="table 6"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -3786,6 +3840,7 @@
 <h2 id="4-6-Robust-Long-term-Relocalization"><a href="#4-6-Robust-Long-term-Relocalization" class="headerlink" title="4.6 Robust Long-term Relocalization"></a>4.6 Robust Long-term Relocalization</h2><p>在匹配对的基础上，作者使用GNC（Graduated Non-Convexity）算法来解算重定位位姿，误差模型定位为中心位置和法向量的欧氏距离。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -3820,6 +3875,7 @@
 <p><img src="/2024/03/06/bev-locator/a4.png" alt="a4" title="algorithm 4"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -3898,6 +3954,7 @@
 <p><img src="/2024/03/06/zhou2022/fig13.png" alt="fig13" title="figure 13"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Map Match</category>
       </categories>
@@ -3959,6 +4016,7 @@
 <p><img src="/2024/03/06/ji2023/fig6.png" alt="fig6" title="figure 6"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Topology</category>
       </categories>
@@ -4018,6 +4076,7 @@
 <h3 id="3-4-2-Find-Correspondences"><a href="#3-4-2-Find-Correspondences" class="headerlink" title="3.4.2 Find Correspondences"></a>3.4.2 Find Correspondences</h3><p>由上文得到的得分矩阵 $S$ ，将每行、每列的最高分保留，其余元素置零，如果最大相似度大于阈值 $\tau = 0.5$ ，则将其标记为一对匹配实例。最终，如果达到最小匹配数量 $\epsilon = 4$ ，表示回环检测成功。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Topology</category>
       </categories>
@@ -4105,6 +4164,7 @@
 <p><img src="/2024/03/06/lin2021/t1.png" alt="t1" title="table 1"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Topology</category>
       </categories>
@@ -4187,6 +4247,7 @@
 <p>本文算法着力于对物体位姿与尺寸进行估计，并构建半稠密物体级语义地图，没有对相机位姿解算效果进行介绍。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -4304,6 +4365,7 @@
 <p><img src="/2024/03/15/rld-slam/t3.png" alt="t3" title="table 3"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -4362,6 +4424,7 @@
 </ol>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Pose Optimization</category>
       </categories>
@@ -4406,6 +4469,7 @@
 <p>根据上式可以发现，TD 利用测距来估计双差DD 的整周模糊度，这对于初始位姿估计的精度要求较高，作者利用LiDAR 和 IMU 实现一个<strong>高质量的初始位姿估计</strong>，从而实现对较小周跳的成功探测。</p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>GNSS</category>
         <category>NLOS</category>
       </categories>
@@ -4462,6 +4526,7 @@
 <p><img src="/2024/03/25/hsu2017/fig12.png" alt="fig12" title="figure 12"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>GNSS</category>
         <category>NLOS</category>
       </categories>
@@ -4507,6 +4572,7 @@
 <p><img src="/2024/04/03/singh2020/t2.png" alt="t2" title="table 2"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>Dynamic SLAM</category>
       </categories>
@@ -4627,6 +4693,7 @@
 <p><img src="/2024/04/08/orb-slam3/t3.png" alt="t3" title="table 3"></p>
 ]]></content>
       <categories>
+        <category>论文记录</category>
         <category>SLAM</category>
         <category>ORB-SLAM</category>
       </categories>
@@ -4953,6 +5020,20 @@ f_x & 0 & c_x \\
         <tag>SLAM</tag>
         <tag>Stereo</tag>
         <tag>Calibration</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Waypoint Inertial Explorer 9.0 使用教程</title>
+    <url>/2024/05/15/ie-tutorial/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>随记</category>
+        <category>Multi source</category>
+      </categories>
+      <tags>
+        <tag>Multi source</tag>
+        <tag>IE</tag>
+        <tag>Tight couple</tag>
       </tags>
   </entry>
 </search>
