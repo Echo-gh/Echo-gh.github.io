@@ -5127,4 +5127,26 @@ f_x & 0 & c_x \\
         <tag>Multi-source</tag>
       </tags>
   </entry>
+  <entry>
+    <title>HEXO报错Error_Cannot find module &#39;./languages/vim&#39; 问题记录</title>
+    <url>/2024/05/16/hexo-error/</url>
+    <content><![CDATA[<h1 id="记录"><a href="#记录" class="headerlink" title="记录"></a>记录</h1><p>昨天在使用hexo准备新建博文时，突然报错：</p>
+<blockquote>
+<p>Error: Cannot find module ‘./languages/vim’</p>
+</blockquote>
+<p>首先是看到这个名字以为是跟前天把windows上的Vim卸载了有关（但心里还是十分怀疑这个相关性的）。先在Google搜索了该报错语句之后，竟然没有找到有相同报错内容的问题，于是乎死马当活马医，先重装Vim再说，果不其然，没用。</p>
+<p>然后查看是否跟安装的主题有关，在themes下的languages中看到了vi.kml，基于Linux下vi与vim的关系继续盲目尝试（心里还是十分怀疑这个相关性的），copy一下该文件并改名为vim.kml，果然还是没用……</p>
+<p>最后只好继续在网页大海中遨游，尝试了多种方法之后终于利用该<a href="https://github.com/hexojs/hexo/issues/1922">网页</a>中提供的方法解决了该问题，虽然最终也没有搞清楚问题出在哪，但，能用就行。在此记录一下该解决方法：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm uninstall hexo-cli -g</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>随记</category>
+        <category>问题记录</category>
+      </categories>
+      <tags>
+        <tag>HEXO</tag>
+        <tag>Node</tag>
+        <tag>Blog</tag>
+      </tags>
+  </entry>
 </search>
