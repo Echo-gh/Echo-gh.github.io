@@ -220,7 +220,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-05-16 10:49:36 / 修改时间：11:18:58" itemprop="dateCreated datePublished" datetime="2024-05-16T10:49:36+08:00">2024-05-16</time>
+              <time title="创建时间：2024-05-16 10:49:36 / 修改时间：11:24:23" itemprop="dateCreated datePublished" datetime="2024-05-16T10:49:36+08:00">2024-05-16</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,7 +253,7 @@
 </blockquote>
 <p>首先是看到这个名字以为是跟前天把windows上的Vim卸载了有关（但心里还是十分怀疑这个相关性的）。先在Google搜索了该报错语句之后，竟然没有找到有相同报错内容的问题，于是乎死马当活马医，先重装Vim再说，果不其然，没用。</p>
 <p>然后查看是否跟安装的主题有关，在themes下的languages中看到了vi.kml，基于Linux下vi与vim的关系继续盲目尝试（心里还是十分怀疑这个相关性的），copy一下该文件并改名为vim.kml，果然还是没用……</p>
-<p>最后只好继续在网页大海中遨游，尝试了多种方法之后终于利用该<a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues/1922">网页</a>中提供的方法解决了该问题，虽然最终也没有搞清楚问题出在哪，但，能用就行。在此记录一下该解决方法：</p>
+<p>最后只好继续在网页大海中遨游，尝试了多种方法之后终于利用该<a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues/1922#issuecomment-268710384">网页</a>中提供的方法解决了该问题，虽然最终也没有搞清楚问题出在哪，但，能用就行。在此记录一下该解决方法：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm uninstall hexo-cli -g</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure>
 
       
