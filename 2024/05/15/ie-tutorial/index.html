@@ -25,20 +25,47 @@
 
 
 
-  <meta name="description" content="To know, read. To learn, write. To master, teach.">
+  <meta name="description" content="1 简介最近采完数据之后需要计算参考解，于是便使用组内购买的Waypoint Inertial Explorer 9.0 进行紧组合后处理，因为之前没有使用过该软件，所以向组内用过的师弟请教，在此记录一下使用过程，以免自己后续遗忘操作步骤时再去麻烦师弟。 首先介绍一下IE这个软件：  Inertial Explorer 是 NovAtel 公司 Waypoint 产品组研发的强大的、可配置度高的事">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Waypoint Inertial Explorer 9.0 使用教程">
 <meta property="og:url" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/index.html">
 <meta property="og:site_name" content="Echo&#39;s blog">
-<meta property="og:description" content="To know, read. To learn, write. To master, teach.">
+<meta property="og:description" content="1 简介最近采完数据之后需要计算参考解，于是便使用组内购买的Waypoint Inertial Explorer 9.0 进行紧组合后处理，因为之前没有使用过该软件，所以向组内用过的师弟请教，在此记录一下使用过程，以免自己后续遗忘操作步骤时再去麻烦师弟。 首先介绍一下IE这个软件：  Inertial Explorer 是 NovAtel 公司 Waypoint 产品组研发的强大的、可配置度高的事">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240515220136911.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240515224436241.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240515224908438.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240515225258793.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240515230927985.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240515230336819.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240515230451367.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516083728998.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516084236803.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516084545245.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516085222448.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516085412938.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516085802250.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516090110422.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516090316248.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516090843559.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516092914130.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516093550676.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516094049308.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516094456008.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516094735171.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516094816491.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516094934625.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516095352008.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516101842709.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240516102212282.png">
 <meta property="article:published_time" content="2024-05-15T13:20:44.000Z">
-<meta property="article:modified_time" content="2024-05-15T13:32:58.869Z">
+<meta property="article:modified_time" content="2024-05-16T02:27:24.823Z">
 <meta property="article:author" content="Echo">
 <meta property="article:tag" content="Multi source">
 <meta property="article:tag" content="IE">
 <meta property="article:tag" content="Tight couple">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/05/15/ie-tutorial/image-20240515220136911.png">
 
 <link rel="canonical" href="http://echo-gh.github.io/2024/05/15/ie-tutorial/">
 
@@ -223,10 +250,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2024-05-15 21:20:44 / 修改时间：21:32:58" itemprop="dateCreated datePublished" datetime="2024-05-15T21:20:44+08:00">2024-05-15</time>
+              <time title="创建时间：2024-05-15 21:20:44" itemprop="dateCreated datePublished" datetime="2024-05-15T21:20:44+08:00">2024-05-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-05-16 10:27:24" itemprop="dateModified" datetime="2024-05-16T10:27:24+08:00">2024-05-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -252,7 +285,98 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>最近采完数据之后需要计算参考解，于是便使用组内购买的Waypoint Inertial Explorer 9.0 进行紧组合后处理，因为之前没有使用过该软件，所以向组内用过的师弟请教，在此记录一下使用过程，以免自己后续遗忘操作步骤时再去麻烦师弟。</p>
+<p>首先介绍一下IE这个软件：</p>
+<blockquote>
+<p>Inertial Explorer 是 NovAtel 公司 Waypoint 产品组研发的强大的、可配置度高的事后处理软件，用于处理所有可用的 GNSS、INS 数据，提供高精度组合导航信息，包括位置、速度和姿态信息。针对精度和稳定性要求比较高，不需要实时定位导航信息的应用，可以通过 GNSS 和 INS 原始数据后处理的方式，提高组合导航解算精度和稳定性。</p>
+</blockquote>
+<p>具体的软件介绍可以参考<a target="_blank" rel="noopener" href="https://novatel.com/products/waypoint-post-processing-software/inertial-explorer">Novatel官网</a>，官网中也有不同版本IE的<a target="_blank" rel="noopener" href="https://novatel.com/support/waypoint-software/inertial-explorer">用户手册</a>，但是当前只找到了英文版本，且有200多页，应该比较适合当作一个参考文件。</p>
+<span id="more"></span>
+<h1 id="2-使用教程"><a href="#2-使用教程" class="headerlink" title="2 使用教程"></a>2 使用教程</h1><h2 id="2-1-软件内容介绍"><a href="#2-1-软件内容介绍" class="headerlink" title="2.1 软件内容介绍"></a>2.1 软件内容介绍</h2><p>安装完IE之后，在开始页面会有以下8个软件，详细用处可以参考用户手册，用来计算参考解时主要使用以下几个软件：</p>
+<ul>
+<li>Inertial Explorer：主体软件，可以在该软件页面中打开其他软件；</li>
+<li>GNSS Data Converter：将GNSS原始数据转换为IE兼容的 .gpb 文件；</li>
+<li>Local License Manager：激活软件；</li>
+<li>Download Service Data：用以下载参考站数据。</li>
+</ul>
+<p><img src="/2024/05/15/ie-tutorial/image-20240515220136911.png" alt="image-20240515220136911" title="fig 1"></p>
+<h2 id="2-2-激活"><a href="#2-2-激活" class="headerlink" title="2.2 激活"></a>2.2 激活</h2><p>该软件在我们组购买时已经不需要密码狗了，而是使用<strong>密钥</strong>进行验证。验证过程在Local License Manager中完成，如Fig 2所示，在 Activate License ①中输入激活码，②中随意输入名字，然后点击 Activate 即可激活，值得注意的是，可能需要美国IP 才可顺利激活成功。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240515224436241.png" alt="image-20240515224436241" title="fig 2"></p>
+<p>激活之后即可正常使用其他软件了。在使用完IE之后记得<strong>下线激活状态</strong>，否则会影响他人使用。下线过程如Fig 3所示，在 Local License - Inertial Explorer 中选择Offline，然后点击Return即可下线。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240515224908438.png" alt="image-20240515224908438" title="fig 3"></p>
+<h2 id="2-3-参考站数据下载"><a href="#2-3-参考站数据下载" class="headerlink" title="2.3 参考站数据下载"></a>2.3 参考站数据下载</h2><p>在软件激活状态可进入 Download Service Data 软件来下载参考站的数据，如Fig 4所示，可以通过①列表添加，②根据位置选取。然后修改保存路径、选取时间范围下载即可，通过该软件下载可以得到IE软件兼容的 .gpb 文件。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240515225258793.png" alt="image-20240515225258793" title="fig 4"></p>
+<h2 id="2-4-采集数据格式转换"><a href="#2-4-采集数据格式转换" class="headerlink" title="2.4 采集数据格式转换"></a>2.4 采集数据格式转换</h2><p>为了生成IE可兼容的 .gpb 文件，需要利用 GNSS Data Converter 对<strong>GNSS、IMU观测数据</strong>进行格式转换：</p>
+<ol>
+<li>选取GNSS或IMU观测数据文件（<strong>注</strong>：IMU观测数据也是在该软件中进行格式转换的，而不是在IMU Data Converter中）；</li>
+<li>选取文件之后点击Add添加按钮；</li>
+<li>点击Options按钮进行设置；</li>
+<li><strong>参考站选择Static，流动站选择Kinematic</strong>；</li>
+<li>点击Convert按钮进行转换。</li>
+</ol>
+<p><img src="/2024/05/15/ie-tutorial/image-20240515230927985.png" alt="image-20240515230927985" title="fig 5"></p>
+<p>在对GNSS进行数据转换时，会提示选择Navigation file，选择对应文件然后进行转换即可。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240515230336819.png" alt="image-20240515230336819" title="fig 6"></p>
+<p>下图是GNSS数据转换完成的界面：</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240515230451367.png" alt="image-20240515230451367" title="fig 7"></p>
+<p>转换成功之后，GNSS观测数据文件会生成.gpb文件，IMU观测数据文件会生成.imr文件，用于下一步的文件添加。</p>
+<h2 id="2-5-文件添加"><a href="#2-5-文件添加" class="headerlink" title="2.5 文件添加"></a>2.5 文件添加</h2><p>在完成文件格式转换之后，即可在Inertial Explorer软件中进行文件添加操作。打开IE，首先新建一个工程，建议使用<strong>全英文路径</strong>。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516083728998.png" alt="image-20240516083728998" title="fig 8"></p>
+<p>然后，通过①②③分别添加<strong>参考站</strong>、<strong>流动站</strong>和<strong>IMU观测数据</strong>：</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516084236803.png" alt="image-20240516084236803" title="fig 9"></p>
+<h3 id="2-5-1-参考站数据添加"><a href="#2-5-1-参考站数据添加" class="headerlink" title="2.5.1 参考站数据添加"></a>2.5.1 参考站数据添加</h3><p>对于参考站数据添加，选取.gpb文件之后会弹出参数面板，如Fig 10所示。①是参考站的经纬度、椭球高，添加参考站文件后会自动填入参考站的<strong>平均观测坐标</strong>，精度可能不会很高；若对精度要求较高的话，也可通过其他方式解算该参考站的坐标并填写进去。②中选取WGS84即可；③选择L1相位中心。然后点击确定即可。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516084545245.png" alt="image-20240516084545245" title="fig 10"></p>
+<p>在①中还有其他<strong>参考站坐标导入选项</strong>，点击Coord. options，有如Fig 11所示的几个选项，可根据需要进行选择。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516085222448.png" alt="image-20240516085222448" title="fig 11"></p>
+<p>添加完参考站数据后，会在界面显示参考站的标识：</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516085412938.png" alt="image-20240516085412938" title="fig 12"></p>
+<h3 id="2-5-2-流动站数据添加"><a href="#2-5-2-流动站数据添加" class="headerlink" title="2.5.2 流动站数据添加"></a>2.5.2 流动站数据添加</h3><p>对于流动站数据添加，选择.gpb文件之后同样会弹出参数面板，如Fig 13所示，在①中选择采集数据时使用的天线型号，如果没有特定型号也可选择Generic；②中默认选择L1相位中心。然后点击确定即可。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516085802250.png" alt="image-20240516085802250" title="fig 13"></p>
+<p>流动站数据添加之后，会在界面中显示轨迹路线：</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516090110422.png" alt="image-20240516090110422" title="fig 14"></p>
+<h3 id="2-5-3-IMU数据添加"><a href="#2-5-3-IMU数据添加" class="headerlink" title="2.5.3 IMU数据添加"></a>2.5.3 IMU数据添加</h3><p>对于IMU数据添加，选取.imr文件之后会弹出文件添加提示，点击确定即可。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516090316248.png" alt="image-20240516090316248" title="fig 15"></p>
+<p>至此，完成了观测数据的添加工作。</p>
+<h2 id="2-6-紧组合解算"><a href="#2-6-紧组合解算" class="headerlink" title="2.6 紧组合解算"></a>2.6 紧组合解算</h2><p>数据添加完之后，选取紧组合处理。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516090843559.png" alt="image-20240516090843559" title="fig 16"></p>
+<p>点击之后会弹出参数面板，如Fig 17所示，各个参数设置如下：</p>
+<ol>
+<li>根据是否有参考站数据选择差分计算或是PPP解算；</li>
+<li>一般选择Both、Multi-pass；</li>
+<li>根据实验情况选择合适的载体模型，这里选择的是车载；</li>
+<li>设置GNSS天线在IMU坐标系下的杆臂；</li>
+<li>设置载体坐标系到IMU坐标系的转换关系。</li>
+</ol>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516092914130.png" alt="image-20240516092914130" title="fig 17"></p>
+<p>对于⑥Advanced GNSS，点击会弹出GNSS数据的参数面板，如Fig 18所示，在①处可对处理时间进行选择；②处对信号进行<strong>初步的筛选</strong>，如限制高度角、载噪比等；③处可对不同卫星、基线、时间段等参数进行设置，本处设置选择<strong>剔除掉Beidou 1~5星</strong>。设置完之后即可点击确定。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516093550676.png" alt="image-20240516093550676" title="fig 18"></p>
+<p>对于⑦Advanced IMU，点击同样会弹出IMU数据的参数面板。</p>
+<p>首先，在Alignment界面，在①处对IMU的<strong>对齐方式</strong>进行设置，该处要将两个对齐方式均设置为<strong>Static Alignment</strong>（注：可能是因为IMU在初始状态一般是静止的），注意，此处设置很重要，若没有正确设置在后期解算时会报错<strong>Alignment Error</strong>；在②处可对要处理的IMU数据根据时间进行选择。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516094049308.png" alt="image-20240516094049308" title="fig 19"></p>
+<p>然后，在States界面选择IMU的<strong>误差模型</strong>，此处需要根据所用的IMU型号选择对应的误差模型，若选项中没有所需的型号可通过自定义进行添加。然后点击确定按键即可。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516094456008.png" alt="image-20240516094456008" title="fig 20"></p>
+<p>至此，完成了解算前的设置，然后就可点击Process按键开始解算。可能会出现以下的警告，点击Continue即可。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516094735171.png" alt="image-20240516094735171" title="fig 21"></p>
+<p>解算过程的界面如Fig 22所示：</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516094816491.png" alt="image-20240516094816491" title="fig 22"></p>
+<p>解算完之后的结果如Fig 23所示：</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516094934625.png" alt="image-20240516094934625" title="fig 23"></p>
+<h2 id="2-7-紧组合二次解算"><a href="#2-7-紧组合二次解算" class="headerlink" title="2.7 紧组合二次解算"></a>2.7 紧组合二次解算</h2><p>在操作文档中还提到了<strong>二次解算</strong>，即在紧组合解的情况下选取额外的约束进行二次解算。本人试了二次解算对本次采集的数据提升效果不明显，但还是记录一下操作步骤。</p>
+<p>在进行紧组合解算之后，再次点击紧组合求解按钮，上次已有的参数无需更改。在Advanced IMU中进入Constraints界面，如Fig 24所示，在①中勾选Apply vehicle constraints，然后点击②Compute Boresight，接着勾选③Rotate processed output to vehicle frame，最后点击确定、解算即可。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516095352008.png" alt="image-20240516095352008" title="fig 24"></p>
+<h2 id="2-8-文件保存"><a href="#2-8-文件保存" class="headerlink" title="2.8 文件保存"></a>2.8 文件保存</h2><p>在主界面选择Export Wizard对解算结果进行保存，操作如下所示：</p>
+<ol>
+<li>点击Export Wizard按钮；</li>
+<li>选择结果保存文件路径；</li>
+<li>选取保存内容，可进行自定义；</li>
+<li>自定义界面，可根据需要选择保存的内容。</li>
+</ol>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516101842709.png" alt="image-20240516101842709" title="fig 25"></p>
+<p>选择保存文档后点击下一页，默认使用WGS84；继续点击下一页，如Fig 26所示，①中自定义保存数据的时间段；②中修改输出时间间隔或距离间隔；③中可将输出结果转换至以IMU坐标系下的某一点为基准。</p>
+<p><img src="/2024/05/15/ie-tutorial/image-20240516102212282.png" alt="image-20240516102212282" title="fig 26"></p>
+<p>然后点击下一页，可对保存结果进行预览，最终保存完整的结果。</p>
+<h1 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h1><p>以上就是目前使用IE的过程记录，其中还有很多参数没有搞清楚，只是过了一遍操作过程罢了，后面会根据实际使用情况对本文内容进行更新。</p>
+
     </div>
 
     
@@ -335,6 +459,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="nav-text">1 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="nav-text">2 使用教程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E8%BD%AF%E4%BB%B6%E5%86%85%E5%AE%B9%E4%BB%8B%E7%BB%8D"><span class="nav-text">2.1 软件内容介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E6%BF%80%E6%B4%BB"><span class="nav-text">2.2 激活</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E5%8F%82%E8%80%83%E7%AB%99%E6%95%B0%E6%8D%AE%E4%B8%8B%E8%BD%BD"><span class="nav-text">2.3 参考站数据下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E9%87%87%E9%9B%86%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%E8%BD%AC%E6%8D%A2"><span class="nav-text">2.4 采集数据格式转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-%E6%96%87%E4%BB%B6%E6%B7%BB%E5%8A%A0"><span class="nav-text">2.5 文件添加</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-1-%E5%8F%82%E8%80%83%E7%AB%99%E6%95%B0%E6%8D%AE%E6%B7%BB%E5%8A%A0"><span class="nav-text">2.5.1 参考站数据添加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-2-%E6%B5%81%E5%8A%A8%E7%AB%99%E6%95%B0%E6%8D%AE%E6%B7%BB%E5%8A%A0"><span class="nav-text">2.5.2 流动站数据添加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-3-IMU%E6%95%B0%E6%8D%AE%E6%B7%BB%E5%8A%A0"><span class="nav-text">2.5.3 IMU数据添加</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-%E7%B4%A7%E7%BB%84%E5%90%88%E8%A7%A3%E7%AE%97"><span class="nav-text">2.6 紧组合解算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-7-%E7%B4%A7%E7%BB%84%E5%90%88%E4%BA%8C%E6%AC%A1%E8%A7%A3%E7%AE%97"><span class="nav-text">2.7 紧组合二次解算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-8-%E6%96%87%E4%BB%B6%E4%BF%9D%E5%AD%98"><span class="nav-text">2.8 文件保存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%80%BB%E7%BB%93"><span class="nav-text">3 总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

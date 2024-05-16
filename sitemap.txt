@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/05/15/ie-tutorial/
 http://echo-gh.github.io/2024/03/06/zhou2022/
 http://echo-gh.github.io/2024/02/28/zhao2019/
 http://echo-gh.github.io/2024/03/01/zhang2023a/
@@ -65,7 +66,6 @@ http://echo-gh.github.io/2024/02/02/brasch2018/
 http://echo-gh.github.io/2024/02/18/bowman2017/
 http://echo-gh.github.io/2024/03/06/bev-locator/
 http://echo-gh.github.io/2024/03/01/3ds-slam/
-http://echo-gh.github.io/2024/05/15/ie-tutorial/
 http://echo-gh.github.io/2024/04/28/stereo-calib/
 http://echo-gh.github.io/2024/01/26/object-slam/
 http://echo-gh.github.io/2024/04/17/imu-preinteg/
