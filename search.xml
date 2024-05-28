@@ -5042,7 +5042,7 @@ f_x & 0 & c_x \\
 <p><img src="/2024/05/15/ie-tutorial/image-20240515220136911.png" alt="image-20240515220136911" title="fig 1"></p>
 <h2 id="2-2-激活"><a href="#2-2-激活" class="headerlink" title="2.2 激活"></a>2.2 激活</h2><p>该软件在我们组购买时已经不需要密码狗了，而是使用<strong>密钥</strong>进行验证。验证过程在Local License Manager中完成，如Fig 2所示，在 Activate License ①中输入激活码，②中随意输入名字，然后点击 Activate 即可激活，值得注意的是，可能需要美国IP 才可顺利激活成功。</p>
 <p><img src="/2024/05/15/ie-tutorial/image-20240515224436241.png" alt="image-20240515224436241" title="fig 2"></p>
-<p>激活之后即可正常使用其他软件了。在使用完IE之后记得<strong>下线激活状态</strong>，否则会影响他人使用。下线过程如Fig 3所示，在 Local License - Inertial Explorer 中选择Offline，然后点击Return即可下线。</p>
+<p>激活之后即可正常使用其他软件了。在使用完IE之后记得<strong>下线激活状态</strong>，否则会影响他人使用。下线过程如Fig 3所示，在 Local License - Inertial Explorer 点击Return即可下线（下方应选择<strong>Online</strong>）。</p>
 <p><img src="/2024/05/15/ie-tutorial/image-20240515224908438.png" alt="image-20240515224908438" title="fig 3"></p>
 <h2 id="2-3-参考站数据下载"><a href="#2-3-参考站数据下载" class="headerlink" title="2.3 参考站数据下载"></a>2.3 参考站数据下载</h2><p>在软件激活状态可进入 Download Service Data 软件来下载参考站的数据，如Fig 4所示，可以通过①列表添加，②根据位置选取。然后修改保存路径、选取时间范围下载即可，通过该软件下载可以得到IE软件兼容的 .gpb 文件。</p>
 <p><img src="/2024/05/15/ie-tutorial/image-20240515225258793.png" alt="image-20240515225258793" title="fig 4"></p>
