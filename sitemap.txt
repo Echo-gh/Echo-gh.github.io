@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/05/29/mmseg/
 http://echo-gh.github.io/2024/05/15/ie-tutorial/
 http://echo-gh.github.io/2024/05/16/hexo-error/
 http://echo-gh.github.io/2024/03/06/zhou2022/
@@ -120,6 +121,9 @@ http://echo-gh.github.io/tags/Multi-source/
 http://echo-gh.github.io/tags/HEXO/
 http://echo-gh.github.io/tags/Node/
 http://echo-gh.github.io/tags/Blog/
+http://echo-gh.github.io/tags/Semantic-Segmentation/
+http://echo-gh.github.io/tags/MMSegmentation/
+http://echo-gh.github.io/tags/OpenMMLab/
 http://echo-gh.github.io/categories/SLAM/
 http://echo-gh.github.io/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/
 http://echo-gh.github.io/categories/SLAM/Pose-Optimization/
@@ -139,3 +143,5 @@ http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/OR
 http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/Multi-source/
 http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/GNSS/NLOS/
 http://echo-gh.github.io/categories/%E9%9A%8F%E8%AE%B0/%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/
+http://echo-gh.github.io/categories/%E9%9A%8F%E6%9C%BA/
+http://echo-gh.github.io/categories/%E9%9A%8F%E6%9C%BA/%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/
