@@ -143,5 +143,3 @@ http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/OR
 http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/Multi-source/
 http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/GNSS/NLOS/
 http://echo-gh.github.io/categories/%E9%9A%8F%E8%AE%B0/%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/
-http://echo-gh.github.io/categories/%E9%9A%8F%E6%9C%BA/
-http://echo-gh.github.io/categories/%E9%9A%8F%E6%9C%BA/%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/

@@ -5150,7 +5150,7 @@ f_x & 0 & c_x \\
       </tags>
   </entry>
   <entry>
-    <title>MMSegmentation安装报错问题解决记录</title>
+    <title>MMSegmentation平台安装报错问题解决记录</title>
     <url>/2024/05/29/mmseg/</url>
     <content><![CDATA[<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>在介绍MMSegmentation之前首先要介绍一下<a href="https://openmmlab.com/">OpenMMLab</a>，源自官方的介绍：</p>
 <blockquote>
@@ -5158,32 +5158,32 @@ f_x & 0 & c_x \\
 <p>OpenMMLab 已经累计开源了超过 30 个算法库，涵盖分类、检测、分割、视频理解等众多研究领域，拥有超过 300 种算法、2,400  多个预训练模型。在 GitHub 上获得超过 72,000 个标星，同时吸引了超过 1,500 名社区开发者参与项目贡献，用户遍及超过 110  个国家和地区，覆盖全国全球顶尖高校、研究机构和企业。</p>
 </blockquote>
 <span id="more"></span>
-<p>总之，OpenMMLab就是一个计算机视觉方向的开源算法库，是为方便开发者进行统一管理、使用而建立的，其包含了非常丰富的开源视觉算法，许多新发表的论文也会基于该平台开源自己的代码；<a href="https://github.com/open-mmlab/mmsegmentation/blob/main/README.md">MMSegmentation</a>是OpenMMLab 项目中的语义分割部分，同样类似地还有物体检测的MMDetection等。</p>
+<p>总之，OpenMMLab就是一个计算机视觉方向的开源算法库，是为方便开发者进行统一管理、使用而建立的，其包含了非常丰富的开源视觉算法，许多新发表的论文也会基于该平台开源自己的代码；<a href="https://github.com/open-mmlab/mmsegmentation/blob/main/README.md">MMSegmentation</a>是OpenMMLab 项目中的语义分割部分，同样类似地还有物体检测的<a href="https://github.com/open-mmlab/mmdetection">MMDetection</a>等。</p>
 <p>本人在安装MMSegmentation过程中遇到了一个问题，在网上也找到了许多关于同样问题的内容，官方给出解决方案极具模糊性，无法帮助本人解决该问题。本人在经过数次的卸载重装后发现了一个简单的解决方案（有点取巧的嫌疑），使得安装完可以正常运行，但不知道后续会有什么其他幺蛾子出现，但最起码目前可以正常运行了，所以在此记录一下；同时，也希望官方可以出具更合理的解决方案。</p>
-<h1 id="问题与解决过程"><a href="#问题与解决过程" class="headerlink" title="问题与解决过程"></a>问题与解决过程</h1><h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>按照官方提供的<a href="https://mmsegmentation.readthedocs.io/zh-cn/latest/get_started.html">使用手册</a>，创建conda环境，然后安装PyTorch，注意，这是第一个坑：使用手册推荐的conda安装命令会安装CPU版本的PyTorch，所以此处还是要进入<a href="https://pytorch.org/get-started/locally/">PyTorch官网</a>使用推荐的命令安装，如Fig.1所示：</p>
+<h1 id="问题与解决过程"><a href="#问题与解决过程" class="headerlink" title="问题与解决过程"></a>问题与解决过程</h1><h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>按照官方提供的<a href="https://mmsegmentation.readthedocs.io/zh-cn/latest/get_started.html">使用手册</a>，创建conda环境，然后安装PyTorch，注意，这是第一个坑：使用手册推荐的conda安装命令会安装CPU版本的PyTorch，所以此处应该进入<a href="https://pytorch.org/get-started/locally/">PyTorch官网</a>、使用官方推荐的命令进行安装，如Fig.1所示：</p>
 <p><img src="/2024/05/29/mmseg/image-20240529204944850.png" alt="image-20240529204944850" title="fig 1"></p>
-<p>然后，手册建议安装<a href="https://github.com/open-mmlab/mim">openmim</a>，然后通过MIM命令（类似pip）来安装mmengine、mmcv等：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pip install -U openmim</span><br><span class="line">mim install mmengine</span><br><span class="line">mim install &quot;mmcv&gt;=2.0.0&quot;</span><br><span class="line">pip install &quot;mmsegmentation&gt;=1.0.0&quot;</span><br></pre></td></tr></table></figure>
+<p>然后，手册建议安装<a href="https://github.com/open-mmlab/mim">openmim</a>，后续通过MIM命令（类似pip）来安装mmengine、mmcv等：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pip install -U openmim</span><br><span class="line">mim install mmengine</span><br><span class="line">mim install &quot;mmcv&gt;=2.0.0&quot;</span><br><span class="line">pip/mim install &quot;mmsegmentation&gt;=1.0.0&quot;</span><br></pre></td></tr></table></figure>
 <p>到这一部分安装都很顺利，然后验证安装是否成功，手册中也给出了一个推理demo来验证，验证过程就出现了报错：</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Traceback (most recent call last):                                                   </span><br><span class="line">  File &quot;demo/image_demo.py&quot;, line 6, in &lt;module&gt;                                     </span><br><span class="line">    from mmseg.apis import inference_model, init_model, show_result_pyplot           </span><br><span class="line">  File &quot;/home/***/codes/python/mmsegmentation/mmseg/__init__.py&quot;, line 61, in &lt;modul</span><br><span class="line"><span class="meta prompt_">e&gt; </span><span class="language-bash"> </span>                                                                                 </span><br><span class="line">    assert (mmcv_min_version &lt;= mmcv_version &lt; mmcv_max_version), \                  </span><br><span class="line">AssertionError: MMCV==2.2.0 is used but incompatible. Please install mmcv&gt;=2.0.0rc4.</span><br></pre></td></tr></table></figure>
-<h2 id="解决过程"><a href="#解决过程" class="headerlink" title="解决过程"></a>解决过程</h2><p>在网上搜索该报错后，发现很多网友遇到类似的问题，官方给的解释是mmcv mmengine mmsegmentation版本要兼容，具体版本可参考<a href="https://mmsegmentation.readthedocs.io/zh-cn/latest/notes/faq.html">该页面</a>，主要是Fig.2中的内容：</p>
+<h2 id="解决过程"><a href="#解决过程" class="headerlink" title="解决过程"></a>解决过程</h2><p>在网上搜索该报错后，发现很多网友遇到类似的问题，官方给的解释是mmcv、mmengine、mmsegmentation版本要兼容，具体版本可参考<a href="https://mmsegmentation.readthedocs.io/zh-cn/latest/notes/faq.html">该页面</a>，该页面的主要内容如Fig.2所示：</p>
 <p><img src="/2024/05/29/mmseg/image-20240529210109070.png" alt="image-20240529210109070" title="fig 2"></p>
-<p>然后根据官方的安装教程，安装完的软件版本如下所示：</p>
+<p>根据官方的安装教程，安装完的软件版本如下所示：</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Package         Version    Source</span><br><span class="line">--------------  ---------  --------------------------------------------</span><br><span class="line">mmcv            2.2.0      https://github.com/open-mmlab/mmcv</span><br><span class="line">mmengine        0.10.4     https://github.com/open-mmlab/mmengine</span><br><span class="line">mmsegmentation  1.2.1      https://github.com/open-mmlab/mmsegmentation</span><br></pre></td></tr></table></figure>
-<p>但是Fig.2中给定的版本关系都是&gt;=关系，根据查询的程序安装版本明明是满足&gt;=关系的，但就是会报错。包括官方Github页面Issues中也是一直强调程序版本问题，但就是不知道哪一版本才可以…</p>
-<p>于是乎，开始了程序的卸载与重装，在使用mmcv==2.1.0之后，该demo跑通了，但跑自己的程序时仍然报错：</p>
+<p>但是Fig.2中给定的版本关系都是&gt;=关系，根据查询的程序安装版本明明是满足&gt;=关系的，但就是会报错。包括官方Github页面Issues中也是一直强调程序版本问题，但就是不知道哪一版本才可以正确对应…</p>
+<p>于是乎，开始了程序的卸载与重装。在安装完mmcv==2.1.0之后，该demo跑通了，但跑自己的程序时仍然报错：</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">File &quot;inference_manul.py&quot;, line 1, in &lt;module&gt;</span><br><span class="line">    from mmseg.apis import init_model, inference_model, show_result_pyplot</span><br><span class="line">  File &quot;/home/***/codes/python/mmsegmentation/mmseg/__init__.py&quot;, line 61, in &lt;modul</span><br><span class="line"><span class="meta prompt_">e&gt;</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash">    assert (mmcv_min_version &lt;= mmcv_version &lt; mmcv_max_version), \</span></span><br><span class="line"><span class="language-bash">AssertionError: MMCV==2.1.0 is used but incompatible. Please install mmcv&gt;=2.0.0rc4.</span></span><br></pre></td></tr></table></figure>
-<p>这就见了鬼了，明明从<code>mmseg.apis</code> 导入的函数都一样，为什么demo跑通了自己写的程序就是跑不通，后续又开始尝试卸载重装，甚至到了自己瞎猜mmcv版本的情况了：</p>
+<p>这就见了鬼了，明明从<code>mmseg.apis</code> 导入的函数都一样，为什么demo跑通了自己写的程序就是跑不通！后续又开始尝试卸载重装，甚至到了自己瞎猜mmcv版本的情况了：</p>
 <p><img src="/2024/05/29/mmseg/image-20240529211155057.png" alt="image-20240529211155057" title="fig 3"></p>
-<p>突然间，想到可以查看一下具体报错的代码，在ipython中导入<code>mmseg.apis</code> 的函数，查看具体报错内容：</p>
+<p>突然间，想到可以查看一下具体报错的代码，于是在ipython中导入<code>mmseg.apis</code> 的函数，查看具体报错内容：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">AssertionError                            Traceback (most recent call last)          </span><br><span class="line">Cell In[<span class="number">1</span>], line <span class="number">1</span>                                                                   </span><br><span class="line">----&gt; <span class="number">1</span> <span class="keyword">from</span> mmseg.apis <span class="keyword">import</span> init_model, inference_model, show_result_pyplot       </span><br><span class="line">                                                                                     </span><br><span class="line">File ~/codes/python/mmsegmentation/mmseg/__init__.py:<span class="number">61</span>                              </span><br><span class="line">     <span class="number">57</span> mmcv_max_version = digit_version(MMCV_MAX)                                   </span><br><span class="line">     <span class="number">58</span> mmcv_version = digit_version(mmcv.__version__)                               </span><br><span class="line">---&gt; <span class="number">61</span> <span class="keyword">assert</span> (mmcv_min_version &lt;= mmcv_version &lt; mmcv_max_version), \              </span><br><span class="line">     <span class="number">62</span>     <span class="string">f&#x27;MMCV==<span class="subst">&#123;mmcv.__version__&#125;</span> is used but incompatible. &#x27;</span> \                 </span><br><span class="line">     <span class="number">63</span>     <span class="string">f&#x27;Please install mmcv&gt;=2.0.0rc4.&#x27;</span>                                        </span><br><span class="line">     <span class="number">65</span> mmengine_min_version = digit_version(MMENGINE_MIN)                           </span><br><span class="line">     <span class="number">66</span> mmengine_max_version = digit_version(MMENGINE_MAX)                           </span><br><span class="line">                                                                                     </span><br><span class="line">AssertionError: MMCV==<span class="number">2.1</span><span class="number">.0</span> <span class="keyword">is</span> used but incompatible. Please install mmcv&gt;=<span class="number">2.0</span><span class="number">.0</span>rc4.</span><br></pre></td></tr></table></figure>
-<p>发现原来在__init__.py文件中给定的由版本限制参数：MMCV_MIN、MMCV_MAX等，那直接在该文档中修改该参数是否可行？于是打开文件，修改为以下内容：</p>
+<p>发现原来在__init__.py文件中给定了程序版本限制参数：MMCV_MIN、MMCV_MAX等，那直接在该文档中修改该参数是否可行？于是打开文件，修改为以下内容：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">MMCV_MIN = <span class="string">&#x27;2.0.0rc4&#x27;</span></span><br><span class="line">MMCV_MAX = <span class="string">&#x27;2.2.0&#x27;</span></span><br><span class="line">MMENGINE_MIN = <span class="string">&#x27;0.5.0&#x27;</span></span><br><span class="line">MMENGINE_MAX = <span class="string">&#x27;1.0.0&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>然后就成功跑通了…没想到问题就这么戏剧性地收尾了。</p>
-<h2 id="问题总结"><a href="#问题总结" class="headerlink" title="问题总结"></a>问题总结</h2><p>根据上述解决过程可以发现本人是通过一种取巧的方式解决了该问题，这同时也说明了官方对于版本管理的混乱，没有一个清晰的兼容版本对应关系，反而在一团乱麻之后修改程序中的数值来解决版本兼容问题，显得有点儿戏了，尽管目前工作良好，但也不知道后续会不会有其他问题出现；所以，还是希望官方后续出具一个清晰的程序版本对应关系吧。</p>
+<p>然后，就成功跑通了…没想到问题就这么戏剧性地解决了。</p>
+<h2 id="问题总结"><a href="#问题总结" class="headerlink" title="问题总结"></a>问题总结</h2><p>根据上述解决过程可以发现本人是通过一种取巧的方式解决了该问题，这同时也说明了官方对于版本管理的混乱，没有一个清晰的兼容版本对应关系，反而在一团乱麻之后修改程序中的数值来解决版本兼容问题，显得有点儿戏了；尽管目前工作良好，但也不知道后续会不会有其他问题出现。所以，还是希望官方后续出具一个清晰的程序版本对应关系吧。</p>
 ]]></content>
       <categories>
-        <category>随机</category>
+        <category>随记</category>
         <category>问题记录</category>
       </categories>
       <tags>
