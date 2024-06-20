@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/03/01/yang2022/
 http://echo-gh.github.io/2024/05/29/mmseg/
 http://echo-gh.github.io/2024/05/15/ie-tutorial/
 http://echo-gh.github.io/2024/05/16/hexo-error/
@@ -7,7 +8,6 @@ http://echo-gh.github.io/2024/03/01/zhang2023a/
 http://echo-gh.github.io/2024/01/30/zhang2018/
 http://echo-gh.github.io/2024/02/27/yu2021/
 http://echo-gh.github.io/2024/03/01/yolo-slam/
-http://echo-gh.github.io/2024/03/01/yang2022/
 http://echo-gh.github.io/2024/01/30/x-view/
 http://echo-gh.github.io/2024/03/01/xiao2020/
 http://echo-gh.github.io/2024/03/01/wen2023a/

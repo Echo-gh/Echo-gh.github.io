@@ -3172,6 +3172,9 @@
 <p>此外，考虑到多观测数据融合，作者使用循环贝叶斯recursive Bayesian 进行数据关联，来更新每个地图点的概率分布：</p>
 <p><img src="/2024/03/01/yang2022/f6.png" alt="f6" title="formula 6"></p>
 <p>根据式6，可得到基于最大后验概率的稠密地图点标签。</p>
+<h1 id="4-Experiments"><a href="#4-Experiments" class="headerlink" title="4 Experiments"></a>4 Experiments</h1><p>作者提到，在KITTI数据集的01、04中，出现的汽车与人绝大部分都是动态的，因此，移除掉所有动态物体的算法（dynamic-SLAM、SLAMANTIC）较ORB-SLAM系列算法取得了更好的效果。</p>
+<p><img src="/2024/03/01/yang2022/t1.png" alt="t1" title="table 1"></p>
+<p><img src="/2024/03/01/yang2022/t2.png" alt="t2" title="table 2"></p>
 ]]></content>
       <categories>
         <category>论文记录</category>
