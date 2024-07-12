@@ -5195,4 +5195,62 @@ f_x & 0 & c_x \\
         <tag>OpenMMLab</tag>
       </tags>
   </entry>
+  <entry>
+    <title>使用ffmpeg将图片转为视频</title>
+    <url>/2024/07/12/ffmpeg-imgs2video/</url>
+    <content><![CDATA[<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>近期采了一组数据（包含GNSS、IMU、LiDAR、相机），想要将其中一段图片转为视频放到PPT中结合轨迹图进行讲解，使用了ffmpeg将图片流转换为了视频文件，在此记录一下大致过程，方便后续使用时进行查阅。</p>
+<span id="more"></span>
+<p>首先介绍一下FFmpeg（<a href="https://ffmpeg.org/">官网</a>）：</p>
+<blockquote>
+<p>FFmpeg 是一个开放原始码的自由软体，可以执行音讯和视讯多种格式的录影、转档、串流功能，包含了libavcodec——这是一个用于多个专案中音讯和视讯的解码器函式库，以及libavformat——一个音讯与视讯格式转换函式库。         —Wikipedia</p>
+</blockquote>
+<h1 id="2-转换过程"><a href="#2-转换过程" class="headerlink" title="2 转换过程"></a>2 转换过程</h1><h2 id="2-1-文件名更改-amp-转换视频"><a href="#2-1-文件名更改-amp-转换视频" class="headerlink" title="2.1 文件名更改 &amp; 转换视频"></a>2.1 文件名更改 &amp; 转换视频</h2><p>在使用ffmpeg将图片转为视频时首先需要对图片文件名进行预处理，将图片按照顺序使用数字来作为其文件名，可在终端中使用以下命令来批量修改文件夹中的文件名：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">declare</span> -i num=0;</span><br><span class="line"><span class="keyword">for</span> name <span class="keyword">in</span> `<span class="built_in">ls</span>`; <span class="keyword">do</span> <span class="built_in">mv</span> -f <span class="variable">$name</span> `<span class="built_in">echo</span> <span class="variable">$num</span><span class="string">&quot;.jpg&quot;</span>`;num=num+1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>然后，使用以下命令将图片转换为视频：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg -f image2 -i %d.jpg video.mp4</span><br></pre></td></tr></table></figure>
+<p><strong>注：</strong>上述两个命令中需要根据图片的实际格式对“jpg”进行更改。</p>
+<h2 id="2-2-ffmpeg参数"><a href="#2-2-ffmpeg参数" class="headerlink" title="2.2 ffmpeg参数"></a>2.2 ffmpeg参数</h2><p>首先介绍一下上述命令中的参数：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg -f image2 -i %d.jpg video.mp4</span><br></pre></td></tr></table></figure>
+<ul>
+<li>-f：指定输入/输出文件格式，包括视频（MP4、AVI等）、音频（MP3、WAV等）、图片（PNG、JPEG等），此处后面为image2表示输入为图片流。<strong>注：</strong>-f参数应在-i参数前使用。</li>
+<li>-i：指定输入文件。</li>
+</ul>
+<p>ffmpeg还有各种参数可以进行自定义设置，现挑几个常用的参数进行说明。</p>
+<h3 id="r-帧率"><a href="#r-帧率" class="headerlink" title="-r 帧率"></a>-r 帧率</h3><p>ffmpeg默认帧率设置为25帧，可通过下述命令来修改帧率：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg -r 40 -f image2 -i %d.jpg video.mp4</span><br></pre></td></tr></table></figure>
+<p>值得注意的是，<code>-r 40</code> 需要放在 <code>-i %d.jpg</code> 前方可生效。</p>
+<h3 id="s-vf-分辨率"><a href="#s-vf-分辨率" class="headerlink" title="-s -vf 分辨率"></a>-s -vf 分辨率</h3><p>如果想将视频分辨率调整为某分辨率，可直接使用-s参数进行修改：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg -r 40 -f image2 -i %d.jpg -s 640x480 video.mp4</span><br></pre></td></tr></table></figure>
+<p>但是如果原始图片分辨率不是4:3的话，会对原始图片进行拉伸、压缩操作，导致视频效果不好。这种情况下可以考虑-vf参数，固定高度或宽度，进行比例缩放：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg -r 40 -f image2 -i %d.jpg -vf scale=-1:480 video.mp4</span><br></pre></td></tr></table></figure>
+<p>其中，-1表示比例缩放。</p>
+<h3 id="b-v-码率"><a href="#b-v-码率" class="headerlink" title="-b:v 码率"></a>-b:v 码率</h3><p>首先简要介绍一下视频码率：</p>
+<blockquote>
+<p><strong>视频码率或者码率</strong>是指视频信息每秒传输的比特数目。码率的单位通常为：</p>
+<ul>
+<li>kbps或者千比特每秒</li>
+<li>mbps或兆比特每秒</li>
+</ul>
+</blockquote>
+<p>根据概念可知，码率会影响视频的质量，即高码率一般对应着较高的视频质量。但两者之间并不存在绝对的对应关系，因为一方面码率对视频质量的增加存在一个瓶颈，视频质量一旦达到某一点，无论如何增加码率也无法进一步提升视频质量；另一方面，视频质量也是由多方因素决定的，如分辨率、帧率、编解码格式等。</p>
+<p>ffmpeg修改码率的命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg -r 40 -f image2 -i %d.jpg -b:v 4M video.mp4</span><br></pre></td></tr></table></figure>
+<h3 id="c-v-编码格式"><a href="#c-v-编码格式" class="headerlink" title="-c:v 编码格式"></a>-c:v 编码格式</h3><p>默认使用的是h264，如想要切换为h265，可使用如下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ffmpeg -r 40 -f image2 -i %d.jpg -c:v libx265 video.mp4</span><br></pre></td></tr></table></figure>
+<p>注：使用该参数时可能需要安装编码器依赖，否则会报错。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ol>
+<li><a href="https://blog.csdn.net/moshuilangting/article/details/120194895">ubuntu下ffmpeg图片转视频</a></li>
+<li><a href="https://blog.csdn.net/xindoo/article/details/121451318">使用ffmpeg将图片合成为视频(附完整参数介绍)</a></li>
+<li><a href="https://livevideostack.cn/news/bitrate-vs-resolution-video-streaming-compression/">码率vs.分辨率，哪一个更重要？</a></li>
+<li><a href="https://ffmpeg.org/ffmpeg.html#Stream-selection">ffmpeg Documentation</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>随记</category>
+        <category>notes</category>
+      </categories>
+      <tags>
+        <tag>ffmpeg</tag>
+      </tags>
+  </entry>
 </search>
