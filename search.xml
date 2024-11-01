@@ -1331,7 +1331,8 @@ X = zK^{-1}p_1 \tag{1}}</script><p>作者进而根据两个相机之间的平移
 <h1 id="推导过程"><a href="#推导过程" class="headerlink" title="推导过程"></a>推导过程</h1><p>现在回到对 $p_2$ 的计算上去。$[I|\mathbf{t}]X$ 是将地标点 $X$ 从世界坐标系（相机1的坐标系）转换至相机2坐标系下，得到的坐标应为:</p>
 <script type="math/tex; mode=display">X_c = X + \mathbf{t} = [x+t_1, y+t_2, z+t_3]^T \tag{3}</script><p>然后，利用内参 $K$ 将其投影至成像坐标系中，在该过程中论文中的推导出现了问题，根据论文中的结果，反推其运算过程应为：</p>
 <script type="math/tex; mode=display">p_2 = \frac{1}{z}K[I|\mathbf{t}]X = \frac{1}{z}K(X+\mathbf{t}) = \frac{1}{z}K(zK^{-1}p_1+\mathbf{t}) = p_1+\frac{K\mathbf{t}}{z} \tag{4}</script><p>上述推导过程出错的地方在于，在相机2坐标系下，地标点 $X$ 的深度信息不再是 $z$ ，而应该是 $z+t_3$ 。则上式的正确推导过程为：</p>
-<script type="math/tex; mode=display">p_2 = \frac{1}{z+t_3}K[I|\mathbf{t}]X = \frac{1}{z+t_3}K(X+\mathbf{t}) = \frac{1}{z+t_3}K(zK^{-1}p_1+\mathbf{t}) = \frac{1}{z+t_3}(zp_1 + K\mathbf{t}) \tag{5}</script><p>那么，根据上式可以进一步得到特征点在两幅图片中的光流：</p>
+<script type="math/tex; mode=display">\displaylines{p_2 = \frac{1}{z+t_3}K[I|\mathbf{t}]X = \frac{1}{z+t_3}K(X+\mathbf{t}) \\
+    = \frac{1}{z+t_3}K(zK^{-1}p_1+\mathbf{t}) = \frac{1}{z+t_3}(zp_1 + K\mathbf{t}) \tag{5}}</script><p>那么，根据上式可以进一步得到特征点在两幅图片中的光流：</p>
 <script type="math/tex; mode=display">\displaylines{p_2-p_1 = [u_2,v_2]^T - [u_1,v_1]^T = [\Delta u, \Delta v]^T = \frac{1}{z+t_3}(K\mathbf{t} - t_3p_1) \\
 K\mathbf{t} = [f_x t_1+c_x t_3, f_y t_2 + c_y t_3, t_3]^T = [M,N,t_3]^T \\
 \Delta u = \frac{M - t_3 u_1}{z+t_3} \\
