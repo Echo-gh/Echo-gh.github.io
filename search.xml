@@ -1324,7 +1324,7 @@
 <p>然而，对极几何约束存在缺陷，当路标点 $X$ 在极平面上移动时，其投影点仍会位于极线或距离极线很近，那么，此时就无法使用对极几何约束来准确判断特征点的运动状态，这种情况称为degenerate motion，如Fig. 2所示。这种情况最常见于自动驾驶场景，动态车辆与自身的运动方向相同，此时难以利用对极几何约束实现对动态特征点的检测。<br><img src="/2024/11/01/epipolar-constraints/fig2.png" alt="fig2" title="Fig. 2"></p>
 <h1 id="论文方法-amp-问题"><a href="#论文方法-amp-问题" class="headerlink" title="论文方法 &amp; 问题"></a>论文方法 &amp; 问题</h1><p>Kundu 等人[Kundu 等, 2009]提出了一种方法来应对此种情况，称为 <em>Flow Vector Bound (FVB)</em> ，现对该方法进行介绍，以及对其中发现的问题进行描述。</p>
 <p>作者假设两个相机之间只存在一个平移 $\mathbf{t}=[t_1,t_2,t_3]^T$，以第一个相机的坐标系作为世界坐标系，则静态路标点 $X=[x,y,z]^T$ 与第一个成像平面上的投影 $p_1$ 分别为：</p>
-<script type="math/tex; mode=display">p_1 = \frac{1}{z}KX \tag{1} \\\
+<script type="math/tex; mode=display">p_1 = \frac{1}{z}KX \tag{1} \newline
 X = zK^{-1}p_1</script><p>作者进而根据两个相机之间的平移转换，得到 $p_2$ 的坐标：</p>
 <script type="math/tex; mode=display">p_2 = K[I|\mathbf{t}]X = p_1+\frac{K\mathbf{t}}{z} \tag{2}</script><p>然后，作者根据上式得到同一特征点在两幅成像平面上的坐标差为 $K\mathbf{t}/z$ ，作者通过设定距离阈值来判断特征点的运动状态。</p>
 <p>但是，我在推导中发现上式存在问题；而且，根据上式，由于图中的任一特征点具有相同的 $K\mathbf{t}$ ，那么所有的特征点应该具有相同的光流方向，无非是光流尺度不同罢了。然而，根据实际情况发现并不如此，如Fig. 3所示。可以发现，位于不同区域的特征点具有不同的光流方向，后文会继续推导该方向是由特征点在图片中的不同象限决定的。<br><img src="/2024/11/01/epipolar-constraints/fig3.png" alt="fig3" title="Fig. 3"></p>
