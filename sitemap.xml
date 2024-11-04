@@ -803,6 +803,13 @@
 
   
   <url>
+    <loc>http://echo-gh.github.io/tags/Ubuntu/</loc>
+    <lastmod>2024-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://echo-gh.github.io/tags/Dynamic-SLAM/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -818,13 +825,6 @@
   
   <url>
     <loc>http://echo-gh.github.io/tags/Semantic/</loc>
-    <lastmod>2024-11-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://echo-gh.github.io/tags/Ubuntu/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -887,6 +887,13 @@
   </url>
   
   <url>
+    <loc>http://echo-gh.github.io/tags/ffmpeg/</loc>
+    <lastmod>2024-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://echo-gh.github.io/tags/g/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -916,13 +923,6 @@
   
   <url>
     <loc>http://echo-gh.github.io/tags/Blog/</loc>
-    <lastmod>2024-11-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://echo-gh.github.io/tags/ffmpeg/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1048,6 +1048,13 @@
   </url>
   
   <url>
+    <loc>http://echo-gh.github.io/tags/ROS/</loc>
+    <lastmod>2024-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://echo-gh.github.io/tags/SSH/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -1089,24 +1096,17 @@
     <priority>0.2</priority>
   </url>
   
-  <url>
-    <loc>http://echo-gh.github.io/tags/ROS/</loc>
-    <lastmod>2024-11-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
 
   
   <url>
-    <loc>http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/</loc>
+    <loc>http://echo-gh.github.io/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://echo-gh.github.io/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</loc>
+    <loc>http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1127,13 +1127,6 @@
   </url>
   
   <url>
-    <loc>http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/Pose-Optimization/</loc>
-    <lastmod>2024-11-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/Dynamic-SLAM/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
@@ -1142,6 +1135,13 @@
   
   <url>
     <loc>http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/Map-Match/</loc>
+    <lastmod>2024-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/Pose-Optimization/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1190,7 +1190,7 @@
   </url>
   
   <url>
-    <loc>http://echo-gh.github.io/categories/SLAM/Experiments/</loc>
+    <loc>http://echo-gh.github.io/categories/%E9%9A%8F%E8%AE%B0/notes/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1205,13 +1205,6 @@
   
   <url>
     <loc>http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/Multi-source/</loc>
-    <lastmod>2024-11-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://echo-gh.github.io/categories/%E9%9A%8F%E8%AE%B0/notes/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -1240,6 +1233,13 @@
   
   <url>
     <loc>http://echo-gh.github.io/categories/SLAM/ORB-SLAM/</loc>
+    <lastmod>2024-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://echo-gh.github.io/categories/SLAM/Experiments/</loc>
     <lastmod>2024-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
