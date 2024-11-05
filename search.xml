@@ -3458,8 +3458,50 @@ K\mathbf{t} = [f_x t_1+c_x t_3, f_y t_2 + c_y t_3, t_3]^T = [M,N,t_3]^T \\
   <entry>
     <title>在Ubuntu 22.04上部署ROS1教程</title>
     <url>/2024/11/04/ros1-on-ubuntu22-04/</url>
-    <content><![CDATA[<h1 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h1><p>当前组内开发的程序是基于ROS1进行的，所以需要在本地搭建一个ROS1环境来运行和修改。查阅<a href="https://www.ros.org/">ROS官网</a>后发现ROS版本与Ubuntu版本有着较为严格的对应关系。Ubuntu 22.04之后只能安装ROS2了，而ROS2与ROS1之间还是存在着较大的架构差异的，ROS2并不能向下兼容ROS1。</p>
-<p>因此，本人在网上搜寻如何在Ubuntu 22.04上运行ROS1的方法，搜到的方法包括使用源码部署、使用docker等等，在此过程中遇到了各种各样的问题，最终在<a href="https://rcbbs.top/">rcbbs</a>论坛上找到了合适的解决方案，在此记录一下解决方法，并表示对作者的感谢。具体过程参考<a href="https://rcbbs.top/t/topic/559">该帖子</a>。<br>作者迭代了几版之后，已经成功将程序打包为Deb包，可直接通过更新软件源然后利用<code>apt install</code>安装即可。对于Ubuntu 22.04：<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:ros-for-jammy/noetic</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install ros-noetic-desktop-full</span><br></pre></td></tr></table></figure><br>对于Ubuntu 24.04：<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:ros-for-jammy/noble</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install ros-noetic-desktop-full</span><br></pre></td></tr></table></figure></p>
+    <content><![CDATA[<h1 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h1><p>当前组内开发的程序是基于ROS1进行的，所以需要在本地搭建一个ROS1环境来运行和修改。查阅<a href="https://www.ros.org/">ROS官网</a>后发现ROS版本与Ubuntu版本有着较为严格的对应关系，根据<a href="https://wiki.ros.org/Distributions">ROS1版本页面</a>总结的对应关系如下表所示，ROS1官方已经不支持Ubuntu 20.04以后的版本了，Ubuntu 22.04之后只能安装ROS2，而ROS2与ROS1之间还是存在着较大的架构差异的，ROS2并不能向下兼容ROS1。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Ubuntu</th>
+<th style="text-align:center">ROS</th>
+<th style="text-align:center">Release date</th>
+<th style="text-align:center">End of Life (EOL)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">14.04</td>
+<td style="text-align:center">Indigo Igloo</td>
+<td style="text-align:center">July 22nd, 2014</td>
+<td style="text-align:center">April, 2019</td>
+</tr>
+<tr>
+<td style="text-align:center">16.04</td>
+<td style="text-align:center">Kinetic Kame</td>
+<td style="text-align:center">May 23rd, 2016</td>
+<td style="text-align:center">April, 2021</td>
+</tr>
+<tr>
+<td style="text-align:center">18.04</td>
+<td style="text-align:center">Melodic Morenia</td>
+<td style="text-align:center">May 23rd, 2018</td>
+<td style="text-align:center">June 27, 2023</td>
+</tr>
+<tr>
+<td style="text-align:center">20.04</td>
+<td style="text-align:center">Noetic Ninjemys</td>
+<td style="text-align:center">May 23rd, 2020</td>
+<td style="text-align:center">May, 2025</td>
+</tr>
+</tbody>
+</table>
+</div>
+<span id="more"></span>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>因此，本人在网上搜寻如何在Ubuntu 22.04上运行ROS1的方法，搜到的方法包括使用源码部署、使用docker等等，在此过程中遇到了各种各样的问题，最终在<a href="https://rcbbs.top/">rcbbs论坛</a>上找到了合适的解决方案，在此记录一下解决方法，并表示对作者的感谢。具体过程参考<a href="https://rcbbs.top/t/topic/559">该帖子</a>。<br>作者迭代了几版之后，已经成功将程序打包为Deb包，可直接通过更新软件源然后利用<code>apt install</code>安装即可。</p>
+<p>对于Ubuntu 22.04：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:ros-for-jammy/noetic</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install ros-noetic-desktop-full</span><br></pre></td></tr></table></figure>
+<p>对于Ubuntu 24.04：<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo add-apt-repository ppa:ros-for-jammy/noble</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install ros-noetic-desktop-full</span><br></pre></td></tr></table></figure></p>
 <p>再次感谢大佬的贡献！</p>
 ]]></content>
       <categories>
