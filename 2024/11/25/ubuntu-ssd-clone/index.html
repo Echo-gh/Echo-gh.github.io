@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="1 前情提要当时购买工作站时不是自己挑选的配置，总价2万的工作站（Dell Precision 5820）竟然只给配了一块4T的希捷企业级机械硬盘，唉……本人日常是通过局域网内的远程桌面控制工作站的（参考），在日常使用中可以感受到机械硬盘读取速率导致的画面卡顿，而且，在跑视觉算法时经常是硬盘读取速度限制了算法的运行速度；再加上有一次在工作站运行时摔倒了一次，当时就连续多次启动失败，还好后来重新插拔">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu系统硬盘克隆过程记录">
+<meta property="og:url" content="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="1 前情提要当时购买工作站时不是自己挑选的配置，总价2万的工作站（Dell Precision 5820）竟然只给配了一块4T的希捷企业级机械硬盘，唉……本人日常是通过局域网内的远程桌面控制工作站的（参考），在日常使用中可以感受到机械硬盘读取速率导致的画面卡顿，而且，在跑视觉算法时经常是硬盘读取速度限制了算法的运行速度；再加上有一次在工作站运行时摔倒了一次，当时就连续多次启动失败，还好后来重新插拔">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/image-20241125114801255.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/image-20241125130446486.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/image-20241125131808256.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/02.png">
+<meta property="og:image" content="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/image-20241125153551207.png">
+<meta property="article:published_time" content="2024-11-25T03:17:38.000Z">
+<meta property="article:modified_time" content="2024-11-25T07:40:39.987Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="Ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/image-20241125114801255.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Ubuntu系统硬盘克隆过程记录 | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu系统硬盘克隆过程记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-11-25 11:17:38 / 修改时间：15:40:39" itemprop="dateCreated datePublished" datetime="2024-11-25T11:17:38+08:00">2024-11-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">开发环境搭建</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-前情提要"><a href="#1-前情提要" class="headerlink" title="1 前情提要"></a>1 前情提要</h1><p>当时购买工作站时不是自己挑选的配置，总价2万的工作站（Dell Precision 5820）竟然只给配了一块4T的希捷企业级机械硬盘，唉……本人日常是通过局域网内的远程桌面控制工作站的（<a href="https://echo-gh.github.io/2024/01/26/win-remote-ubuntu/">参考</a>），在日常使用中可以感受到机械硬盘读取速率导致的画面卡顿，而且，在跑视觉算法时经常是硬盘读取速度限制了算法的运行速度；再加上有一次在工作站运行时摔倒了一次，当时就连续多次启动失败，还好后来重新插拔硬盘后又可以正常运行了，但从那以后我就觉得这个硬盘不太可靠了，进一步增加了自己要换硬盘的信念。最近正好赶上实验室配件购买，所以就决定升级一下内存并更换这块不靠谱的硬盘。</p>
+<span id="more"></span>
+<p>更换SSD硬盘有两种选择：当前常见的NVME M2 SSD，或者是SATA3 企业级固态硬盘，考虑到企业级固态硬盘的超高售价以及提升不大的读取速度，决定选择使用M2 SSD硬盘，日常记得常做数据备份就可以。当时工作站到手的时候就拆机看了，主板上没有M2接口的硬盘位，要想使用M2硬盘有两种方案：方案一是使用官方的<a target="_blank" rel="noopener" href="https://www.dell.com/support/kbdoc/zh-cn/000185631/%E5%A6%82%E4%BD%95%E4%B8%BA-precision-5820-%E5%92%8C-7820-%E5%A1%94%E5%BC%8F%E6%9C%BA%E5%88%87%E6%8D%A2-nvme">PCIe SSD FlexBay套件</a>：</p>
+<p><img src="/2024/11/25/ubuntu-ssd-clone/image-20241125114801255.png" alt="image-20241125114801255" title="FlexBay"></p>
+<p>该方案优点是可以实现NVME硬盘的热插拔，而且位于硬盘仓位里，有系统风扇可以提供散热；缺点是，咨询了Dell的代理商，该方案由于售价高（上千元）、操作麻烦已经基本被弃用了，他们自己都不用这种方案，而是使用PCIe转接卡，这就是所谓的方案二。使用PCIe转接卡方案的优势是价格低（几十元）、操作便捷，但缺点就是散热问题，不仅没有系统风扇直接降温，而且还离显卡更近；此外，还需要确认主板支持NVME硬盘启动，这个已经跟代理商沟通过没问题的。最终，权衡之后选择使用方案二。</p>
+<h1 id="2-材料准备"><a href="#2-材料准备" class="headerlink" title="2 材料准备"></a>2 材料准备</h1><p>转接卡使用的是<a target="_blank" rel="noopener" href="https://item.jd.com/100058017976.html">绿联单盘位转接卡</a>，最高支持32Gbps的传输速度（应该是PCIe3.0 x4）。但是要是要让我重新选的话，我不会选这个转接卡了，因为其硬盘固定方式不可靠，它是通过一个<strong>螺栓</strong>将硬盘卡在转接卡上，而不是常规使用螺丝帽来固定的，如下图所示：</p>
+<p><img src="/2024/11/25/ubuntu-ssd-clone/image-20241125130446486.png" alt="image-20241125130446486" title="转接卡"></p>
+<p>由于该螺栓中间空隙的高度与硬盘厚度并<strong>不一致</strong>，导致硬盘按照这种方式安装后可以<strong>上下晃动</strong>，虽然不至于影响金手指处的连接，但是总觉得不靠谱；因此本人没有按照这种图示的方式进行连接，而是将螺栓放置到背面，仍使用传统的螺丝帽固定硬盘，毫不松动、非常可靠。</p>
+<p>至于硬盘，本想选择与机械硬盘一样存储容量的型号，但是无奈三星4T硬盘当前价格已经到了2600左右（2024年11月），价格实在是有点难接受，只能购买2T版本的了；由于支持PCIe3.0的980型号当时京东上没有2T版本的，并考虑到硬盘的散热问题，所以最终选择了PCIe4.0版本的<a target="_blank" rel="noopener" href="https://item.jd.com/100045627669.html">990PRO 散热片版</a>：</p>
+<p><img src="/2024/11/25/ubuntu-ssd-clone/image-20241125131808256.png" alt="image-20241125131808256" title="Samsung ssd"></p>
+<p>这就是合体后的样子了：</p>
+<p><img src="/2024/11/25/ubuntu-ssd-clone/02.png" alt="02" title="合体版"></p>
+<h1 id="3-硬盘克隆过程"><a href="#3-硬盘克隆过程" class="headerlink" title="3 硬盘克隆过程"></a>3 硬盘克隆过程</h1><p>在Windows系统下硬盘克隆是件很简单的事，有很多工具可以直接使用，如DiskGenius等；而在Ubuntu下，稍微会麻烦一点，有推荐使用台湾出品的Clonezilla（再生龙）软件的，也有推荐直接使用dd命令进行全文件复制的，大概看了一下不同方法的操作流程，最终决定使用更简单的dd命令进行操作，记录一下操作过程。</p>
+<h2 id="3-1-制作U盘启动盘"><a href="#3-1-制作U盘启动盘" class="headerlink" title="3.1 制作U盘启动盘"></a>3.1 制作U盘启动盘</h2><p>制作一个Ubuntu系统盘，可参考<a href="https://echo-gh.github.io/2024/01/26/Ubuntu-setup/">该教程</a>使用Rufus制作；在这个时间里可以将转接卡安装到工作站中，注意查看PCIe通道数，这个绿联转接卡是4通道的；<strong>建议在一切操作之前备份重要数据</strong>。</p>
+<h2 id="3-2-旧硬盘瘦身"><a href="#3-2-旧硬盘瘦身" class="headerlink" title="3.2 旧硬盘瘦身"></a>3.2 旧硬盘瘦身</h2><p>进入U盘启动模式，选择Try Ubuntu，注：本节后续的所有操作均是在该模式下进行的。</p>
+<p>进入系统之后先查看现有的硬盘，使用<code>sudo fdisk -l</code>命令查看当前硬盘的分区以及类型（注：这是后期补的，操作过程中没有及时记录）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Disk /dev/nvme0n1: 1.82 TiB, 2000398934016 bytes, 3907029168 sectors                     Disk model: Samsung SSD 990 PRO with Heatsink 2TB                                        Units: sectors of 1 * 512 = 512 bytes                                                    Sector size (logical/physical): 512 bytes / 512 bytes                                    I/O size (minimum/optimal): 512 bytes / 512 bytes                                        Disklabel <span class="built_in">type</span>: gpt                                                                      Disk identifier: 25A90423-66B9-46A2-9BFA-A8BCBE13416D                                                                                                                             Device             Start        End    Sectors  Size Type                                /dev/nvme0n1p1      2048     978943     976896  477M Microsoft basic data                /dev/nvme0n1p2    978944    1957887     978944  478M Linux filesystem                    /dev/nvme0n1p3   1957888   22929407   20971520   10G Linux swap                          /dev/nvme0n1p4  22929408  442359807  419430400  200G Linux filesystem                    /dev/nvme0n1p5 442359808 3907028991 3464669184  1.6T Linux filesystem</span><br></pre></td></tr></table></figure>
+<p>可以看到分区类型为gpt，一共有5个分区，为<code>/dev/sda1-/dev/sda5</code>（原来的机械硬盘），分别对应efi、boot、swap、/和/home。要想进行克隆，则需要将新硬盘设置为完全相同的分区模式，此处使用Ubuntu自带的gparted对硬盘进行分区，此处的分区大小设置应与之前相同，但由于新硬盘小于旧硬盘，所以需要先对旧硬盘进行“瘦身”。</p>
+<p>旧硬盘的“瘦身”也是通过gparted完成的，将未使用的分区进行压缩，本人当时是在/home下有大量的未占用空间，所以将其瘦身，直至新硬盘容量足以容纳现有的分区。（注：该过程对于机械硬盘来说处理时间较久，本人就曾因为时间过久以为卡死了，后来发现确实需要蛮长时间的）</p>
+<h2 id="3-3-硬盘克隆"><a href="#3-3-硬盘克隆" class="headerlink" title="3.3 硬盘克隆"></a>3.3 硬盘克隆</h2><p>新分区完之后就是简单的数据拷贝了，这里使用dd命令对各个分区的数据进行完全拷贝：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/sda1 of=/dev/nvme0n1p1</span><br><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/sda2 of=/dev/nvme0n1p2</span><br><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/sda3 of=/dev/nvme0n1p3</span><br><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/sda4 of=/dev/nvme0n1p4</span><br><span class="line"><span class="built_in">dd</span> <span class="keyword">if</span>=/dev/sda5 of=/dev/nvme0n1p5</span><br></pre></td></tr></table></figure>
+<p>如果想查看拷贝进程，可以新开一个终端，输入以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">watch -n 5 killall -USR1 <span class="built_in">dd</span></span><br></pre></td></tr></table></figure>
+<p>这样使用dd进行完全拷贝之后，会使得新硬盘的各个分区uuid与旧硬盘完全相同，如果想要新旧硬盘一起使用的话，就会出现问题，可以使用<code>uuidgen</code>命令更新新硬盘分区的uuid；而我是直接用旧硬盘替换新硬盘的，所以不存在这个问题。现在拔掉旧硬盘，重启电脑，设置启动顺序之后，就可以正常开机了，与旧硬盘下状态完全一样，不过速度已经起飞了。</p>
+<h1 id="4-NVME硬盘情况查看"><a href="#4-NVME硬盘情况查看" class="headerlink" title="4 NVME硬盘情况查看"></a>4 NVME硬盘情况查看</h1><p>使用dmesg查看PCIe接口设备的连接速度：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> sudo dmesg | grep Gb</span><br><span class="line">[    0.470410] pci 0000:17:00.0: 126.016 Gb/s available PCIe bandwidth, limited by 8.0 GT/s PCIe x16 <span class="built_in">link</span> at 0000:16:00.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 <span class="built_in">link</span>)</span><br><span class="line">[    0.473664] pci 0000:65:00.0: 126.016 Gb/s available PCIe bandwidth, limited by 8.0 GT/s PCIe x16 <span class="built_in">link</span> at 0000:64:00.0 (capable of 252.048 Gb/s with 16.0 GT/s PCIe x16 <span class="built_in">link</span>)</span><br><span class="line">[    1.028825] ahci 0000:00:17.0: AHCI 0001.0301 32 slots 8 ports 6 Gbps 0xff impl SATA mode</span><br><span class="line">[    1.033983] pci 10000:01:00.0: 31.504 Gb/s available PCIe bandwidth, limited by 8.0 GT/s PCIe x4 <span class="built_in">link</span> at 10000:00:00.0 (capable of 63.012 Gb/s with 16.0 GT/s PCIe x4 <span class="built_in">link</span>)</span><br><span class="line">[    1.532754] ata7: SATA <span class="built_in">link</span> up 1.5 Gbps (SStatus 113 SControl 300)</span><br></pre></td></tr></table></figure>
+<p>前两个是显卡，PCIe带宽为126.016 Gb/s，是PCIe3.0 x16速度，该显卡实际支持的是PCIe4.0 x16速度；第四个是新安装的NVMe硬盘，PCIe带宽为31.504 Gb/s，是是PCIe3.0 x4速度，该硬盘实际支持的是PCIe4.0 x4速度；PCIe版本速度对应情况查看<a target="_blank" rel="noopener" href="https://blog.muxilong.com/pocket/linux/ubuntu%E4%B8%8E%E7%A1%AC%E4%BB%B6%E5%9C%A8ubuntu%E4%B8%8A%E6%9F%A5%E7%9C%8Bpci-e%E6%8F%92%E6%A7%BD%E4%B8%8E%E7%89%88%E6%9C%AC/">该文章</a>。使用Ubuntu自带的Disk软件检测读取速度：</p>
+<p><img src="/2024/11/25/ubuntu-ssd-clone/image-20241125153551207.png" alt="image-20241125153551207" title="ssd测试"></p>
+<p>使用<code>nvme-cli</code>工具查看硬盘实时状况：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"> sudo nvme smart-log /dev/nvme0n1</span><br><span class="line">Smart Log <span class="keyword">for</span> NVME device:nvme0n1 namespace-id:ffffffff</span><br><span class="line">critical_warning                        : 0</span><br><span class="line">temperature                             : 34 C (307 Kelvin)</span><br><span class="line">available_spare                         : 100%</span><br><span class="line">available_spare_threshold               : 10%</span><br><span class="line">percentage_used                         : 0%</span><br><span class="line">endurance group critical warning summary: 0</span><br><span class="line">data_units_read                         : 3,315,606</span><br><span class="line">data_units_written                      : 2,897,004</span><br><span class="line">host_read_commands                      : 358,623,991</span><br><span class="line">host_write_commands                     : 2,956,956</span><br><span class="line">controller_busy_time                    : 41</span><br><span class="line">power_cycles                            : 26</span><br><span class="line">power_on_hours                          : 3</span><br><span class="line">unsafe_shutdowns                        : 18</span><br><span class="line">media_errors                            : 0</span><br><span class="line">num_err_log_entries                     : 0</span><br><span class="line">Warning Temperature Time                : 0</span><br><span class="line">Critical Composite Temperature Time     : 0</span><br><span class="line">Temperature Sensor 1           : 34 C (307 Kelvin)</span><br><span class="line">Temperature Sensor 2           : 35 C (308 Kelvin)</span><br><span class="line">Thermal Management T1 Trans Count       : 0</span><br><span class="line">Thermal Management T2 Trans Count       : 0</span><br><span class="line">Thermal Management T1 Total Time        : 0</span><br><span class="line">Thermal Management T2 Total Time        : 0</span><br></pre></td></tr></table></figure>
+<p>至此，硬盘克隆过程结束。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/11/04/ros1-on-ubuntu22-04/" rel="prev" title="在Ubuntu 22.04上部署ROS1教程">
+      <i class="fa fa-chevron-left"></i> 在Ubuntu 22.04上部署ROS1教程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="nav-text">1 前情提要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%9D%90%E6%96%99%E5%87%86%E5%A4%87"><span class="nav-text">2 材料准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E7%A1%AC%E7%9B%98%E5%85%8B%E9%9A%86%E8%BF%87%E7%A8%8B"><span class="nav-text">3 硬盘克隆过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E5%88%B6%E4%BD%9CU%E7%9B%98%E5%90%AF%E5%8A%A8%E7%9B%98"><span class="nav-text">3.1 制作U盘启动盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E6%97%A7%E7%A1%AC%E7%9B%98%E7%98%A6%E8%BA%AB"><span class="nav-text">3.2 旧硬盘瘦身</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E7%A1%AC%E7%9B%98%E5%85%8B%E9%9A%86"><span class="nav-text">3.3 硬盘克隆</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-NVME%E7%A1%AC%E7%9B%98%E6%83%85%E5%86%B5%E6%9F%A5%E7%9C%8B"><span class="nav-text">4 NVME硬盘情况查看</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:xrzhao404@outlook.com" title="E-Mail → mailto:xrzhao404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+
+</body>
+</html>
