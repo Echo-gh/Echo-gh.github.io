@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/11/27/pcie-data/
 http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/
 http://echo-gh.github.io/2024/11/04/ros1-on-ubuntu22-04/
 http://echo-gh.github.io/2024/11/01/epipolar-constraints/
