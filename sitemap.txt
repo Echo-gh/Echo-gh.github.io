@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2024/12/12/rime/
 http://echo-gh.github.io/2024/11/27/pcie-data/
 http://echo-gh.github.io/2024/11/25/ubuntu-ssd-clone/
 http://echo-gh.github.io/2024/11/04/ros1-on-ubuntu22-04/
@@ -131,6 +132,8 @@ http://echo-gh.github.io/tags/Calibration/
 http://echo-gh.github.io/tags/VINS/
 http://echo-gh.github.io/tags/remote-access/
 http://echo-gh.github.io/tags/zsh/
+http://echo-gh.github.io/tags/Windows-10/
+http://echo-gh.github.io/tags/Rime/
 http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/
 http://echo-gh.github.io/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/
 http://echo-gh.github.io/categories/%E8%AE%BA%E6%96%87%E8%AE%B0%E5%BD%95/SLAM/
