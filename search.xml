@@ -5516,26 +5516,26 @@ f_x & 0 & c_x \\
     <title>Windows安装小狼毫Rime+雾凇拼音输入法过程记录</title>
     <url>/2024/12/12/rime/</url>
     <content><![CDATA[<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>使用Windows过程中一直在切换各种输入法，包括但不限于搜狗输入法、Windows自带输入法、谷歌输入法等，各个输入法都有其对应的缺点，导致本人一直在挑选更适合自己的输入法，最终在网上找到了Rime输入法，<strong>离线、轻量化、高度定制化</strong>是其最鲜明的特点。</p>
-<p><img src="/2024/12/12/rime/image-20241212173115067.png" width="70%" title="Rime"></p>
+<p><img src="/2024/12/12/rime/image-20241212173115067.png" width="85%" title="Rime"></p>
 <span id="more"></span>
 <p>照例，先贴上<a href="https://zh.wikipedia.org/zh-hans/%E4%B8%AD%E5%B7%9E%E9%9F%BB%E8%BC%B8%E5%85%A5%E6%B3%95%E5%BC%95%E6%93%8E">Wikipedia</a>上的介绍：</p>
 <blockquote>
 <p><strong>中州韵输入法引擎</strong>（英语：<strong>Rime Input Method Engine</strong>，又称<strong>Rime输入法</strong>）是由佛振编写的<a href="https://zh.wikipedia.org/wiki/开放源代码">开放源代码</a>的<a href="https://zh.wikipedia.org/wiki/中文輸入法">中文输入法</a>，目前项目网站、源代码均托管在<a href="https://zh.wikipedia.org/wiki/GitHub">GitHub</a><a href="https://zh.wikipedia.org/zh-hans/中州韻輸入法引擎#cite_note-2">[注 1]</a>。基于同一个核心架构，该输入法分为三个官方发行版：<a href="https://zh.wikipedia.org/wiki/Linux">Linux</a> 发行版<strong>中州韵</strong>（<a href="https://zh.wikipedia.org/wiki/Ibus">ibus</a>-rime）、<a href="https://zh.wikipedia.org/wiki/Microsoft_Windows">Windows</a>发行版<strong>小狼毫</strong>（Weasel）、<a href="https://zh.wikipedia.org/wiki/MacOS">macOS</a> 发行版<strong>鼠须管</strong>（Squirrel）。另有数个第三方发行版：<a href="https://zh.wikipedia.org/wiki/Linux">Linux</a> 发行版<strong>fcitx-rime</strong>、<a href="https://zh.wikipedia.org/wiki/Microsoft_Windows">Windows</a>发行版<strong>PRIME</strong>、<a href="https://zh.wikipedia.org/wiki/MacOS">macOS</a> 发行版<strong>XIME</strong>、<a href="https://zh.wikipedia.org/wiki/Android">Android</a>发行版<strong>同文输入法</strong>（Trime）、<a href="https://zh.wikipedia.org/wiki/IOS">iOS</a>发行版<strong>iRime</strong>。</p>
 </blockquote>
-<p>更具体的信息可参考<a href="https://rime.im/">Rime官网</a>。高度定制化决定了其入手难度不算低，相较于搜狗等这种开箱即用的输入法来说还是有一定使用门槛的。该输入法的绝大部分设置是通过编写yaml文件完成的，可以在使用过程中根据个人喜好不断进行修改，而且没有烦人的广告、臃肿的程序，这些都让Rime显得如此具有吸引力；再加上现在有了大神开源并持续维护的<a href="https://dvel.me/posts/rime-ice/#%e5%9f%ba%e6%9c%ac%e5%a5%97%e8%b7%af">雾凇拼音</a>，使得入手难度大为降低，很适合那些对于当前输入法有着诸多不满的人来尝试，相信总会有吸引你的特性在里面的。</p>
+<p>更具体的信息可参考<a href="https://rime.im/">Rime官网</a>。高度定制化决定了其入手难度不算低，相较于搜狗等这种开箱即用的输入法来说还是有一定使用门槛的。该输入法的绝大部分设置是通过编写yaml文件完成的，可以在使用过程中根据个人喜好不断进行修改，而且没有烦人的广告、臃肿的程序，这些都让Rime显得如此具有吸引力；再加上现在有了大神开源并持续维护的<a href="https://dvel.me/posts/rime-ice/">雾凇拼音</a>，使得入手难度大为降低，很适合那些对于现有输入法有着诸多不满的人来尝试，相信总会有吸引你的特性在里面的。</p>
 <h1 id="2-Rime安装-雾凇拼音"><a href="#2-Rime安装-雾凇拼音" class="headerlink" title="2 Rime安装+雾凇拼音"></a>2 Rime安装+雾凇拼音</h1><h2 id="2-1-Rime安装"><a href="#2-1-Rime安装" class="headerlink" title="2.1 Rime安装"></a>2.1 Rime安装</h2><p>安装过程应该不需要多说，从<a href="https://rime.im/">Rime官网</a>下载对应的安装版本然后进行常规安装即可，安装完成之后会弹出设定，进行一些基础设置，包括选择输入方案、皮肤设定等。</p>
 <p><img src="/2024/12/12/rime/image-20241212174742882.png" alt="image-20241212174742882" title="settings"></p>
-<p>可以看到Rime自带有比较多的输入方案，最开始接触使用Rime时网上很多博客推荐使用<strong>朙（ming）月拼音</strong>方案，自己当时也用过一段不短的时间，按照网上的配置进行设置；但是可能由于使用了杂七杂八的各种来源的设置之后导致输入法出现了一些问题，包括设置卡顿、影响任务栏功能等，导致后来本人又转向使用了一段时间的Windows自带输入法。这之后又经历了几次重装Rime，都会发生类似的问题，当然这些过程中都是保留了个人设置文件夹的；最近，在第N次切换回Rime后决定舍弃将之前保存的个人文件夹，重新进行设置，也是在重新设置过程中发现了大神开源的<strong>雾凇拼音</strong>，直接将Rime的使用难度降低到了基本开箱即用的程度，而且不妨碍个人的定制化修改，下面就介绍一下雾凇拼音的安装方式。</p>
+<p>可以看到Rime自带有比较多的输入方案，最开始接触使用Rime时网上很多博客推荐使用<strong>朙（míng）月拼音</strong>方案，自己当时也用过一段不短的时间，按照网上的配置进行设置；但是可能由于使用了杂七杂八的各种来源的配置文件之后导致输入法出现了一些问题，包括设置卡顿、影响任务栏功能等，致使本人后来转向Windows自带输入法了一段时间，但对于Rime仍然是念念不忘，在这之后又经历了几次重装Rime，都发生了类似的问题，当然这些过程中都是保留了个人设置文件夹的；最近，在第N次切换回Rime后决定完全舍弃之前保存的个人文件夹，重新进行设置，也是在重新设置过程中发现了大神开源的<strong>雾凇拼音</strong>，直接将Rime的使用难度降低到了近似开箱即用的程度，而且不妨碍个人的定制化修改，下面就介绍一下雾凇拼音的安装方式。</p>
 <h2 id="2-1-雾凇拼音"><a href="#2-1-雾凇拼音" class="headerlink" title="2.1 雾凇拼音"></a>2.1 雾凇拼音</h2><h3 id="2-1-1-介绍"><a href="#2-1-1-介绍" class="headerlink" title="2.1.1 介绍"></a>2.1.1 介绍</h3><p>雾凇拼音的具体的特点与新手指引可参考其<a href="https://dvel.me/posts/rime-ice/">配置网页</a>，其突出特点可以参考下图：</p>
-<p><img src="/2024/12/12/rime/2023-08-07.webp" width="70%" title="feature"></p>
-<p>包含了优化后的英文输入、拆字方案、Emoji、数字大写、标点符号直接上屏、日期时间农历等便捷操作；当然，Rime一直有着很好支持的特殊字符输入仍然保留着，只不过不是使用”/“，而是切换为了”v”键，如想要输入希腊字母可以直接在输入框中输入”vxl”，对于数字的不同表示可以输入”v1”等即可便捷实现特殊字符的快速输入。</p>
+<p><img src="/2024/12/12/rime/2023-08-07.webp" width="85%" title="feature"></p>
+<p>包含了优化后的英文输入、拆字方案、Emoji、数字大写、标点符号直接上屏、日期时间农历等便捷操作；当然，Rime一直有着很好支持的特殊字符输入仍然保留着，只不过不是使用”/“，而是切换为了”v”键，例如，若想要输入希腊字母可以直接在输入框中输入”vxl”，对于数字的不同表示可以输入”v1”等，即可便捷实现特殊字符的快速输入。</p>
 <p>对于离线词库，作者添加了<a href="https://github.com/iDvel/The-Table-of-General-Standard-Chinese-Characters">《通用规范汉字表》</a>、<a href="http://bbs.pinyin.thunisoft.com/forum.php?mod=viewthread&amp;tid=30049">华宇野风系统词库</a>、<a href="https://github.com/thunlp/THUOCL">清华大学开源词库</a>、<a href="https://gist.github.com/indiejoseph/eae09c673460aa0b56db">《现代汉语常用词表》</a>、<a href="https://ai.tencent.com/ailab/nlp/en/download.html">腾讯词向量</a>等词库，基本可以实现日常生活中的应用需求，当然，如果想定制化个人的词库也是支持的。</p>
-<h3 id="2-2-2-安装"><a href="#2-2-2-安装" class="headerlink" title="2.2.2 安装"></a>2.2.2 安装</h3><p>由于Rime自身是不包含雾凇拼音输入方案的，想要获取可以通过“设定-获取更多输入方案”来下载雾凇拼音输入方案，此处可参考<a href="https://sspai.com/post/89281">该文章</a>中的做法。不过，在操作过程中发现该方法操作有点复杂，本人win10上已经安装了Git，但是仍然无法正常安装该输入方案，查看<a href="https://sspai.com/link?target=https%3A%2F%2Fgithub.com%2Frime%2Fplum%3Ftab%3Dreadme-ov-file%23windows">Rime官方文档说明</a>也没看太明白，可能是自己太菜了吧😂；所幸，找到了一个简单直接的方案：下载<a href="https://github.com/iDvel/rime-ice?tab=readme-ov-file">雾凇拼音的Github</a> zip压缩包，将压缩包中的所有文件解压缩至Rime的个人文件夹中即可。</p>
+<h3 id="2-2-2-安装"><a href="#2-2-2-安装" class="headerlink" title="2.2.2 安装"></a>2.2.2 安装</h3><p>由于Rime自身是不包含雾凇拼音输入方案的，想要获取可以通过“设定-获取更多输入方案”来下载雾凇拼音输入方案，此处可参考<a href="https://sspai.com/post/89281">该文章</a>中的做法。不过，本人在操作过程中发现该方法操作有点复杂，本人的系统中已经安装了Git，但是仍然无法正常安装该输入方案，查看<a href="https://sspai.com/link?target=https%3A%2F%2Fgithub.com%2Frime%2Fplum%3Ftab%3Dreadme-ov-file%23windows">Rime官方文档说明</a>也没看太明白，可能是自己太菜了吧😂；所幸，找到了一个简单直接的方案：下载<a href="https://github.com/iDvel/rime-ice?tab=readme-ov-file">雾凇拼音的Github</a> zip压缩包，将压缩包中的所有文件解压缩至Rime的个人文件夹中即可。</p>
 <p><img src="/2024/12/12/rime/image-20241212191836029.png" width="70%" title="configuration"></p>
-<p>然后，重新进入Rime设定中，发现雾凇拼音就已经在可选列表中了：</p>
+<p>然后，重新进入Rime设定中，发现<strong>雾凇拼音</strong>就已经在可选列表中了：</p>
 <p><img src="/2024/12/12/rime/image-20241212192122093.png" alt="image-20241212192122093" title="雾凇拼音"></p>
-<p>同样，继续选择皮肤之类的操作完成设置就可以了。值得注意的是，在这种方法安装完后选择皮肤时，预览状态与实际状态不一致，我们可以从2.1.1节中的图片可以看出雾凇输入方案自带的皮肤看着非常舒适，包括配色、圆角等设置，可在weasel.custom.yaml文件中设置主题<code>&quot;style/color_scheme&quot;: purity_of_form_custom</code>即可实现图中的皮肤；当然，在weasel.yaml中还有作者设置的其他主题，可以根据个人喜好选择喜欢的主题。</p>
-<p>至此，就将Rime+雾凇拼音在win10的安装设置过程简述完了，至于Rime的其他细节设置网上有很多现成的博文有详细的介绍，此处就不多赘述了。最后，希望大家都能找到自己喜欢的输入法。</p>
+<p>同样，继续选择皮肤完成设置就可以了。值得注意的是，在此后选择皮肤时，预览状态与实际状态不一致，我们可以从2.1.1节中的图片可以看出雾凇输入方案自带的皮肤看着非常舒适，包括配色、圆角等设置，而预览状态看着就不怎么样了；所以，可手动在weasel.custom.yaml文件中设置主题<code>&quot;style/color_scheme&quot;: purity_of_form_custom</code>即可实现图中的默认皮肤；当然，在weasel.yaml中还有作者设置的其他主题，可以根据个人喜好选择喜欢的主题。</p>
+<p>至此，就将Rime+雾凇拼音在win10上的安装设置过程简述完了，至于Rime的其他细节设置网上有很多现成的博文有详细的介绍，此处就不多赘述了。最后，希望大家都能找到自己喜欢的输入法。</p>
 ]]></content>
       <categories>
         <category>随记</category>
