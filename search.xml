@@ -5551,14 +5551,14 @@ f_x & 0 & c_x \\
   <entry>
     <title>Ubuntu docker环境下调用宿主机显卡&amp;问题解决</title>
     <url>/2025/01/10/docker-nvidia/</url>
-    <content><![CDATA[<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>最近在跑一些模型时需要用到Docker，但出现了无法使用宿主机GPU的情况，在此记录一下解决过程。</p>
-<p>首先介绍一下Docker吧，即便本人相信看到这篇文章的人应该不会不知道这是个什么东西吧……照例，摆上Wiki上的介绍：</p>
+    <content><![CDATA[<h1 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1 问题描述"></a>1 问题描述</h1><p>最近在跑一些模型时需要用到Docker，但出现了无法使用宿主机GPU的情况，在此记录一下解决过程。</p>
+<p>首先介绍一下Docker吧，照例，Wiki上的介绍：</p>
 <blockquote>
 <p><strong>Docker容器</strong>与虚拟机类似，但二者在原理上不同。容器是将<a href="https://zh.wikipedia.org/wiki/作業系統層虛擬化">操作系统层虚拟化</a>，虚拟机则是虚拟化硬件，因此容器更具有便携性、更能高效地利用服务器。 容器更多的用于表示软件的一个标准化单元。由于容器的标准化，因此它可以无视基础设施（Infrastructure）的差异，部署到任何一个地方。</p>
 </blockquote>
 <p>简单来说，Docker可以理解为一个实现原理不同的虚拟机，可以将程序运行需要的环境进行一个整体的打包，然后部署到任何支持Docker的平台上，方便复现与调试。</p>
 <span id="more"></span>
-<h1 id="安装与调试"><a href="#安装与调试" class="headerlink" title="安装与调试"></a>安装与调试</h1><h2 id="1-安装-NVIDIA-Container-Toolkit"><a href="#1-安装-NVIDIA-Container-Toolkit" class="headerlink" title="1 安装 NVIDIA Container Toolkit"></a>1 安装 NVIDIA Container Toolkit</h2><p>首先，要想在Docker内部使用宿主机的GPU（默认为Nvidia）必须首先安装<a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html">NVIDIA Container Toolkit</a>，简单记录一下安装步骤（Ubuntu系统下）：</p>
+<h1 id="2-安装与调试"><a href="#2-安装与调试" class="headerlink" title="2 安装与调试"></a>2 安装与调试</h1><h2 id="2-1-安装-NVIDIA-Container-Toolkit"><a href="#2-1-安装-NVIDIA-Container-Toolkit" class="headerlink" title="2.1 安装 NVIDIA Container Toolkit"></a>2.1 安装 NVIDIA Container Toolkit</h2><p>首先，要想在Docker内部使用宿主机的GPU（默认为Nvidia）必须首先安装<a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html">NVIDIA Container Toolkit</a>，简单记录一下安装步骤（Ubuntu系统下）：</p>
 <ol>
 <li><p>添加源：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \</span><br><span class="line">  &amp;&amp; curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \</span><br><span class="line">    sed <span class="string">&#x27;s#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g&#x27;</span> | \</span><br><span class="line">    sudo <span class="built_in">tee</span> /etc/apt/sources.list.d/nvidia-container-toolkit.list</span><br></pre></td></tr></table></figure>
@@ -5578,13 +5578,13 @@ f_x & 0 & c_x \\
 </ol>
 <p>完成上述步骤之后可以查看<code>/etc/docker/daemon.json</code>，正常应该如下所示：</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;runtimes&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;nvidia&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;nvidia-container-runtime&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-<h2 id="2-测试-Docker"><a href="#2-测试-Docker" class="headerlink" title="2 测试 Docker"></a>2 测试 Docker</h2><p>完成上述操作后，可以测试一下Docker环境下是否可以正常使用宿主机的GPU，通过以下命令进行测试：</p>
+<h2 id="2-2-测试-Docker"><a href="#2-2-测试-Docker" class="headerlink" title="2.2 测试 Docker"></a>2.2 测试 Docker</h2><p>完成上述操作后，可以测试一下Docker环境下是否可以正常使用宿主机的GPU，通过以下命令进行测试：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo docker run --<span class="built_in">rm</span> --runtime=nvidia --gpus all ubuntu nvidia-smi</span><br></pre></td></tr></table></figure>
 <p>该命令是为ubuntu镜像（该镜像模拟一个Ubuntu环境）创建一个临时容器，<code>--gpus all</code>参数表示在Docker环境中使用宿主机的GPU，并在该容器内运行<code>nvidia-smi</code>，正常情况下应该会出现如下界面：</p>
 <p><img src="/2025/01/10/docker-nvidia/image-20250110202838121.png" alt="image-20250110202838121"></p>
 <p>如果出现上图证明成功实现了Docker环境下宿主机GPU的调用，然而，我在测试时出现了报错：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Failed to initialize NVML: Unknown Error</span><br></pre></td></tr></table></figure>
-<h2 id="3-问题解决"><a href="#3-问题解决" class="headerlink" title="3 问题解决"></a>3 问题解决</h2><p>在网上搜索之后，在<a href="https://blog.csdn.net/qq_36649698/article/details/142261619">该文章</a>中找到了解决方案。修改以下文件：</p>
+<h2 id="2-3-问题解决"><a href="#2-3-问题解决" class="headerlink" title="2.3 问题解决"></a>2.3 问题解决</h2><p>在网上搜索之后，在<a href="https://blog.csdn.net/qq_36649698/article/details/142261619">该文章</a>中找到了解决方案。修改以下文件：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/nvidia-container-runtime/config.toml</span><br></pre></td></tr></table></figure>
 <p>将<code>no-cgroups</code>设置为false：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">no-cgroups = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
