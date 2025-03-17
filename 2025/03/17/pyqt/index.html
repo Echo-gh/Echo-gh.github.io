@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="1 问题描述在Ubuntu conda环境中运行python代码时会报错： 123QObject::moveToThread: Current thread (0x223e600) is not the object&amp;#x27;s thread...Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&#x2F;home&#x2F;...&amp;qu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu conda环境PyQt报错 QObject::moveToThread: Current thread (0x223e600) is not the object&#39;s thread">
+<meta property="og:url" content="http://echo-gh.github.io/2025/03/17/pyqt/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="1 问题描述在Ubuntu conda环境中运行python代码时会报错： 123QObject::moveToThread: Current thread (0x223e600) is not the object&amp;#x27;s thread...Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&#x2F;home&#x2F;...&amp;qu">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-03-17T12:21:06.000Z">
+<meta property="article:modified_time" content="2025-03-17T13:02:00.526Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="Conda">
+<meta property="article:tag" content="Python-OpenCV">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://echo-gh.github.io/2025/03/17/pyqt/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Ubuntu conda环境PyQt报错 QObject::moveToThread: Current thread (0x223e600) is not the object's thread | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2025/03/17/pyqt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu conda环境PyQt报错 QObject::moveToThread: Current thread (0x223e600) is not the object's thread
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-03-17 20:21:06 / 修改时间：21:02:00" itemprop="dateCreated datePublished" datetime="2025-03-17T20:21:06+08:00">2025-03-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">随记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E8%AE%B0/%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">问题记录</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1 问题描述"></a>1 问题描述</h1><p>在Ubuntu conda环境中运行python代码时会报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QObject::moveToThread: Current thread (0x223e600) is not the object<span class="string">&#x27;s thread</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line"><span class="string">Could not load the Qt platform plugin &quot;xcb&quot; in &quot;/home/...&quot; even though it was found</span></span><br></pre></td></tr></table></figure>
+<h1 id="2-问题解决"><a href="#2-问题解决" class="headerlink" title="2 问题解决"></a>2 问题解决</h1><h2 id="2-1-网上相关文章"><a href="#2-1-网上相关文章" class="headerlink" title="2.1 网上相关文章"></a>2.1 网上相关文章</h2><p>在网上搜索该问题（<code>Could not load the Qt platform plugin &quot;xcb&quot; in &quot;/home/...&quot; even though it was found</code>）时发现很多人遇到了同样的问题，很多文章提到可以打开PyQt的debug模式<code>export QT_DEBUG_PLUGINS=1</code>，然后查看报错内容。部分情况是由于缺少动态链接库导致的，解决方案可参考这篇<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43912749/article/details/122330815?spm=1001.2014.3001.5501">文章</a>，但是我并不属于这个报错类型。后来又搜索<code>QObject::moveToThread: Current thread (0x223e600) is not the object&#39;s thread</code>时找到了适用于本人情况的解决方案，此处参考该<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_59496782/article/details/122833159">文章</a>，并在此记录一下解决方案。</p>
+<h2 id="2-2-解决方案"><a href="#2-2-解决方案" class="headerlink" title="2.2 解决方案"></a>2.2 解决方案</h2><p>该<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_59496782/article/details/122833159">文章</a>指出出现上述报错是由于使用不同方式安装PyQt和OpenCV，两软件版本不兼容导致的。文中提到的解决方案是：</p>
+<ol>
+<li><p>卸载当前<code>conda</code>安装的PyQt：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install pyqt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过<code>pip</code>安装PyQt：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install PyQt5</span><br><span class="line">pip install opencv-python</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>然而，通过上述操作后会出现同样的报错内容……</p>
+<p>不过，在查看评论区时发现了<strong>真正解决</strong>该问题的方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install opencv-python-headless</span><br></pre></td></tr></table></figure>
+<h2 id="2-3-OpenCV版本"><a href="#2-3-OpenCV版本" class="headerlink" title="2.3 OpenCV版本"></a>2.3 OpenCV版本</h2><p>opencv-python和opencv-python-headless的区别可参考该<a target="_blank" rel="noopener" href="https://wenku.csdn.net/answer/107h82yzp2">文章</a>。主要区别在于opencv-python是完整版，包含图像处理、视觉算法、GUI操作等；而opencv-python-headless不包含任何GUI相关组件，其余功能与完整版本一致。PyQt是适用于python语言的GUI工具包，猜想该解决方法有效的原因是这种功能性互补的操作可以避免出现版本不兼容的问题。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
+              <a href="/tags/Conda/" rel="tag"><i class="fa fa-tag"></i> Conda</a>
+              <a href="/tags/Python-OpenCV/" rel="tag"><i class="fa fa-tag"></i> Python-OpenCV</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/01/10/docker-nvidia/" rel="prev" title="Ubuntu docker环境下调用宿主机显卡&问题解决">
+      <i class="fa fa-chevron-left"></i> Ubuntu docker环境下调用宿主机显卡&问题解决
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-text">1 问题描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="nav-text">2 问题解决</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E7%BD%91%E4%B8%8A%E7%9B%B8%E5%85%B3%E6%96%87%E7%AB%A0"><span class="nav-text">2.1 网上相关文章</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">2.2 解决方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-OpenCV%E7%89%88%E6%9C%AC"><span class="nav-text">2.3 OpenCV版本</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:xrzhao404@outlook.com" title="E-Mail → mailto:xrzhao404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+
+</body>
+</html>

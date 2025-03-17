@@ -5602,4 +5602,34 @@ f_x & 0 & c_x \\
         <tag>Docker</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Ubuntu conda环境PyQt报错 QObject::moveToThread: Current thread (0x223e600) is not the object&#39;s thread</title>
+    <url>/2025/03/17/pyqt/</url>
+    <content><![CDATA[<h1 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1 问题描述"></a>1 问题描述</h1><p>在Ubuntu conda环境中运行python代码时会报错：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">QObject::moveToThread: Current thread (0x223e600) is not the object<span class="string">&#x27;s thread</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line"><span class="string">Could not load the Qt platform plugin &quot;xcb&quot; in &quot;/home/...&quot; even though it was found</span></span><br></pre></td></tr></table></figure>
+<h1 id="2-问题解决"><a href="#2-问题解决" class="headerlink" title="2 问题解决"></a>2 问题解决</h1><h2 id="2-1-网上相关文章"><a href="#2-1-网上相关文章" class="headerlink" title="2.1 网上相关文章"></a>2.1 网上相关文章</h2><p>在网上搜索该问题（<code>Could not load the Qt platform plugin &quot;xcb&quot; in &quot;/home/...&quot; even though it was found</code>）时发现很多人遇到了同样的问题，很多文章提到可以打开PyQt的debug模式<code>export QT_DEBUG_PLUGINS=1</code>，然后查看报错内容。部分情况是由于缺少动态链接库导致的，解决方案可参考这篇<a href="https://blog.csdn.net/weixin_43912749/article/details/122330815?spm=1001.2014.3001.5501">文章</a>，但是我并不属于这个报错类型。后来又搜索<code>QObject::moveToThread: Current thread (0x223e600) is not the object&#39;s thread</code>时找到了适用于本人情况的解决方案，此处参考该<a href="https://blog.csdn.net/m0_59496782/article/details/122833159">文章</a>，并在此记录一下解决方案。</p>
+<h2 id="2-2-解决方案"><a href="#2-2-解决方案" class="headerlink" title="2.2 解决方案"></a>2.2 解决方案</h2><p>该<a href="https://blog.csdn.net/m0_59496782/article/details/122833159">文章</a>指出出现上述报错是由于使用不同方式安装PyQt和OpenCV，两软件版本不兼容导致的。文中提到的解决方案是：</p>
+<ol>
+<li><p>卸载当前<code>conda</code>安装的PyQt：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda install pyqt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过<code>pip</code>安装PyQt：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip install PyQt5</span><br><span class="line">pip install opencv-python</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>然而，通过上述操作后会出现同样的报错内容……</p>
+<p>不过，在查看评论区时发现了<strong>真正解决</strong>该问题的方法：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip install opencv-python-headless</span><br></pre></td></tr></table></figure>
+<h2 id="2-3-OpenCV版本"><a href="#2-3-OpenCV版本" class="headerlink" title="2.3 OpenCV版本"></a>2.3 OpenCV版本</h2><p>opencv-python和opencv-python-headless的区别可参考该<a href="https://wenku.csdn.net/answer/107h82yzp2">文章</a>。主要区别在于opencv-python是完整版，包含图像处理、视觉算法、GUI操作等；而opencv-python-headless不包含任何GUI相关组件，其余功能与完整版本一致。PyQt是适用于python语言的GUI工具包，猜想该解决方法有效的原因是这种功能性互补的操作可以避免出现版本不兼容的问题。</p>
+]]></content>
+      <categories>
+        <category>随记</category>
+        <category>问题记录</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Conda</tag>
+        <tag>Python-OpenCV</tag>
+      </tags>
+  </entry>
 </search>

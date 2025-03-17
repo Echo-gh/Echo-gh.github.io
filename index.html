@@ -195,6 +195,93 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2025/03/17/pyqt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2025/03/17/pyqt/" class="post-title-link" itemprop="url">Ubuntu conda环境PyQt报错 QObject::moveToThread: Current thread (0x223e600) is not the object's thread</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-03-17 20:21:06 / 修改时间：21:02:00" itemprop="dateCreated datePublished" datetime="2025-03-17T20:21:06+08:00">2025-03-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">随记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E8%AE%B0/%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">问题记录</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1 问题描述"></a>1 问题描述</h1><p>在Ubuntu conda环境中运行python代码时会报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QObject::moveToThread: Current thread (0x223e600) is not the object<span class="string">&#x27;s thread</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line"><span class="string">Could not load the Qt platform plugin &quot;xcb&quot; in &quot;/home/...&quot; even though it was found</span></span><br></pre></td></tr></table></figure>
+<h1 id="2-问题解决"><a href="#2-问题解决" class="headerlink" title="2 问题解决"></a>2 问题解决</h1><h2 id="2-1-网上相关文章"><a href="#2-1-网上相关文章" class="headerlink" title="2.1 网上相关文章"></a>2.1 网上相关文章</h2><p>在网上搜索该问题（<code>Could not load the Qt platform plugin &quot;xcb&quot; in &quot;/home/...&quot; even though it was found</code>）时发现很多人遇到了同样的问题，很多文章提到可以打开PyQt的debug模式<code>export QT_DEBUG_PLUGINS=1</code>，然后查看报错内容。部分情况是由于缺少动态链接库导致的，解决方案可参考这篇<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43912749/article/details/122330815?spm=1001.2014.3001.5501">文章</a>，但是我并不属于这个报错类型。后来又搜索<code>QObject::moveToThread: Current thread (0x223e600) is not the object&#39;s thread</code>时找到了适用于本人情况的解决方案，此处参考该<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_59496782/article/details/122833159">文章</a>，并在此记录一下解决方案。</p>
+<h2 id="2-2-解决方案"><a href="#2-2-解决方案" class="headerlink" title="2.2 解决方案"></a>2.2 解决方案</h2><p>该<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_59496782/article/details/122833159">文章</a>指出出现上述报错是由于使用不同方式安装PyQt和OpenCV，两软件版本不兼容导致的。文中提到的解决方案是：</p>
+<ol>
+<li><p>卸载当前<code>conda</code>安装的PyQt：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install pyqt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过<code>pip</code>安装PyQt：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install PyQt5</span><br><span class="line">pip install opencv-python</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>然而，通过上述操作后会出现同样的报错内容……</p>
+<p>不过，在查看评论区时发现了<strong>真正解决</strong>该问题的方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install opencv-python-headless</span><br></pre></td></tr></table></figure>
+<h2 id="2-3-OpenCV版本"><a href="#2-3-OpenCV版本" class="headerlink" title="2.3 OpenCV版本"></a>2.3 OpenCV版本</h2><p>opencv-python和opencv-python-headless的区别可参考该<a target="_blank" rel="noopener" href="https://wenku.csdn.net/answer/107h82yzp2">文章</a>。主要区别在于opencv-python是完整版，包含图像处理、视觉算法、GUI操作等；而opencv-python-headless不包含任何GUI相关组件，其余功能与完整版本一致。PyQt是适用于python语言的GUI工具包，猜想该解决方法有效的原因是这种功能性互补的操作可以避免出现版本不兼容的问题。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2025/01/10/docker-nvidia/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -968,96 +1055,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/05/15/ie-tutorial/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/05/15/ie-tutorial/" class="post-title-link" itemprop="url">Waypoint Inertial Explorer 9.0 使用教程</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-05-15 21:20:44" itemprop="dateCreated datePublished" datetime="2024-05-15T21:20:44+08:00">2024-05-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-05-28 17:51:32" itemprop="dateModified" datetime="2024-05-28T17:51:32+08:00">2024-05-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SLAM/Multi-source/" itemprop="url" rel="index"><span itemprop="name">Multi-source</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>最近采完数据之后需要计算参考解，于是便使用组内购买的Waypoint Inertial Explorer 9.0 进行紧组合后处理，因为之前没有使用过该软件，所以向组内用过的师弟请教，在此记录一下使用过程，以免自己后续遗忘操作步骤时再去麻烦师弟。</p>
-<p>首先介绍一下IE这个软件：</p>
-<blockquote>
-<p>Inertial Explorer 是 NovAtel 公司 Waypoint 产品组研发的强大的、可配置度高的事后处理软件，用于处理所有可用的 GNSS、INS 数据，提供高精度组合导航信息，包括位置、速度和姿态信息。针对精度和稳定性要求比较高，不需要实时定位导航信息的应用，可以通过 GNSS 和 INS 原始数据后处理的方式，提高组合导航解算精度和稳定性。</p>
-</blockquote>
-<p>具体的软件介绍可以参考<a target="_blank" rel="noopener" href="https://novatel.com/products/waypoint-post-processing-software/inertial-explorer">Novatel官网</a>，官网中也有不同版本IE的<a target="_blank" rel="noopener" href="https://novatel.com/support/waypoint-software/inertial-explorer">用户手册</a>，但是当前只找到了英文版本，且有200多页，应该比较适合当作一个参考文件。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/05/15/ie-tutorial/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1129,7 +1126,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-count">90</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -1142,7 +1139,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-count">46</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
