@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="1 前情提要最近接到任务要把之前在寒武纪MLU220上部署的ERFNet网络（可参考该文章）重新部署到Nvidia Orin NX上去，因此记录一下环境部署过程，以及在此过程中遇到的一些问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nvidia Orin NX部署Pytorch环境教程">
+<meta property="og:url" content="http://echo-gh.github.io/2025/05/21/orin-pytorch/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="1 前情提要最近接到任务要把之前在寒武纪MLU220上部署的ERFNet网络（可参考该文章）重新部署到Nvidia Orin NX上去，因此记录一下环境部署过程，以及在此过程中遇到的一些问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2025/05/21/orin-pytorch/image-20250521112656743.png">
+<meta property="og:image" content="http://echo-gh.github.io/2025/05/21/orin-pytorch/image-20250521114000905.png">
+<meta property="og:image" content="http://echo-gh.github.io/2025/05/21/orin-pytorch/image-20250521115209807.png">
+<meta property="og:image" content="http://echo-gh.github.io/2025/05/21/orin-pytorch/image-20250521125404575.png">
+<meta property="article:published_time" content="2025-05-21T02:48:31.000Z">
+<meta property="article:modified_time" content="2025-05-21T04:55:58.533Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="Nvidia">
+<meta property="article:tag" content="Orin NX">
+<meta property="article:tag" content="Pytorch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2025/05/21/orin-pytorch/image-20250521112656743.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2025/05/21/orin-pytorch/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Nvidia Orin NX部署Pytorch环境教程 | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2025/05/21/orin-pytorch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Nvidia Orin NX部署Pytorch环境教程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2025-05-21 10:48:31 / 修改时间：12:55:58" itemprop="dateCreated datePublished" datetime="2025-05-21T10:48:31+08:00">2025-05-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">开发环境搭建</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-前情提要"><a href="#1-前情提要" class="headerlink" title="1 前情提要"></a>1 前情提要</h1><p>最近接到任务要把之前在寒武纪MLU220上部署的ERFNet网络（可参考该文章）重新部署到Nvidia Orin NX上去，因此记录一下环境部署过程，以及在此过程中遇到的一些问题。</p>
+<span id="more"></span>
+<h1 id="2-环境搭建过程"><a href="#2-环境搭建过程" class="headerlink" title="2 环境搭建过程"></a>2 环境搭建过程</h1><h2 id="2-1-Anaconda安装"><a href="#2-1-Anaconda安装" class="headerlink" title="2.1 Anaconda安装"></a>2.1 Anaconda安装</h2><p>跑不同的CNN网络需要不同的环境，所以Anaconda基本是要首先安装的，这里的安装过程与x86端基本一致，只需要注意安装包需要选择<strong>Linux-aarch64版本</strong>的，这里附上<a target="_blank" rel="noopener" href="https://repo.anaconda.com/archive/">Anaconda版本列表地址</a>。具体安装过程不再赘述。</p>
+<h2 id="2-2-Cuda-cuDNN安装"><a href="#2-2-Cuda-cuDNN安装" class="headerlink" title="2.2 Cuda, cuDNN安装"></a>2.2 Cuda, cuDNN安装</h2><p>由于本人拿到的Orin板子中已经安装好了Cuda和cuDNN，所以这个安装过程就无法展开来讲了，会针对后面cuDNN的一些后续操作进行详细说明。</p>
+<p>值得注意的是，参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43702653/article/details/129249585">该文章</a>中的说法，<strong>千万不要直接安装Cuda官网上最新的Cuda-Jetson-12.0</strong>，这可能会导致机子黑屏，需要刷机才可解决。该文章推荐的方法是直接安装Jetpack：</p>
+<ul>
+<li>Nvidia专为Jetson系列嵌入式AI和运算平台开发的软件开发工具包，包含了<strong>操作系统、CUDA工具包、深度学习、视觉库等组件</strong>，方便开发者能够高效地在Jetson设备上开发、部署和优化AI应用。</li>
+</ul>
+<p>那么安装Jetson后就可以直接安装上适配的Cuda、cuDNN、TensorRT等软件。如果不确定本机是否安装了Jetson，可以通过<code>jetson_release</code>命令来查看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">$ jetson_release</span><br><span class="line">Software part of jetson-stats 4.3.0 - (c) 2024, Raffaello Bonghi</span><br><span class="line">Model: NVIDIA Orin NX Developer Kit - Jetpack 5.1.4 [L4T 35.6.0]</span><br><span class="line">NV Power Mode[3]: 25W</span><br><span class="line">Serial Number: [XXX Show with: jetson_release -s XXX]</span><br><span class="line">Hardware:</span><br><span class="line"> - P-Number: p3767-0000</span><br><span class="line"> - Module: NVIDIA Jetson Orin NX (16GB ram)</span><br><span class="line">Platform:</span><br><span class="line"> - Distribution: Ubuntu 20.04 focal</span><br><span class="line"> - Release: 5.10.216-tegra</span><br><span class="line">jtop:</span><br><span class="line"> - Version: 4.3.0</span><br><span class="line"> - Service: Active</span><br><span class="line">Libraries:</span><br><span class="line"> - CUDA: 11.4.315</span><br><span class="line"> - cuDNN: 8.6.0.166</span><br><span class="line"> - TensorRT: 8.5.2.2</span><br><span class="line"> - VPI: 2.4.8</span><br><span class="line"> - Vulkan: 1.3.204</span><br><span class="line"> - OpenCV: 4.10.0 - with CUDA: NO</span><br></pre></td></tr></table></figure>
+<p>该命令在后续安装Pytorch时也需要使用，此处先mark一下。使用<code>ncvv -V</code>命令即可查看安装的Cuda版本信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ nvcc -V</span><br><span class="line">nvcc: NVIDIA (R) Cuda compiler driver</span><br><span class="line">Copyright (c) 2005-2022 NVIDIA Corporation</span><br><span class="line">Built on Sun_Oct_23_22:16:07_PDT_2022</span><br><span class="line">Cuda compilation tools, release 11.4, V11.4.315</span><br><span class="line">Build cuda_11.4.r11.4/compiler.31964100_0</span><br></pre></td></tr></table></figure>
+<p>可以看到本机安装的是cuda-11.4。虽然Cuda经测试是正常的，不过该机子之前应该没人搭建过CNN开发环境，所以对于cuDNN还需要进一步处理：<strong>将其对应的头文件、库文件放到Cuda目录</strong>。此处同样参考了<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43702653/article/details/129249585">该文章</a>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#复制文件到cuda目录下</span></span><br><span class="line"><span class="built_in">cd</span> /usr/include &amp;&amp; sudo <span class="built_in">cp</span> cudnn* /usr/local/cuda/include</span><br><span class="line"><span class="built_in">cd</span> /usr/lib/aarch64-linux-gnu &amp;&amp; sudo <span class="built_in">cp</span> libcudnn* /usr/local/cuda/lib64</span><br><span class="line"></span><br><span class="line"><span class="comment">#修改文件权限，修改复制完的头文件与库文件的权限，所有用户都可读，可写，可执行：</span></span><br><span class="line">sudo <span class="built_in">chmod</span> 777 /usr/local/cuda/include/cudnn.h </span><br><span class="line">sudo <span class="built_in">chmod</span> 777 /usr/local/cuda/lib64/libcudnn*</span><br><span class="line"></span><br><span class="line"><span class="comment">#重新软链接，这里的8.4.1和8对应安装的cudnn版本号和首数字</span></span><br><span class="line"><span class="built_in">cd</span> /usr/local/cuda/lib64</span><br><span class="line"></span><br><span class="line">sudo <span class="built_in">ln</span> -sf libcudnn.so.8.4.1 libcudnn.so.8</span><br><span class="line"></span><br><span class="line">sudo <span class="built_in">ln</span> -sf libcudnn_ops_train.so.8.4.1 libcudnn_ops_train.so.8</span><br><span class="line">sudo <span class="built_in">ln</span> -sf libcudnn_ops_infer.so.8.4.1 libcudnn_ops_infer.so.8</span><br><span class="line"></span><br><span class="line">sudo <span class="built_in">ln</span> -sf libcudnn_adv_train.so.8.4.1 libcudnn_adv_train.so.8</span><br><span class="line">sudo <span class="built_in">ln</span> -sf libcudnn_adv_infer.so.8.4.1 libcudnn_adv_infer.so.8</span><br><span class="line"></span><br><span class="line">sudo <span class="built_in">ln</span> -sf libcudnn_cnn_train.so.8.4.1 libcudnn_cnn_train.so.8</span><br><span class="line">sudo <span class="built_in">ln</span> -sf libcudnn_cnn_infer.so.8.4.1 libcudnn_cnn_infer.so.8</span><br><span class="line"></span><br><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure>
+<p>完成之后即可对cuDNN进行测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo <span class="built_in">cp</span> -r /usr/src/cudnn_samples_v8/ ~/</span><br><span class="line"><span class="built_in">cd</span> ~/cudnn_samples_v8/mnistCUDNN</span><br><span class="line">sudo <span class="built_in">chmod</span> 777 ~/cudnn_samples_v8</span><br><span class="line">sudo make clean &amp;&amp; sudo make</span><br><span class="line">./mnistCUDNN</span><br></pre></td></tr></table></figure>
+<p>如果出现”Test passed!” 即表明安装成功。</p>
+<h2 id="2-3-Pytorch-torchvision安装"><a href="#2-3-Pytorch-torchvision安装" class="headerlink" title="2.3 Pytorch, torchvision安装"></a>2.3 Pytorch, torchvision安装</h2><h3 id="2-3-1-Pytorch"><a href="#2-3-1-Pytorch" class="headerlink" title="2.3.1 Pytorch"></a>2.3.1 Pytorch</h3><p>本人在安装Pytorch时遇到了问题（虽然是一个小问题，但还是卡住了好久才搞定……），此处记录一下。</p>
+<p>同样地，Pytorch版本是需要根据机子环境进行确定的，刚才通过<code>jetson_release</code>命令查看了本机的Jetpack版本号是<code>Jetpack 5.1.4 [L4T 35.6.0]</code>，根据<a target="_blank" rel="noopener" href="https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048">Nvidia官方版本对应列表</a>查找可以安装的版本，这里是第一个坑，也是导致自己后来无法准确定位错误原因的一个关键点：在官方列表中找不到<code>Jetpack 5.1.4 [L4T 35.6.0]</code>这个版本……</p>
+<p><img src="/2025/05/21/orin-pytorch/image-20250521112656743.png" width="85%" title="NVIDIA Pytorch version"></p>
+<p>那就在这里面找几个试一下呗，然后就出现了问题：下载完wheel文件（或直接到<a target="_blank" rel="noopener" href="https://developer.download.nvidia.com/compute/redist/jp/">该网址</a>寻查对应版本文件链接），使用如下命令安装，然后就出现了报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ pip install https://developer.download.nvidia.com/compute/redist/jp/v51/pytorch/torch-2.0.0a0+8aa34602.nv23.03-cp38-cp38-linux_aarch64.whl</span><br><span class="line">ERROR: torch-2.0.0a0+8aa34602.nv23.03-cp38-cp38-linux_aarch64.whl is not a supported wheel on this platform.</span><br></pre></td></tr></table></figure>
+<p>把图中几个都试了一下都是同样的报错，本人脑子中第一个想法就是这个列表不完整，缺少<code>Jetpack 5.1.4 [L4T 35.6.0]</code>这个版本对应的文件。于是乎，找到<a target="_blank" rel="noopener" href="https://docs.nvidia.com/deeplearning/frameworks/install-pytorch-jetson-platform/index.html">Nvidia Jetson Pytorch官网教程</a>，按照步骤一步步来，最后到<a target="_blank" rel="noopener" href="https://developer.download.nvidia.com/compute/redist/jp/">该网址</a>寻查对应版本文件链接：</p>
+<p><img src="/2025/05/21/orin-pytorch/image-20250521114000905.png" width="70%" title="Jetson Pytorch version"></p>
+<p>那应该就是要使用<code>v51</code>中的版本了吧，同样的报错内容……</p>
+<p>此时，开始停下来思考原因，之前在网上搜索相关报错内容，发现几乎没有相同的报错情况，根据Jetson平台的广泛应用情况，说明这应该不是一个通用的问题，那肯定是自己操作中的问题。此时，突然想到python版本信息；其实在<a target="_blank" rel="noopener" href="https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048">Nvidia官方版本对应列表</a>中已经注意到Python3.8的标示，但是根据之前在x86端的部署经验，Pytorch对于Python版本要求并不严格，所以刚才自己也没有注意。此时也是无计可施，那就重新创建一个Python3.8的版本试一下吧，结果一下子就顺利安装了……唉，卡了几个小时的问题就这么轻易解决了，问题竟然出在Python版本上了，不多说了，以后肯定老老实实按照各种版本信息来部署环境了，要不然浪费的时间成本有点高。</p>
+<h3 id="2-3-2-torchvision"><a href="#2-3-2-torchvision" class="headerlink" title="2.3.2 torchvision"></a>2.3.2 torchvision</h3><p>相较于Pytorch的安装来说，torchvision安装过程就顺利得多了。安装所需的依赖软件、clone工程文件、安装即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install libjpeg-dev zlib1g-dev libpython3-dev libavcodec-dev libavformat-dev libswscale-dev </span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> --branch &lt;version&gt; https://github.com/pytorch/vision torchvision <span class="comment">#&lt;version&gt;看下表选择，我的是v0.16.0</span></span><br><span class="line"><span class="built_in">cd</span> torchvision</span><br><span class="line"><span class="built_in">export</span> BUILD_VERSION=0.x.0  <span class="comment"># where 0.x.0 is the torchvision version  </span></span><br><span class="line">python3 setup.py install --user</span><br></pre></td></tr></table></figure>
+<p>这里附上<a target="_blank" rel="noopener" href="https://github.com/pytorch/vision/tree/main">torchvision仓库</a>，以及版本对照表：</p>
+<p><img src="/2025/05/21/orin-pytorch/image-20250521115209807.png" width="80%" title="torchvision version"></p>
+<p>编译安装时间会比较长，安装完之后进入python环境，<code>import torchvision</code>测试一下，缺少哪些软件使用pip或conda安装即可。这里顺带记录一下opencv安装时的问题，根据<a target="_blank" rel="noopener" href="https://blog.csdn.net/song5bai/article/details/134393202">文章</a>指出有两种安装方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python3-opencv</span><br><span class="line"><span class="comment"># or</span></span><br><span class="line">conda install -n your-env-name opencv</span><br></pre></td></tr></table></figure>
+<p>本人测试后使用第二种方法有效。</p>
+<h1 id="3-问题记录"><a href="#3-问题记录" class="headerlink" title="3 问题记录"></a>3 问题记录</h1><p>安装过程中的问题在上一节中已经记录了，这里记录一个在程序运行中遇到的问题。</p>
+<h2 id="3-1-undefined-symbol-TIFFReadRGBATileExt-version-LIBTIFF-4-0"><a href="#3-1-undefined-symbol-TIFFReadRGBATileExt-version-LIBTIFF-4-0" class="headerlink" title="3.1 undefined symbol: TIFFReadRGBATileExt, version LIBTIFF_4.0"></a>3.1 undefined symbol: TIFFReadRGBATileExt, version LIBTIFF_4.0</h2><p>搭建完环境后运行rospy程序时出现如下报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">&quot;/opt/ros/noetic/lib/python3/dist-packages/rospy/topics.py&quot;</span>, line 750, <span class="keyword">in</span> _invoke_callback</span><br><span class="line">    cb(msg)</span><br><span class="line">  File <span class="string">&quot;main.py&quot;</span>, line 133, <span class="keyword">in</span> satelliteMapCallback</span><br><span class="line">    ground_image_array = bridge.imgmsg_to_cv2(ground_image_msg, <span class="string">&quot;bgr8&quot;</span>)</span><br><span class="line">  File <span class="string">&quot;/opt/ros/noetic/lib/python3/dist-packages/cv_bridge/core.py&quot;</span>, line 163, <span class="keyword">in</span> imgmsg_to_cv2</span><br><span class="line">    dtype, n_channels = self.encoding_to_dtype_with_channels(img_msg.encoding)</span><br><span class="line">  File <span class="string">&quot;/opt/ros/noetic/lib/python3/dist-packages/cv_bridge/core.py&quot;</span>, line 99, <span class="keyword">in</span> encoding_to_dtype_with_channels</span><br><span class="line">    <span class="built_in">return</span> self.cvtype2_to_dtype_with_channels(self.encoding_to_cvtype2(encoding))</span><br><span class="line">  File <span class="string">&quot;/opt/ros/noetic/lib/python3/dist-packages/cv_bridge/core.py&quot;</span>, line 91, <span class="keyword">in</span> encoding_to_cvtype2</span><br><span class="line">    from cv_bridge.boost.cv_bridge_boost import getCvType</span><br><span class="line">ImportError: /lib/libgdal.so.26: undefined symbol: TIFFReadRGBATileExt, version LIBTIFF_4.0</span><br></pre></td></tr></table></figure>
+<p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39779233/article/details/140839443">该文章</a>，报错原因可能是系统中存在多个<code>libtiff.so.5</code>库，但此处使用的<code>libtiff.so.5</code>库中没有<code>LIBTIFF_4.0</code>，所以在程序运行前可以手动指定一下正确的<code>libtiff.so.5</code>库。可通过<code>find</code>命令查询库路径：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo find / -name <span class="string">&quot;libtiff.so.5*&quot;</span> 2&gt;/dev/null</span><br><span class="line">/snap/gnome-42-2204/201/usr/lib/aarch64-linux-gnu/libtiff.so.5</span><br><span class="line">...</span><br><span class="line">/usr/lib/aarch64-linux-gnu/libtiff.so.5.5.0</span><br><span class="line">/usr/lib/aarch64-linux-gnu/libtiff.so.5</span><br></pre></td></tr></table></figure>
+<p>可在程序执行前运行以下命令或在<code>.bashrc</code>中添加该命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libtiff.so.5</span><br></pre></td></tr></table></figure>
+<h2 id="3-2-Orin-NX端语义分割性能下降问题"><a href="#3-2-Orin-NX端语义分割性能下降问题" class="headerlink" title="3.2 Orin NX端语义分割性能下降问题"></a>3.2 Orin NX端语义分割性能下降问题</h2><p>这是之前遇到过的老问题了，ROS通过cv_bridge接收到的图像是BGR格式的，而PIL默认使用RGB格式的，所以需要利用<code>cv2.cvtColor</code>转换一下颜色通道。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改颜色空间转换顺序</span></span><br><span class="line">cv_img = bridge.imgmsg_to_cv2(msg, <span class="string">&quot;bgr8&quot;</span>)</span><br><span class="line"><span class="comment"># OpenCV的BGR转为RGB</span></span><br><span class="line">rgb_img = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)</span><br><span class="line">pil_img = PILImage.fromarray(rgb_img)</span><br><span class="line">input_tensor = self.input_transform(pil_img).unsqueeze(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>记录一下不同图片读取方式的色彩通道。</p>
+<p><img src="/2025/05/21/orin-pytorch/image-20250521125404575.png" alt="image-20250521125404575" title="color channels"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
+              <a href="/tags/Nvidia/" rel="tag"><i class="fa fa-tag"></i> Nvidia</a>
+              <a href="/tags/Orin-NX/" rel="tag"><i class="fa fa-tag"></i> Orin NX</a>
+              <a href="/tags/Pytorch/" rel="tag"><i class="fa fa-tag"></i> Pytorch</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/03/17/pyqt/" rel="prev" title="Ubuntu conda环境PyQt报错 QObject::moveToThread: Current thread (0x223e600) is not the object's thread">
+      <i class="fa fa-chevron-left"></i> Ubuntu conda环境PyQt报错 QObject::moveToThread: Current thread (0x223e600) is not the object's thread
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="nav-text">1 前情提要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="nav-text">2 环境搭建过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Anaconda%E5%AE%89%E8%A3%85"><span class="nav-text">2.1 Anaconda安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Cuda-cuDNN%E5%AE%89%E8%A3%85"><span class="nav-text">2.2 Cuda, cuDNN安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Pytorch-torchvision%E5%AE%89%E8%A3%85"><span class="nav-text">2.3 Pytorch, torchvision安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-Pytorch"><span class="nav-text">2.3.1 Pytorch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-torchvision"><span class="nav-text">2.3.2 torchvision</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95"><span class="nav-text">3 问题记录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-undefined-symbol-TIFFReadRGBATileExt-version-LIBTIFF-4-0"><span class="nav-text">3.1 undefined symbol: TIFFReadRGBATileExt, version LIBTIFF_4.0</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Orin-NX%E7%AB%AF%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2%E6%80%A7%E8%83%BD%E4%B8%8B%E9%99%8D%E9%97%AE%E9%A2%98"><span class="nav-text">3.2 Orin NX端语义分割性能下降问题</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">91</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:xrzhao404@outlook.com" title="E-Mail → mailto:xrzhao404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+
+</body>
+</html>
