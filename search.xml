@@ -5691,4 +5691,43 @@ f_x & 0 & c_x \\
         <tag>Pytorch</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Ubuntu系统禁用网卡方法</title>
+    <url>/2025/05/21/network-card/</url>
+    <content><![CDATA[<h1 id="1-问题说明"><a href="#1-问题说明" class="headerlink" title="1 问题说明"></a>1 问题说明</h1><p>最近在使用Orin NX时遇到了ssh连接失败的问题，查看ip地址是没问题的（192.168.1.*），但就是ping不通。经过检查发现是因为该机子配有多张网卡（有线网卡、无线网卡），有线网卡的ip设置为了同一号段、不同ip地址，可能是该原因导致ping不通的。所以我想要找到一种方法来禁用网卡，使得每次开机后不需要连接显示器、键盘等外设，直接ssh连接控制即可。之前也在其他机子上禁用过网卡，但是没有记录下来，所以这次顺手记录一下。</p>
+<span id="more"></span>
+<h1 id="2-解决方法"><a href="#2-解决方法" class="headerlink" title="2 解决方法"></a>2 解决方法</h1><p>网上查找Ubuntu禁用网卡方法，大概有以下几种：</p>
+<ol>
+<li>ifconfig</li>
+<li>ip</li>
+<li>netplan</li>
+<li>blacklist.conf</li>
+</ol>
+<p>其中，ifconfig和ip都属于临时设定网卡，重启之后就会失效，所以不适用于本方法。netplan方法测试后在本机上无效果，所以这里记录一下使用blacklist.conf的方法，该方法参考了<a href="https://blog.csdn.net/weixin_43252751/article/details/130359938">该文章</a>。</p>
+<blockquote>
+<p>blacklist.conf 是一个在 Linux 系统中用于阻止加载指定内核模块的配置文件，可禁止模块在系统启动时自动加载。</p>
+</blockquote>
+<p>因此，可以将网卡的驱动写入该文件，实现对该网卡的禁用。</p>
+<p>首先，使用<code>lshw -C network</code>命令获取网卡信息；需要注意的是，如果有多张网卡，需要根据网卡名称来其对应的具体参数，如下所示，这是<code>eno1</code>网卡的参数。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">❯ lshw -C network</span><br><span class="line">WARNING: you should run this program as super-user.</span><br><span class="line">  *-network</span><br><span class="line">       description: Ethernet interface</span><br><span class="line">       product: Ethernet Connection (5) I219-LM</span><br><span class="line">       vendor: Intel Corporation</span><br><span class="line">       physical <span class="built_in">id</span>: 1f.6</span><br><span class="line">       bus info: pci@0000:00:1f.6</span><br><span class="line">       logical name: eno1</span><br><span class="line">       version: 00</span><br><span class="line">       serial: 74:86:e2:17:b4:4f</span><br><span class="line">       size: 1Gbit/s</span><br><span class="line">       capacity: 1Gbit/s</span><br><span class="line">       width: 32 bits</span><br><span class="line">       clock: 33MHz</span><br><span class="line">       capabilities: bus_master cap_list ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt-fd autonegotiation</span><br><span class="line">       configuration: autonegotiation=on broadcast=<span class="built_in">yes</span> driver=e1000e driverversion=6.5.0-14-generic duplex=full firmware=0.1-4 ip=192.168.1.245 latency=0 <span class="built_in">link</span>=<span class="built_in">yes</span> multicast=<span class="built_in">yes</span> port=twisted pair speed=1Gbit/s</span><br><span class="line">       resources: irq:69 memory:92f00000-92f1ffff</span><br><span class="line">WARNING: output may be incomplete or inaccurate, you should run this program as super-user.</span><br></pre></td></tr></table></figure>
+<p>根据上述信息得到网卡的驱动<code>driver=e1000e</code>。然后，将该驱动参数写入blacklist.conf文件中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/modprobe.d/blacklist.conf </span><br><span class="line"></span><br><span class="line"><span class="comment"># Disable network card eno1.</span></span><br><span class="line">blacklist e1000e</span><br></pre></td></tr></table></figure>
+<p>保存退出后，使用如下命令来确保系统可以正确引导并进行重启操作：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo update-initramfs -u</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>update-initramfs -u 命令用于更新 Linux 系统的初始化 RAM 磁盘文件系统（initramfs）。在系统引导过程中，initramfs 用于加载必要的驱动程序并初始化硬件，以便在挂载根文件系统之前完成这些工作。该命令生成一个新的 initramfs 映像文件并更新符号链接到最新的映像文件。在更新内核或任何与内核相关的配置文件更改之后，通常会运行此命令，以确保系统可以正确引导。</p>
+</blockquote>
+<p>同样地，若想使网卡禁用失效，那么删除对应语句并重复上述命令+重启即可。</p>
+<p>此处附上Linux网卡操作命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ifconfig：查看、设置网络接口信息</span><br><span class="line">ip addr：查询和设置IP地址，子网掩码和广播地址</span><br><span class="line">ip <span class="built_in">link</span>：查询和设置网络接口的状态和属性</span><br><span class="line">ip route：查询和设置路由信息</span><br><span class="line">route：显示和管理IP路由表</span><br><span class="line">netstat：显示网络状态信息</span><br><span class="line">ping：测试网络连通性</span><br><span class="line">arp：管理本地地址解析协议 (ARP) 缓存</span><br><span class="line">nslookup：查询DNS服务器以获取IP地址</span><br><span class="line">host：查询DNS服务器以获取IP地址</span><br><span class="line">dig：DNS查询工具</span><br><span class="line">ethtool：查询和设置以太网接口的状态和属性</span><br><span class="line">mii-tool：查询和设置以太网接口的状态和属性</span><br><span class="line">tcpdump：抓包分析网络数据</span><br><span class="line">telnet：建立远程登录终端连接</span><br><span class="line">ssh：建立安全的远程登录终端连接</span><br><span class="line">ifup：启动网络接口</span><br><span class="line">ifdown：关闭网络接口</span><br><span class="line">ifcfg-xxx：网络接口配置文件</span><br><span class="line">systemctl restart network：重启网络服务</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>随记</category>
+        <category>问题记录</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>ssh</tag>
+      </tags>
+  </entry>
 </search>

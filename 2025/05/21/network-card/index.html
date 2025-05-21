@@ -25,30 +25,34 @@
 
 
 
-  <meta name="description" content="To know, read. To learn, write. To master, teach.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Echo&#39;s blog">
-<meta property="og:url" content="http://echo-gh.github.io/page/10/index.html">
+  <meta name="description" content="1 问题说明最近在使用Orin NX时遇到了ssh连接失败的问题，查看ip地址是没问题的（192.168.1.*），但就是ping不通。经过检查发现是因为该机子配有多张网卡（有线网卡、无线网卡），有线网卡的ip设置为了同一号段、不同ip地址，可能是该原因导致ping不通的。所以我想要找到一种方法来禁用网卡，使得每次开机后不需要连接显示器、键盘等外设，直接ssh连接控制即可。之前也在其他机子上禁用过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu系统禁用网卡方法">
+<meta property="og:url" content="http://echo-gh.github.io/2025/05/21/network-card/index.html">
 <meta property="og:site_name" content="Echo&#39;s blog">
-<meta property="og:description" content="To know, read. To learn, write. To master, teach.">
+<meta property="og:description" content="1 问题说明最近在使用Orin NX时遇到了ssh连接失败的问题，查看ip地址是没问题的（192.168.1.*），但就是ping不通。经过检查发现是因为该机子配有多张网卡（有线网卡、无线网卡），有线网卡的ip设置为了同一号段、不同ip地址，可能是该原因导致ping不通的。所以我想要找到一种方法来禁用网卡，使得每次开机后不需要连接显示器、键盘等外设，直接ssh连接控制即可。之前也在其他机子上禁用过">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-05-21T05:17:57.000Z">
+<meta property="article:modified_time" content="2025-05-21T05:39:32.318Z">
 <meta property="article:author" content="Echo">
+<meta property="article:tag" content="Ubuntu">
+<meta property="article:tag" content="ssh">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://echo-gh.github.io/page/10/">
+<link rel="canonical" href="http://echo-gh.github.io/2025/05/21/network-card/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Echo's blog</title>
+  <title>Ubuntu系统禁用网卡方法 | Echo's blog</title>
   
 
 
@@ -189,13 +193,14 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/26/zsh-setup/">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2025/05/21/network-card/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/snoopy.jpg">
@@ -207,10 +212,9 @@
       <meta itemprop="name" content="Echo's blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/26/zsh-setup/" class="post-title-link" itemprop="url">zsh、Oh-My-Zsh及相关设置</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu系统禁用网卡方法
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -218,23 +222,21 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2024-01-26 10:57:42" itemprop="dateCreated datePublished" datetime="2024-01-26T10:57:42+08:00">2024-01-26</time>
+              <time title="创建时间：2025-05-21 13:17:57 / 修改时间：13:39:32" itemprop="dateCreated datePublished" datetime="2025-05-21T13:17:57+08:00">2025-05-21</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-29 10:18:38" itemprop="dateModified" datetime="2024-01-29T10:18:38+08:00">2024-01-29</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">开发环境搭建</span></a>
+                  <a href="/categories/%E9%9A%8F%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">随记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E8%AE%B0/%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">问题记录</span></a>
                 </span>
             </span>
 
@@ -249,116 +251,63 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>注：<strong>本文主要参考</strong><a target="_blank" rel="noopener" href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">该文章</a>。</p>
-<h1 id="1-安装并设置zsh"><a href="#1-安装并设置zsh" class="headerlink" title="1 安装并设置zsh"></a>1 安装并设置zsh</h1><p>安装命令：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/26/zsh-setup/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
+        <h1 id="1-问题说明"><a href="#1-问题说明" class="headerlink" title="1 问题说明"></a>1 问题说明</h1><p>最近在使用Orin NX时遇到了ssh连接失败的问题，查看ip地址是没问题的（192.168.1.*），但就是ping不通。经过检查发现是因为该机子配有多张网卡（有线网卡、无线网卡），有线网卡的ip设置为了同一号段、不同ip地址，可能是该原因导致ping不通的。所以我想要找到一种方法来禁用网卡，使得每次开机后不需要连接显示器、键盘等外设，直接ssh连接控制即可。之前也在其他机子上禁用过网卡，但是没有记录下来，所以这次顺手记录一下。</p>
+<span id="more"></span>
+<h1 id="2-解决方法"><a href="#2-解决方法" class="headerlink" title="2 解决方法"></a>2 解决方法</h1><p>网上查找Ubuntu禁用网卡方法，大概有以下几种：</p>
+<ol>
+<li>ifconfig</li>
+<li>ip</li>
+<li>netplan</li>
+<li>blacklist.conf</li>
+</ol>
+<p>其中，ifconfig和ip都属于临时设定网卡，重启之后就会失效，所以不适用于本方法。netplan方法测试后在本机上无效果，所以这里记录一下使用blacklist.conf的方法，该方法参考了<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43252751/article/details/130359938">该文章</a>。</p>
+<blockquote>
+<p>blacklist.conf 是一个在 Linux 系统中用于阻止加载指定内核模块的配置文件，可禁止模块在系统启动时自动加载。</p>
+</blockquote>
+<p>因此，可以将网卡的驱动写入该文件，实现对该网卡的禁用。</p>
+<p>首先，使用<code>lshw -C network</code>命令获取网卡信息；需要注意的是，如果有多张网卡，需要根据网卡名称来其对应的具体参数，如下所示，这是<code>eno1</code>网卡的参数。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">❯ lshw -C network</span><br><span class="line">WARNING: you should run this program as super-user.</span><br><span class="line">  *-network</span><br><span class="line">       description: Ethernet interface</span><br><span class="line">       product: Ethernet Connection (5) I219-LM</span><br><span class="line">       vendor: Intel Corporation</span><br><span class="line">       physical <span class="built_in">id</span>: 1f.6</span><br><span class="line">       bus info: pci@0000:00:1f.6</span><br><span class="line">       logical name: eno1</span><br><span class="line">       version: 00</span><br><span class="line">       serial: 74:86:e2:17:b4:4f</span><br><span class="line">       size: 1Gbit/s</span><br><span class="line">       capacity: 1Gbit/s</span><br><span class="line">       width: 32 bits</span><br><span class="line">       clock: 33MHz</span><br><span class="line">       capabilities: bus_master cap_list ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt-fd autonegotiation</span><br><span class="line">       configuration: autonegotiation=on broadcast=<span class="built_in">yes</span> driver=e1000e driverversion=6.5.0-14-generic duplex=full firmware=0.1-4 ip=192.168.1.245 latency=0 <span class="built_in">link</span>=<span class="built_in">yes</span> multicast=<span class="built_in">yes</span> port=twisted pair speed=1Gbit/s</span><br><span class="line">       resources: irq:69 memory:92f00000-92f1ffff</span><br><span class="line">WARNING: output may be incomplete or inaccurate, you should run this program as super-user.</span><br></pre></td></tr></table></figure>
+<p>根据上述信息得到网卡的驱动<code>driver=e1000e</code>。然后，将该驱动参数写入blacklist.conf文件中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/modprobe.d/blacklist.conf </span><br><span class="line"></span><br><span class="line"><span class="comment"># Disable network card eno1.</span></span><br><span class="line">blacklist e1000e</span><br></pre></td></tr></table></figure>
+<p>保存退出后，使用如下命令来确保系统可以正确引导并进行重启操作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo update-initramfs -u</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>update-initramfs -u 命令用于更新 Linux 系统的初始化 RAM 磁盘文件系统（initramfs）。在系统引导过程中，initramfs 用于加载必要的驱动程序并初始化硬件，以便在挂载根文件系统之前完成这些工作。该命令生成一个新的 initramfs 映像文件并更新符号链接到最新的映像文件。在更新内核或任何与内核相关的配置文件更改之后，通常会运行此命令，以确保系统可以正确引导。</p>
+</blockquote>
+<p>同样地，若想使网卡禁用失效，那么删除对应语句并重复上述命令+重启即可。</p>
+<p>此处附上Linux网卡操作命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">ifconfig：查看、设置网络接口信息</span><br><span class="line">ip addr：查询和设置IP地址，子网掩码和广播地址</span><br><span class="line">ip <span class="built_in">link</span>：查询和设置网络接口的状态和属性</span><br><span class="line">ip route：查询和设置路由信息</span><br><span class="line">route：显示和管理IP路由表</span><br><span class="line">netstat：显示网络状态信息</span><br><span class="line">ping：测试网络连通性</span><br><span class="line">arp：管理本地地址解析协议 (ARP) 缓存</span><br><span class="line">nslookup：查询DNS服务器以获取IP地址</span><br><span class="line">host：查询DNS服务器以获取IP地址</span><br><span class="line">dig：DNS查询工具</span><br><span class="line">ethtool：查询和设置以太网接口的状态和属性</span><br><span class="line">mii-tool：查询和设置以太网接口的状态和属性</span><br><span class="line">tcpdump：抓包分析网络数据</span><br><span class="line">telnet：建立远程登录终端连接</span><br><span class="line">ssh：建立安全的远程登录终端连接</span><br><span class="line">ifup：启动网络接口</span><br><span class="line">ifdown：关闭网络接口</span><br><span class="line">ifcfg-xxx：网络接口配置文件</span><br><span class="line">systemctl restart network：重启网络服务</span><br></pre></td></tr></table></figure>
+
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2024/01/26/Ubuntu-setup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/snoopy.jpg">
-      <meta itemprop="name" content="Echo">
-      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Echo's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2024/01/26/Ubuntu-setup/" class="post-title-link" itemprop="url">Ubuntu系统安装</a>
-        </h2>
+          <div class="post-tags">
+              <a href="/tags/Ubuntu/" rel="tag"><i class="fa fa-tag"></i> Ubuntu</a>
+              <a href="/tags/ssh/" rel="tag"><i class="fa fa-tag"></i> ssh</a>
+          </div>
 
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-01-26 10:53:25" itemprop="dateCreated datePublished" datetime="2024-01-26T10:53:25+08:00">2024-01-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-01-29 10:14:31" itemprop="dateModified" datetime="2024-01-29T10:14:31+08:00">2024-01-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">开发环境搭建</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-系统盘制作"><a href="#1-系统盘制作" class="headerlink" title="1 系统盘制作"></a>1 系统盘制作</h1><p>推荐使用 Rufus 这个软件进行制作：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/26/Ubuntu-setup/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/05/21/orin-pytorch/" rel="prev" title="Nvidia Orin NX搭建Pytorch环境教程">
+      <i class="fa fa-chevron-left"></i> Nvidia Orin NX搭建Pytorch环境教程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
       </footer>
+    
   </article>
   
   
   
-
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span>
-  </nav>
 
 
 
@@ -410,6 +359,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E9%97%AE%E9%A2%98%E8%AF%B4%E6%98%8E"><span class="nav-text">1 问题说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="nav-text">2 解决方法</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

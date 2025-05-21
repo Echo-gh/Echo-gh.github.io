@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://echo-gh.github.io/2025/05/21/network-card/</loc>
+    
+    <lastmod>2025-05-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://echo-gh.github.io/2025/05/21/orin-pytorch/</loc>
     
     <lastmod>2025-05-21</lastmod>
@@ -1187,6 +1196,13 @@
   
   <url>
     <loc>http://echo-gh.github.io/tags/Pytorch/</loc>
+    <lastmod>2025-05-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://echo-gh.github.io/tags/ssh/</loc>
     <lastmod>2025-05-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
