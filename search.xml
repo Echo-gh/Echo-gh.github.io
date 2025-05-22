@@ -5730,4 +5730,39 @@ f_x & 0 & c_x \\
         <tag>ssh</tag>
       </tags>
   </entry>
+  <entry>
+    <title>利用RTKlib将ECEF坐标转换为LLA坐标</title>
+    <url>/2025/05/22/rtklib-ecef2lla/</url>
+    <content><![CDATA[<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1 介绍"></a>1 介绍</h1><p>最近在使用RTKlib计算单点定位（SPP）和RTK结果，在观察定位误差时需要使用参考真值，但是RTKplot只能使用Lat, Lon, Hgt作为参考真值，所以需要将ECEF坐标系转为LLA坐标系。根据<a href="https://zhuanlan.zhihu.com/p/529856328">这篇文章</a>学习到了怎么利用RTKlib方便地对ECEF坐标进行转换，在此记录一下。</p>
+<p><strong>注：</strong>这个是针对单条坐标转换的，若是需要大批量转换，还是使用脚本更方便。</p>
+<span id="more"></span>
+<h1 id="2-转换过程"><a href="#2-转换过程" class="headerlink" title="2 转换过程"></a>2 转换过程</h1><p>首先，打开RTKpost，点击”Options”：</p>
+<p><img src="/2025/05/22/rtklib-ecef2lla/image-20250522163935195.png" alt="image-20250522163935195"></p>
+<p>然后，在Positioning Mode中选择”Kinematic”：</p>
+<p><img src="/2025/05/22/rtklib-ecef2lla/image-20250522164041289.png" alt="image-20250522164041289"></p>
+<p>再点击”Positions”选项，在Base Station处选择代转换的坐标系类型（此处是ECEF），将代转换坐标填写进去：</p>
+<p><img src="/2025/05/22/rtklib-ecef2lla/image-20250522164301118.png" alt="image-20250522164301118"></p>
+<p>最后，还是在Base Station处选择要转换的坐标系类型，框中就显示出转换之后的坐标了。图中示例就是将ECEF转换为LLA坐标的过程。</p>
+<p><img src="/2025/05/22/rtklib-ecef2lla/image-20250522164500651.png" alt="image-20250522164500651"></p>
+<h1 id="3-RTKplot添加参考坐标"><a href="#3-RTKplot添加参考坐标" class="headerlink" title="3 RTKplot添加参考坐标"></a>3 RTKplot添加参考坐标</h1><p>最后附上在RTKplot中添加参考坐标的方法。打开RTKplot，进入设置：</p>
+<p><img src="/2025/05/22/rtklib-ecef2lla/image-20250522164918668.png" alt="image-20250522164918668"></p>
+<p>然后在”Coordinate Origin”中选取”Lat/Lon/Hgt”，将转换后的LLA坐标填写进去即可。</p>
+<p><img src="/2025/05/22/rtklib-ecef2lla/image-20250522165059315.png" alt="image-20250522165059315"></p>
+<p>顺便记录一下其他几个选项的含义：</p>
+<ul>
+<li>Start Pos：结果中的第一个结果作为真值；</li>
+<li>End Pos：结果中的最后一个结果作为真值；</li>
+<li>Average Pos：结果中的平均值作为真值。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>随记</category>
+        <category>notes</category>
+      </categories>
+      <tags>
+        <tag>GNSS</tag>
+        <tag>Windows 10</tag>
+        <tag>RTKlib</tag>
+      </tags>
+  </entry>
 </search>
