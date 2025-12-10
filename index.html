@@ -218,10 +218,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-12-05 11:38:36 / 修改时间：17:05:17" itemprop="dateCreated datePublished" datetime="2025-12-05T11:38:36+08:00">2025-12-05</time>
+              <time title="创建时间：2025-12-05 11:38:36" itemprop="dateCreated datePublished" datetime="2025-12-05T11:38:36+08:00">2025-12-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-12-10 17:29:40" itemprop="dateModified" datetime="2025-12-10T17:29:40+08:00">2025-12-10</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -248,47 +254,14 @@
 
       
           <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>最近在看GNSS/Vision/IMU组合导航的相关内容，其中<a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>是一个跳不过的项目，而且经过一番调研之后发现，目前开源的GNSS/Vision/IMU紧组合系统似乎还只有GVINS这一家，所以想要对这个项目进行学习，并在此基础上做一些改进。由于GVINS是基于ROS Kinetic开发的，而我的电脑安装的是ROS Noetic，安装过程中存在一些兼容性问题，在此记录一下。</p>
-<h1 id="2-安装问题记录"><a href="#2-安装问题记录" class="headerlink" title="2 安装问题记录"></a>2 安装问题记录</h1><p>进入<a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>项目之后先将项目下载下来，如果基于ROS Noetic一点不改直接编译的话肯定是会报错的，接下来对遇到的问题进行记录。</p>
-<p>ROS版本查询方式：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">❯ echo $ROS_DISTRO</span><br><span class="line">noetic</span><br></pre></td></tr></table></figure>
-<h2 id="2-1-问题一：ROS版本适配"><a href="#2-1-问题一：ROS版本适配" class="headerlink" title="2.1 问题一：ROS版本适配"></a>2.1 问题一：ROS版本适配</h2><p>该部分内容参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/XXXHCITIZENZ/article/details/139816194">该文章</a>。</p>
-<h3 id="2-1-1-C-编译版本"><a href="#2-1-1-C-编译版本" class="headerlink" title="2.1.1 C++编译版本"></a>2.1.1 C++编译版本</h3><p>GVINS采用的Ceres是1.12.0版本的，是用C++11编译的，而Ceres2.0.0以上版本是用C++14编译的，所以需要将GVINS中所有CMakeLists.txt改为C++14编译：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span>(CMAKE_CXX_FLAGS <span class="string">&quot;-std=c++14&quot;</span>)</span><br></pre></td></tr></table></figure>
-<h3 id="2-1-2-适配OpenCV4"><a href="#2-1-2-适配OpenCV4" class="headerlink" title="2.1.2 适配OpenCV4"></a>2.1.2 适配OpenCV4</h3><p>ROS noetic版本中的OpenCV4.2与GVINS中需要使用的OpenCV3冲突，所以需要修改GVINS代码兼容openCV4:</p>
-<ol>
-<li><p>在头文件GVINS/camera_model/include/camodocal/chessboard/Chessboard.h中添加：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;opencv2/imgproc/types_c.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;opencv2/calib3d/calib3d_c.h&gt;</span></span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在头文件GVINS/camera_model/include/camodocal/calib/CameraCalibration.h中添加：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;opencv2/imgproc/types_c.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;opencv2/imgproc/imgproc_c.h&gt;</span></span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h2 id="2-2-问题二：em"><a href="#2-2-问题二：em" class="headerlink" title="2.2 问题二：em"></a>2.2 问题二：em</h2><p>在处理上个问题之后，编译过程出现报错：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import em</span><br><span class="line">ModuleNotFoundError: No module named ‘em’</span><br></pre></td></tr></table></figure>
-<p>第一次遇到这个问题之后，尝试直接安装em：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install empy</span><br></pre></td></tr></table></figure>
-<p>重新编译时，继续报错：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AttributeError:module ‘em‘ has no attribute ‘RAW_OPT‘</span><br></pre></td></tr></table></figure>
-<p>查询之后发现是empy版本不匹配，在4.0版本上可能会出现这个错误（<a target="_blank" rel="noopener" href="https://blog.csdn.net/YUANDyuand/article/details/137529453">参考链接</a>）。相对应的解决方案就是卸载当前版本、安装4.0以下的版本：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip uninstall empy</span><br><span class="line">pip install empy==3.3.4</span><br></pre></td></tr></table></figure>
-<p>然后重新编译这部分就没有问题了。</p>
-<h2 id="2-3-问题三：shared-mutex"><a href="#2-3-问题三：shared-mutex" class="headerlink" title="2.3 问题三：shared_mutex"></a>2.3 问题三：shared_mutex</h2><p>解决上个问题后出现了新的报错：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error: ‘shared_mutex’ in namespace ‘std’ does not name a type</span><br></pre></td></tr></table></figure>
-<p>该问题的解决方案参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/markton1990/article/details/136588501">该文章</a>，解决方法为修改下面的文件：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /usr/include/log4cxx/boost-std-configuration.h</span><br></pre></td></tr></table></figure>
-<p>修改之前的代码：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">define STD_SHARED_MUTEX_FOUND 1</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">define Boost_SHARED_MUTEX_FOUND 0</span></span><br></pre></td></tr></table></figure>
-<p>修改之后的代码：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">define STD_SHARED_MUTEX_FOUND 0</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">define Boost_SHARED_MUTEX_FOUND 1</span></span><br></pre></td></tr></table></figure>
-<p>然后，问题就解决了（很神奇）…</p>
-<h1 id="3-VINS-Fusion安装过程记录"><a href="#3-VINS-Fusion安装过程记录" class="headerlink" title="3 VINS-Fusion安装过程记录"></a>3 VINS-Fusion安装过程记录</h1><p>由于<a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>、<a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/VINS-Fusion">VINS-Fusion</a>这两个工程极其相似，遇到的问题也是大同小异，所以就在一起记录了。此处主要参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_37993445/article/details/123075977">该文章</a>。</p>
-<p>首先还是要对C++版本进行修改，将-std=c++11修改为-std=c++14，此处不再赘述，可参考2.1.1小节。</p>
-<p>然后还是适配OpenCV4的问题：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">1.camera_model 头文件中 Chessboard.h添加</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;opencv2/imgproc/types_c.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;opencv2/calib3d/balib3d_c.h&gt;</span></span><br><span class="line"></span><br><span class="line">2.CameraCalibration.h添加</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;opencv2/imgproc/types_c.h&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;opencv2/imgproc/imgproc_c.h&gt;</span></span><br><span class="line"></span><br><span class="line">3.loop_fusion/src/VRIEF.h添加</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;opencv2/imgproc/types_c.h&gt;</span></span><br><span class="line"></span><br><span class="line">4.loop_fusion/src/pose_graph.cpp</span><br><span class="line">* 修改 CV_FONT_HERSHEY_SIMPLEX -&gt; cv::FONT_HERSHEY_SIMPLEX</span><br><span class="line"></span><br><span class="line">5. vins_estimator/src/feature_tracker.h 添加</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;opencv2/highgui.hpp&gt;</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;opencv2/cvconfig.h&gt;	// 该头文件我在自己的库文件中没找到，所以就将该句注释掉了，不影响后续编译。</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">include &lt;opencv2/imgproc/types_c.h&gt;</span></span><br><span class="line"></span><br><span class="line">6. vins_estimator/src/KITTIOdomTest.cpp KITTIGPSTest.cpp</span><br><span class="line">* 修改 CV_LOAD_IMAGE_GRAYSCALE -&gt; cv::IMREAD_GRAYSCALE</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>最后，在编译过程中由于OpenCV版本问题，还会出现一些小错误，如：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">error: ‘CV_GRAY2BGR’ was <span class="keyword">not</span> declared in <span class="keyword">this</span> scope</span><br></pre></td></tr></table></figure>
-<p>可以将其修改为：cv::COLOR_GRAY2BGR。其他类似情况不再赘述。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/12/05/gvins/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

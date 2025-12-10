@@ -5782,6 +5782,7 @@ f_x & 0 & c_x \\
     <title>GVINS程序部署</title>
     <url>/2025/12/05/gvins/</url>
     <content><![CDATA[<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>最近在看GNSS/Vision/IMU组合导航的相关内容，其中<a href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>是一个跳不过的项目，而且经过一番调研之后发现，目前开源的GNSS/Vision/IMU紧组合系统似乎还只有GVINS这一家，所以想要对这个项目进行学习，并在此基础上做一些改进。由于GVINS是基于ROS Kinetic开发的，而我的电脑安装的是ROS Noetic，安装过程中存在一些兼容性问题，在此记录一下。</p>
+<span id="more"></span>
 <h1 id="2-安装问题记录"><a href="#2-安装问题记录" class="headerlink" title="2 安装问题记录"></a>2 安装问题记录</h1><p>进入<a href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>项目之后先将项目下载下来，如果基于ROS Noetic一点不改直接编译的话肯定是会报错的，接下来对遇到的问题进行记录。</p>
 <p>ROS版本查询方式：</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">❯ echo $ROS_DISTRO</span><br><span class="line">noetic</span><br></pre></td></tr></table></figure>
