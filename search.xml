@@ -5836,4 +5836,53 @@ f_x & 0 & c_x \\
         <tag>Vision</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Nvidia GPU中Persistence-M模式介绍与打开</title>
+    <url>/2026/01/05/gpu-persistence/</url>
+    <content><![CDATA[<p>本文主要参考<a href="https://blog.mvpbang.com/p/51860b189f2f475e9d4470e5259bfbbc/">该文章</a>。</p>
+<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>实验室同门在使用GPU服务器时遇到模型加载初始化时间过长（有时甚至达到10min）的情况，查询之后发现可以通过打开Nvidia GPU的Persistence-M模式来解决该情况，在此，也对该模式进行一个介绍以及启动方式进行记录。</p>
+<span id="more"></span>
+<p>首先介绍一下Persistence-M模式。</p>
+<blockquote>
+<p>NVIDIA显卡持久模式（Persistence Mode）是一种让GPU驱动和内核模块保持加载和初始化状态的运行模式（即便没有程序在运行），避免了频繁的驱动加载/卸载开销，显著减少了首次调用GPU应用（如CUDA、深度学习任务）的延迟，确保了高性能和稳定性，对服务器、专业工作站、需要快速启动GPU任务的场景尤其重要。</p>
+<p>​                                                                        —Gemini</p>
+</blockquote>
+<p>该模式默是关闭的，打开之后可以提高模型加载速度，而且会一定程度上减小掉驱动的风险；代价就是会增加一定的功耗与温度。该模式的状态可以通过<code>nvidia-smi</code>命令来查看，如下图中的绿框所示，On表示该持久模式已经打开了。</p>
+<p><img src="/2026/01/05/gpu-persistence/nvidia-smi.png" width="90%" title="nvidia-smi"></p>
+<h1 id="2-启动Persistence-M模式"><a href="#2-启动Persistence-M模式" class="headerlink" title="2 启动Persistence-M模式"></a>2 启动Persistence-M模式</h1><h2 id="2-1-临时启动"><a href="#2-1-临时启动" class="headerlink" title="2.1 临时启动"></a>2.1 临时启动</h2><p>使用如下命令可以启动Persistence-M模式：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo nvidia-smi -pm 1</span><br></pre></td></tr></table></figure>
+<p>关闭命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo nvidia-smi -pm 0</span><br></pre></td></tr></table></figure>
+<p>以上两个命令是临时的，只在当前有效，重启服务器之后会失效。</p>
+<h2 id="2-2-永久启动"><a href="#2-2-永久启动" class="headerlink" title="2.2 永久启动"></a>2.2 永久启动</h2><p>若想要重启服务器之后保持打开Persistence-M模式，则需要添加启动进程。</p>
+<p>首先，确定是否存在<code>nvidia-persistenced</code>命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">❯ which nvidia-persistenced</span><br><span class="line">/usr/bin/nvidia-persistenced</span><br></pre></td></tr></table></figure>
+<p>如果该命令不存在，则需要参考该<a href="https://blog.mvpbang.com/p/51860b189f2f475e9d4470e5259bfbbc/">文章</a>来安装该命令。</p>
+<p>然后，即可创建服务文件<code>/etc/systemd/system/nvidia-persistenced.service</code>（如果不存在的话）：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=NVIDIA Persistence Daemon</span><br><span class="line">After=network.target</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type=forking</span><br><span class="line">ExecStart=/usr/bin/nvidia-persistenced --user nvidia-persistenced</span><br><span class="line">ExecStopPost=/bin/rm -rf /var/run/nvidia-persistenced</span><br><span class="line">Restart=always</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br></pre></td></tr></table></figure>
+<p>以上命令通过限定使用用户<code>nvidia-persistenced</code>来运行，从而提高安全性。接下来就是创建该用户（如果不存在的话）：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo useradd -r -s /sbin/nologin nvidia-persistenced</span><br></pre></td></tr></table></figure>
+<p>上述创建用户的命令的两个选项：</p>
+<ul>
+<li>使用<code>-r</code>表明创建的是一个系统账号（System Account），默认不会在<code>\home</code>下创建文件夹，且不会像普通账号一样有密码过期策略；</li>
+<li>使用<code>-s /sbin/nologin</code>是指定该用户使用一个特殊的“假Shell“<code>/sbin/nologin</code>，表明该账号仅供后台服务使用，无法用于登录系统。</li>
+</ul>
+<p>完成以上任务之后，就可以重新加载systemd：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl enable --now nvidia-persistenced</span><br></pre></td></tr></table></figure>
+<p>此时，可以使用以下命令检查是否正常开启：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">❯ ps aux | grep nvidia-persistenced</span><br><span class="line">nvidia-+ 1084550  0.0  0.0   5260  1956 ?        Ss   16:11   0:02 /usr/bin/nvidia-persistenced --user nvidia-persistenced</span><br></pre></td></tr></table></figure>
+<p>在User列中写的是<code>nvidia-p+</code>就表明使用系统账号正常启动了。</p>
+<h2 id="2-3-文件指向-dev-null"><a href="#2-3-文件指向-dev-null" class="headerlink" title="2.3 文件指向/dev/null"></a>2.3 文件指向/dev/null</h2><p>在创建文件<code>/etc/systemd/system/nvidia-persistenced.service</code>时发现该文件已经存在了，且指向<code>/dev/null</code>（<code>nvidia-persistenced.service -&gt; /dev/null</code>）。经过查询得知，当一个systemd服务文件指向<code>/dev/null</code>时，在Linux中被称为“Masked”（屏蔽/打标签掩盖）状态。这个状态比简单的“停止”或“禁用”更彻底，可以有效禁用文件、防止意外启动。</p>
+<p>这里记录一下其启动及禁止命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo systemctl mask nvidia-persistenced</span><br><span class="line">sudo systemctl unmask nvidia-persistenced</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>开发环境搭建</category>
+      </categories>
+      <tags>
+        <tag>Ubuntu</tag>
+        <tag>Nvidia</tag>
+        <tag>GPU</tag>
+      </tags>
+  </entry>
 </search>
