@@ -1,3 +1,4 @@
+http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/
 http://echo-gh.github.io/2026/01/05/gpu-persistence/
 http://echo-gh.github.io/2025/12/05/gvins/
 http://echo-gh.github.io/2025/05/21/orin-pytorch/

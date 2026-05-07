@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="1 简介最近在基于GVINS进行开发，需要使用自采数据集进行测试验证；由于网上相关资料较少，导致自己也走了一些弯路，所以一方面为了给大家一个参考，另一方面也记录一下采集过程以便后续查找，所以在利用该文章来记录一下。 2 数据集采集过程2.1 GVINS数据集介绍GVINS数据集包含有GNSS、IMU、Camera三种传感器的数据，其中IMU和Camera数据比较常规，都是之前多次采集过的；但是对于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GVINS数据集采集">
+<meta property="og:url" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="1 简介最近在基于GVINS进行开发，需要使用自采数据集进行测试验证；由于网上相关资料较少，导致自己也走了一些弯路，所以一方面为了给大家一个参考，另一方面也记录一下采集过程以便后续查找，所以在利用该文章来记录一下。 2 数据集采集过程2.1 GVINS数据集介绍GVINS数据集包含有GNSS、IMU、Camera三种传感器的数据，其中IMU和Camera数据比较常规，都是之前多次采集过的；但是对于">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507130256101.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507131752287.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507132919454.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507133536307.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507133639086.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507133859381.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507134226891.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507134510245.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507134556974.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507172122435.png">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507172323616.png">
+<meta property="article:published_time" content="2026-05-07T04:52:46.000Z">
+<meta property="article:modified_time" content="2026-05-07T09:26:24.652Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="GNSS">
+<meta property="article:tag" content="IMU">
+<meta property="article:tag" content="GVINS">
+<meta property="article:tag" content="Vision">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/image-20260507130256101.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>GVINS数据集采集 | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2026/05/07/gvins-data-acquisition/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GVINS数据集采集
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-05-07 12:52:46 / 修改时间：17:26:24" itemprop="dateCreated datePublished" datetime="2026-05-07T12:52:46+08:00">2026-05-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Multi-source/" itemprop="url" rel="index"><span itemprop="name">Multi-source</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>最近在基于<a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>进行开发，需要使用自采数据集进行测试验证；由于网上相关资料较少，导致自己也走了一些弯路，所以一方面为了给大家一个参考，另一方面也记录一下采集过程以便后续查找，所以在利用该文章来记录一下。</p>
+<h1 id="2-数据集采集过程"><a href="#2-数据集采集过程" class="headerlink" title="2 数据集采集过程"></a>2 数据集采集过程</h1><h2 id="2-1-GVINS数据集介绍"><a href="#2-1-GVINS数据集介绍" class="headerlink" title="2.1 GVINS数据集介绍"></a>2.1 GVINS数据集介绍</h2><p>GVINS数据集包含有GNSS、IMU、Camera三种传感器的数据，其中IMU和Camera数据比较常规，都是之前多次采集过的；但是对于GNSS就稍微复杂一些了，根据GVINS官方给的数据集（sports_field.bag）为例进行说明吧。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507130256101.png" width="90%" title="gvins_dataset"></p>
+<p>GVINS的数据集都是以rosbag的形式保存的，根据上图可以看到包含有GNSS、IMU、Camera三种传感器的数据，下面对各种数据进行说明：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>消息名称</th>
+<th>对应传感器</th>
+<th>详情</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cam0/image_view</td>
+<td>Camera</td>
+<td>相机0</td>
+</tr>
+<tr>
+<td>cam1/image_view</td>
+<td>Camera</td>
+<td>相机1</td>
+</tr>
+<tr>
+<td>external_trigger</td>
+<td>-</td>
+<td>外部触发信号</td>
+</tr>
+<tr>
+<td>imu0</td>
+<td>IMU</td>
+<td>IMU数据</td>
+</tr>
+<tr>
+<td>ublox_driver/ephem</td>
+<td>GNSS</td>
+<td>星历数据</td>
+</tr>
+<tr>
+<td>ublox_driver/glo_ephem</td>
+<td>GNSS</td>
+<td>Glonass星历数据</td>
+</tr>
+<tr>
+<td>ublox_driver/iono_params</td>
+<td>GNSS</td>
+<td>电离层参数</td>
+</tr>
+<tr>
+<td>ublox_driver/range_meas</td>
+<td>GNSS</td>
+<td>原始观测数据</td>
+</tr>
+<tr>
+<td>ublox_driver/receiver_lla</td>
+<td>GNSS</td>
+<td>GNSS位置解</td>
+</tr>
+<tr>
+<td>ublox_driver/receiver_pvt</td>
+<td>GNSS</td>
+<td>GNSS详细位置解</td>
+</tr>
+<tr>
+<td>ublox_driver/time_pulse_info</td>
+<td>GNSS</td>
+<td>PPS秒脉冲</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>根据以上展示可以发现，GNSS部分的数据是很复杂的，第一次接触该部分数据时由于网上资料较少，加上<a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/gnss_comm">gnss_comm</a>里面有相关代码（如下图所示），我还以为是要自己将之前采集到的数据手动转换为rosbag，还为此花了几天的时间来将之前采集到的数据一步步转换为对应的消息类型和rosbag，浪费了宝贵的时间，这也是目前在该数据集采集过程中遇到的最大的一个弯路。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507131752287.png" width="40%" title="gnss_comm"></p>
+<h1 id="2-2-ublox-driver使用说明"><a href="#2-2-ublox-driver使用说明" class="headerlink" title="2.2 ublox_driver使用说明"></a>2.2 ublox_driver使用说明</h1><p>峰回路转在于发现了GVINS团队还提供了<a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/ublox_driver">ublox_driver工具</a>来帮助大家比较方便地采集GNSS数据并保存为rosbag格式，有了该工具，采集GNSS数据就简单得多了，在此记录一下使用过程。</p>
+<h3 id="2-2-1-ublox-driver介绍"><a href="#2-2-1-ublox-driver介绍" class="headerlink" title="2.2.1 ublox_driver介绍"></a>2.2.1 ublox_driver介绍</h3><p>根据Github页面介绍，该工具是参考<a target="_blank" rel="noopener" href="https://www.u-blox.com/en/docs/UBX-18010854">UBX-18010854</a>文档专为Ublox ZED-F9P模块设计的，可能也兼容于其他8系列或9系列的Ublox接收机。安装该工具的具体过程就不赘述了，在网页上有详细介绍，只要之前成功编译安装过VINS、GVINS，那么这个工具的安装就没有什么问题。真正需要注意的是对ZED-F9P模块进行参数设置。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507132919454.png" width="90%" title="ublox_driver"></p>
+<h3 id="2-2-2-ZED-F9P模块参数设置"><a href="#2-2-2-ZED-F9P模块参数设置" class="headerlink" title="2.2.2 ZED-F9P模块参数设置"></a>2.2.2 ZED-F9P模块参数设置</h3><p><a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/ublox_driver">ublox_driver Github页面</a>上也说明了，在使用该工具之前需要利用<a target="_blank" rel="noopener" href="https://www.u-blox.com/en/product/u-center">u-center</a>来对ZED-F9P模块进行设置，目前u-center只有Windows版本，所以需要在Windows上进行设置，以下为详细步骤：</p>
+<ol>
+<li><p>打开u-center连接接收机；</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133536307.png" alt="image-20260507133536307"></p>
+</li>
+<li><p>点击Tools-Receiver Configuration；</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133639086.png" alt="image-20260507133639086"></p>
+</li>
+<li><p>在弹出页面中进行选择，这里使用ublox_driver Github页面提供的文件即可，具体文件为config/ucenter_config_f9p_gvins.txt；填写正确路径，然后点击Transfer file -&gt; GNSS；</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133859381.png" alt="image-20260507133859381"></p>
+</li>
+<li><p>然后打开View-Message View，查看对应消息是否打开；</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134226891.png" alt="image-20260507134226891"></p>
+<p>这里需要做两件事情：第一件事是确保<code>UBX-RXM-RAWX</code>, <code>UBX-RXM-SFRBX</code> 和 <code>UBX-NAV-PVT</code>处于激活状态；只要上一步的配置文件设置没问题，这里就可以看到各个消息正常输出，以<code>UBX-RXM-RAWX</code>为例，如下图所示，这里正常是有数据输出的，只不过我这是在实验室没有接天线，所以没有数据输出，但是是有这个消息选项的。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134510245.png" alt="image-20260507134510245"></p>
+<p>第二件事情是将修改后的配置进行保存，还是在该Message View页面，选取UBX-CFG(Config)-CFG(Configuration)，进入该页面，确保左侧选择了”Save current configuration”，右侧选取了BBR、FLASH，然后点击左下角的Send按钮。这样刚才的配置就会在设备断电重启后继续使用该配置。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134556974.png" alt="image-20260507134556974"></p>
+</li>
+<li><p>至此，即可将该模块接入Ubuntu系统中，运行以下命令来启动该工具并查看对应的topic：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG dialout $USER</span><br><span class="line">roslaunch ublox_driver ublox_driver.launch</span><br><span class="line">rostopic echo /ublox_driver/receiver_lla</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="2-2-3-模块固件版本不匹配问题"><a href="#2-2-3-模块固件版本不匹配问题" class="headerlink" title="2.2.3 模块固件版本不匹配问题"></a>2.2.3 模块固件版本不匹配问题</h3><p>在2.2.2节步骤3中可能会出现该工具提供的配置文件固件与当前使用模块的固件版本不一致的问题，那在导入配置文件时会报错：<code>The version you are about to download does not correspond the version of the GPS receiver.</code>。根据弹出框中的内容显示，ublox_driver提供的配置文件是基于<code>f10c36</code>固件版本的，网上查询之后发现该版本对应的固件版本号为<code>HPG-1.13</code>。在Ublox官方中可以找到并下载该固件，此处附上对应的<a target="_blank" rel="noopener" href="https://content.u-blox.com/sites/default/files/UBX_F9_100_HPG_113_ZED_F9P.7e6e899c5597acddf2f5f2f70fdf5fbe.bin">下载链接</a>。下载完该固件之后，在u-center中进行固件升级，如下图所示：</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507172122435.png" width="90%" title="firmware_update"></p>
+<p>选取下载的固件，然后点击左下角的GO即可进行固件升级，然后继续重复上节的操作步骤即可。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507172323616.png" width="90%" title="firmware_update-1"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/GNSS/" rel="tag"><i class="fa fa-tag"></i> GNSS</a>
+              <a href="/tags/IMU/" rel="tag"><i class="fa fa-tag"></i> IMU</a>
+              <a href="/tags/GVINS/" rel="tag"><i class="fa fa-tag"></i> GVINS</a>
+              <a href="/tags/Vision/" rel="tag"><i class="fa fa-tag"></i> Vision</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/01/05/gpu-persistence/" rel="prev" title="Nvidia GPU中Persistence-M模式介绍与打开">
+      <i class="fa fa-chevron-left"></i> Nvidia GPU中Persistence-M模式介绍与打开
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="nav-text">1 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%95%B0%E6%8D%AE%E9%9B%86%E9%87%87%E9%9B%86%E8%BF%87%E7%A8%8B"><span class="nav-text">2 数据集采集过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-GVINS%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D"><span class="nav-text">2.1 GVINS数据集介绍</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-2-ublox-driver%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E"><span class="nav-text">2.2 ublox_driver使用说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-ublox-driver%E4%BB%8B%E7%BB%8D"><span class="nav-text">2.2.1 ublox_driver介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-ZED-F9P%E6%A8%A1%E5%9D%97%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE"><span class="nav-text">2.2.2 ZED-F9P模块参数设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-%E6%A8%A1%E5%9D%97%E5%9B%BA%E4%BB%B6%E7%89%88%E6%9C%AC%E4%B8%8D%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-text">2.2.3 模块固件版本不匹配问题</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">96</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">53</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:xrzhao404@outlook.com" title="E-Mail → mailto:xrzhao404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+
+</body>
+</html>

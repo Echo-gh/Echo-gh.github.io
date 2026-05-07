@@ -5885,4 +5885,123 @@ f_x & 0 & c_x \\
         <tag>GPU</tag>
       </tags>
   </entry>
+  <entry>
+    <title>GVINS数据集采集</title>
+    <url>/2026/05/07/gvins-data-acquisition/</url>
+    <content><![CDATA[<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>最近在基于<a href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>进行开发，需要使用自采数据集进行测试验证；由于网上相关资料较少，导致自己也走了一些弯路，所以一方面为了给大家一个参考，另一方面也记录一下采集过程以便后续查找，所以在利用该文章来记录一下。</p>
+<h1 id="2-数据集采集过程"><a href="#2-数据集采集过程" class="headerlink" title="2 数据集采集过程"></a>2 数据集采集过程</h1><h2 id="2-1-GVINS数据集介绍"><a href="#2-1-GVINS数据集介绍" class="headerlink" title="2.1 GVINS数据集介绍"></a>2.1 GVINS数据集介绍</h2><p>GVINS数据集包含有GNSS、IMU、Camera三种传感器的数据，其中IMU和Camera数据比较常规，都是之前多次采集过的；但是对于GNSS就稍微复杂一些了，根据GVINS官方给的数据集（sports_field.bag）为例进行说明吧。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507130256101.png" width="90%" title="gvins_dataset"></p>
+<p>GVINS的数据集都是以rosbag的形式保存的，根据上图可以看到包含有GNSS、IMU、Camera三种传感器的数据，下面对各种数据进行说明：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>消息名称</th>
+<th>对应传感器</th>
+<th>详情</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cam0/image_view</td>
+<td>Camera</td>
+<td>相机0</td>
+</tr>
+<tr>
+<td>cam1/image_view</td>
+<td>Camera</td>
+<td>相机1</td>
+</tr>
+<tr>
+<td>external_trigger</td>
+<td>-</td>
+<td>外部触发信号</td>
+</tr>
+<tr>
+<td>imu0</td>
+<td>IMU</td>
+<td>IMU数据</td>
+</tr>
+<tr>
+<td>ublox_driver/ephem</td>
+<td>GNSS</td>
+<td>星历数据</td>
+</tr>
+<tr>
+<td>ublox_driver/glo_ephem</td>
+<td>GNSS</td>
+<td>Glonass星历数据</td>
+</tr>
+<tr>
+<td>ublox_driver/iono_params</td>
+<td>GNSS</td>
+<td>电离层参数</td>
+</tr>
+<tr>
+<td>ublox_driver/range_meas</td>
+<td>GNSS</td>
+<td>原始观测数据</td>
+</tr>
+<tr>
+<td>ublox_driver/receiver_lla</td>
+<td>GNSS</td>
+<td>GNSS位置解</td>
+</tr>
+<tr>
+<td>ublox_driver/receiver_pvt</td>
+<td>GNSS</td>
+<td>GNSS详细位置解</td>
+</tr>
+<tr>
+<td>ublox_driver/time_pulse_info</td>
+<td>GNSS</td>
+<td>PPS秒脉冲</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>根据以上展示可以发现，GNSS部分的数据是很复杂的，第一次接触该部分数据时由于网上资料较少，加上<a href="https://github.com/HKUST-Aerial-Robotics/gnss_comm">gnss_comm</a>里面有相关代码（如下图所示），我还以为是要自己将之前采集到的数据手动转换为rosbag，还为此花了几天的时间来将之前采集到的数据一步步转换为对应的消息类型和rosbag，浪费了宝贵的时间，这也是目前在该数据集采集过程中遇到的最大的一个弯路。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507131752287.png" width="40%" title="gnss_comm"></p>
+<h1 id="2-2-ublox-driver使用说明"><a href="#2-2-ublox-driver使用说明" class="headerlink" title="2.2 ublox_driver使用说明"></a>2.2 ublox_driver使用说明</h1><p>峰回路转在于发现了GVINS团队还提供了<a href="https://github.com/HKUST-Aerial-Robotics/ublox_driver">ublox_driver工具</a>来帮助大家比较方便地采集GNSS数据并保存为rosbag格式，有了该工具，采集GNSS数据就简单得多了，在此记录一下使用过程。</p>
+<h3 id="2-2-1-ublox-driver介绍"><a href="#2-2-1-ublox-driver介绍" class="headerlink" title="2.2.1 ublox_driver介绍"></a>2.2.1 ublox_driver介绍</h3><p>根据Github页面介绍，该工具是参考<a href="https://www.u-blox.com/en/docs/UBX-18010854">UBX-18010854</a>文档专为Ublox ZED-F9P模块设计的，可能也兼容于其他8系列或9系列的Ublox接收机。安装该工具的具体过程就不赘述了，在网页上有详细介绍，只要之前成功编译安装过VINS、GVINS，那么这个工具的安装就没有什么问题。真正需要注意的是对ZED-F9P模块进行参数设置。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507132919454.png" width="90%" title="ublox_driver"></p>
+<h3 id="2-2-2-ZED-F9P模块参数设置"><a href="#2-2-2-ZED-F9P模块参数设置" class="headerlink" title="2.2.2 ZED-F9P模块参数设置"></a>2.2.2 ZED-F9P模块参数设置</h3><p><a href="https://github.com/HKUST-Aerial-Robotics/ublox_driver">ublox_driver Github页面</a>上也说明了，在使用该工具之前需要利用<a href="https://www.u-blox.com/en/product/u-center">u-center</a>来对ZED-F9P模块进行设置，目前u-center只有Windows版本，所以需要在Windows上进行设置，以下为详细步骤：</p>
+<ol>
+<li><p>打开u-center连接接收机；</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133536307.png" alt="image-20260507133536307"></p>
+</li>
+<li><p>点击Tools-Receiver Configuration；</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133639086.png" alt="image-20260507133639086"></p>
+</li>
+<li><p>在弹出页面中进行选择，这里使用ublox_driver Github页面提供的文件即可，具体文件为config/ucenter_config_f9p_gvins.txt；填写正确路径，然后点击Transfer file -&gt; GNSS；</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133859381.png" alt="image-20260507133859381"></p>
+</li>
+<li><p>然后打开View-Message View，查看对应消息是否打开；</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134226891.png" alt="image-20260507134226891"></p>
+<p>这里需要做两件事情：第一件事是确保<code>UBX-RXM-RAWX</code>, <code>UBX-RXM-SFRBX</code> 和 <code>UBX-NAV-PVT</code>处于激活状态；只要上一步的配置文件设置没问题，这里就可以看到各个消息正常输出，以<code>UBX-RXM-RAWX</code>为例，如下图所示，这里正常是有数据输出的，只不过我这是在实验室没有接天线，所以没有数据输出，但是是有这个消息选项的。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134510245.png" alt="image-20260507134510245"></p>
+<p>第二件事情是将修改后的配置进行保存，还是在该Message View页面，选取UBX-CFG(Config)-CFG(Configuration)，进入该页面，确保左侧选择了”Save current configuration”，右侧选取了BBR、FLASH，然后点击左下角的Send按钮。这样刚才的配置就会在设备断电重启后继续使用该配置。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134556974.png" alt="image-20260507134556974"></p>
+</li>
+<li><p>至此，即可将该模块接入Ubuntu系统中，运行以下命令来启动该工具并查看对应的topic：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo usermod -aG dialout $USER</span><br><span class="line">roslaunch ublox_driver ublox_driver.launch</span><br><span class="line">rostopic echo /ublox_driver/receiver_lla</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="2-2-3-模块固件版本不匹配问题"><a href="#2-2-3-模块固件版本不匹配问题" class="headerlink" title="2.2.3 模块固件版本不匹配问题"></a>2.2.3 模块固件版本不匹配问题</h3><p>在2.2.2节步骤3中可能会出现该工具提供的配置文件固件与当前使用模块的固件版本不一致的问题，那在导入配置文件时会报错：<code>The version you are about to download does not correspond the version of the GPS receiver.</code>。根据弹出框中的内容显示，ublox_driver提供的配置文件是基于<code>f10c36</code>固件版本的，网上查询之后发现该版本对应的固件版本号为<code>HPG-1.13</code>。在Ublox官方中可以找到并下载该固件，此处附上对应的<a href="https://content.u-blox.com/sites/default/files/UBX_F9_100_HPG_113_ZED_F9P.7e6e899c5597acddf2f5f2f70fdf5fbe.bin">下载链接</a>。下载完该固件之后，在u-center中进行固件升级，如下图所示：</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507172122435.png" width="90%" title="firmware_update"></p>
+<p>选取下载的固件，然后点击左下角的GO即可进行固件升级，然后继续重复上节的操作步骤即可。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507172323616.png" width="90%" title="firmware_update-1"></p>
+]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Multi-source</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>GNSS</tag>
+        <tag>IMU</tag>
+        <tag>GVINS</tag>
+        <tag>Vision</tag>
+      </tags>
+  </entry>
 </search>
