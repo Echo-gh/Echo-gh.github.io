@@ -5889,6 +5889,7 @@ f_x & 0 & c_x \\
     <title>GVINS数据集采集</title>
     <url>/2026/05/07/gvins-data-acquisition/</url>
     <content><![CDATA[<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>最近在基于<a href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>进行开发，需要使用自采数据集进行测试验证；由于网上相关资料较少，导致自己也走了一些弯路，所以一方面为了给大家一个参考，另一方面也记录一下采集过程以便后续查找，所以在利用该文章来记录一下。</p>
+<span id="more"></span>
 <h1 id="2-数据集采集过程"><a href="#2-数据集采集过程" class="headerlink" title="2 数据集采集过程"></a>2 数据集采集过程</h1><h2 id="2-1-GVINS数据集介绍"><a href="#2-1-GVINS数据集介绍" class="headerlink" title="2.1 GVINS数据集介绍"></a>2.1 GVINS数据集介绍</h2><p>GVINS数据集包含有GNSS、IMU、Camera三种传感器的数据，其中IMU和Camera数据比较常规，都是之前多次采集过的；但是对于GNSS就稍微复杂一些了，根据GVINS官方给的数据集（sports_field.bag）为例进行说明吧。</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507130256101.png" width="90%" title="gvins_dataset"></p>
 <p>GVINS的数据集都是以rosbag的形式保存的，根据上图可以看到包含有GNSS、IMU、Camera三种传感器的数据，下面对各种数据进行说明：</p>
@@ -5896,66 +5897,66 @@ f_x & 0 & c_x \\
 <table>
 <thead>
 <tr>
-<th>消息名称</th>
-<th>对应传感器</th>
-<th>详情</th>
+<th style="text-align:center">消息名称</th>
+<th style="text-align:center">对应传感器</th>
+<th style="text-align:center">详情</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>cam0/image_view</td>
-<td>Camera</td>
-<td>相机0</td>
+<td style="text-align:center">cam0/image_view</td>
+<td style="text-align:center">Camera</td>
+<td style="text-align:center">相机0</td>
 </tr>
 <tr>
-<td>cam1/image_view</td>
-<td>Camera</td>
-<td>相机1</td>
+<td style="text-align:center">cam1/image_view</td>
+<td style="text-align:center">Camera</td>
+<td style="text-align:center">相机1</td>
 </tr>
 <tr>
-<td>external_trigger</td>
-<td>-</td>
-<td>外部触发信号</td>
+<td style="text-align:center">external_trigger</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">外部触发信号</td>
 </tr>
 <tr>
-<td>imu0</td>
-<td>IMU</td>
-<td>IMU数据</td>
+<td style="text-align:center">imu0</td>
+<td style="text-align:center">IMU</td>
+<td style="text-align:center">IMU数据</td>
 </tr>
 <tr>
-<td>ublox_driver/ephem</td>
-<td>GNSS</td>
-<td>星历数据</td>
+<td style="text-align:center">ublox_driver/ephem</td>
+<td style="text-align:center">GNSS</td>
+<td style="text-align:center">星历数据</td>
 </tr>
 <tr>
-<td>ublox_driver/glo_ephem</td>
-<td>GNSS</td>
-<td>Glonass星历数据</td>
+<td style="text-align:center">ublox_driver/glo_ephem</td>
+<td style="text-align:center">GNSS</td>
+<td style="text-align:center">Glonass星历数据</td>
 </tr>
 <tr>
-<td>ublox_driver/iono_params</td>
-<td>GNSS</td>
-<td>电离层参数</td>
+<td style="text-align:center">ublox_driver/iono_params</td>
+<td style="text-align:center">GNSS</td>
+<td style="text-align:center">电离层参数</td>
 </tr>
 <tr>
-<td>ublox_driver/range_meas</td>
-<td>GNSS</td>
-<td>原始观测数据</td>
+<td style="text-align:center">ublox_driver/range_meas</td>
+<td style="text-align:center">GNSS</td>
+<td style="text-align:center">原始观测数据</td>
 </tr>
 <tr>
-<td>ublox_driver/receiver_lla</td>
-<td>GNSS</td>
-<td>GNSS位置解</td>
+<td style="text-align:center">ublox_driver/receiver_lla</td>
+<td style="text-align:center">GNSS</td>
+<td style="text-align:center">GNSS位置解</td>
 </tr>
 <tr>
-<td>ublox_driver/receiver_pvt</td>
-<td>GNSS</td>
-<td>GNSS详细位置解</td>
+<td style="text-align:center">ublox_driver/receiver_pvt</td>
+<td style="text-align:center">GNSS</td>
+<td style="text-align:center">GNSS详细位置解</td>
 </tr>
 <tr>
-<td>ublox_driver/time_pulse_info</td>
-<td>GNSS</td>
-<td>PPS秒脉冲</td>
+<td style="text-align:center">ublox_driver/time_pulse_info</td>
+<td style="text-align:center">GNSS</td>
+<td style="text-align:center">PPS秒脉冲</td>
 </tr>
 </tbody>
 </table>
@@ -5967,27 +5968,27 @@ f_x & 0 & c_x \\
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507132919454.png" width="90%" title="ublox_driver"></p>
 <h3 id="2-2-2-ZED-F9P模块参数设置"><a href="#2-2-2-ZED-F9P模块参数设置" class="headerlink" title="2.2.2 ZED-F9P模块参数设置"></a>2.2.2 ZED-F9P模块参数设置</h3><p><a href="https://github.com/HKUST-Aerial-Robotics/ublox_driver">ublox_driver Github页面</a>上也说明了，在使用该工具之前需要利用<a href="https://www.u-blox.com/en/product/u-center">u-center</a>来对ZED-F9P模块进行设置，目前u-center只有Windows版本，所以需要在Windows上进行设置，以下为详细步骤：</p>
 <ol>
-<li><p>打开u-center连接接收机；</p>
+<li><p>打开u-center并连接接收机；</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133536307.png" alt="image-20260507133536307"></p>
 </li>
 <li><p>点击Tools-Receiver Configuration；</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133639086.png" alt="image-20260507133639086"></p>
 </li>
-<li><p>在弹出页面中进行选择，这里使用ublox_driver Github页面提供的文件即可，具体文件为config/ucenter_config_f9p_gvins.txt；填写正确路径，然后点击Transfer file -&gt; GNSS；</p>
+<li><p>在弹出页面中选择配置文件路径，这里使用ublox_driver Github页面提供的文件即可，具体文件为config/ucenter_config_f9p_gvins.txt；填写正确路径，然后点击Transfer file -&gt; GNSS，如果没有报错就表示正常设置了该配置文件；</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507133859381.png" alt="image-20260507133859381"></p>
 </li>
 <li><p>然后打开View-Message View，查看对应消息是否打开；</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134226891.png" alt="image-20260507134226891"></p>
-<p>这里需要做两件事情：第一件事是确保<code>UBX-RXM-RAWX</code>, <code>UBX-RXM-SFRBX</code> 和 <code>UBX-NAV-PVT</code>处于激活状态；只要上一步的配置文件设置没问题，这里就可以看到各个消息正常输出，以<code>UBX-RXM-RAWX</code>为例，如下图所示，这里正常是有数据输出的，只不过我这是在实验室没有接天线，所以没有数据输出，但是是有这个消息选项的。</p>
+<p>这里需要做两件事情：第一件事是确保<code>UBX-RXM-RAWX</code>, <code>UBX-RXM-SFRBX</code> 和 <code>UBX-NAV-PVT</code>处于激活状态；只要上一步的配置文件设置没问题，这里就可以看到各个消息正常输出，以<code>UBX-RXM-RAWX</code>为例，如下图所示。这里如果运行正常的化是有数据输出的，只不过我这是在实验室没有接天线，所以没有数据输出，但是这个消息选项是点亮的（黑色，而不是灰色）。</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134510245.png" alt="image-20260507134510245"></p>
-<p>第二件事情是将修改后的配置进行保存，还是在该Message View页面，选取UBX-CFG(Config)-CFG(Configuration)，进入该页面，确保左侧选择了”Save current configuration”，右侧选取了BBR、FLASH，然后点击左下角的Send按钮。这样刚才的配置就会在设备断电重启后继续使用该配置。</p>
+<p>第二件事情是将修改后的配置进行保存，还是在该Message View页面，选取UBX-CFG(Config)-CFG(Configuration)，进入该页面，确保左侧选择了``Save current configuration”，右侧选取了BBR、FLASH，然后点击左下角的Send按钮。这样刚才的配置就会在设备断电重启后继续使用该配置。</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507134556974.png" alt="image-20260507134556974"></p>
 </li>
 <li><p>至此，即可将该模块接入Ubuntu系统中，运行以下命令来启动该工具并查看对应的topic：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo usermod -aG dialout $USER</span><br><span class="line">roslaunch ublox_driver ublox_driver.launch</span><br><span class="line">rostopic echo /ublox_driver/receiver_lla</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo usermod -aG dialout $USER</span><br><span class="line">source devel/setup.bash</span><br><span class="line">roslaunch ublox_driver ublox_driver.launch</span><br><span class="line">rostopic echo /ublox_driver/receiver_lla</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<h3 id="2-2-3-模块固件版本不匹配问题"><a href="#2-2-3-模块固件版本不匹配问题" class="headerlink" title="2.2.3 模块固件版本不匹配问题"></a>2.2.3 模块固件版本不匹配问题</h3><p>在2.2.2节步骤3中可能会出现该工具提供的配置文件固件与当前使用模块的固件版本不一致的问题，那在导入配置文件时会报错：<code>The version you are about to download does not correspond the version of the GPS receiver.</code>。根据弹出框中的内容显示，ublox_driver提供的配置文件是基于<code>f10c36</code>固件版本的，网上查询之后发现该版本对应的固件版本号为<code>HPG-1.13</code>。在Ublox官方中可以找到并下载该固件，此处附上对应的<a href="https://content.u-blox.com/sites/default/files/UBX_F9_100_HPG_113_ZED_F9P.7e6e899c5597acddf2f5f2f70fdf5fbe.bin">下载链接</a>。下载完该固件之后，在u-center中进行固件升级，如下图所示：</p>
+<h3 id="2-2-3-模块固件版本不匹配问题"><a href="#2-2-3-模块固件版本不匹配问题" class="headerlink" title="2.2.3 模块固件版本不匹配问题"></a>2.2.3 模块固件版本不匹配问题</h3><p>在2.2.2节步骤3中可能会出现固件版本不匹配的问题，即该工具提供的配置文件固件与当前使用的ublox模块的固件版本不一致，在导入配置文件时会报错：<code>The version you are about to download does not correspond the version of the GPS receiver.</code>。根据弹出框中的内容显示，ublox_driver提供的配置文件是基于<code>f10c36</code>固件版本的，网上查询之后发现该版本对应的固件版本号为<code>HPG-1.13</code>。在Ublox官方中可以找到并下载该固件，此处附上对应的<a href="https://content.u-blox.com/sites/default/files/UBX_F9_100_HPG_113_ZED_F9P.7e6e899c5597acddf2f5f2f70fdf5fbe.bin">下载链接</a>。下载完该固件之后，在u-center中进行固件升级，如下图所示：</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507172122435.png" width="90%" title="firmware_update"></p>
 <p>选取下载的固件，然后点击左下角的GO即可进行固件升级，然后继续重复上节的操作步骤即可。</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507172323616.png" width="90%" title="firmware_update-1"></p>
