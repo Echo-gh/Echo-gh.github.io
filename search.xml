@@ -5962,7 +5962,7 @@ f_x & 0 & c_x \\
 </table>
 </div>
 <p>根据以上展示可以发现，GNSS部分的数据是很复杂的，第一次接触该部分数据时由于网上资料较少，加上<a href="https://github.com/HKUST-Aerial-Robotics/gnss_comm">gnss_comm</a>里面有相关代码（如下图所示），我还以为是要自己将之前采集到的数据手动转换为rosbag，还为此花了几天的时间来将之前采集到的数据一步步转换为对应的消息类型和rosbag，浪费了宝贵的时间，这也是目前在该数据集采集过程中遇到的最大的一个弯路。</p>
-<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507131752287.png" width="40%" title="gnss_comm"></p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260507131752287.png" width="30%" title="gnss_comm"></p>
 <h2 id="2-2-ublox-driver使用说明"><a href="#2-2-ublox-driver使用说明" class="headerlink" title="2.2 ublox_driver使用说明"></a>2.2 ublox_driver使用说明</h2><p>峰回路转在于发现了GVINS团队还提供了<a href="https://github.com/HKUST-Aerial-Robotics/ublox_driver">ublox_driver工具</a>来帮助大家比较方便地采集GNSS数据并保存为rosbag格式，有了该工具，采集GNSS数据就简单得多了，在此记录一下使用过程。</p>
 <h3 id="2-2-1-ublox-driver介绍"><a href="#2-2-1-ublox-driver介绍" class="headerlink" title="2.2.1 ublox_driver介绍"></a>2.2.1 ublox_driver介绍</h3><p>根据Github页面介绍，该工具是参考<a href="https://www.u-blox.com/en/docs/UBX-18010854">UBX-18010854</a>文档专为Ublox ZED-F9P模块设计的，可能也兼容于其他8系列或9系列的Ublox接收机。安装该工具的具体过程就不赘述了，在网页上有详细介绍，只要之前成功编译安装过VINS、GVINS，那么这个工具的安装就没有什么问题。真正需要注意的是对ZED-F9P模块进行参数设置。</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507132919454.png" width="90%" title="ublox_driver"></p>
@@ -5992,6 +5992,51 @@ f_x & 0 & c_x \\
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507172122435.png" width="90%" title="firmware_update"></p>
 <p>选取下载的固件，然后点击左下角的GO即可进行固件升级，然后继续重复上节的操作步骤即可。</p>
 <p><img src="/2026/05/07/gvins-data-acquisition/image-20260507172323616.png" width="90%" title="firmware_update-1"></p>
+<h2 id="2-3-数据采集"><a href="#2-3-数据采集" class="headerlink" title="2.3 数据采集"></a>2.3 数据采集</h2><p>数据采集过程这里就不多赘述了，安装好相机、IMU、GNSS模块和天线之后，开启各个模块的数据采集程序，然后使用<code>rosbag record -O $&#123;文件名&#125; $&#123;ROS_topic&#125;</code>即可进行数据的保存。</p>
+<h1 id="3-数据处理过程"><a href="#3-数据处理过程" class="headerlink" title="3 数据处理过程"></a>3 数据处理过程</h1><p>保存完数据之后并不是都可以直接兼容GVINS程序的，我这里在测试过程中就遇到了一些问题，在这里记录一下。</p>
+<h2 id="3-1-IMU消息类型不兼容"><a href="#3-1-IMU消息类型不兼容" class="headerlink" title="3.1 IMU消息类型不兼容"></a>3.1 IMU消息类型不兼容</h2><p>由于之前编写的IMU数据采集程序使用了自定义的数据格式，而非GVINS中使用的<code>sensor_msgs/Imu</code>格式（如下图所示），因此，需要对自采数据集中的IMU消息类型进行转换。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260508205017061.png" width="30%" title="IMU_msg-1"></p>
+<p>这里可以采用两种方式进行转换：方式一是将整个bag包中的IMU消息进行类型转换，然后保存为新的rosbag包；方式二是在回放rosbag时对IMU消息进行实时转换。因为包含图像的rosbag比较大，所以为了方便起见，这里采用方式二实时转换的方法。具体转换方法为使用以下python脚本进行实时转换：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> rospy</span><br><span class="line"><span class="keyword">from</span> sensor_msgs.msg <span class="keyword">import</span> Imu</span><br><span class="line"><span class="keyword">from</span> EXAMPLE.msg <span class="keyword">import</span> example_imu		<span class="comment"># 根据自己数据集的实际消息类型进行修改</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">callback</span>(<span class="params">data</span>):</span><br><span class="line">    standard_imu = Imu()</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 时间戳修改，后文会有说明。</span></span><br><span class="line">    gps_time_float = data.accel_gps_time</span><br><span class="line">    standard_imu.header.stamp = rospy.Time.from_sec(gps_time_float)</span><br><span class="line">    standard_imu.header.frame_id = <span class="string">&quot;imu_link&quot;</span></span><br><span class="line">	</span><br><span class="line">    <span class="comment"># 将自采数据中的加速度计、陀螺仪数值赋给standard_imu。</span></span><br><span class="line">    <span class="comment"># 这里的data.linear_acceleration.x、data.angular_velocity.x等需要根据自采数据集的实际情况进行修改。</span></span><br><span class="line">    <span class="comment"># 注意这里涉及到坐标轴的转换！</span></span><br><span class="line">    standard_imu.linear_acceleration.x = data.linear_acceleration.x</span><br><span class="line">    standard_imu.linear_acceleration.y = -data.linear_acceleration.y</span><br><span class="line">    standard_imu.linear_acceleration.z = -data.linear_acceleration.z</span><br><span class="line"></span><br><span class="line">    standard_imu.angular_velocity.x = data.angular_velocity.x</span><br><span class="line">    standard_imu.angular_velocity.y = -data.angular_velocity.y</span><br><span class="line">    standard_imu.angular_velocity.z = -data.angular_velocity.z</span><br><span class="line"></span><br><span class="line">    pub.publish(standard_imu)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    rospy.init_node(<span class="string">&#x27;imu_format_converter&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 根据实际情况进行修改。</span></span><br><span class="line">    rospy.Subscriber(<span class="string">&quot;/EXAMPLE/EXAMPLE&quot;</span>, example, callback)</span><br><span class="line"></span><br><span class="line">    pub = rospy.Publisher(<span class="string">&quot;/imu_converted&quot;</span>, Imu, queue_size=<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    rospy.spin()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>值得注意的是，这里运行该脚本需要基于EXAMPLE环境。</p>
+<p>在回放rosbag数据前先使用<code>python img_bridge.py</code>运行该脚本即可实现对自采数据集的IMU消息进行实时转换。当然，也可以对GVINS代码进行修改，但那种方式相对会更复杂一些，我这里就没有去尝试了。</p>
+<p>同样地，如果图像消息也与GVINS不同的话也要做对应的修改，不过这种情况应该比较少见，一般图像的保存类型都为默认的<code>sensor_msgs/Image</code>。</p>
+<h2 id="3-2-坐标轴转换"><a href="#3-2-坐标轴转换" class="headerlink" title="3.2 坐标轴转换"></a>3.2 坐标轴转换</h2><p>这个问题属于比较常规的问题，但是为了后续便于查找还是记录一下。GVINS遵循ROS社区的标准约定，主要涉及两个核心坐标系，IMU坐标系和相机坐标系。</p>
+<p><strong>IMU坐标系 (Body Frame)</strong></p>
+<p>作为系统的基准坐标系，GVINS默认其为”<strong>前左上</strong>“：</p>
+<ul>
+<li>x轴：载体前进方向；</li>
+<li>y轴：载体左侧；</li>
+<li>z轴：载体上方；</li>
+<li>重力矢量：静止平放时，加速度计测得的z轴数值应改为 $+9.8m/s^2$ 。</li>
+</ul>
+<p>以我的自采数据集为例，在实验过程中IMU的坐标轴为”<strong>前右下</strong>“，在静止平放时z轴的数值为 $-9.8 m/s^2$ ；所以，我在进行IMU消息转换时也将坐标轴转换为”前左上“了，如<a href="#3.1 IMU消息类型不兼容">3.1节</a>中的代码所示。</p>
+<p><strong>相机坐标系 (Camera Frame)</strong></p>
+<p>遵循计算机视觉的传统定义”<strong>右下前</strong>“：</p>
+<ul>
+<li>x轴：相机右侧；</li>
+<li>y轴：相机下方；</li>
+<li>z轴：相机前方（视线方向）。</li>
+</ul>
+<p>由此，也可以得到从相机坐标系到IMU坐标系的标准旋转矩阵 $\mathrm{R}^b_c$ ：</p>
+<script type="math/tex; mode=display">
+\mathrm{R}^b_c = \begin{bmatrix} 0&0&1 \\
+-1&0&0 \\
+0&-1&0
+\end{bmatrix}</script><p>当然，需要根据数据采集过程中各设备的具体摆放来进行对应的坐标轴转换。</p>
+<h2 id="3-3-传感器时间戳对齐"><a href="#3-3-传感器时间戳对齐" class="headerlink" title="3.3 传感器时间戳对齐"></a>3.3 传感器时间戳对齐</h2><p>在处理了以上两个问题之后，我在GVINS上测试仍不成功，遵循Gemini的建议现在VINS上测试一下IMU与相机是否可以正常工作，发现仍然无法正常运行，一直在等待IMU数据（Wait IMU …），我也使用了<code>rostopic info $&#123;IMU_TOPIC&#125;</code>进行查看，发现IMU消息的发布和订阅都没有问题；进一步分析之后发现原来是时间戳不对应的关系。现在梳理一下三个传感器的时间戳以及对应yaml文件的配置。</p>
+<p>首先，查看GVINS官方数据集中各传感器的时间戳，如下图所示，可以发现，IMU和相机的时间戳都是在header.stamp中，且是机器<strong>内部时钟</strong>（记为MCU时钟）；而GNSS数据的时间戳是在每一个卫星的观测中出现的，在time中以<strong>GPS时</strong>周数+周内秒形式记录的。这种差异是由于数据采集时没有使用时间硬同步造成的，IMU和相机只能使用MCU时间。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260508213144486.png" width="80%" title="gvins_dataset_time-stamp"></p>
+<p>此外，GVINS的配置文件中关于时钟的设定为：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">gnss_local_online_sync:</span> <span class="number">1</span>                       <span class="comment"># if perform online synchronization betwen GNSS and local time</span></span><br><span class="line"><span class="attr">local_trigger_info_topic:</span> <span class="string">&quot;/external_trigger&quot;</span>   <span class="comment"># external trigger info of the local sensor, if `gnss_local_online_sync` is 1</span></span><br><span class="line"><span class="attr">gnss_local_time_diff:</span> <span class="number">18.0</span>                      <span class="comment"># difference between GNSS and local time (s), if `gnss_local_online_sync` is 0	</span></span><br></pre></td></tr></table></figure>
+<p>这里设定了<code>gnss_local_online_sync</code>为1，即需要对GNSS时间和MCU时间进行校准。</p>
+<p>接下来进一步观察我的自采数据集三个传感器的时间戳，如下图所示。</p>
+<p><img src="/2026/05/07/gvins-data-acquisition/image-20260508213922983.png" width="80%" title="self_dataset_time-stamp"></p>
+<p>我在采集数据是使用了时间硬同步，所有传感器均同步到了GPS时；从上图可以看到，自采数据集中，IMU数据除了在header.stamp中记录了MCU时间外，还记录了GPS时，而相机和GNSS消息中都是记录了GPS时，所以我在3.1节的IMU消息转换代码中使用了以下代码进行时间修改以确保三个传感器的时间戳同步：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">gps_time_float = data.accel_gps_time</span><br><span class="line">standard_imu.header.stamp = rospy.Time.from_sec(gps_time_float)</span><br></pre></td></tr></table></figure>
+<p>由此，三个传感器的时间戳就都同步到了GPS时，对应的yaml配置文件也修改为：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">gnss_local_online_sync:</span> <span class="number">0</span>                       <span class="comment"># if perform online synchronization betwen GNSS and local time</span></span><br><span class="line"><span class="attr">local_trigger_info_topic:</span> <span class="string">&quot;/external_trigger&quot;</span>   <span class="comment"># external trigger info of the local sensor, if `gnss_local_online_sync` is 1</span></span><br><span class="line"><span class="attr">gnss_local_time_diff:</span> <span class="number">0</span>                      <span class="comment"># difference between GNSS and local time (s), if `gnss_local_online_sync` is 0	</span></span><br></pre></td></tr></table></figure>
+<p>将<code>gnss_local_online_sync</code>修改为0，同时把<code>gnss_local_time_diff</code>也设置为0，之后Vins和GVINS的程序都可以正常运行了。</p>
 ]]></content>
       <categories>
         <category>SLAM</category>
