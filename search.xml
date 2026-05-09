@@ -6036,8 +6036,76 @@ f_x & 0 & c_x \\
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">gps_time_float = data.accel_gps_time</span><br><span class="line">standard_imu.header.stamp = rospy.Time.from_sec(gps_time_float)</span><br></pre></td></tr></table></figure>
 <p>由此，三个传感器的时间戳就都同步到了GPS时，对应的yaml配置文件也修改为：</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">gnss_local_online_sync:</span> <span class="number">0</span>                       <span class="comment"># if perform online synchronization betwen GNSS and local time</span></span><br><span class="line"><span class="attr">local_trigger_info_topic:</span> <span class="string">&quot;/external_trigger&quot;</span>   <span class="comment"># external trigger info of the local sensor, if `gnss_local_online_sync` is 1</span></span><br><span class="line"><span class="attr">gnss_local_time_diff:</span> <span class="number">0</span>                      <span class="comment"># difference between GNSS and local time (s), if `gnss_local_online_sync` is 0	</span></span><br></pre></td></tr></table></figure>
-<p>将<code>gnss_local_online_sync</code>修改为0，同时把<code>gnss_local_time_diff</code>也设置为0，之后Vins和GVINS的程序都可以正常运行了。</p>
+<p>将<code>gnss_local_online_sync</code>修改为0，同时把<code>gnss_local_time_diff</code>也设置为0，之后VINS和GVINS的程序都可以正常运行了。</p>
 ]]></content>
+      <categories>
+        <category>SLAM</category>
+        <category>Multi-source</category>
+      </categories>
+      <tags>
+        <tag>SLAM</tag>
+        <tag>GNSS</tag>
+        <tag>IMU</tag>
+        <tag>GVINS</tag>
+        <tag>Vision</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kalibr标定软件使用教程</title>
+    <url>/2026/05/09/kalibr/</url>
+    <content><![CDATA[<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>近期在基于在基于<a href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>进行开发，采集了GNSS、IMU、相机的数据，需要对相机和IMU的数据进行标定，包括相机内参标定以及相机和IMU之间的外参标定，这里使用了著名的<a href="https://github.com/ethz-asl/kalibr">Kalibr</a>标定软件进行操作，在此记录一下使用过程。</p>
+<span id="more"></span>
+<h1 id="2-Kalibr安装过程"><a href="#2-Kalibr安装过程" class="headerlink" title="2 Kalibr安装过程"></a>2 Kalibr安装过程</h1><p>Kalibr软件是一个经典的标定软件，可以解决以下标定问题：</p>
+<ul>
+<li>多相机标定；</li>
+<li>相机-IMU标定；</li>
+<li>多IMU标定；</li>
+<li>卷帘快门相机标定。</li>
+</ul>
+<p>具体可以参考<a href="https://github.com/ethz-asl/kalibr">Kalibr 页面</a>介绍。</p>
+<p>由于Kalibr软件开发得比较早，安装环境全部是基于旧的Ubuntu环境，所以本人在Ubuntu22.04上基于源码编译安装出现了很多问题，最终还是采用了基于Docker的安装方式，这里就不对源码编译安装的惨痛过程进行赘述了，直接开始介绍Docker安装过程。</p>
+<p>Kalibr的安装过程可以参考<a href="https://github.com/ethz-asl/kalibr/wiki/installation">install wiki页面</a>，本人所用的安装命令为：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/ethz-asl/kalibr.git</span><br><span class="line">cd kalibr</span><br><span class="line">docker build -t kalibr -f Dockerfile_ros1_20_04 . # change this to whatever ubuntu version you want</span><br></pre></td></tr></table></figure>
+<p>尽管本人电脑的操作系统为Ubuntu22.04，但是安装的ROS版本还是ROS-noetic，所以这里还是选用的<code>Dockerfile_ros1_20_04</code>。执行上述命令后不出意外报错了：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[+] Building 30.1s (2/2) FINISHED                                     docker:default</span><br><span class="line"></span><br><span class="line"> =&gt; [internal] load build definition from Dockerfile_ros1_20_04                 0.0s</span><br><span class="line"></span><br><span class="line"> =&gt; =&gt; transferring dockerfile: 1.37kB                                          0.0s</span><br><span class="line"></span><br><span class="line"> =&gt; ERROR [internal] load metadata for docker.io/osrf/ros:noetic-desktop-full  30.0s</span><br><span class="line"></span><br><span class="line">------</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"> &gt; </span><span class="language-bash">[internal] load metadata <span class="keyword">for</span> docker.io/osrf/ros:noetic-desktop-full:</span></span><br><span class="line"></span><br><span class="line">------</span><br><span class="line"></span><br><span class="line">Dockerfile_ros1_20_04:1</span><br><span class="line"></span><br><span class="line">--------------------</span><br><span class="line"></span><br><span class="line">   1 | &gt;&gt;&gt; FROM osrf/ros:noetic-desktop-full</span><br><span class="line"></span><br><span class="line">   2 |     </span><br><span class="line"></span><br><span class="line">   3 |     </span><br><span class="line"></span><br><span class="line">--------------------</span><br><span class="line"></span><br><span class="line">ERROR: failed to solve: osrf/ros:noetic-desktop-full: failed to do request: Head &quot;https://registry-1.docker.io/v2/osrf/ros/manifests/noetic-desktop-full&quot;: dial tcp 128.121.243.235:443: i/o timeout</span><br></pre></td></tr></table></figure>
+<p>根据以上报错原因，是Docker从官方仓库获取镜像<code>osrf/ros:noetic-desktop-full</code>时超时了，这我就不理解了，本机一直开着代理，<code>curl google</code>也没有问题，这里为什么就会超时。咨询了Gemini后是这么回答我的：</p>
+<blockquote>
+<p><strong>终端的环境变量代理（HTTP_PROXY）与 Docker 守护进程（Docker Daemon）的代理是完全独立的。</strong></p>
+<p>即使你在终端里执行 <code>export http_proxy=...</code> 并且 <code>curl</code> 成功了，这只影响当前这个 Shell 窗口发出的请求。而 <code>docker build</code> 命令实际上是将指令发送给后台运行的 <strong>Docker Engine (dockerd)</strong>，它并不读取你终端里的环境变量。</p>
+<p>要解决 <code>docker build</code> 时的超时，你需要针对性地配置 Docker 守护进程或构建参数。</p>
+</blockquote>
+<p>嗯，看来Docker还是有很多东西要学习的。Gemini也给出了解决办法，快速点就是直接换源，在<code>Dockerfile_ros1_20_04</code>中修改源地址：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">FROM osrf/ros:noetic-desktop-full	<span class="comment"># 注释掉原有的官方地址</span></span></span><br><span class="line">FROM docker.m.daocloud.io/osrf/ros:noetic-desktop-full	# 换为国内镜像源</span><br></pre></td></tr></table></figure>
+<p>然后就是漫长的等待时间，等待安装完成即可。</p>
+<h1 id="3-标定过程"><a href="#3-标定过程" class="headerlink" title="3 标定过程"></a>3 标定过程</h1><p>安装完成之后，首先进入docker环境，使用以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run -it \</span><br><span class="line">	--name my_kalibr \</span><br><span class="line">	-v &quot;$&#123;/PATH/TO/SHARE&#125;:/data&quot; \	# 修改共享的文件夹路径</span><br><span class="line">	kalibr \</span><br><span class="line">	/bin/bash</span><br></pre></td></tr></table></figure>
+<p>要进行相机-IMU标定前需要先对相机进行内参标定，然后才可以进行外参标定，接下来分别进行介绍。</p>
+<h2 id="3-1-相机内参标定"><a href="#3-1-相机内参标定" class="headerlink" title="3.1 相机内参标定"></a>3.1 相机内参标定</h2><p>进行相机内参标定时需要用到标定板，然后编写对应的配置文件，我这里用的是棋盘格（Checkerboard），将对应的配置文件写下作为参考：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">target_type:</span> <span class="string">&#x27;checkerboard&#x27;</span></span><br><span class="line"><span class="attr">targetCols:</span> <span class="number">6</span>       <span class="comment"># 内角点数量（行）</span></span><br><span class="line"><span class="attr">targetRows:</span> <span class="number">9</span>       <span class="comment"># 内角点数量（列）</span></span><br><span class="line"><span class="attr">rowSpacingMeters:</span> <span class="number">0.024</span>  <span class="comment"># 格子高度 (米)</span></span><br><span class="line"><span class="attr">colSpacingMeters:</span> <span class="number">0.024</span>  <span class="comment"># 格子宽度 (米)</span></span><br></pre></td></tr></table></figure>
+<p>当然，更推荐使用Aprilgrid，在抗遮挡方面效果更佳，其对应的配置文件为：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">target_type:</span> <span class="string">&#x27;aprilgrid&#x27;</span></span><br><span class="line"><span class="attr">tagCols:</span> <span class="number">6</span></span><br><span class="line"><span class="attr">tagRows:</span> <span class="number">6</span></span><br><span class="line"><span class="attr">tagSize:</span> <span class="number">0.088</span>      <span class="comment"># 二维码大小 (米)</span></span><br><span class="line"><span class="attr">tagSpacing:</span> <span class="number">0.3</span>     <span class="comment"># 间距比例 (0.3 表示间距是 tagSize 的 30%)</span></span><br></pre></td></tr></table></figure>
+<p>完成标定板的配置文件之后，就可以利用提前录制的标定rosbag来进行标定了：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">rosrun kalibr kalibr_calibrate_cameras \</span><br><span class="line">	--bag /data/vins_calib.bag \	# 修改为自己的rosbag路径</span><br><span class="line">	--target /data/config_self/target.yaml \	# 标定板配置文件</span><br><span class="line">	--models omni-radtan \	# 这里根据使用的镜头类型选择合适的模型</span><br><span class="line">	--topics /sensor/cam1	# 同上</span><br></pre></td></tr></table></figure>
+<p>然后程序就可以自主运行，解算出相机的内参与标定结果文件了。</p>
+<h2 id="3-2-相机-IMU外参标定"><a href="#3-2-相机-IMU外参标定" class="headerlink" title="3.2 相机-IMU外参标定"></a>3.2 相机-IMU外参标定</h2><h3 id="3-2-1-IMU配置文件"><a href="#3-2-1-IMU配置文件" class="headerlink" title="3.2.1 IMU配置文件"></a>3.2.1 IMU配置文件</h3><p>在得到相机的内参之后，就可以进行相机-IMU的外参标定了，这里还需要准备以下IMU的相关噪声参数，这些参数都可以从datasheet中获取，这里写下IMU的噪声参数配置文件：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">rostopic: /imu0</span><br><span class="line">update_rate: 200.0 # 频率 (Hz)</span><br><span class="line">accelerometer_noise_density: 9.81e-04  	# (m/s^2/sqrt(Hz))</span><br><span class="line">accelerometer_random_walk: 6.17e-04   	# (m/s^3/sqrt(Hz))</span><br><span class="line">gyroscope_noise_density: 1.39e-04     	# (rad/s/sqrt(Hz))</span><br><span class="line">gyroscope_random_walk: 9.89e-05      	# (rad/s^2/sqrt(Hz))</span><br></pre></td></tr></table></figure>
+<p>这里需要注意单位换算，以ADIS16470的手册中给的数值为例：</p>
+<p><img src="/2026/05/09/kalibr/image-20260509163500179.png" alt="image-20260509163500179"></p>
+<p>文件中给定的陀螺仪、加速度计的随机游走单位分别为$^\circ/\sqrt{\text{hr}}$、$ \text{m}/\text{s}/\sqrt{\text{hr}}$，而配置文件中要求的单位分别是：$ \text{rad}/\text{s}^2/\sqrt{\text{Hz}}$、$\text{m}/\text{s}^3/\sqrt{\text{Hz}}$，这里给出对应的转换关系：</p>
+<script type="math/tex; mode=display">
+\text{Value}(\text{rad}/\text{s}^2/\sqrt{\text{Hz}}) = \frac{\text{Value}(^\circ/\sqrt{\text{hr}})}{\sqrt{3600}} \cdot \frac{\pi}{180} \\
+
+\text{Value}(\text{m}/\text{s}^3/\sqrt{\text{Hz}}) = \frac{\text{Value}(\text{m}/\text{sec}/\sqrt{\text{hr}})}{\sqrt{3600}} = \frac{\text{Value}(\text{m}/\text{s}/\sqrt{\text{hr}})}{60}</script><p>而噪声密度参数的单位转换比较简单，从$^\circ$转换为rad、从$\mu g$转换为$\text{m}/\text{s}^2$，这里就不多赘述了。</p>
+<h3 id="3-2-2-标定与结果"><a href="#3-2-2-标定与结果" class="headerlink" title="3.2.2 标定与结果"></a>3.2.2 标定与结果</h3><p>编写完IMU的配置文件之后即可进行相机-IMU外参标定了，命令如下所示：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">rosrun</span> <span class="string">kalibr</span> <span class="string">kalibr_calibrate_imu_camera</span> <span class="string">\</span></span><br><span class="line">    <span class="string">--bag</span> <span class="string">/data/vins_calib_converted.bag</span> <span class="string">\</span></span><br><span class="line">    <span class="string">--target</span> <span class="string">/data/config_self/target.yaml</span> <span class="string">\</span></span><br><span class="line">    <span class="string">--cam</span> <span class="string">/data/vins_calib-camchain.yaml</span> <span class="string">\</span></span><br><span class="line">    <span class="string">--imu</span> <span class="string">/data/config_self/imu.yaml</span></span><br></pre></td></tr></table></figure>
+<p>与相机标定命令类似，需要对上述各路径根据实际情况进行修改。然后程序就可以自主运行，得到相机和IMU之间的外参了。这里以我的标定结果为例进行说明：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">cam0:</span></span><br><span class="line">  <span class="attr">T_cam_imu:</span></span><br><span class="line">  <span class="bullet">-</span> [<span class="number">-0.9999077671725599</span>, <span class="number">0.006788928204283567</span>, <span class="number">0.01176297589148161</span>, <span class="number">-0.010043807082338534</span>]</span><br><span class="line">  <span class="bullet">-</span> [<span class="number">0.011335063851105292</span>, <span class="number">-0.05995628234656512</span>, <span class="number">0.998136644219954</span>, <span class="number">0.06764716589702693</span>]</span><br><span class="line">  <span class="bullet">-</span> [<span class="number">0.007481542319459307</span>, <span class="number">0.9981779173378946</span>, <span class="number">0.05987379947444539</span>, <span class="number">-0.10102821338700176</span>]</span><br><span class="line">  <span class="bullet">-</span> [<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>]</span><br></pre></td></tr></table></figure>
+<p>值得注意的是，这里得到的是<strong>从IMU坐标系到相机坐标系</strong>的转换矩阵，即：</p>
+<script type="math/tex; mode=display">
+P_{cam} = T^{cam}_{imu} \cdot P_{imu}</script><p>若想获取从相机坐标系到IMU坐标系的转换矩阵，可以通过下式得到：</p>
+<script type="math/tex; mode=display">
+R_{cam}^{imu} = {R^{cam}_{imu}}^T \\
+t_{cam}^{imu} = -{R^{cam}_{imu}}^T t^{cam}_{imu}</script>]]></content>
       <categories>
         <category>SLAM</category>
         <category>Multi-source</category>
