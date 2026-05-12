@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-32x32.png">
+  <link rel="mask-icon" href="/images/favicon-32x32.svg" color="#222">
+  <meta name="google-site-verification" content="kc32VCVuVpIaaxW7WxQc60wTHkpa97Q8gs-fFHJRVYM">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"echo-gh.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+
+
+
+
+  <meta name="description" content="1 简介最近在基于GVINS进行开发，无法避免要对GNSS数据进行处理，这部分对于像我这样的外行来说有点不太友好，网上的资料不是很全。这里我会将我在身边朋友帮助下对GNSS数据处理的过程进行记录，如有谬误，请不吝赐教。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GNSS数据处理过程记录">
+<meta property="og:url" content="http://echo-gh.github.io/2026/05/12/gnss-data-process/index.html">
+<meta property="og:site_name" content="Echo&#39;s blog">
+<meta property="og:description" content="1 简介最近在基于GVINS进行开发，无法避免要对GNSS数据进行处理，这部分对于像我这样的外行来说有点不太友好，网上的资料不是很全。这里我会将我在身边朋友帮助下对GNSS数据处理的过程进行记录，如有谬误，请不吝赐教。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://echo-gh.github.io/2026/05/12/gnss-data-process/image-20260512113245467.png">
+<meta property="article:published_time" content="2026-05-12T02:32:47.000Z">
+<meta property="article:modified_time" content="2026-05-12T05:14:37.681Z">
+<meta property="article:author" content="Echo">
+<meta property="article:tag" content="SLAM">
+<meta property="article:tag" content="GNSS">
+<meta property="article:tag" content="IMU">
+<meta property="article:tag" content="GVINS">
+<meta property="article:tag" content="Vision">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://echo-gh.github.io/2026/05/12/gnss-data-process/image-20260512113245467.png">
+
+<link rel="canonical" href="http://echo-gh.github.io/2026/05/12/gnss-data-process/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>GNSS数据处理过程记录 | Echo's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Echo's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-address-card fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-list fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-inbox fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://echo-gh.github.io/2026/05/12/gnss-data-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/snoopy.jpg">
+      <meta itemprop="name" content="Echo">
+      <meta itemprop="description" content="To know, read. To learn, write. To master, teach.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Echo's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GNSS数据处理过程记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-05-12 10:32:47 / 修改时间：13:14:37" itemprop="dateCreated datePublished" datetime="2026-05-12T10:32:47+08:00">2026-05-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/" itemprop="url" rel="index"><span itemprop="name">SLAM</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SLAM/Multi-source/" itemprop="url" rel="index"><span itemprop="name">Multi-source</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>最近在基于<a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/GVINS">GVINS</a>进行开发，无法避免要对GNSS数据进行处理，这部分对于像我这样的外行来说有点不太友好，网上的资料不是很全。这里我会将我在身边朋友帮助下对GNSS数据处理的过程进行记录，如有谬误，请不吝赐教。</p>
+<span id="more"></span>
+<h1 id="2-GNSS数据处理"><a href="#2-GNSS数据处理" class="headerlink" title="2 GNSS数据处理"></a>2 GNSS数据处理</h1><h2 id="2-1-接收机文件处理"><a href="#2-1-接收机文件处理" class="headerlink" title="2.1 接收机文件处理"></a>2.1 接收机文件处理</h2><p>本人在采集GNSS数据时一般会使用两种GNSS接收机：低成本接收机（一般是Ublox）和高成本接收机（一般是Alloy），两种原始数据都需要经过格式转换之后得到Rinex格式的文件，以下是两种文件的转换方式：</p>
+<ul>
+<li>Ublox的文件使用RTKlib RTKCONV即可转换；</li>
+<li>Alloy的文件在从接收机导出时就可以选择“导出并转换”，一般会获得原始观测文件和对应的星历文件；如果得到的是未经转换的原始数据，还可以通过Trimble公司的转换软件<a target="_blank" rel="noopener" href="https://forms.trimble.com/support_trl.aspx?Nav=Collection-40773&amp;pt=Trimble+RINEX">ConvertToRinex</a>进行转换。</li>
+</ul>
+<h2 id="2-2-基站数据和星历数据下载"><a href="#2-2-基站数据和星历数据下载" class="headerlink" title="2.2 基站数据和星历数据下载"></a>2.2 基站数据和星历数据下载</h2><p>实验测试时需要真值数据，一般会通过RTK或者RTK/INS紧组合来求解真值，该过程都会需要基站数据，这里将基站数据和星历数据的获取方式进行记录。</p>
+<h3 id="2-2-1-手动下载方式"><a href="#2-2-1-手动下载方式" class="headerlink" title="2.2.1 手动下载方式"></a>2.2.1 手动下载方式</h3><p>手动下载方式一般通过ftp从网站进行下载，如可通过使用FileZilla软件来下载，下面分别介绍数据下载方式。</p>
+<p><strong>基站数据</strong></p>
+<ol>
+<li><p>打开FileZilla软件，在①处填写服务器地址（这里使用的是<code>gdc.cddis.eosdis.nasa.gov</code>），然后点击②处的“快速连接”，接着在③处选择合适的选项，这里我一般选择highrate（1Hz）的基站数据，然后即可在④处选择合适的年份、日期进行下载了。比如选择<code>highrate/2026/131</code>这一天的数据进行下载，也可以根据一天内所需的对应时间段下载数据。<img src="/2026/05/12/gnss-data-process/image-20260512113245467.png" alt="image-20260512113245467"></p>
+</li>
+<li><p>这里下载的数据格式为<code>crx.gz</code>文件，接下来使用压缩软件将其进行解压缩，得到crx文件；</p>
+</li>
+<li>对于Windows系统，在命令提示符中使用如下命令进行数据拼接：<code>for %i in (*.crx) do crx2rnx.exe &quot;%i&quot;</code>，即可得到一个完整的参考站数据；</li>
+<li>对于Linux系统，在终端中使用如下命令进行操作：<code>./gfzrnx_2.1.9_lx64 -finp ~/PATH/TO/FILE/*.rnx -kv &gt; output.rnx</code>。</li>
+</ol>
+<p>以上就是手动下载基站数据的方式。</p>
+<p><strong>星历数据</strong></p>
+<p>星历数据的下载方式类似，填入地址（这里还需要账号、密码）、“快速连接”、选择“/brdc_whu - 服务器 - 搜索远程文件（F3）”，选取对应天数文件下载，文件名为“brdm<em>**</em>.26p”，其中“.26p”是根据所需年份确定的。</p>
+<h3 id="2-2-2-自动下载方式"><a href="#2-2-2-自动下载方式" class="headerlink" title="2.2.2 自动下载方式"></a>2.2.2 自动下载方式</h3><p>手动下载方式比较麻烦，特别是针对基站数据，还要手动选择、解压缩等操作，同学给了我一个开源代码可以在不同服务器上自动下载基站数据和星历数据，即<a target="_blank" rel="noopener" href="https://github.com/zhouforme0318/GAMPII-GOOD">GAMPII-GOOD</a>软件，代码详情可以参考其Github页面，下面介绍一下本人使用该软件的过程。</p>
+<p>按照要求进行代码编译之后，可根据需求修改配置文件/config/GOOD_cfg.yaml，将部分需要修改的部分摘出来加以说明：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The root/main directory of GNSS observations and products  -------------------</span></span><br><span class="line"><span class="attr">mainDir       :</span> <span class="string">/home/***/GAMPII-GOOD/data</span>	<span class="comment"># 修改为对应路径；</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#中间部分省略，不需要修改；</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Time settings ----------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># 日期范围设定，后面有针对不同模式的说明；</span></span><br><span class="line"><span class="attr">procTime      :</span> <span class="number">1</span>  <span class="number">2026  </span><span class="number">5</span> <span class="number">11</span> <span class="number">1</span>  <span class="comment"># The setting of start time for processing, which should be set to &#x27;1 year month day ndays&#x27; or &#x27;2 year doy ndays&#x27; or &#x27;3 week dow ndays&#x27;. <span class="doctag">NOTE:</span> doy = day of year; week = GPS week; dow = day within week</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 该部分不需要修改；</span></span><br><span class="line"><span class="comment"># Settings of FTP downloading --------------------------------------------------</span></span><br><span class="line"><span class="attr">minusAdd1day  :</span> <span class="number">1</span>                 <span class="comment"># (0: off  1: on) The setting of the day before and after the current day for precise satellite orbit and clock products downloading</span></span><br><span class="line"><span class="attr">merge_sp3files:</span> <span class="number">0</span>                 <span class="comment"># (0: off  1: on) to merge three consecutive sp3 files into one file</span></span><br><span class="line"><span class="attr">printInfoWget :</span> <span class="number">1</span>                 <span class="comment"># (0: off  1: on) Printing the information generated by &#x27;wget&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Handling of FTP downloading --------------------------------------------------</span></span><br><span class="line"><span class="attr">ftpDownloading:</span>                   <span class="comment"># The setting of the master switch for data downloading</span></span><br><span class="line">  <span class="attr">opt4ftp:</span> <span class="number">1</span>                      <span class="comment">#   1st: (0:off  1:on);</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 该部分根据需要进行修改，有时候某个服务器无法下载了可以更换不同的服务器进行下载；</span></span><br><span class="line">  <span class="attr">ftpArch:</span> <span class="string">cddis</span>                   <span class="comment">#   2nd: the FTP archive, i.e., cddis, ign, or whu.    </span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 基站观测文件下载部分；</span></span><br><span class="line"><span class="attr">getObs:</span>                           <span class="comment"># GNSS observation data downloading option</span></span><br><span class="line">  <span class="attr">opt4obs:</span> <span class="number">1</span>                      <span class="comment">#   1st(opt4obs): (0: off  1: on);</span></span><br><span class="line">  <span class="comment"># 根据需要选择不同的频率类型；</span></span><br><span class="line">  <span class="attr">obsType:</span> <span class="string">highrate</span>                     <span class="comment">#   2nd(obsType): &#x27;daily&#x27;, &#x27;hourly&#x27;, &#x27;highrate&#x27;, &#x27;30s&#x27;, &#x27;5s&#x27;, or &#x27;1s&#x27;;</span></span><br><span class="line">  <span class="comment"># 同样地，如果某个服务器不好用，可已在该处进行更换；</span></span><br><span class="line">  <span class="attr">obsFrom:</span> <span class="string">igm</span>                  <span class="comment">#   3rd: &#x27;igs&#x27;, &#x27;mgex&#x27;, &#x27;igm&#x27;, &#x27;cut&#x27;, &#x27;hk&#x27;, &#x27;ngs&#x27;, &#x27;epn&#x27;, &#x27;pbo&#x27;, or &#x27;chi&#x27;;</span></span><br><span class="line">  <span class="comment"># 下载站点的列表；</span></span><br><span class="line">  <span class="attr">obsList:</span> <span class="string">site_mgex.list</span>         <span class="comment">#   4th: &#x27;all&#x27; (observation files downloaded in the whole directory) or the site list file name (observation files downloaded site-by-site according to the site list file, which needs to inherit the path of &#x27;mainDir&#x27;);</span></span><br><span class="line">  <span class="comment"># 起始时间；</span></span><br><span class="line">  <span class="attr">sHH4obs:</span> <span class="number">1</span>                     <span class="comment">#   5th: Start hour (00, 01, 02, ...);</span></span><br><span class="line">  <span class="comment"># 所需时间总和（h）；</span></span><br><span class="line">  <span class="attr">nHH4obs:</span> <span class="number">7</span>                      <span class="comment">#   6th: The consecutive hours, i.e., &#x27;01  3&#x27; denotes 01, 02, and 03;</span></span><br><span class="line">  <span class="attr">l2s4obs:</span> <span class="number">1</span>                      <span class="comment">#   7th: Valid only for the observation files with long name, 0: long name, 1: short name, 2: long and short name</span></span><br><span class="line">                                  <span class="comment">#   <span class="doctag">NOTE:</span> The 5th and 6th items are valid ONLY when the 2nd item &#x27;hourly&#x27;, &#x27;highrate&#x27;, &#x27;5s&#x27;, or &#x27;1s&#x27; is set.</span></span><br><span class="line">                                  <span class="comment">#   <span class="doctag">NOTE:</span> If the 3rd item is &#x27;igs&#x27;, &#x27;mgex&#x27;, &#x27;igm&#x27;, the 2nd item can be &#x27;daily&#x27;, &#x27;hourly&#x27;, or &#x27;highrate&#x27;;</span></span><br><span class="line">                                  <span class="comment">#         If the 3rd item is &#x27;cut&#x27;, &#x27;ngs&#x27;, &#x27;epn&#x27;, or &#x27;pbo&#x27;, the 2nd item should be &#x27;daily&#x27;;</span></span><br><span class="line">                                  <span class="comment">#         If the 3rd item is &#x27;hk&#x27;, the 2nd item can be 1) &#x27;30s&#x27;, &#x27;5s&#x27;, or &#x27;1s&#x27; 2) &#x27;30s&#x27;, &#x27;05s&#x27;, or &#x27;01s&#x27;. However, &#x27;30 s&#x27;, &#x27;5 s&#x27;, or &#x27;1 s&#x27; is NOT allowed.</span></span><br><span class="line">                                  <span class="comment">#   <span class="doctag">NOTE:</span> If the 3rd item is &#x27;hk&#x27; &#x27;ngs&#x27;, or &#x27;pbo&#x27;, the 4th item should ONLY be the full path of site list.</span></span><br><span class="line">                                  <span class="comment">#   INFO: The 2nd item &#x27;igs&#x27; is for IGS observation (RINEX version 2.xx, short name &#x27;d&#x27;);</span></span><br><span class="line">                                  <span class="comment">#         The 2nd item &#x27;mgex&#x27; is for MGEX observation (RINEX version 3.xx, long name &#x27;crx&#x27;);</span></span><br><span class="line">                                  <span class="comment">#         The 2nd item &#x27;igm&#x27; is for the union of IGS and MGEX (IGS + MGEX, while the priority of MGEX sites is higher) observation with respect to the site name;</span></span><br><span class="line">                                  <span class="comment">#         The 2nd item &#x27;cut&#x27; is for Curtin University of Technology (CUT) observation (RINEX version 3.xx, long name &#x27;crx&#x27;);</span></span><br><span class="line">                                  <span class="comment">#         The 2nd item &#x27;hk&#x27; is for Hong Kong CORS observation (RINEX version 3.xx, long name &#x27;crx&#x27;);</span></span><br><span class="line">                                  <span class="comment">#         The 2nd item &#x27;ngs&#x27; is for NGS/NOAA CORS observation (RINEX version 2.xx, short name &#x27;d&#x27;);</span></span><br><span class="line">                                  <span class="comment">#         The 2nd item &#x27;epn&#x27; is for EUREF Permanent Network (EPN) observation (RINEX version 3.xx, long name &#x27;crx&#x27; and RINEX version 2.xx, short name &#x27;d&#x27;);</span></span><br><span class="line">                                  <span class="comment">#         The 2nd item &#x27;pbo&#x27; is for Plate Boundary Observatory (PBO) observation (RINEX version 3.xx, long name &#x27;crx&#x27;);</span></span><br><span class="line">                                  <span class="comment">#         The 2nd item &#x27;chi&#x27; is for Centro Sismologico Nacional of Universidad de Chile observation (RINEX version 2.xx, short name &quot;d&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 星历文件下载设定；</span></span><br><span class="line"><span class="attr">getNav:</span>                           <span class="comment"># Various broadcast ephemeris downloading option</span></span><br><span class="line">  <span class="attr">opt4nav:</span> <span class="number">1</span>                      <span class="comment">#   1st: (0: off  1: on);</span></span><br><span class="line">  <span class="attr">navType:</span> <span class="string">daily</span>                  <span class="comment">#   2nd: &#x27;daily&#x27; or &#x27;hourly&#x27;;</span></span><br><span class="line">  <span class="attr">navSys :</span> <span class="string">mixed3</span>                 <span class="comment">#   3rd: &#x27;gps&#x27;, &#x27;glo&#x27;, &#x27;bds&#x27;, &#x27;gal&#x27;, &#x27;qzs&#x27;, &#x27;irn&#x27;, &#x27;mixed3&#x27;, &#x27;mixed4&#x27;, or &#x27;all&#x27;;</span></span><br><span class="line">  <span class="attr">navFrom:</span> <span class="string">gop</span>                    <span class="comment">#   4th: Analysis center (i.e., &#x27;igs&#x27;, &#x27;dlr&#x27;, &#x27;ign&#x27;, &#x27;gop&#x27;, or &#x27;wrd&#x27;) that carries out the combination of broadcast ephemeris for mixed navigation data. From CDDIS or WHU FTP, &#x27;igs&#x27; and &#x27;dlr&#x27; can be downloaded, and from IGN, &#x27;igs&#x27; and &#x27;ign&#x27; can be downloaded. The downloading of &#x27;gop&#x27; and/or &#x27;wrd&#x27; is via the other FTP addresses;</span></span><br><span class="line">  <span class="attr">navList:</span> <span class="string">site_mgex2.list</span>         <span class="comment">#   5th: ONLY the site list file name is valid if the 2nd item is &#x27;hourly&#x27;;</span></span><br><span class="line">  <span class="attr">sHH4nav:</span> <span class="number">01</span>                     <span class="comment">#   6th: Start hour (00, 01, 02, ...);</span></span><br><span class="line">  <span class="attr">nHH4nav:</span> <span class="number">2</span>                      <span class="comment">#   7th: The consecutive hours, i.e., &#x27;01  3&#x27; denotes 01, 02, and 03;</span></span><br><span class="line">  <span class="attr">l2s4nav:</span> <span class="number">2</span>                      <span class="comment">#   8th: Valid only for the navigation files with long name, 0: long name, 1: short name, 2: long and short name</span></span><br><span class="line">                                  <span class="comment">#   <span class="doctag">NOTE:</span> The 5th, 6th, and 7th items are valid ONLY when the 2nd item &#x27;hourly&#x27; is set.</span></span><br><span class="line">                                  <span class="comment">#   <span class="doctag">NOTE:</span> If the 2nd item is &#x27;daily&#x27;, the 3rd item should be &#x27;gps&#x27;, &#x27;glo&#x27;, &#x27;mixed3&#x27;, or &#x27;mixed4&#x27;;</span></span><br><span class="line">                                  <span class="comment">#         If the 2nd item is &#x27;hourly&#x27;, the 3rd item can be &#x27;gps&#x27;, &#x27;glo&#x27;, &#x27;bds&#x27;, &#x27;gal&#x27;, &#x27;qzs&#x27;, &#x27;irn&#x27;, &#x27;mixed&#x27;, or &#x27;all&#x27;.</span></span><br><span class="line">                                  <span class="comment">#   <span class="doctag">NOTE:</span> The 4th item is valid ONLY when the 3rd item &#x27;mixed3&#x27; is set.</span></span><br><span class="line">                                  <span class="comment">#   <span class="doctag">NOTE:</span> The 3rd item &#x27;mixed3&#x27; is for RINEX 3.xx, while &#x27;mixed4&#x27; is for RINEX 4.xx.</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>以上内容后面也均有对应说明，可根据需要进行修改。此外，也需要对/data/site_mgex.list进行修改，填上需要下载的基站名称即可。</p>
+<p>修改完配置文件之后，即可进入/bin执行运行命令：<code>./run_GOOD ../config/GOOD_cfg.yaml</code>，然后程序就会自动下载选定时间段、选定基站的观测数据和星历数据。</p>
+<p>下载完后的数据会保存在/data/obs和/data/nav下，对于观测数据还需要使用<code>./gfzrnx_2.1.9_lx64 -finp ~/PATH/TO/FILE/*.rnx -kv &gt; output.rnx</code>进行拼接。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/SLAM/" rel="tag"><i class="fa fa-tag"></i> SLAM</a>
+              <a href="/tags/GNSS/" rel="tag"><i class="fa fa-tag"></i> GNSS</a>
+              <a href="/tags/IMU/" rel="tag"><i class="fa fa-tag"></i> IMU</a>
+              <a href="/tags/GVINS/" rel="tag"><i class="fa fa-tag"></i> GVINS</a>
+              <a href="/tags/Vision/" rel="tag"><i class="fa fa-tag"></i> Vision</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/05/09/kalibr/" rel="prev" title="Kalibr标定软件使用教程">
+      <i class="fa fa-chevron-left"></i> Kalibr标定软件使用教程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="nav-text">1 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-GNSS%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-text">2 GNSS数据处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E6%8E%A5%E6%94%B6%E6%9C%BA%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86"><span class="nav-text">2.1 接收机文件处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%9F%BA%E7%AB%99%E6%95%B0%E6%8D%AE%E5%92%8C%E6%98%9F%E5%8E%86%E6%95%B0%E6%8D%AE%E4%B8%8B%E8%BD%BD"><span class="nav-text">2.2 基站数据和星历数据下载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-%E6%89%8B%E5%8A%A8%E4%B8%8B%E8%BD%BD%E6%96%B9%E5%BC%8F"><span class="nav-text">2.2.1 手动下载方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-%E8%87%AA%E5%8A%A8%E4%B8%8B%E8%BD%BD%E6%96%B9%E5%BC%8F"><span class="nav-text">2.2.2 自动下载方式</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Echo"
+      src="/images/snoopy.jpg">
+  <p class="site-author-name" itemprop="name">Echo</p>
+  <div class="site-description" itemprop="description">To know, read. To learn, write. To master, teach.</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">98</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">53</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:xrzhao404@outlook.com" title="E-Mail → mailto:xrzhao404@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-robot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Echo</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+
+</body>
+</html>
